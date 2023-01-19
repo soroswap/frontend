@@ -1,5 +1,5 @@
 .soroban
-.contracts/target
+.contracts/target/
 
 # Logs
 logs
