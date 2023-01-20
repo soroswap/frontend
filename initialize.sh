@@ -74,12 +74,23 @@ echo "Contract deployed succesfully with LIQUIDITY_POOL_ID: $LIQUIDITY_POOL_ID"
 echo ".."
 echo ".."
 
-sleep 5
+echo STEP 5: Install a token contract in order to get the wasm WASM_HASH
+TOKEN_WASM_HASH="$(
+  soroban install \
+    --wasm contracts/target/wasm32-unknown-unknown/release/soroban_token_contract.wasm
+)"
+
+echo "Token contract installed succesfully with TOKEN_WASM_HASH: $TOKEN_WASM_HASH"
+
+
+echo "$TOKEN_WASM_HASH" > .soroban/token_wasm_hash
+
 
 echo STEP 4: Initialize the liquidity_pool contract with TOKEN IDs
 soroban invoke \
   --id "$LIQUIDITY_POOL_ID" \
   --fn initialize \
+  --arg $TOKEN_WASM_HASH \
   --arg $TOKEN_ID_1 \
   --arg $TOKEN_ID_2 \
   --wasm contracts/target/wasm32-unknown-unknown/release/soroban_liquidity_pool_contract.wasm
@@ -90,3 +101,5 @@ soroban invoke \
  LIQUIDITY_POOL_ID=$(cat .soroban/liquidity_pool)
  TOKEN_ID_1=$(cat .soroban/token_id_1)
  TOKEN_ID_2=$(cat .soroban/token_id_2)
+ TOKEN_WASM_HASH=$(cat .soroban/token_wasm_hash)
+
