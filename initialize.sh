@@ -41,7 +41,7 @@ echo ".."
 echo STEP 2.1: Wrap the Dummy Stellar Asset 1
 mkdir -p .soroban
 TOKEN_ID_1=$(soroban token wrap --asset "DUMMY1:$TOKEN_ADMIN")
-echo -n "$TOKEN_ID_1" > .soroban/token_id
+echo -n "$TOKEN_ID_1" > .soroban/token_id_1
 echo "  - Dummy Stellat Asset wrapped with TOKEN_ID_1: $TOKEN_ID_1"
 
 echo ".."
@@ -49,43 +49,44 @@ echo ".."
 
 echo STEP 2.2: Wrap the Dummy Stellar Asset 2
 TOKEN_ID_2=$(soroban token wrap --asset "DUMMY2:$TOKEN_ADMIN")
-echo -n "$TOKEN_ID_2" > .soroban/token_id
+echo -n "$TOKEN_ID_2" > .soroban/token_id_2
 echo "  - Dummy Stellat Asset wrapped with TOKEN_ID_2: $TOKEN_ID_2"
 
 echo ".."
 echo ".."
 
-echo TODO: Build the soroswap_pair contract
+echo STEP 3: Build the soroswap_pair contract
+cd contracts
+make build 
+cd ..
+
 echo ".."
 echo ".."
-echo TODO: Deploy the soroswap_pair contract
+
+echo STEP 4: Deploy the liquidity_pool contract
+LIQUIDITY_POOL_ID="$(
+  soroban deploy \
+    --wasm contracts/target/wasm32-unknown-unknown/release/soroban_liquidity_pool_contract.wasm
+)"
+echo "$LIQUIDITY_POOL_ID" > .soroban/liquidity_pool
+echo "Contract deployed succesfully with LIQUIDITY_POOL_ID: $LIQUIDITY_POOL_ID"
+
 echo ".."
 echo ".."
 
-echo TODO: Initialize the soroswap_pair contract with TOKEN IDs
+sleep 5
+
+echo STEP 4: Initialize the liquidity_pool contract with TOKEN IDs
+soroban invoke \
+  --id "$LIQUIDITY_POOL_ID" \
+  --fn initialize \
+  --arg $TOKEN_ID_1 \
+  --arg $TOKEN_ID_2 \
+  --wasm contracts/target/wasm32-unknown-unknown/release/soroban_liquidity_pool_contract.wasm
+
+ echo "Done"
 
 
-
-# make build
-
-# echo Deploy the crowdfund contract
-# CROWDFUND_ID="$(
-#   soroban deploy \
-#     --wasm target/wasm32-unknown-unknown/release/soroban_crowdfund_contract.wasm
-# )"
-# echo "$CROWDFUND_ID" > .soroban/crowdfund_id
-
-# echo "Contract deployed succesfully with ID: $CROWDFUND_ID"
-
-# echo "Initialize the crowdfund contract"
-# deadline="$(($(date +"%s") + 86400))"
-# soroban invoke \
-#   --id "$CROWDFUND_ID" \
-#   --fn initialize \
-#   --arg-xdr "$TOKEN_ADMIN_IDENTIFIER" \
-#   --arg "$deadline" \
-#   --arg "1000000000" \
-#   --arg "$TOKEN_ID" \
-#   --wasm target/wasm32-unknown-unknown/release/soroban_crowdfund_contract.wasm
-
-# echo "Done"
+ LIQUIDITY_POOL_ID=$(cat .soroban/liquidity_pool)
+ TOKEN_ID_1=$(cat .soroban/token_id_1)
+ TOKEN_ID_2=$(cat .soroban/token_id_2)
