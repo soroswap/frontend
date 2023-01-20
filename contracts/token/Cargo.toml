@@ -1,21 +1,21 @@
 [package]
-name = "soroban-liquidity-pool-contract"
-version = "0.0.0"
+name = "soroban-token-contract"
+description = "Soroban standard token contract"
+version = "0.0.6"
 edition = "2021"
-publish = false
 
 [lib]
 crate-type = ["cdylib"]
 
 [features]
-token-wasm = []
 testutils = ["soroban-sdk/testutils", "soroban-auth/testutils"]
 
 [dependencies]
 soroban-sdk = { workspace = true }
 soroban-auth = { workspace = true }
-num-integer = { version = "0.1.45", default-features = false, features = ["i128"] }
 
-[dev_dependencies]
+[dev-dependencies]
+ed25519-dalek = { version = "1.0.1" }
+rand = { version = "0.7.3" }
 soroban-sdk = { workspace = true, features = ["testutils"] }
 soroban-auth = { workspace = true, features = ["testutils"] }

@@ -80,6 +80,7 @@ echo STEP 4: Initialize the liquidity_pool contract with TOKEN IDs
 soroban invoke \
   --id "$LIQUIDITY_POOL_ID" \
   --fn initialize \
+  --arg WASM_HASH????
   --arg $TOKEN_ID_1 \
   --arg $TOKEN_ID_2 \
   --wasm contracts/target/wasm32-unknown-unknown/release/soroban_liquidity_pool_contract.wasm
