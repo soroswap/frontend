@@ -1,6 +1,6 @@
 import Head from 'next/head'
 import { Inter } from '@next/font/google'
-import DogGrid from '../src/components/DogGrid';
+import SwapGrid from '../src/components/SwapGrid';
 import ButtonAppBar from '../src/components/ButtonAppBar';
 import MySorobanReactProvider from '../src/soroban/MySorobanReactProvider';
 
@@ -17,7 +17,7 @@ export default function Home() {
       </Head>
       <MySorobanReactProvider>
         <ButtonAppBar/>
-        <DogGrid/>
+        <SwapGrid/>
       </MySorobanReactProvider>
     </>
   )
