@@ -1,5 +1,5 @@
 import React from 'react';
-import DogGrid from './DogGrid';
+import SwapGrid from './SwapGrid';
 import ButtonAppBar from './ButtonAppBar';
 import MySorobanReactProvider from '../soroban/MySorobanReactProvider';
 
@@ -8,7 +8,7 @@ export default function MyApp() {
   return (
       <MySorobanReactProvider>
         <ButtonAppBar/>
-        <DogGrid/>
+        <SwapGrid/>
       </MySorobanReactProvider>
   )
 }
