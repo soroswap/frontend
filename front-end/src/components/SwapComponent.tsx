@@ -4,7 +4,7 @@ import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import { Typography } from '@mui/material';
-import {AdoptPetButton} from '../soroban/AdoptPetButton';
+import {SwapButton} from '../soroban/SwapButton';
 import { useIsPetAdopted } from '../soroban/useIsPetAdopted';
 import { useSorobanReact } from '@soroban-react/core';
 import TextField from '@mui/material/TextField';
@@ -74,7 +74,7 @@ export function SwapComponent (){
     <Card sx={{ maxWidth: 345 }}>
       <CardContent>
         <Typography gutterBottom variant="h5" component="div">
-        Input token:
+       Swap your favourite tokens
         </Typography>
         <TextField
           id="outlined-select-currency"
@@ -124,7 +124,7 @@ export function SwapComponent (){
 
       </CardContent>
       <CardActions>
-        <AdoptPetButton id={1}></AdoptPetButton>
+        <SwapButton id={1}></SwapButton>
       </CardActions>
       
     </Card>

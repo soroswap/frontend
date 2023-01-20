@@ -4,15 +4,15 @@ import Button from '@mui/material/Button';
 import {useSendTransaction, contractTransaction} from '@soroban-react/contracts'
 import {numberToU32} from '@soroban-react/utils'
 import * as SorobanClient from 'soroban-client'
-import addresses from '../soroban/addresses.json'
+import addresses from './addresses.json'
 
 
-interface AdoptPetButtonProps {
+interface SwapButtonProps {
     id: number,
 }
 
 
-export function AdoptPetButton ({id}: AdoptPetButtonProps){
+export function SwapButton ({id}: SwapButtonProps){
     const sorobanContext =  useSorobanReact()
     console.log("sorobanContext: ", sorobanContext)
     const { sendTransaction } = useSendTransaction()
@@ -53,7 +53,7 @@ export function AdoptPetButton ({id}: AdoptPetButtonProps){
             size="small"
             variant="contained"
             onClick={handleAdopt}>
-              Adopt it now! ❤️
+              Swap
           </Button>
 
     )
