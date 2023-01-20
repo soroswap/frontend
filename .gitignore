@@ -1,6 +1,6 @@
 .soroban
-.contracts/target/
-
+contracts/target/*
+front-end/node_modules
 # Logs
 logs
 *.log
