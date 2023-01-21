@@ -5,17 +5,18 @@ import {scvalToString} from '@soroban-react/utils'
 import * as SorobanClient from "soroban-client";
 
 export async function setTrustline({
-    tokenId,
+    tokenSymbol,
     tokenAdmin,
     account,
-    sorobanContext
+    sorobanContext,
+    sendTransaction
     }:{
-      tokenId: string,
+      tokenSymbol: string,
       tokenAdmin: string,
       account: string,
-      sorobanContext: SorobanContextType}){
-
-    const {sendTransaction} = useSendTransaction()
+      sorobanContext: SorobanContextType,
+      sendTransaction: any
+    }){
 
     const server = sorobanContext.server
     const networkPassphrase = sorobanContext.activeChain?.networkPassphrase ?? ''
@@ -25,14 +26,11 @@ export async function setTrustline({
     let adminSource = new SorobanClient.Account(tokenAdmin, sequence)
     let wallet = await server.getAccount(account)
     let walletSource = new SorobanClient.Account(wallet.id, wallet.sequence)
-    let symbol = useContractValue({ 
-        contractId: tokenId,
-        method: 'symbol',
-        sorobanContext
-      })
-    const tokenSymbol = symbol.result && scvalToString(symbol.result)?.replace("\u0000", "")
-    if (!tokenSymbol) throw new Error("Was not know what was the tokenSymbol")
     
+    console.log("tokenSymbol: ", tokenSymbol)
+    tokenSymbol="DUMMY1"
+    let myAsset = new SorobanClient.Asset(tokenSymbol, tokenAdmin)
+    console.log("myAsset: ", myAsset)
     const trustlineResult = await sendTransaction(
         new SorobanClient.TransactionBuilder(walletSource, {
             networkPassphrase,
@@ -53,5 +51,6 @@ export async function setTrustline({
         },
         )
         console.debug(trustlineResult)
+        return trustlineResult
 
       }

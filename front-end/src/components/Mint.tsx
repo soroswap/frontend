@@ -20,7 +20,9 @@ import Button from '@mui/material/Button';
 
 import * as SorobanClient from 'soroban-client'
 import BigNumber from 'bignumber.js'
-import {useSendTransaction} from '@soroban-react/contracts'
+import {useContractValue, useSendTransaction} from '@soroban-react/contracts'
+//import {useSendTransaction} from '../useSendTransaction'
+import {scvalToString} from '@soroban-react/utils'
 import {Constants} from '../constants'
 import { setTrustline } from '../setTrustline';
 
@@ -40,16 +42,22 @@ const currencies = [
 
 function MintButton({
         sorobanContext,
-        tokenId,
-        symbol
+        tokenId     
         }:{
           sorobanContext: SorobanContextType,
           tokenId: string
-          symbol: string}){
+          }){
 
   const [isSubmitting, setSubmitting] = useState(false)
   const networkPassphrase = sorobanContext.activeChain?.networkPassphrase ?? ''
   const { sendTransaction } = useSendTransaction()
+  let symbol = useContractValue({ 
+    contractId: tokenId,
+    method: 'symbol',
+    sorobanContext
+  })
+  const tokenSymbol = symbol.result && scvalToString(symbol.result)?.replace("\u0000", "")
+  //if (!tokenSymbol) throw new Error("Was not know what was the tokenSymbol")
 
   const amount = BigNumber(100)
 
@@ -84,13 +92,20 @@ function MintButton({
           if (!balances || balances.filter(b => (
             b.asset_code == symbol && b.asset_issuer == Constants.TokenAdmin
           )).length === 0) {
+            console.log("TRUSTLINE")
             try {
-              setTrustline({
-                tokenId: tokenId,
+
+              
+              
+
+              let trustlineResult = await setTrustline({
+                tokenSymbol: tokenSymbol,
                 tokenAdmin: Constants.TokenAdmin,
                 account: account,
-                sorobanContext: sorobanContext
+                sorobanContext: sorobanContext,
+                sendTransaction: sendTransaction
               })
+              console.log("trustlineResult: ", trustlineResult)
             } catch (err) {
               console.error(err)
               console.log("error while creating trustline")
@@ -199,7 +214,7 @@ export function Mint (){
         <MintButton
           sorobanContext={sorobanContext}
           tokenId={mintTokenId}
-          symbol={"DUMMY1:GDT2NORMZF6S2T4PT4OBJJ43OPD3GPRNTJG3WVVFB356TUHWZQMU6C3U"}>
+          >
           MINT!
         </MintButton>
       </CardActions>

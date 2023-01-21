@@ -14,7 +14,7 @@
     "@mui/material": "^5.10.17",
     "@next/font": "13.0.7",
     "@soroban-react/chains": "^3.2.1",
-    "@soroban-react/contracts": "^3.2.1",
+    "@soroban-react/contracts": "^3.4.0",
     "@soroban-react/core": "^3.2.1",
     "@soroban-react/types": "^3.2.1",
     "@soroban-react/utils": "^3.2.1",
