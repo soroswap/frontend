@@ -25,42 +25,23 @@ import {useContractValue, useSendTransaction} from '@soroban-react/contracts'
 import {scvalToString} from '@soroban-react/utils'
 import {Constants} from '../constants'
 import { setTrustline } from '../setTrustline';
+import {currencies} from '../currencies'
 
-
-const currencies = [
-  {
-    value: 'XLM',
-    label: 'XLM (XLM)',
-    shortlabel: 'XLM'
-  },
-  {
-    value: 'BTC',
-    label: 'BTC (฿)',
-    shortlabel: '฿'
-  }
-];
 
 function MintButton({
         sorobanContext,
-        tokenId     
+        tokenId,
+        tokenSymbol,
+        amountToMint     
         }:{
           sorobanContext: SorobanContextType,
-          tokenId: string
+          tokenId: string,
+          tokenSymbol: string,
+          amountToMint: BigNumber
           }){
-
   const [isSubmitting, setSubmitting] = useState(false)
   const networkPassphrase = sorobanContext.activeChain?.networkPassphrase ?? ''
   const { sendTransaction } = useSendTransaction()
-  let symbol = useContractValue({ 
-    contractId: tokenId,
-    method: 'symbol',
-    sorobanContext
-  })
-  const tokenSymbol = symbol.result && scvalToString(symbol.result)?.replace("\u0000", "")
-  //if (!tokenSymbol) throw new Error("Was not know what was the tokenSymbol")
-
-  const amount = BigNumber(100)
-
   const setTrustlineAndMint = async () => {
     setSubmitting(true)
     const server = sorobanContext.server
@@ -90,9 +71,8 @@ function MintButton({
           //
 
           if (!balances || balances.filter(b => (
-            b.asset_code == symbol && b.asset_issuer == Constants.TokenAdmin
+            b.asset_code == tokenSymbol && b.asset_issuer == Constants.TokenAdmin
           )).length === 0) {
-            console.log("TRUSTLINE")
             try {
 
               
@@ -105,7 +85,6 @@ function MintButton({
                 sorobanContext: sorobanContext,
                 sendTransaction: sendTransaction
               })
-              console.log("trustlineResult: ", trustlineResult)
             } catch (err) {
               console.error(err)
               console.log("error while creating trustline")
@@ -123,8 +102,8 @@ function MintButton({
               .addOperation(
                 SorobanClient.Operation.payment({
                   destination: wallet.id,
-                  asset: new SorobanClient.Asset(symbol, Constants.TokenAdmin),
-                  amount: amount.toString(),
+                  asset: new SorobanClient.Asset(tokenSymbol, Constants.TokenAdmin),
+                  amount: amountToMint.toString(),
                 })
               )
               .build(), {
@@ -159,21 +138,39 @@ function MintButton({
 export function Mint (){
     const sorobanContext = useSorobanReact()
     const [inputToken, setInputToken] = useState(currencies[0]);
-    const [outputToken, setOutputToken] = useState(currencies[1]);
     const [mintTokenId, setMintTokenId] = useState(Constants.TokenId_1);
+    const [tokenSymbol, setTokenSymbol] = useState(currencies[0].symbol);
+    const [amount, setAmount] = useState(BigNumber(0));
     
+
 
     const handleInputTokenChange = (event: React.ChangeEvent<HTMLInputElement>) => {
       if(event.target.value == currencies[0].value){
         setInputToken(currencies[0]);
         setMintTokenId(Constants.TokenId_1)
+        setTokenSymbol(currencies[0].symbol)
       }
       else{
         setInputToken(currencies[1]);
         setMintTokenId(Constants.TokenId_2)
+        setTokenSymbol(currencies[1].symbol)
       }
     };
 
+    const handleAmountChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+      setAmount(BigNumber(event.target.value))
+    };
+
+    // TODO: REMOVE HARDOCDED SYMBOL
+    /*
+    let symbol = useContractValue({ 
+      contractId: tokenId,
+      method: 'symbol',
+      sorobanContext
+    })
+    const tokenSymbol = symbol.result && scvalToString(symbol.result)?.replace("\u0000", "")
+
+*/
 
 
     return (   
@@ -201,6 +198,7 @@ export function Mint (){
           <OutlinedInput
             type="number"
             id="outlined-adornment-amount"
+            onChange={handleAmountChange}
             startAdornment={<InputAdornment position="start">
               {inputToken.shortlabel}
             </InputAdornment>}
@@ -214,6 +212,8 @@ export function Mint (){
         <MintButton
           sorobanContext={sorobanContext}
           tokenId={mintTokenId}
+          tokenSymbol={tokenSymbol}
+          amountToMint={amount}
           >
           MINT!
         </MintButton>

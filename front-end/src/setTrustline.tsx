@@ -27,10 +27,6 @@ export async function setTrustline({
     let wallet = await server.getAccount(account)
     let walletSource = new SorobanClient.Account(wallet.id, wallet.sequence)
     
-    console.log("tokenSymbol: ", tokenSymbol)
-    tokenSymbol="DUMMY1"
-    let myAsset = new SorobanClient.Asset(tokenSymbol, tokenAdmin)
-    console.log("myAsset: ", myAsset)
     const trustlineResult = await sendTransaction(
         new SorobanClient.TransactionBuilder(walletSource, {
             networkPassphrase,
