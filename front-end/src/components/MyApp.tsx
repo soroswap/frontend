@@ -1,5 +1,5 @@
 import React from 'react';
-import SwapGrid from './SwapGrid';
+import SwapGrid from './ComponentsGrid';
 import ButtonAppBar from './ButtonAppBar';
 import MySorobanReactProvider from '../soroban/MySorobanReactProvider';
 

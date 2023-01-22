@@ -29,10 +29,10 @@ const currencies = [
 ];
 
 
-//export interface SwapComponentProps {}
+//export interface SwapProps {}
 
 
-export function SwapComponent (){
+export function Swap (){
     const sorobanContext = useSorobanReact()
     const [inputToken, setInputToken] = React.useState(currencies[0]);
     const [outputToken, setOutputToken] = React.useState(currencies[1]);

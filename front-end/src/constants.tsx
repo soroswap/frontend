@@ -5,7 +5,7 @@ const TokenAdminSecretKey = 'SAKCFFFNCE7XAWYMYVRZQYKUK6KMUCDIINLWISJYTMYJLNR2QLC
 // Contract IDs, set up by ./initialize.sh
 const LiquidityPoolId = process.env.LIQUIDITY_POOL_ID ?? ''
 const TokenId_1 = process.env.TOKEN_ID_1 ?? ''
-const TokenId_2 = process.env.TOKEN_ID_1 ?? ''
+const TokenId_2 = process.env.TOKEN_ID_2 ?? ''
 
 const Constants = {
     LiquidityPoolId,

@@ -1,17 +1,4 @@
-
-- SIMPLE AMM Uniswap v2 style
-    - Simple smart contract x*y = z
-    - Support only two tokens.
-    - Let user mint any of two tokens (As we do in soroban-example-dapp)
-    - Simple Uniswap-like user interface.
-    - We can fork the uniswap front-end to do it faster?
-    - User can:
-        - provide liquidity
-        - do swap.
-        - contract can allow flashloan?
-
-
-
+# Soroswap
 ### Dependencies
 
 1. `soroban-cli v0.4.0`. See https://soroban.stellar.org/docs/getting-started/setup#install-the-soroban-cli
@@ -60,11 +47,18 @@
     the instructions to create your freighter account on Futurenet.
 
 ### Frontend
-
+Install
+```
+cd front-end
+yarn
+```
 Then, run the development server:
 
 ```bash
-npm run dev
+yarn dev
 ```
+
+Remember to fund your waller with XLM
+http://localhost:8000/friendbot?addr=[WALLET]
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.

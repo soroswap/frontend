@@ -14,7 +14,6 @@ interface SwapButtonProps {
 
 export function SwapButton ({id}: SwapButtonProps){
     const sorobanContext =  useSorobanReact()
-    console.log("sorobanContext: ", sorobanContext)
     const { sendTransaction } = useSendTransaction()
     const { activeChain, server, address } = sorobanContext
     

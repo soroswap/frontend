@@ -469,10 +469,10 @@
   resolved "https://registry.yarnpkg.com/@soroban-react/types/-/types-3.2.1.tgz#238bdc45333872363d7a353f2e1a437383428120"
   integrity sha512-EAocVvvQy1z2W/zsMFJ+NRa9t5MnUKkNgEEM3VSKEVdm0RFB3BoiciZDIxwOhBUWHqoKxbV7g5jynF/cfRlsBA==
 
-"@soroban-react/utils@^3.2.1":
-  version "3.2.1"
-  resolved "https://registry.yarnpkg.com/@soroban-react/utils/-/utils-3.2.1.tgz#63fab164bc2313fdf42df7f6cfd8269dba1dc8da"
-  integrity sha512-hGS17lN7zwLDsKsm9b9gNp54ex8Hg7GiKkPC4INNqHyexJ0GEGQ0ltXZ3SiTwmNwR1xwsFfvDiTg7/o9EdJjhA==
+"@soroban-react/utils@^3.4.0":
+  version "3.4.0"
+  resolved "https://registry.yarnpkg.com/@soroban-react/utils/-/utils-3.4.0.tgz#234432be89e832c6f1b0f93a53e11370ce07b5d5"
+  integrity sha512-UiBaG9grOpdd4ZnzUzLg3tU4AaGrdDaUGRh0hEz9RtqL9PGrKdMzmB/GWvq2mJ8SFp6K74vFWHSaBPRSt9AzeQ==
   dependencies:
     bignumber.js "^9.1.1"
     soroban-client "^0.3.0"

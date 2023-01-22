@@ -1,9 +1,11 @@
 import React from 'react';
 import Grid from '@mui/material/Grid';
-import {SwapComponent} from './SwapComponent'
+import {Swap} from './Swap'
+import {Mint} from './Mint'
+import {Balances} from './Balances'
 
 
-export default function DogGrid() {
+export default function ComponentsGrid() {
 
   return (
 
@@ -13,8 +15,9 @@ export default function DogGrid() {
     direction='row'
     alignItems="center"
     justifyContent="center">
-      
-    <SwapComponent/>
+    <Balances/> 
+    <Mint/>  
+    <Swap/>
   </Grid>   
   )
 }

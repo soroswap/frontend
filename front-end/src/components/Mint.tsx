@@ -114,6 +114,7 @@ function MintButton({
               }
             )
             console.debug(paymentResult)
+            console.log("paymentResult: ", paymentResult)
           } catch (err) {
             console.error(err)
             console.log("error while minting")
@@ -129,7 +130,6 @@ function MintButton({
     <Button
       onClick={setTrustlineAndMint}
       disabled={isSubmitting}
-        isLoading={isSubmitting}
     >Mint and create Trustline</Button>
   )
 
