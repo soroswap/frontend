@@ -200,20 +200,20 @@ impl LiquidityPoolTrait for LiquidityPool {
     }
 
     fn deposit(e: Env, to: Identifier) {
-        let (reserve_a, reserve_b) = (get_reserve_a(&e), get_reserve_b(&e));
+        // let (reserve_a, reserve_b) = (get_reserve_a(&e), get_reserve_b(&e));
         let (balance_a, balance_b) = (get_balance_a(&e), get_balance_b(&e));
-        let total_shares = get_total_shares(&e);
+        // let total_shares = get_total_shares(&e);
 
-        let zero = 0;
-        let new_total_shares = if reserve_a > zero && reserve_b > zero {
-            let shares_a = (balance_a * total_shares) / reserve_a;
-            let shares_b = (balance_b * total_shares) / reserve_b;
-            shares_a.min(shares_b)
-        } else {
-            (balance_a * balance_b).sqrt()
-        };
+        // let zero = 0;
+        // let new_total_shares = if reserve_a > zero && reserve_b > zero {
+        //     let shares_a = (balance_a * total_shares) / reserve_a;
+        //     let shares_b = (balance_b * total_shares) / reserve_b;
+        //     shares_a.min(shares_b)
+        // } else {
+        //     (balance_a * balance_b).sqrt()
+        // };
 
-        mint_shares(&e, to, new_total_shares - total_shares);
+        // mint_shares(&e, to, new_total_shares - total_shares);
         put_reserve_a(&e, balance_a);
         put_reserve_b(&e, balance_b);
     }
@@ -222,25 +222,38 @@ impl LiquidityPoolTrait for LiquidityPool {
         let (reserve_a, reserve_b) = (get_reserve_a(&e), get_reserve_b(&e));
         let (balance_a, balance_b) = (get_balance_a(&e), get_balance_b(&e));
 
-        // residue_numerator and residue_denominator are the amount that the invariant considers after
-        // deducting the fee, scaled up by 1000 to avoid fractions
-        let residue_numerator = 997;
-        let residue_denominator = 1000;
-        let zero = 0;
+        // // residue_numerator and residue_denominator are the amount that the invariant considers after
+        // // deducting the fee, scaled up by 1000 to avoid fractions
+        // let residue_numerator = 997;
+        // let residue_denominator = 1000;
+        // let zero = 0;
 
-        let new_invariant_factor = |balance: i128, reserve: i128, out: i128| {
-            let delta = balance - reserve - out;
-            let adj_delta = if delta > zero {
-                residue_numerator * delta
-            } else {
-                residue_denominator * delta
-            };
-            residue_denominator * reserve + adj_delta
+        // let new_invariant_factor = |balance: i128, reserve: i128, out: i128| {
+        //     let delta = balance - reserve - out;
+        //     let adj_delta = if delta > zero {
+        //         residue_numerator * delta
+        //     } else {
+        //         residue_denominator * delta
+        //     };
+        //     residue_denominator * reserve + adj_delta
+        // };
+        // let new_inv_a = new_invariant_factor(balance_a, reserve_a, out_a);
+        // let new_inv_b = new_invariant_factor(balance_b, reserve_b, out_b);
+
+        let new_invariant_factor_no_fee = |balance: i128, out: i128| {
+            balance - out
         };
-        let new_inv_a = new_invariant_factor(balance_a, reserve_a, out_a);
-        let new_inv_b = new_invariant_factor(balance_b, reserve_b, out_b);
-        let old_inv_a = residue_denominator * reserve_a;
-        let old_inv_b = residue_denominator * reserve_b;
+        // let new_inv_a = new_invariant_factor_no_fee(balance_a, reserve_a, out_a);
+        // let new_inv_b = new_invariant_factor_no_fee(balance_b, reserve_b, out_b);
+        let new_inv_a = new_invariant_factor_no_fee(balance_a, out_a);
+        let new_inv_b = new_invariant_factor_no_fee(balance_b, out_b);
+
+
+        // let old_inv_a = residue_denominator * reserve_a;
+        // let old_inv_b = residue_denominator * reserve_b;
+
+        let old_inv_a = reserve_a;
+        let old_inv_b = reserve_b;
 
         if new_inv_a * new_inv_b < old_inv_a * old_inv_b {
             panic!("constant product invariant does not hold");

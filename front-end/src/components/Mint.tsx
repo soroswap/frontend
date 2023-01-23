@@ -26,7 +26,7 @@ import {scvalToString} from '@soroban-react/utils'
 import {Constants} from '../constants'
 import { setTrustline } from '../setTrustline';
 import {currencies} from '../currencies'
-import {MintButton} from './buttons/MinButton'
+import {MintButton} from './buttons/MintButton'
 
 export function Mint (){
     const sorobanContext = useSorobanReact()

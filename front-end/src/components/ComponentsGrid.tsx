@@ -4,9 +4,12 @@ import {Swap} from './Swap'
 import {Mint} from './Mint'
 import {Balances} from './Balances'
 import {ProvideLiquidity} from './ProvideLiquidity'
+import { useBalances } from '../hooks/useBalances';
 
 
 export default function ComponentsGrid() {
+
+  let balancesBigNumber = useBalances()
 
   return (
 
@@ -16,10 +19,10 @@ export default function ComponentsGrid() {
     direction='row'
     alignItems="center"
     justifyContent="center">
-    <Balances/> 
+    <Balances balancesBigNumber={balancesBigNumber}/> 
     <Mint/>  
     <ProvideLiquidity/>  
-    <Swap/>
+    <Swap balancesBigNumber={balancesBigNumber}/>
   </Grid>   
   )
 }

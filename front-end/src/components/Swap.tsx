@@ -2,45 +2,27 @@ import * as React from 'react';
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
-import CardMedia from '@mui/material/CardMedia';
 import { Typography } from '@mui/material';
-import {SwapButton} from '../soroban/SwapButton';
-import { useIsPetAdopted } from '../soroban/useIsPetAdopted';
-import { useSorobanReact } from '@soroban-react/core';
 import TextField from '@mui/material/TextField';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import InputAdornment from '@mui/material/InputAdornment';
-import { type } from 'os';
-
-const currencies = [
-  {
-    value: 'XLM',
-    label: 'XLM (XLM)',
-    shortlabel: 'XLM'
-  },
-  {
-    value: 'BTC',
-    label: 'BTC (฿)',
-    shortlabel: '฿'
-  }
-];
 
 
-//export interface SwapProps {}
+import {SwapButton} from './buttons/SwapButton'
+import {currencies} from '../currencies'
 
 
-export function Swap (){
-    const sorobanContext = useSorobanReact()
-    const [inputToken, setInputToken] = React.useState(currencies[0]);
-    const [outputToken, setOutputToken] = React.useState(currencies[1]);
 
-
-    const [inputTokenAmount, setInputTokenAmount] = React.useState(0);
-    const [outputTokenAmount, setOutputTokenAmount] = React.useState(0);
-    
+export function Swap ({balancesBigNumber}:{balancesBigNumber: any}){
+  const [inputToken, setInputToken] = React.useState(currencies[0]);
+  const [outputToken, setOutputToken] = React.useState(currencies[1]);
+  
+  
+  const [inputTokenAmount, setInputTokenAmount] = React.useState(0);
+  const [outputTokenAmount, setOutputTokenAmount] = React.useState(0);
 
     const handleInputTokenChange = (event: React.ChangeEvent<HTMLInputElement>) => {
       if(event.target.value == currencies[0].value){
@@ -61,10 +43,30 @@ export function Swap (){
 
     const inputToOutput = (n: number) => {
       if(inputToken.value == currencies[0].value){
+        if (balancesBigNumber){
+          // let a = balancesBigNumber.liquidityPoolBalance_1.multipliedBy(balancesBigNumber.liquidityPoolBalance_2)
+          // let b = balancesBigNumber.liquidityPoolBalance_1.plus(BigNumber(n))
+          // let fraction = a.dividedBy(b)
+          // let result = balancesBigNumber.liquidityPoolBalance_2.minus(fraction)
+          // return (parseInt(result.toString()))
+          
+          let ra = parseInt(balancesBigNumber.liquidityPoolBalance_1.toString())/10000000
+          let rb = parseInt(balancesBigNumber.liquidityPoolBalance_2.toString())/10000000
+          let fraction = (ra*rb)/(ra+n)
+          console.log("fraction: ", fraction)
+          console.log("rb: ", rb)
+          return rb- fraction
+
+        }
         return n*2
       }
       else{
-        return n/2
+        let ra = parseInt(balancesBigNumber.liquidityPoolBalance_1.toString())/10000000
+          let rb = parseInt(balancesBigNumber.liquidityPoolBalance_2.toString())/10000000
+          let fraction = (ra*rb)/(rb-n)
+          console.log("fraction: ", fraction)
+          console.log("rb: ", rb)
+          return fraction-rb 
       }
 
     };
@@ -124,7 +126,11 @@ export function Swap (){
 
       </CardContent>
       <CardActions>
-        <SwapButton id={1}></SwapButton>
+        <SwapButton
+          outputToken={outputToken}
+          outputTokenAmount={outputTokenAmount}
+          inputTokenAmount={inputTokenAmount}
+        ></SwapButton>
       </CardActions>
       
     </Card>

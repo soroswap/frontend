@@ -14,44 +14,18 @@ import {Constants} from '../constants'
 import * as SorobanClient from 'soroban-client'
 import { accountIdentifier, contractIdentifier } from '../identifiers'
 import {formatAmount} from '../utils'
+import {useBalances} from '../hooks/useBalances'
 
 
-export function Balances() {
+export function Balances({balancesBigNumber}:{balancesBigNumber: any}) {
     const sorobanContext = useSorobanReact()
     
-    let user, balances, balancesBigNumber, balancesFormated
+    let user, balancesFormated
 
+    
     if (sorobanContext.address) {
       user = accountIdentifier(sorobanContext.address)
-
-      balances =  {
-        userBalance_1: useContractValue({
-          contractId: Constants.TokenId_1,
-          method: 'balance',
-          params: [user],
-          sorobanContext: sorobanContext
-        }),
-  
-        userBalance_2: useContractValue({
-          contractId: Constants.TokenId_2,
-          method: 'balance',
-          params: [user],
-          sorobanContext: sorobanContext
-        }),
-        liquidityPoolBalance_1: useContractValue({
-          contractId: Constants.TokenId_1,
-          method: 'balance',
-          params: [contractIdentifier(Constants.LiquidityPoolId)],
-          sorobanContext: sorobanContext
-            }),
-  
-        liquidityPoolBalance_2: useContractValue({
-          contractId: Constants.TokenId_2,
-          method: 'balance',
-          params: [contractIdentifier(Constants.LiquidityPoolId)],
-          sorobanContext: sorobanContext
-            }),
-        }
+      //const balancesBigNumber = useBalances(user);
 
       const decimals = useContractValue({ 
         contractId: Constants.TokenId_1,
@@ -59,14 +33,9 @@ export function Balances() {
         sorobanContext: sorobanContext
       })
 
-      balancesBigNumber = {
-      userBalance_1: scvalToBigNumber(balances.userBalance_1.result),
-      userBalance_2: scvalToBigNumber(balances.userBalance_2.result),
-      liquidityPoolBalance_1: scvalToBigNumber(balances.liquidityPoolBalance_1.result),
-      liquidityPoolBalance_2: scvalToBigNumber(balances.liquidityPoolBalance_2.result)
-      }
       
-      const tokenDecimals = balances?.decimals?.result && (balances.decimals.result?.u32() ?? 7)
+      
+      const tokenDecimals = decimals?.result && (decimals.result?.u32() ?? 7)
 
       balancesFormated = {
         userBalance_1: formatAmount(balancesBigNumber.userBalance_1, tokenDecimals),
@@ -77,17 +46,17 @@ export function Balances() {
 
     }
 
-  const isLoading = (): boolean | undefined => {
-    if(balances) {return (
-      balances?.userBalance_1?.loading ||
-      balances?.userBalance_2?.loading ||
-      balances?.liquidityPoolBalance_1?.loading ||
-      balances?.liquidityPoolBalance_2?.loading ||
-      balances?.decimals?.loading
+  // const isLoading = (): boolean | undefined => {
+  //   if(balances) {return (
+  //     balances?.userBalance_1?.loading ||
+  //     balances?.userBalance_2?.loading ||
+  //     balances?.liquidityPoolBalance_1?.loading ||
+  //     balances?.liquidityPoolBalance_2?.loading ||
+  //     balances?.decimals?.loading
        
-    )}
-    else return false
-  }
+  //   )}
+  //   else return false
+  // }
 
 
 
@@ -141,7 +110,7 @@ export function Balances() {
         <Typography gutterBottom variant="h5" component="div">
           Balances
         </Typography>
-        {isLoading() ? (<p>Loading...</p>) : (
+        {false ? (<p>Loading...</p>) : (  
           <div>
             <p>Your wallet balances:</p>
             <p>{currencies[0].shortlabel} : {balancesFormated?.userBalance_1}</p>

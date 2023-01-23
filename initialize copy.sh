@@ -91,17 +91,11 @@ soroban invoke \
   --id "$LIQUIDITY_POOL_ID" \
   --fn initialize \
   --arg $TOKEN_WASM_HASH \
-  --arg "$TOKEN_ID_1" \
-  --arg "$TOKEN_ID_2" \
+  --arg $TOKEN_ID_1 \
+  --arg $TOKEN_ID_2 \
   --wasm contracts/target/wasm32-unknown-unknown/release/soroban_liquidity_pool_contract.wasm
 
  echo "Done"
-
-
-# soroban invoke \
-#   --id "$LIQUIDITY_POOL_ID" \
-#   --fn share_id  \
-#   --wasm contracts/target/wasm32-unknown-unknown/release/soroban_liquidity_pool_contract.wasm
 
 
  LIQUIDITY_POOL_ID=$(cat .soroban/liquidity_pool)
@@ -109,9 +103,3 @@ soroban invoke \
  TOKEN_ID_2=$(cat .soroban/token_id_2)
  TOKEN_WASM_HASH=$(cat .soroban/token_wasm_hash)
 
-
-
-# soroban invoke \
-#   --id "$LIQUIDITY_POOL_ID" \
-#   --fn share_id  \
-#   --wasm contracts/target/wasm32-unknown-unknown/release/soroban_liquidity_pool_contract.wasm

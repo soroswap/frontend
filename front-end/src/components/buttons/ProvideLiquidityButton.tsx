@@ -48,24 +48,27 @@ export function ProvideLiquidityButton (
         else{
             try{
 
+                
 
-                try{
-                    "need to know that is the share "
 
-                    const trustlineResult = await sendTransaction(
-                        contractTransaction({
-                            networkPassphrase: activeChain.networkPassphrase,
-                            source: source,
-                            contractId: Constants.TokenId_1,
-                            method: 'xfer',
-                            params: [invoker, nonce, contractIdentifier(liquidityPoolId), bigNumberToI128(BigNumber(inputTokenAmount_1).shiftedBy(7))]
-                        }), {sorobanContext})
-                    console.log("trustlineResult: ", trustlineResult)
-                }
-                catch(error){
-                    console.log("new error: ", error)
-                }
-                console.log("Setting trustilne for pool token")
+
+                // try{
+                //     "need to know that is the share "
+
+                //     const trustlineResult = await sendTransaction(
+                //         contractTransaction({
+                //             networkPassphrase: activeChain.networkPassphrase,
+                //             source: source,
+                //             contractId: Constants.TokenId_1,
+                //             method: 'xfer',
+                //             params: [invoker, nonce, contractIdentifier(liquidityPoolId), bigNumberToI128(BigNumber(inputTokenAmount_1).shiftedBy(7))]
+                //         }), {sorobanContext})
+                //     console.log("trustlineResult: ", trustlineResult)
+                // }
+                // catch(error){
+                //     console.log("new error: ", error)
+                // }
+                // console.log("Setting trustilne for pool token")
             
           
             
@@ -85,6 +88,10 @@ export function ProvideLiquidityButton (
             console.log("contractIdentifier(liquidityPoolId): ", contractIdentifier(liquidityPoolId))
             console.log("bigNumberToI128(BigNumber(inputTokenAmount_1)): ", bigNumberToI128(BigNumber(inputTokenAmount_1)))
             
+
+
+            
+
 
             console.log("creating 1st tx to sign")
             
@@ -115,10 +122,6 @@ export function ProvideLiquidityButton (
 
             
         
-
-
-
-
             console.log("Invoking deposit in pool")
 
             console.log("creating 3nd tx to sign")
@@ -128,48 +131,20 @@ export function ProvideLiquidityButton (
                 source: source,
                 contractId: liquidityPoolId,
                 method: 'deposit',
-                params: [contractIdentifier(liquidityPoolId)]
+                params: [accountIdentifier(address)]
             })
 
             console.log("sending to user to sign")
             
             const result3 = await sendTransaction(
                 transaction3, {timeout: 10 * 1000,
-                skipAddingFootprint: true,
+                //skipAddingFootprint: true,
                 sorobanContext})
             console.log("result3: ", result3)
-            
 
-            // let wallet = await server.getAccount(address)
-            // let walletSource = new SorobanClient.Account(wallet.id, wallet.sequence)
-            // let operation = SorobanClient.Operation.payment({
-            //     destination: liquidityPoolId,
-            //     asset: new SorobanClient.Asset(tokenSymbol_1, Constants.TokenAdmin),
-            //     amount: inputTokenAmount_1.toString(),
-            // })
-            //     console.log("operation: ", operation)
-            // try {
-                
-            //     const paymentResult = await sendTransaction(
-            //         new SorobanClient.TransactionBuilder(walletSource, { 
-            //         networkPassphrase,
-            //         fee: "1000",
-            //         memo: new SorobanClient.Memo(MemoText, "mymemo"),
-            //         })
-            //         .setTimeout(10)
-            //         .addOperation(operation)
-            //         .build(), {
-            //         timeout: 10 * 1000,
-            //         skipAddingFootprint: true,
-            //         sorobanContext
-            //         }
-            //     )
-            //     console.debug(paymentResult)
-            //     console.log("paymentResult: ", paymentResult)
-            //     } catch (err) {
-            //     console.error(err)
-            //     console.log("error while first transfer")
-            //     }
+
+
+           
 
             }
             catch(error){
