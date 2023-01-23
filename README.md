@@ -1,4 +1,14 @@
 # Soroswap
+```
+yarn
+./quickstart.sh standalone
+./inizialize.sh standalone
+yarn dev
+
+```
+
+
+
 ### Dependencies
 
 1. `soroban-cli v0.4.0`. See https://soroban.stellar.org/docs/getting-started/setup#install-the-soroban-cli
