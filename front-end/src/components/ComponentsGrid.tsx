@@ -3,6 +3,7 @@ import Grid from '@mui/material/Grid';
 import {Swap} from './Swap'
 import {Mint} from './Mint'
 import {Balances} from './Balances'
+import {ProvideLiquidity} from './ProvideLiquidity'
 
 
 export default function ComponentsGrid() {
@@ -17,6 +18,7 @@ export default function ComponentsGrid() {
     justifyContent="center">
     <Balances/> 
     <Mint/>  
+    <ProvideLiquidity/>  
     <Swap/>
   </Grid>   
   )
