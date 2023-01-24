@@ -89,11 +89,11 @@ export function SwapButton (
                     source: source,
                     contractId: Constants.LiquidityPoolId,
                     method: 'swap',
-                    params: [accountIdentifier(address), bigNumberToI128(BigNumber(0)), bigNumberToI128(BigNumber(outputTokenAmount))]})
+                    params: [accountIdentifier(address), bigNumberToI128(BigNumber(outputTokenAmount).shiftedBy(7)), bigNumberToI128(BigNumber(0))]})
 
             }
                 console.log("Sending swap transaction")
-                const result = await sendTransaction(transaction, {sorobanContext, skipAddingFootprint: true,})
+                const result = await sendTransaction(transaction, {sorobanContext})
                 console.log("swap:sendTransaction:result: ", result)
             }
             catch(error){

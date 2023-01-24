@@ -13,7 +13,7 @@ export default function ButtonAppBar() {
       <AppBar position="sticky">
         <Toolbar>
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            Pet Adopt Dapp in Soroban
+            Soroswap! AMM in Soroban
           </Typography>
           <WalletData sorobanContext={sorobanContext} />
         </Toolbar>

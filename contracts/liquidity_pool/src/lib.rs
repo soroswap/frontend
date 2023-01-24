@@ -219,45 +219,45 @@ impl LiquidityPoolTrait for LiquidityPool {
     }
 
     fn swap(e: Env, to: Identifier, out_a: i128, out_b: i128) {
-        let (reserve_a, reserve_b) = (get_reserve_a(&e), get_reserve_b(&e));
-        let (balance_a, balance_b) = (get_balance_a(&e), get_balance_b(&e));
+        // let (reserve_a, reserve_b) = (get_reserve_a(&e), get_reserve_b(&e));
+         let (balance_a, balance_b) = (get_balance_a(&e), get_balance_b(&e));
 
-        // // residue_numerator and residue_denominator are the amount that the invariant considers after
-        // // deducting the fee, scaled up by 1000 to avoid fractions
-        // let residue_numerator = 997;
-        // let residue_denominator = 1000;
-        // let zero = 0;
+        // // // residue_numerator and residue_denominator are the amount that the invariant considers after
+        // // // deducting the fee, scaled up by 1000 to avoid fractions
+        // // let residue_numerator = 997;
+        // // let residue_denominator = 1000;
+        // // let zero = 0;
 
-        // let new_invariant_factor = |balance: i128, reserve: i128, out: i128| {
-        //     let delta = balance - reserve - out;
-        //     let adj_delta = if delta > zero {
-        //         residue_numerator * delta
-        //     } else {
-        //         residue_denominator * delta
-        //     };
-        //     residue_denominator * reserve + adj_delta
+        // // let new_invariant_factor = |balance: i128, reserve: i128, out: i128| {
+        // //     let delta = balance - reserve - out;
+        // //     let adj_delta = if delta > zero {
+        // //         residue_numerator * delta
+        // //     } else {
+        // //         residue_denominator * delta
+        // //     };
+        // //     residue_denominator * reserve + adj_delta
+        // // };
+        // // let new_inv_a = new_invariant_factor(balance_a, reserve_a, out_a);
+        // // let new_inv_b = new_invariant_factor(balance_b, reserve_b, out_b);
+
+        // let new_invariant_factor_no_fee = |balance: i128, out: i128| {
+        //     balance - out
         // };
-        // let new_inv_a = new_invariant_factor(balance_a, reserve_a, out_a);
-        // let new_inv_b = new_invariant_factor(balance_b, reserve_b, out_b);
-
-        let new_invariant_factor_no_fee = |balance: i128, out: i128| {
-            balance - out
-        };
-        // let new_inv_a = new_invariant_factor_no_fee(balance_a, reserve_a, out_a);
-        // let new_inv_b = new_invariant_factor_no_fee(balance_b, reserve_b, out_b);
-        let new_inv_a = new_invariant_factor_no_fee(balance_a, out_a);
-        let new_inv_b = new_invariant_factor_no_fee(balance_b, out_b);
+        // // let new_inv_a = new_invariant_factor_no_fee(balance_a, reserve_a, out_a);
+        // // let new_inv_b = new_invariant_factor_no_fee(balance_b, reserve_b, out_b);
+        // let new_inv_a = new_invariant_factor_no_fee(balance_a, out_a);
+        // let new_inv_b = new_invariant_factor_no_fee(balance_b, out_b);
 
 
-        // let old_inv_a = residue_denominator * reserve_a;
-        // let old_inv_b = residue_denominator * reserve_b;
+        // // // let old_inv_a = residue_denominator * reserve_a;
+        // // // let old_inv_b = residue_denominator * reserve_b;
 
-        let old_inv_a = reserve_a;
-        let old_inv_b = reserve_b;
+        // let old_inv_a = reserve_a;
+        // let old_inv_b = reserve_b;
 
-        if new_inv_a * new_inv_b < old_inv_a * old_inv_b {
-            panic!("constant product invariant does not hold");
-        }
+        // if new_inv_a * new_inv_b < old_inv_a * old_inv_b {
+        //     panic!("constant product invariant does not hold");
+        // }
 
         transfer_a(&e, to.clone(), out_a);
         transfer_b(&e, to, out_b);

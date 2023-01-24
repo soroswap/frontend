@@ -62,11 +62,11 @@ export function Swap ({balancesBigNumber}:{balancesBigNumber: any}){
       }
       else{
         let ra = parseInt(balancesBigNumber.liquidityPoolBalance_1.toString())/10000000
-          let rb = parseInt(balancesBigNumber.liquidityPoolBalance_2.toString())/10000000
-          let fraction = (ra*rb)/(rb-n)
-          console.log("fraction: ", fraction)
-          console.log("rb: ", rb)
-          return fraction-rb 
+        let rb = parseInt(balancesBigNumber.liquidityPoolBalance_2.toString())/10000000
+        let fraction = (rb*ra)/(rb+n)
+        console.log("fraction: ", fraction)
+        console.log("rb: ", rb)
+        return ra- fraction
       }
 
     };

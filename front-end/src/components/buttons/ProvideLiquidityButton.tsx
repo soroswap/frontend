@@ -131,14 +131,14 @@ export function ProvideLiquidityButton (
                 source: source,
                 contractId: liquidityPoolId,
                 method: 'deposit',
-                params: [accountIdentifier(address)]
+               // params: [accountIdentifier(address)]
             })
 
             console.log("sending to user to sign")
             
             const result3 = await sendTransaction(
                 transaction3, {timeout: 10 * 1000,
-                //skipAddingFootprint: true,
+                skipAddingFootprint: true,
                 sorobanContext})
             console.log("result3: ", result3)
 
