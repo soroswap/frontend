@@ -2,7 +2,7 @@
 ```
 yarn
 ./quickstart.sh standalone
-./inizialize.sh standalone
+./initialize.sh standalone
 yarn dev
 
 ```
