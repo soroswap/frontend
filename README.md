@@ -1,12 +1,27 @@
-# Soroswap
+# Soroswap - AMM in Soroban
+Soroswap is full-stack implementation of a Liquidity Pool (AMM) in Soroban. It allows you to provide liquidity and swap your favorite tokens with the power of Soroban, React.js and @soroban-react lib. 
+
+Project developed in the context of the [hacka-soroban-athon](https://hacka-soroban-athon.devpost.com/)
+
+🧞💥Awarded 3rd prize!!!!🎊😜
+
+Check the [project's page](https://devpost.com/software/soroswap-liquidity-pool-dapp-in-soroban) for the hackathon.
+
+## Usage
+
 ```
 yarn
 ./quickstart.sh standalone
 ./initialize.sh standalone
+cd front-end
 yarn dev
-
 ```
 
+
+Remember to fund your waller with XLM
+http://localhost:8000/friendbot?addr=[WALLET]
+
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
 
 ### Dependencies
@@ -55,20 +70,3 @@ yarn dev
 4. Add some Futurenet network lumens to your Freighter wallet.
   - Visit https://laboratory.stellar.org/#create-account, and follow
     the instructions to create your freighter account on Futurenet.
-
-### Frontend
-Install
-```
-cd front-end
-yarn
-```
-Then, run the development server:
-
-```bash
-yarn dev
-```
-
-Remember to fund your waller with XLM
-http://localhost:8000/friendbot?addr=[WALLET]
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
