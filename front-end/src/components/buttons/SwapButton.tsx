@@ -2,14 +2,11 @@ import React from 'react'
 import {useSorobanReact } from "@soroban-react/core"
 import Button from '@mui/material/Button';
 import {useSendTransaction, contractTransaction} from '@soroban-react/contracts'
-import {numberToU32} from '@soroban-react/utils'
 import * as SorobanClient from 'soroban-client'
 import { currencies } from '../../currencies';
 import { Constants } from '../../constants';
-import {bigNumberToI128} from "@soroban-react/utils"
+import {bigNumberToI128, invoker, accountIdentifier, contractIdentifier} from "@soroban-react/utils"
 import BigNumber from 'bignumber.js'
-import { accountIdentifier, contractIdentifier } from '../../identifiers';
-let xdr = SorobanClient.xdr
 
 
 interface SwapButtonProps {
@@ -40,9 +37,7 @@ export function SwapButton (
             let source = new SorobanClient.Account(address, sequence)
             
             console.log("creating 1st tx to sign")
-            const invoker = xdr.ScVal.scvObject(
-                xdr.ScObject.scoVec([xdr.ScVal.scvSymbol('Invoker')])
-            )
+            
             
             const nonce = bigNumberToI128(BigNumber(0))
             

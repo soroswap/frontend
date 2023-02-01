@@ -1,18 +1,15 @@
 import React from 'react'
-import {useSorobanReact } from "@soroban-react/core"
 import Button from '@mui/material/Button';
-import {useSendTransaction, contractTransaction, useContractValue} from '@soroban-react/contracts'
-import {scvalToString} from '@soroban-react/utils'
-import {bigNumberToI128} from '@soroban-react/utils'
-import * as SorobanClient from 'soroban-client'
-import BigNumber from 'bignumber.js'
-let xdr = SorobanClient.xdr
-
-
 import {Constants} from '../../constants'
-import { MemoText } from 'soroban-client';
-import { accountIdentifier, contractIdentifier } from '../../identifiers';
-import { setTrustline } from '../../setTrustline';
+
+import {useSorobanReact} from "@soroban-react/core"
+import {useSendTransaction,
+        contractTransaction,
+        useContractValue} from '@soroban-react/contracts'
+import {bigNumberToI128, contractIdentifier, invoker} from '@soroban-react/utils'
+import BigNumber from 'bignumber.js'
+import * as SorobanClient from 'soroban-client'
+
 
 interface ProvideLiquidityProps {
     inputTokenAmount_1: number,
@@ -77,9 +74,6 @@ export function ProvideLiquidityButton (
             let { sequence } = await server.getAccount(address)
             let source = new SorobanClient.Account(address, sequence)
             console.log("handleProvideLiquidity: Transfering the 1st token")
-            const invoker = xdr.ScVal.scvObject(
-                xdr.ScObject.scoVec([xdr.ScVal.scvSymbol('Invoker')])
-            )
             
             const nonce = bigNumberToI128(BigNumber(0))
 

@@ -4,17 +4,13 @@ import CardContent from '@mui/material/CardContent';
 import { Typography } from '@mui/material';
 
 import { useSorobanReact } from '@soroban-react/core';
-import { scvalToBigNumber } from '@soroban-react/utils';
-import {useContractValue } from '@soroban-react/contracts'
+import { accountIdentifier } from '@soroban-react/utils';
+import { useContractValue } from '@soroban-react/contracts'
 
 import {currencies} from '../currencies'
 import {Constants} from '../constants'
 
-
-import * as SorobanClient from 'soroban-client'
-import { accountIdentifier, contractIdentifier } from '../identifiers'
 import {formatAmount} from '../utils'
-import {useBalances} from '../hooks/useBalances'
 
 
 export function Balances({balancesBigNumber}:{balancesBigNumber: any}) {

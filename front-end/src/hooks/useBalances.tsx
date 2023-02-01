@@ -1,8 +1,7 @@
 import {useSorobanReact} from '@soroban-react/core';
 import {useContractValue} from '@soroban-react/contracts'
 import {Constants} from '../constants'
-import { accountIdentifier, contractIdentifier } from '../identifiers'
-import { scvalToBigNumber } from '@soroban-react/utils';
+import { scvalToBigNumber, accountIdentifier, contractIdentifier} from '@soroban-react/utils';
 
 
 
@@ -47,7 +46,6 @@ export function useBalances(){
             liquidityPoolBalance_1: scvalToBigNumber(balances.liquidityPoolBalance_1.result),
             liquidityPoolBalance_2: scvalToBigNumber(balances.liquidityPoolBalance_2.result)
             }
-   
     return balancesBigNumber}
     else{return undefined}
     

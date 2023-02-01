@@ -1,13 +1,12 @@
-import {React, useState} from 'react';
+import React, {useState} from 'react';
 import { SorobanContextType, useSorobanReact } from '@soroban-react/core';
 import Button from '@mui/material/Button';
 
 
 import * as SorobanClient from 'soroban-client'
 import BigNumber from 'bignumber.js'
-import {useSendTransaction} from '@soroban-react/contracts'
+import {useSendTransaction, setTrustline} from '@soroban-react/contracts'
 import {Constants} from '../../constants'
-import { setTrustline } from '../../setTrustline';
 
 export function MintButton({
     sorobanContext,
