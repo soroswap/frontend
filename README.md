@@ -1,5 +1,5 @@
 # Soroswap - AMM in Soroban
-Soroswap is full-stack implementation of a Liquidity Pool (AMM) in Soroban. It allows you to provide liquidity and swap your favorite tokens with the power of Soroban, React.js and @soroban-react lib. 
+Soroswap is full-stack implementation of a Liquidity Pool (AMM) in Soroban. It allows you to provide liquidity and swap your favorite tokens with the power of Soroban, React.js and [@soroban-react](https://github.com/esteblock/soroban-react/) lib. 
 
 Project developed in the context of the [hacka-soroban-athon](https://hacka-soroban-athon.devpost.com/)
 
