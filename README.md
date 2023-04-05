@@ -12,7 +12,9 @@ Check the [project's page](https://devpost.com/software/soroswap-liquidity-pool-
 ```
 yarn
 ./quickstart.sh standalone
-./initialize.sh standalone
+docker exec soroban-preview-7 node src/friendbot.js
+docker exec soroban-preview-7 node src/issueAssets.js
+docker exec soroban-preview-7 ./initialize.sh standalone
 cd front-end
 yarn dev
 ```

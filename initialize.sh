@@ -37,10 +37,12 @@ esac
 
 echo ".."
 echo ".."
+ARGS="--secret-key $SOROBAN_SECRET_KEY"
 
 echo STEP 2.1: Wrap the Dummy Stellar Asset 1
 mkdir -p .soroban
-TOKEN_ID_1=$(soroban token wrap --asset "DUMMY1:$TOKEN_ADMIN")
+TOKEN_ID_1=$(soroban lab token wrap $ARGS --asset "DUMMY1:$TOKEN_ADMIN")
+
 echo -n "$TOKEN_ID_1" > .soroban/token_id_1
 echo "  - Dummy Stellat Asset wrapped with TOKEN_ID_1: $TOKEN_ID_1"
 
@@ -48,12 +50,12 @@ echo ".."
 echo ".."
 
 echo STEP 2.2: Wrap the Dummy Stellar Asset 2
-TOKEN_ID_2=$(soroban token wrap --asset "DUMMY2:$TOKEN_ADMIN")
+TOKEN_ID_2=$(soroban lab token wrap $ARGS --asset "DUMMY2:$TOKEN_ADMIN")
 echo -n "$TOKEN_ID_2" > .soroban/token_id_2
 echo "  - Dummy Stellat Asset wrapped with TOKEN_ID_2: $TOKEN_ID_2"
 
 echo ".."
-echo ".."
+echo ".." 
 
 echo STEP 3: Build the soroswap_pair contract
 cd contracts
@@ -65,7 +67,7 @@ echo ".."
 
 echo STEP 4: Deploy the liquidity_pool contract
 LIQUIDITY_POOL_ID="$(
-  soroban deploy \
+  soroban contract deploy $ARGS\
     --wasm contracts/target/wasm32-unknown-unknown/release/soroban_liquidity_pool_contract.wasm
 )"
 echo "$LIQUIDITY_POOL_ID" > .soroban/liquidity_pool
@@ -76,7 +78,7 @@ echo ".."
 
 echo STEP 5: Install a token contract in order to get the wasm WASM_HASH
 TOKEN_WASM_HASH="$(
-  soroban install \
+  soroban contract install $ARGS\
     --wasm contracts/target/wasm32-unknown-unknown/release/soroban_token_contract.wasm
 )"
 
@@ -87,12 +89,12 @@ echo "$TOKEN_WASM_HASH" > .soroban/token_wasm_hash
 
 
 echo STEP 4: Initialize the liquidity_pool contract with TOKEN IDs
-soroban invoke \
+soroban contract invoke $ARGS \
   --id "$LIQUIDITY_POOL_ID" \
-  --fn initialize \
-  --arg $TOKEN_WASM_HASH \
-  --arg "$TOKEN_ID_1" \
-  --arg "$TOKEN_ID_2" \
+  --fn initialize --\
+  -- $TOKEN_WASM_HASH \
+  -- "$TOKEN_ID_1" \
+  -- "$TOKEN_ID_2" \
   --wasm contracts/target/wasm32-unknown-unknown/release/soroban_liquidity_pool_contract.wasm
 
  echo "Done"
