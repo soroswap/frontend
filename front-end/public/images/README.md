@@ -1,1 +1,0 @@
-images from     https://github.com/truffle-box/pet-shop-box/
