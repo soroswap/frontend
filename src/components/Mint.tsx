@@ -27,46 +27,54 @@ import {Constants} from '../constants'
 import { setTrustline } from '../setTrustline';
 import {currencies} from '../currencies'
 import {MintButton} from './buttons/MintButton'
+import { getTokens } from '../utils';
 
-export function Mint (){
-    const sorobanContext = useSorobanReact()
-    const [inputToken, setInputToken] = useState(currencies[0]);
-    const [mintTokenId, setMintTokenId] = useState(Constants.TokenId_1);
-    const [tokenSymbol, setTokenSymbol] = useState(currencies[0].symbol);
-    const [amount, setAmount] = useState(BigNumber(0));
+export function Mint() {
+  const sorobanContext = useSorobanReact()
+  const [tokens, setTokens] = useState();
+  const [inputToken, setInputToken] = useState(currencies[0]);
+  const [mintTokenId, setMintTokenId] = useState(Constants.TokenId_1);
+  const [tokenSymbol, setTokenSymbol] = useState(currencies[0].symbol);
+  const [amount, setAmount] = useState(BigNumber(0));
     
 
 
-    const handleInputTokenChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-      if(event.target.value == currencies[0].value){
-        setInputToken(currencies[0]);
-        setMintTokenId(Constants.TokenId_1)
-        setTokenSymbol(currencies[0].symbol)
-      }
-      else{
-        setInputToken(currencies[1]);
-        setMintTokenId(Constants.TokenId_2)
-        setTokenSymbol(currencies[1].symbol)
-      }
-    };
+  const handleInputTokenChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.value == currencies[0].value) {
+      setInputToken(currencies[0]);
+      setMintTokenId(Constants.TokenId_1)
+      setTokenSymbol(currencies[0].symbol)
+    }
+    else {
+      setInputToken(currencies[1]);
+      setMintTokenId(Constants.TokenId_2)
+      setTokenSymbol(currencies[1].symbol)
+    }
+  };
 
-    const handleAmountChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-      setAmount(BigNumber(event.target.value))
-    };
+  const handleAmountChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setAmount(BigNumber(event.target.value))
+  };
 
-    // TODO: REMOVE HARDOCDED SYMBOL
-    /*
-    let symbol = useContractValue({ 
-      contractId: tokenId,
-      method: 'symbol',
-      sorobanContext
-    })
-    const tokenSymbol = symbol.result && scvalToString(symbol.result)?.replace("\u0000", "")
+  // TODO: REMOVE HARDOCDED SYMBOL
+  /*
+  let symbol = useContractValue({ 
+    contractId: tokenId,
+    method: 'symbol',
+    sorobanContext
+  })
+  const tokenSymbol = symbol.result && scvalToString(symbol.result)?.replace("\u0000", "")
 
 */
+  
+  const getTokens = async () => {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/tokens`)
+    console.log("🚀 « response:", await response.json())
+  }
 
+  getTokens()
 
-    return (   
+  return (
     <Card sx={{ maxWidth: 345 }}>
       <CardContent>
         <Typography gutterBottom variant="h5" component="div">
