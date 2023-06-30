@@ -67,8 +67,6 @@ export function tokenBalance(tokenAddress: string, userAddress?: string) {
 
   const address = userAddress ?? sorobanContext.address;
 
-  let balancesBigNumber;
-
   const user = accountIdentifier(address);
 
   let balances = {
