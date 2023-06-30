@@ -6,6 +6,7 @@ import {
   accountIdentifier,
   contractIdentifier,
 } from '@soroban-react/utils';
+import { formatAmount } from '../utils';
 
 export function useBalances() {
   const sorobanContext = useSorobanReact();
@@ -60,10 +61,14 @@ export function useBalances() {
 
 export function tokenBalance(tokenAddress: string, userAddress?: string) {
   const sorobanContext = useSorobanReact();
+
   if (!sorobanContext.address) return;
+
+  const address = userAddress ?? sorobanContext.address;
+
   let balancesBigNumber;
 
-  const user = accountIdentifier(sorobanContext.address);
+  const user = accountIdentifier(address);
 
   let balances = {
     tokenBalance: useContractValue({
