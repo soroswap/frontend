@@ -66,7 +66,7 @@ export function Mint() {
   const tokenSymbol = symbol.result && scvalToString(symbol.result)?.replace("\u0000", "")
 
 */
-  console.log(useTokens())
+  console.log(useTokens(sorobanContext))
 
   return (
     <Card sx={{ maxWidth: 345 }}>
