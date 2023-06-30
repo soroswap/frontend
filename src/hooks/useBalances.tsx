@@ -7,6 +7,7 @@ import {
   contractIdentifier,
 } from '@soroban-react/utils';
 import { formatAmount } from '../utils';
+import { useTokens } from './useTokens';
 
 export function useBalances() {
   const sorobanContext = useSorobanReact();
@@ -97,33 +98,20 @@ export function tokenBalance(tokenAddress: string, userAddress?: string) {
 
 export function tokenBalances(userAddress: string) {
   const sorobanContext = useSorobanReact();
+
   if (!sorobanContext.address) return;
+
   const address = userAddress ?? sorobanContext.address;
-  let balancesBigNumber;
 
-  const user = accountIdentifier(address);
+  const tokens = useTokens(sorobanContext);
 
-  let balances = {
-    tokenBalance: useContractValue({
-      contractId: tokenAddress,
-      method: 'balance',
-      params: [user],
-      sorobanContext: sorobanContext,
-    }),
-  };
-
-  const decimals = useContractValue({
-    contractId: tokenAddress,
-    method: 'decimals',
-    sorobanContext: sorobanContext,
+  const balances = tokens.map((token) => {
+    return {
+      balance: tokenBalance(token.address, address),
+      symbol: token.token_symbol,
+      address: token.token_address,
+    };
   });
 
-  const tokenDecimals = decimals?.result && (decimals.result?.u32() ?? 7);
-
-  const formatedBalance = formatAmount(
-    scvalToBigNumber(balances.tokenBalance.result),
-    tokenDecimals
-  );
-
-  return formatedBalance;
+  return balances;
 }
