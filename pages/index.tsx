@@ -7,6 +7,7 @@ import MySorobanReactProvider from '../src/soroban/MySorobanReactProvider';
 const inter = Inter({ subsets: ['latin'] })
 
 export default function Home() {
+
   return (
     <>
       <Head>
