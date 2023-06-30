@@ -6,6 +6,7 @@ import {
   accountIdentifier,
   contractIdentifier,
 } from '@soroban-react/utils';
+import { formatAmount } from '../utils';
 
 export function useBalances() {
   const sorobanContext = useSorobanReact();
