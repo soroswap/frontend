@@ -89,3 +89,36 @@ export function tokenBalance(tokenAddress: string, userAddress?: string) {
 
   return formatedBalance;
 }
+
+export function tokenBalances(userAddress: string) {
+  const sorobanContext = useSorobanReact();
+  if (!sorobanContext.address) return;
+  const address = userAddress ?? sorobanContext.address;
+  let balancesBigNumber;
+
+  const user = accountIdentifier(address);
+
+  let balances = {
+    tokenBalance: useContractValue({
+      contractId: tokenAddress,
+      method: 'balance',
+      params: [user],
+      sorobanContext: sorobanContext,
+    }),
+  };
+
+  const decimals = useContractValue({
+    contractId: tokenAddress,
+    method: 'decimals',
+    sorobanContext: sorobanContext,
+  });
+
+  const tokenDecimals = decimals?.result && (decimals.result?.u32() ?? 7);
+
+  const formatedBalance = formatAmount(
+    scvalToBigNumber(balances.tokenBalance.result),
+    tokenDecimals
+  );
+
+  return formatedBalance;
+}
