@@ -105,7 +105,7 @@ export function tokenBalances(userAddress: string) {
 
   const balances = tokens.map((token) => {
     return {
-      balance: tokenBalance(token.address, address),
+      balance: tokenBalance(token.token_address, address),
       symbol: token.token_symbol,
       address: token.token_address,
     };
