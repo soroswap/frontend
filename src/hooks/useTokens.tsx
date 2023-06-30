@@ -1,5 +1,7 @@
 import { SorobanContextType } from '@soroban-react/core';
 import useSWR from 'swr';
+import { TokenType, tokensResponse } from '../interfaces';
+// TODO: verify type of fetcher args
 const fetcher = (...args) => fetch(...args).then((resp) => resp.json());
 
 export const useTokens = (sorobanContext: SorobanContextType) => {
@@ -7,13 +9,16 @@ export const useTokens = (sorobanContext: SorobanContextType) => {
     `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/tokens`,
     fetcher
   );
-  let tokens = []
+  let tokens: TokenType[] = [];
 
-  const filtered = data?.filter((item) => item.network === sorobanContext?.activeChain?.name?.toLowerCase())
-  
+  const filtered = data?.filter(
+    (item: tokensResponse) =>
+      item.network === sorobanContext?.activeChain?.name?.toLowerCase()
+  );
+
   if (filtered?.length > 0) {
-    tokens = filtered[0].tokens
+    tokens = filtered[0].tokens;
   }
 
-  return tokens
-}
+  return tokens;
+};
