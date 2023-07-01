@@ -27,7 +27,7 @@ import {Constants} from '../constants'
 import { setTrustline } from '../setTrustline';
 import {currencies} from '../currencies'
 import {MintButton} from './buttons/MintButton'
-import { getTokens } from '../utils';
+import { useTokens } from '../hooks/useTokens';
 
 export function Mint() {
   const sorobanContext = useSorobanReact()
@@ -66,13 +66,7 @@ export function Mint() {
   const tokenSymbol = symbol.result && scvalToString(symbol.result)?.replace("\u0000", "")
 
 */
-  
-  const getTokens = async () => {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/tokens`)
-    console.log("🚀 « response:", await response.json())
-  }
-
-  getTokens()
+  console.log(useTokens(sorobanContext))
 
   return (
     <Card sx={{ maxWidth: 345 }}>
