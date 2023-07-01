@@ -12,25 +12,24 @@ export async function getPairContractAddress2(address_1:string, address_2:string
     if (server == null) return;
     const networkPassphrase = sorobanContext.activeChain?.networkPassphrase ?? ''
     let adminSource = new SorobanClient.Account(Constants.TokenAdmin, "0")
-    const contract = new SorobanClient.Contract(factoryAddress);
+    const contract = new SorobanClient.Contract(factoryAddress)
 
-    let transaction = new SorobanClient.TransactionBuilder(adminSource, { 
-          networkPassphrase,
-          fee: "1000",
-    })
-    .setTimeout(10)
+    let txn = new SorobanClient.TransactionBuilder(adminSource, { fee: "1000", networkPassphrase: networkPassphrase })
     .addOperation(
-        contract.call("get_pair", ...[contractIdentifier(address_1), contractIdentifier(address_2)]),
-    )
+        contract.call("get_pair", ...[contractIdentifier(address_1), contractIdentifier(address_2)])
+    ).setTimeout(30)
     .build();
+
     let transactionResult
+    let network
     try {
-        transaction = await server.prepareTransaction(transaction);
-        transactionResult = await server.sendTransaction(transaction);
+        //txn = await server.prepareTransaction(txn);
+        //const { results } = await server.simulateTransaction(txn);
+        network = await server.getNetwork();
+        //transactionResult = await server.sendTransaction(txn);
     } catch (e) {
         console.log(e)
     }
 
-    return transactionResult
-    
+    return network
 }

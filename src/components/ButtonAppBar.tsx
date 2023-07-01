@@ -7,17 +7,16 @@ import {WalletData} from '@soroban-react/wallet-data'
 import { useSorobanReact } from '@soroban-react/core'
 import { getPairContractAddress } from '../functions/getPairContractAddress';
 import { getPairContractAddress2 } from '../functions/getPairContractAddress2';
+import { getPairContractAddress3 } from '../functions/getPairContractAddress3';
 
 export default function ButtonAppBar() {
   const sorobanContext=useSorobanReact()
-    let pairAddress = getPairContractAddress(
-      "b4be3b48b230f37dde8e64cc2b4bba5f566bdf05d974d83eb5c331123380a830", 
-      //"GBCGW5F2KQ46Z3IXM4ZJJFJ7GMLIOZIV6TZ3AWUMEWANEAOH7JVBZAL7",
-      //"GBCGW5F2KQ46Z3IXM4ZJJFJ7GMLIOZIV6TZ3AWUMEWANEAOH7JVBZAL7",
-      "85a7011dbbed238bd6d42f649e9c9be6fa093bfc62eba1560b95384c3c1ccfcb", 
-      sorobanContext,
-    )
-    console.log(`pair address ${pairAddress}`)
+  console.log(getPairContractAddress(
+    "d6b39f070885256ca96b91e4d46328ce48a9991014dc560a9838a4cd9c738028", 
+    "da32d4750615893e0956ab15e714afd14059fc79b203e2b9059e8101640b3078", 
+    sorobanContext,
+  ))
+
   return (
 
       <AppBar position="sticky">

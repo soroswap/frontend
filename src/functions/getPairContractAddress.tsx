@@ -6,14 +6,14 @@ import { Constants } from '../constants';
 
 
 //Obtain from useFactory hook
-let factoryAddress = "09b7ab4b4e7bf42d30bed14c60bb2662a26e627b0ffd6926d8ab4ba4e0660709"
+let factoryAddress = "8d0f997313172042583e3debfeb150cbf2ec9d567c0a82ca4b2a52b2fd7d6ea8"
 
 export function getPairContractAddress(address_1:string, address_2:string, sorobanContext: SorobanContextType) {
     let pairAddress
 
     pairAddress = useContractValue({
         contractId: factoryAddress,
-        method: 'get_pair',
+        method: 'pair_exists',
         params: [contractIdentifier(address_1), contractIdentifier(address_2)],
         sorobanContext: sorobanContext
       })
