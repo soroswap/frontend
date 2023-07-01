@@ -7,6 +7,7 @@ import {
   contractIdentifier,
 } from '@soroban-react/utils';
 import { formatAmount } from '../utils';
+import { useTokens } from './useTokens';
 
 export function useBalances() {
   const sorobanContext = useSorobanReact();
@@ -91,4 +92,24 @@ export function tokenBalance(tokenAddress: string, userAddress?: string) {
   );
 
   return formatedBalance;
+}
+
+export function tokenBalances(userAddress: string) {
+  const sorobanContext = useSorobanReact();
+
+  if (!sorobanContext.address) return;
+
+  const address = userAddress ?? sorobanContext.address;
+
+  const tokens = useTokens(sorobanContext);
+
+  const balances = tokens.map((token) => {
+    return {
+      balance: tokenBalance(token.token_address, address),
+      symbol: token.token_symbol,
+      address: token.token_address,
+    };
+  });
+
+  return balances;
 }
