@@ -21,7 +21,7 @@ cd frontend
 Copy the .env.example file to create a new .env file:
 
 ```bash
-cp .env.example .env
+cp .env.local.example .env
 ```
 Now, edit the `.env` file and fill in the missing information.
 Where `PUBLICKEY` and `SECRETKEY` are the token admin keys for minting the tokens deployed on __soroswap/core__
