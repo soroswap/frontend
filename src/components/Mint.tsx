@@ -32,7 +32,7 @@ export function Mint() {
   const tokensList = useTokens(sorobanContext)
 
   const [inputToken, setInputToken] = useState(tokensList[0]);
-  const [mintTokenId, setMintTokenId] = useState(tokensList[0]?.token_address);
+  const [mintTokenId, setMintTokenId] = useState(tokensList[0]?.token_id);
   const [tokenSymbol, setTokenSymbol] = useState(tokensList[0]?.token_symbol);
   const [amount, setAmount] = useState(BigNumber(0));
     
@@ -43,7 +43,7 @@ export function Mint() {
 
     if (selectedToken) {
       setInputToken(selectedToken);
-      setMintTokenId(selectedToken.token_address)
+      setMintTokenId(selectedToken.token_id)
       setTokenSymbol(selectedToken.token_symbol)
     }
   };

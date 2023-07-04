@@ -5,9 +5,10 @@ import Button from '@mui/material/Button';
 
 import * as SorobanClient from 'soroban-client'
 import BigNumber from 'bignumber.js'
-import {useSendTransaction, setTrustline} from '@soroban-react/contracts'
+import { contractTransaction, useSendTransaction } from './useSendTransaction';
 import {Constants} from '../../constants'
-import { useKeys } from '../../hooks';
+import { useFactory, useKeys } from '../../hooks';
+import { accountToScVal, bigNumberToI128 } from '../../utils';
 
 interface MintButtonProps {
   sorobanContext: SorobanContextType,
@@ -27,107 +28,59 @@ export function MintButton({
   const server = sorobanContext.server
   const account = sorobanContext.address
   const { sendTransaction } = useSendTransaction()
-  const {admin_public, admin_secret} = useKeys(sorobanContext);
+  const { admin_public, admin_secret } = useKeys(sorobanContext);
 
   const setTrustlineAndMint = async () => {
     setSubmitting(true)
-    
-  let adminSource, walletSource
-  try{
-    adminSource = await server?.getAccount(admin_public)
-    walletSource = await server?.getAccount(account?? "")
-  }
-  catch(error){
-    alert("Your wallet or the token admin wallet might not be funded")
-    setSubmitting(false)  
-    return
-  }
-  console.log("🚀 « walletSource:", walletSource)
-  console.log("🚀 « adminSource:", adminSource)
-    
-  // try {
-  //   console.log("Establishing the trustline...")
-  //   console.log("sorobanContext: ", sorobanContext)
-  //   const trustlineResult = await sendTransaction(
-  //     new SorobanClient.TransactionBuilder(walletSource, {
-  //       networkPassphrase,
-  //       fee: "1000", // arbitrary
-  //     })
-  //     .setTimeout(60)
-  //     .addOperation(
-  //       SorobanClient.Operation.changeTrust({
-  //         asset: new SorobanClient.Asset(tokenSymbol, admin_public),
-  //       })
-  //     )
-  //     .build(), {
-  //       timeout: 60 * 1000, // should be enough time to approve the tx
-  //       skipAddingFootprint: true, // classic = no footprint
-  //       // omit `secretKey` to have Freighter prompt for signing
-  //       // hence, we need to explicit the sorobanContext
-  //       sorobanContext
-  //     },
-  //   )
-  //   console.debug(trustlineResult)
-  // } catch (err) {
-  //   console.log("Error while establishing the trustline: ", err)
-  //   console.error(err)
-  // }
-    
-  try {
-    console.log("Minting the token...")
-    let paymentResult = await sendTransaction(
-      new SorobanClient.TransactionBuilder(adminSource, {
-        networkPassphrase,
-        fee: "1000",
-      })
-      .setTimeout(1000)
-      .addOperation(
-        SorobanClient.Operation.payment({
-          amount: amountToMint.toString(),
-          asset: new SorobanClient.Asset(tokenSymbol, admin_public),
-          destination: walletSource.accountId(),
-        })
-      )
-      .build(), {
-        timeout: 10 * 1000,
-        skipAddingFootprint: true,
-        secretKey: admin_secret,
-        sorobanContext
-      }
-    )
-    // if (true) {
-    //   // Simulate the tx to discover the storage footprint, and update the
-    //   // tx to include it. If you already know the storage footprint you
-    //   // can use `addFootprint` to add it yourself, skipping this step.
-    //   paymentResult = await server?.prepareTransaction(paymentResult, networkPassphrase)
-    //   console.log("🚀 « paymentResult:", paymentResult)
-  
-    //   // // sign with Freighter
-    //   // const signed = await signTransaction(tx.toXDR(), {
-    //   //   network: window.freighterNetwork.network,
-    //   //   networkPassphrase: window.freighterNetwork.networkPassphrase,
-    //   // })
-  
-    //   // // re-assemble with signed tx
-    //   // tx = SorobanClient.TransactionBuilder.fromXDR(
-    //   //   signed,
-    //   //   window.freighterNetwork.networkPassphrase
-    //   // ) as Tx
-  
-    //   // return await server.sendTransaction(tx);
-    // }
-  
-    // const { results } = await server.simulateTransaction(tx)
-    // if (!results || results[0] === undefined) {
-    //     throw new Error("Invalid response from simulateTransaction")
-    // }
-    console.debug(paymentResult)
-    sorobanContext.connect()
-  } catch (err) {
-    console.log("Error while minting the token: ", err)
-    console.error(err)
-  }
 
+    const bigNumberAmount = BigNumber(amountToMint)
+    const amountScVal = bigNumberToI128(bigNumberAmount.shiftedBy(7))
+
+    let adminSource, walletSource
+    
+    try{
+      adminSource = await server?.getAccount(admin_public)
+      walletSource = await server?.getAccount(account?? "")
+    } catch(error){
+      alert("Your wallet or the token admin wallet might not be funded")
+      setSubmitting(false)  
+      return
+    }
+      
+    const options = {
+      // secretKey: admin_secret,
+      sorobanContext,
+    }
+    try {
+      const contract = new SorobanClient.Contract(tokenId)
+      const adminAccount = new SorobanClient.Account(admin_public ?? "", '0')
+      // let tx = new SorobanClient.TransactionBuilder(adminSource, {
+      //   fee: '1000',
+      //   networkPassphrase
+      // })
+      // .addOperation(contract.call('mint', ...[accountToScVal(account), bigNumberToI128(bigNumberAmount)]))
+      // .setTimeout(SorobanClient.TimeoutInfinite)
+      // .build()
+
+
+      let tx = contractTransaction({
+        source: adminAccount,
+        networkPassphrase,
+        contractId: tokenId,
+        method: 'mint',
+        params: [new SorobanClient.Address(account).toScVal(), amountScVal]
+      })
+      console.log("🚀 « tx:", tx)
+      let result = await sendTransaction(tx, options)
+      console.log("🚀 « result:", result)
+  
+
+    } catch (error) {
+      console.log("🚀 « error:", error)
+    }
+
+
+    
     setSubmitting(false)
   } // end of setTrustlineAndMint function
 
