@@ -3,18 +3,20 @@ import { useContractValue } from '@soroban-react/contracts';
 import { Constants } from '../constants';
 import {
   scvalToBigNumber,
-  accountIdentifier,
-  contractIdentifier,
-} from '@soroban-react/utils';
+  accountToScVal,
+  contractIdToScVal,
+} from '../utils';
 import { formatAmount } from '../utils';
 import { useTokens } from './useTokens';
+
+
 
 export function useBalances() {
   const sorobanContext = useSorobanReact();
   let balancesBigNumber;
   if (sorobanContext.address) {
-    const user = accountIdentifier(sorobanContext.address);
-
+    const user = accountToScVal(sorobanContext.address);
+ 
     let balances = {
       userBalance_1: useContractValue({
         contractId: Constants.TokenId_1,
@@ -32,14 +34,14 @@ export function useBalances() {
       liquidityPoolBalance_1: useContractValue({
         contractId: Constants.TokenId_1,
         method: 'balance',
-        params: [contractIdentifier(Constants.LiquidityPoolId)],
+        params: [contractIdToScVal(Constants.LiquidityPoolId)],
         sorobanContext: sorobanContext,
       }),
 
       liquidityPoolBalance_2: useContractValue({
         contractId: Constants.TokenId_2,
         method: 'balance',
-        params: [contractIdentifier(Constants.LiquidityPoolId)],
+        params: [contractIdToScVal(Constants.LiquidityPoolId)],
         sorobanContext: sorobanContext,
       }),
     };
@@ -67,7 +69,7 @@ export function tokenBalance(tokenAddress: string, userAddress?: string) {
 
   const address = userAddress ?? sorobanContext.address;
 
-  const user = accountIdentifier(address);
+  const user = accountToScVal(address);
 
   let balances = {
     tokenBalance: useContractValue({
