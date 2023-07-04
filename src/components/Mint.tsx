@@ -1,11 +1,8 @@
-import {React, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
-import CardMedia from '@mui/material/CardMedia';
 import { Typography } from '@mui/material';
-import {SwapButton} from '../soroban/SwapButton';
-import { useIsPetAdopted } from '../soroban/useIsPetAdopted';
 import { SorobanContextType, useSorobanReact } from '@soroban-react/core';
 import TextField from '@mui/material/TextField';
 import MenuItem from '@mui/material/MenuItem';
@@ -13,38 +10,26 @@ import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import InputAdornment from '@mui/material/InputAdornment';
-import { type } from 'os';
-import Button from '@mui/material/Button';
 
-
-
-import * as SorobanClient from 'soroban-client'
 import BigNumber from 'bignumber.js'
-import {useContractValue, useSendTransaction} from '@soroban-react/contracts'
-//import {useSendTransaction} from '../useSendTransaction'
-import {scvalToString} from '@soroban-react/utils'
-import { setTrustline } from '../setTrustline';
 import {MintButton} from './buttons/MintButton'
 import { useTokens } from '../hooks/useTokens';
+import { TokenType } from '../interfaces';
 
 export function Mint() {
-  const sorobanContext = useSorobanReact()
+  const sorobanContext: SorobanContextType = useSorobanReact()
   const tokensList = useTokens(sorobanContext)
 
-  const [inputToken, setInputToken] = useState(tokensList[0]);
-  const [mintTokenId, setMintTokenId] = useState(tokensList[0]?.token_id);
-  const [tokenSymbol, setTokenSymbol] = useState(tokensList[0]?.token_symbol);
+  const [inputToken, setInputToken] = useState<TokenType>();
+  const [mintTokenId, setMintTokenId] = useState<string>("");
   const [amount, setAmount] = useState(BigNumber(0));
     
-  console.log("🚀 « tokensList:", tokensList)
-
   const handleInputTokenChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const selectedToken = tokensList.find((token) => token.token_symbol == event.target.value)
 
     if (selectedToken) {
       setInputToken(selectedToken);
       setMintTokenId(selectedToken.token_id)
-      setTokenSymbol(selectedToken.token_symbol)
     }
   };
 
@@ -52,16 +37,10 @@ export function Mint() {
     setAmount(BigNumber(event.target.value))
   };
 
-  // TODO: REMOVE HARDOCDED SYMBOL
-  /*
-  let symbol = useContractValue({ 
-    contractId: tokenId,
-    method: 'symbol',
-    sorobanContext
-  })
-  const tokenSymbol = symbol.result && scvalToString(symbol.result)?.replace("\u0000", "")
-
-*/
+  useEffect(() => {
+    setInputToken(tokensList[0]);
+    setMintTokenId(tokensList[0]?.token_id)
+  }, [tokensList])
   
   return (
     <Card sx={{ maxWidth: 345 }}>
@@ -100,7 +79,6 @@ export function Mint() {
         <MintButton
           sorobanContext={sorobanContext}
           tokenId={mintTokenId}
-          tokenSymbol={tokenSymbol}
           amountToMint={amount}
         />
       </CardActions>
