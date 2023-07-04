@@ -19,19 +19,19 @@ export function getPairContractAddress(address_1:string, address_2:string, sorob
   }
   let pairAddress
 
-  pairAddress = useContractValue({
-    contractId: factoryAddress,
-    method: 'get_pair',
-    params: [accountToScVal(address_1), accountToScVal(address_2)],
-    sorobanContext: sorobanContext
-  })
-  if ("error" in pairAddress) {
-    console.log(`pair address error ${pairAddress.error}`)
-}
+//   pairAddress = useContractValue({
+//     contractId: factoryAddress,
+//     method: 'get_pair',
+//     params: [accountToScVal(address_1), accountToScVal(address_2)],
+//     sorobanContext: sorobanContext
+//   })
+//   if ("error" in pairAddress) {
+//     console.log(`pair address error ${pairAddress.error}`)
+// }
 
 
-  if (pairAddress !== undefined) {
-    return pairAddress.result
-  }
+//   if (pairAddress !== undefined) {
+//     return pairAddress.result
+//   }
     
 }
