@@ -1,5 +1,6 @@
 import {SorobanContextType} from '@soroban-react/core';
 import {useContractValue} from '@soroban-react/contracts'
+import * as SorobanClient from 'soroban-client';
 import {
     accountToScVal,
     contractIdToScVal
