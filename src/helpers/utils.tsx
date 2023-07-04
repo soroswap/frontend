@@ -1,6 +1,6 @@
 import BigNumber from 'bignumber.js';
 import * as SorobanClient from 'soroban-client';
-import { I128 } from "./helpers/xdr";
+import { I128 } from "./xdr";
 
 let xdr = SorobanClient.xdr;
 
@@ -153,3 +153,17 @@ export const decodei128ScVal = (value: SorobanClient.xdr.ScVal) => {
     return 0;
   }
 };
+
+
+export function accountToScVal(account: string): SorobanClient.xdr.ScVal {
+  return new SorobanClient.Address(account).toScVal()
+}
+
+export function contractIdToScVal(contractId: string): any {
+  return SorobanClient.Address.contract(Buffer.from(contractId, 'hex')).toScVal()
+}
+
+
+export const formatAmount = (value: BigNumber, decimals = 7): string => {
+  return value.shiftedBy(decimals * -1).toNumber().toLocaleString()
+}

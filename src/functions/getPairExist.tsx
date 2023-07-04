@@ -4,7 +4,7 @@ import * as SorobanClient from 'soroban-client';
 import {
     accountToScVal,
     contractIdToScVal
-  } from '../utils';
+  } from '../helpers/utils';
 import getContractValue from './getContractvalue';
 
 

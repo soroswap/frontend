@@ -7,7 +7,7 @@ import * as SorobanClient from 'soroban-client'
 import BigNumber from 'bignumber.js'
 import { contractTransaction, useSendTransaction } from '@soroban-react/contracts';
 import { useKeys } from '../../hooks';
-import { bigNumberToI128 } from '../../utils';
+import { bigNumberToI128 } from '../../helpers/utils';
 
 interface MintButtonProps {
   sorobanContext: SorobanContextType,

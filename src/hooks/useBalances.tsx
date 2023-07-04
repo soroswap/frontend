@@ -1,8 +1,8 @@
 import { useSorobanReact } from '@soroban-react/core';
 import { useContractValue } from '@soroban-react/contracts';
 import { Constants } from '../constants';
-import { scvalToBigNumber, accountToScVal, contractIdToScVal } from '../utils';
-import { formatAmount } from '../utils';
+import { scvalToBigNumber, accountToScVal, contractIdToScVal } from '../helpers/utils';
+import { formatAmount } from '../helpers/utils';
 import { useTokens } from './useTokens';
 //TODO: create Liquidity Pool Balances
 

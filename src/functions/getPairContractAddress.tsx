@@ -3,7 +3,7 @@ import {useContractValue} from '@soroban-react/contracts'
 import { getPairExist } from './getPairExist';
 import {
   accountToScVal,
-} from '../utils';
+} from '../helpers/utils';
 
 //Obtain from useFactory hook
 let factoryAddress = "b490a625067ebcc5967c9e6ddaff924dee2fdd296b97b0f59497155f8f618f63"
