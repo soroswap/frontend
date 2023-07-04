@@ -4,7 +4,7 @@ import CardContent from '@mui/material/CardContent';
 import { Typography } from '@mui/material';
 
 import { useSorobanReact } from '@soroban-react/core';
-import { accountIdentifier } from '@soroban-react/utils';
+import { accountToScVal } from '../utils';
 import { useContractValue } from '@soroban-react/contracts';
 
 import { currencies } from '../currencies';
@@ -18,7 +18,7 @@ export function Balances({ balancesBigNumber }: { balancesBigNumber: any }) {
   let user, balancesFormated, tokenBalancesResponse;
 
   if (sorobanContext.address) {
-    user = accountIdentifier(sorobanContext.address);
+    user = accountToScVal(sorobanContext.address);
     //const balancesBigNumber = useBalances(user);
 
     const decimals = useContractValue({
@@ -29,24 +29,24 @@ export function Balances({ balancesBigNumber }: { balancesBigNumber: any }) {
 
     const tokenDecimals = decimals?.result && (decimals.result?.u32() ?? 7);
 
-    balancesFormated = {
-      userBalance_1: formatAmount(
-        balancesBigNumber.userBalance_1,
-        tokenDecimals
-      ),
-      userBalance_2: formatAmount(
-        balancesBigNumber.userBalance_2,
-        tokenDecimals
-      ),
-      liquidityPoolBalance_1: formatAmount(
-        balancesBigNumber.liquidityPoolBalance_1,
-        tokenDecimals
-      ),
-      liquidityPoolBalance_2: formatAmount(
-        balancesBigNumber.liquidityPoolBalance_2,
-        tokenDecimals
-      ),
-    };
+    // balancesFormated = {
+    //   userBalance_1: formatAmount(
+    //     balancesBigNumber.userBalance_1,
+    //     tokenDecimals
+    //   ),
+    //   userBalance_2: formatAmount(
+    //     balancesBigNumber.userBalance_2,
+    //     tokenDecimals
+    //   ),
+    //   liquidityPoolBalance_1: formatAmount(
+    //     balancesBigNumber.liquidityPoolBalance_1,
+    //     tokenDecimals
+    //   ),
+    //   liquidityPoolBalance_2: formatAmount(
+    //     balancesBigNumber.liquidityPoolBalance_2,
+    //     tokenDecimals
+    //   ),
+    // };
 
     tokenBalancesResponse = tokenBalances(sorobanContext.address);
   }
@@ -125,11 +125,11 @@ export function Balances({ balancesBigNumber }: { balancesBigNumber: any }) {
             <p>Liquidity Pool Balances:</p>
             <p>
               {currencies[0].shortlabel} :{' '}
-              {balancesFormated?.liquidityPoolBalance_1}
+              {/* {balancesFormated?.liquidityPoolBalance_1} */}
             </p>
             <p>
               {currencies[1].shortlabel} :{' '}
-              {balancesFormated?.liquidityPoolBalance_2}
+              {/* {balancesFormated?.liquidityPoolBalance_2} */}
             </p>
           </div>
         )}
