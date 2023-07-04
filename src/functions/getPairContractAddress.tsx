@@ -1,8 +1,9 @@
 import {SorobanContextType} from '@soroban-react/core';
 import {useContractValue} from '@soroban-react/contracts'
-import { accountIdentifier, contractIdentifier } from '@soroban-react/utils';
 import { getPairExist } from './getPairExist';
-
+import {
+  accountToScVal,
+} from '../utils';
 
 //Obtain from useFactory hook
 let factoryAddress = "8d0f997313172042583e3debfeb150cbf2ec9d567c0a82ca4b2a52b2fd7d6ea8"
@@ -21,7 +22,7 @@ export function getPairContractAddress(address_1:string, address_2:string, sorob
   pairAddress = useContractValue({
     contractId: factoryAddress,
     method: 'get_pair',
-    params: [contractIdentifier(address_1), contractIdentifier(address_2)],
+    params: [accountToScVal(address_1), accountToScVal(address_2)],
     sorobanContext: sorobanContext
   })
   if ("error" in pairAddress) {

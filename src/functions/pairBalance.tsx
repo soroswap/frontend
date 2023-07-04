@@ -1,7 +1,9 @@
 import {SorobanContextType} from '@soroban-react/core';
 import {useContractValue} from '@soroban-react/contracts'
-import { scvalToBigNumber } from '@soroban-react/utils';
 import { xdr } from 'soroban-client';
+import {
+  scvalToBigNumber,
+} from '../utils';
 
 export function getPairBalance(pairAddress:string, user:xdr.ScVal, sorobanContext: SorobanContextType) {
     let userBalance

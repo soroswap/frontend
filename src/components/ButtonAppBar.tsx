@@ -10,8 +10,8 @@ import { getPairContractAddress } from '../functions/getPairContractAddress';
 export default function ButtonAppBar() {
   const sorobanContext=useSorobanReact()
   console.log(`Pair response: ${getPairContractAddress(
-    "d6b39f070885256ca96b91e4d46328ce48a9991014dc560a9838a4cd9c738028", 
-    "da32d4750615893e0956ab15e714afd14059fc79b203e2b9059e8101640b3078", 
+    "CDMRVUYIP7MZJTKZSKZMNQUA5YTWBXJHXQR2WAAH4TLPVG4GYXVY7GQG", 
+    "CBQOMCVBVOEH72Q3LSLPVIDZZVE4OWBLYG2DRBP3U3SCGKRBCZIT43BB", 
     sorobanContext,
   )}` )
 
