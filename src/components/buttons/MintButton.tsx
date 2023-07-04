@@ -37,7 +37,6 @@ export function MintButton({
     
     try{
       adminSource = await server?.getAccount(admin_public)
-      walletSource = await server?.getAccount(account?? "")
     } catch(error){
       alert("Your wallet or the token admin wallet might not be funded")
       setSubmitting(false)  
@@ -60,7 +59,13 @@ export function MintButton({
       })
 
       //Sends the transactions to the blockchain
-      await sendTransaction(tx, options)
+      let result = await sendTransaction(tx, options)
+      if (result){
+        alert("Success!")
+      }
+      console.log("🚀 ~ file: MintButton.tsx:63 ~ mintTokens ~ result:", result)
+      
+      
 
       //This will connect again the wallet to fetch its data
       sorobanContext.connect()
