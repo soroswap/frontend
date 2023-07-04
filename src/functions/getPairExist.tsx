@@ -4,23 +4,27 @@ import {
     accountToScVal,
     contractIdToScVal
   } from '../utils';
+import getContractValue from './getContractvalue';
 
 
-export function getPairExist(address_1:string, address_2:string, sorobanContext: SorobanContextType, factoryAddress:string) {
-    let pairExist
-    pairExist = useContractValue({
-        contractId: factoryAddress,
-        method: 'pair_exists',
-        params: [accountToScVal(address_1), accountToScVal(address_2)],
-        //params: [contractIdToScVal(address_1), contractIdToScVal(address_2)],
-        sorobanContext: sorobanContext
-        })
+export async function getPairExist(address_1:string, address_2:string, factoryAddress:string, sorobanContext: SorobanContextType) {
+    const usePairExist = async (): Promise<any> => {
+        return getContractValue({
+            contractId: factoryAddress,
+            method: 'pair_exists',
+            params: [accountToScVal(address_1), accountToScVal(address_2)],
+            sorobanContext: sorobanContext
+            })
+        }
+    
+    let pairExist = await usePairExist()
+
     if ("error" in pairExist) {
         console.log(`pair exist error ${pairExist.error}`)
-        return undefined
+        return false
     }
-    console.log(pairExist.result)
+    
    if (pairExist.result !== undefined) return pairExist.result!.value()
-   else return undefined
+   else return false
     
 }

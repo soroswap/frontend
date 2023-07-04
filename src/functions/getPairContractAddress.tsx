@@ -6,32 +6,27 @@ import {
 } from '../utils';
 
 //Obtain from useFactory hook
-let factoryAddress = "8d0f997313172042583e3debfeb150cbf2ec9d567c0a82ca4b2a52b2fd7d6ea8"
+let factoryAddress = "b490a625067ebcc5967c9e6ddaff924dee2fdd296b97b0f59497155f8f618f63"
 
 export function getPairContractAddress(address_1:string, address_2:string, sorobanContext: SorobanContextType) {
-
-  switch (getPairExist(address_1, address_2, sorobanContext, factoryAddress)) {
-    case false:
-      return "pair does not exist"
-
-    case undefined:
-      return "pair undefined"
-  }
-  let pairAddress
-
-  pairAddress = useContractValue({
+  const usePairContractAddress= (): any => {
+  return useContractValue({
     contractId: factoryAddress,
     method: 'get_pair',
     params: [accountToScVal(address_1), accountToScVal(address_2)],
     sorobanContext: sorobanContext
   })
-  if ("error" in pairAddress) {
-    console.log(`pair address error ${pairAddress.error}`)
 }
 
+let pairAddress = usePairContractAddress()
 
-  if (pairAddress !== undefined) {
-    return pairAddress.result
-  }
+    if ("error" in pairAddress) {
+        console.log(`pair exist error ${pairAddress.error}`)
+        return false
+    }
+    
+   if (pairAddress.result !== undefined) return pairAddress.result!.value()
+   else return false
+
     
 }
