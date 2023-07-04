@@ -23,32 +23,28 @@ import BigNumber from 'bignumber.js'
 import {useContractValue, useSendTransaction} from '@soroban-react/contracts'
 //import {useSendTransaction} from '../useSendTransaction'
 import {scvalToString} from '@soroban-react/utils'
-import {Constants} from '../constants'
 import { setTrustline } from '../setTrustline';
-import {currencies} from '../currencies'
 import {MintButton} from './buttons/MintButton'
 import { useTokens } from '../hooks/useTokens';
 
 export function Mint() {
   const sorobanContext = useSorobanReact()
-  const [tokens, setTokens] = useState();
-  const [inputToken, setInputToken] = useState(currencies[0]);
-  const [mintTokenId, setMintTokenId] = useState(Constants.TokenId_1);
-  const [tokenSymbol, setTokenSymbol] = useState(currencies[0].symbol);
+  const tokensList = useTokens(sorobanContext)
+
+  const [inputToken, setInputToken] = useState(tokensList[0]);
+  const [mintTokenId, setMintTokenId] = useState(tokensList[0]?.token_address);
+  const [tokenSymbol, setTokenSymbol] = useState(tokensList[0]?.token_symbol);
   const [amount, setAmount] = useState(BigNumber(0));
     
-
+  console.log("🚀 « tokensList:", tokensList)
 
   const handleInputTokenChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.value == currencies[0].value) {
-      setInputToken(currencies[0]);
-      setMintTokenId(Constants.TokenId_1)
-      setTokenSymbol(currencies[0].symbol)
-    }
-    else {
-      setInputToken(currencies[1]);
-      setMintTokenId(Constants.TokenId_2)
-      setTokenSymbol(currencies[1].symbol)
+    const selectedToken = tokensList.find((token) => token.token_symbol == event.target.value)
+
+    if (selectedToken) {
+      setInputToken(selectedToken);
+      setMintTokenId(selectedToken.token_address)
+      setTokenSymbol(selectedToken.token_symbol)
     }
   };
 
@@ -66,8 +62,7 @@ export function Mint() {
   const tokenSymbol = symbol.result && scvalToString(symbol.result)?.replace("\u0000", "")
 
 */
-  console.log(useTokens(sorobanContext))
-
+  
   return (
     <Card sx={{ maxWidth: 345 }}>
       <CardContent>
@@ -78,12 +73,12 @@ export function Mint() {
           id="outlined-select-currency"
           select
           label="Token to Mint"
-          defaultValue="XLM"
+          defaultValue="AAAA"
           onChange={handleInputTokenChange}
         >
-{currencies.map((option) => (
-            <MenuItem key={option.value} value={option.value}>
-              {option.label}
+          {tokensList.map((option) => (
+            <MenuItem key={option.token_id} value={option.token_symbol}>
+              {`${option.token_name} (${option.token_symbol})`}
             </MenuItem>
           ))}
         </TextField>
@@ -95,13 +90,11 @@ export function Mint() {
             id="outlined-adornment-amount"
             onChange={handleAmountChange}
             startAdornment={<InputAdornment position="start">
-              {inputToken.shortlabel}
+              {inputToken?.token_symbol}
             </InputAdornment>}
             label="Amount"
           />
         </FormControl>
-        
-        
       </CardContent>
       <CardActions>
         <MintButton
@@ -109,11 +102,8 @@ export function Mint() {
           tokenId={mintTokenId}
           tokenSymbol={tokenSymbol}
           amountToMint={amount}
-          >
-          MINT!
-        </MintButton>
+        />
       </CardActions>
-      
     </Card>
   );
 }
