@@ -125,7 +125,7 @@ export function ProvideLiquidityButton (
                 source: source,
                 contractId: liquidityPoolId,
                 method: 'deposit',
-               // params: [accountIdentifier(address)]
+               // params: [accountToScVal(address)]
             })
 
             console.log("sending to user to sign")

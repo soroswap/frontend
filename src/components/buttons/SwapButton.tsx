@@ -5,7 +5,7 @@ import {useSendTransaction, contractTransaction} from '@soroban-react/contracts'
 import * as SorobanClient from 'soroban-client'
 import { currencies } from '../../currencies';
 import { Constants } from '../../constants';
-import {bigNumberToI128, invoker, accountIdentifier, contractIdentifier} from "@soroban-react/utils"
+import {bigNumberToI128, invoker, accountToScVal, contractIdentifier} from "@soroban-react/utils"
 import BigNumber from 'bignumber.js'
 
 
@@ -74,7 +74,7 @@ export function SwapButton (
                     source: source,
                     contractId: Constants.LiquidityPoolId,
                     method: 'swap',
-                    params: [accountIdentifier(address), bigNumberToI128(BigNumber(0)), bigNumberToI128(BigNumber(outputTokenAmount).shiftedBy(7))]})
+                    params: [accountToScVal(address), bigNumberToI128(BigNumber(0)), bigNumberToI128(BigNumber(outputTokenAmount).shiftedBy(7))]})
     
             }
             else{
@@ -84,7 +84,7 @@ export function SwapButton (
                     source: source,
                     contractId: Constants.LiquidityPoolId,
                     method: 'swap',
-                    params: [accountIdentifier(address), bigNumberToI128(BigNumber(outputTokenAmount).shiftedBy(7)), bigNumberToI128(BigNumber(0))]})
+                    params: [accountToScVal(address), bigNumberToI128(BigNumber(outputTokenAmount).shiftedBy(7)), bigNumberToI128(BigNumber(0))]})
 
             }
                 console.log("Sending swap transaction")
