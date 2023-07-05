@@ -7,13 +7,12 @@ import { useFactory } from './useFactory';
 
 
 export function usePairContractAddress(address_0:string, address_1:string, sorobanContext: SorobanContextType):string|null{
-    let pairAddress_scval
     let pairAddress
     if (address_0 === address_1) return null
 
     const factory = useFactory(sorobanContext)
-
-    pairAddress_scval = useContractValue({
+    if (!factory) return null
+    const pairAddress_scval = useContractValue({
         contractId: factory.factory_address,
         method: 'get_pair',
         params: [accountToScVal(address_0), accountToScVal(address_1)],

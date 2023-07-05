@@ -8,21 +8,19 @@ import InputLabel from '@mui/material/InputLabel';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import InputAdornment from '@mui/material/InputAdornment';
 import { useTokens } from '../hooks/useTokens';
-import { useSorobanReact } from '@soroban-react/core'
+import { SorobanContext, useSorobanReact } from '@soroban-react/core'
 import TokensDropdown from './TokensDropwndown';
 
 import {ProvideLiquidityButton} from './buttons/ProvideLiquidityButton';
 import { TokenType } from '../interfaces/tokens';
 import { usePairExist } from '../hooks/usePairExist';
-import { useFactory } from '../hooks';
+import { tokenBalance } from '../hooks';
+import { usePairContractAddress } from '../hooks/usePairContractAddress';
 
 
 export function ProvideLiquidity (){
     const sorobanContext=useSorobanReact()
     const tokens = useTokens(sorobanContext)
-    const factory = useFactory(sorobanContext)
-
-    const [filteredTokens, setFilteredTokens] = React.useState<TokenType[]>([]);
 
     const [inputToken, setInputToken] = React.useState<TokenType| null>(null);
     const [outputToken, setOutputToken] = React.useState<TokenType| null>(null);
@@ -35,13 +33,6 @@ export function ProvideLiquidity (){
           token.token_symbol === event.target.value
       ) ?? null
       setInputToken(token);
-      if (token === null) return
-      setFilteredTokens([])
-      //tokens.map((item) => {
-      //  getPairExist(token.token_address, item.token_address, factoryId, sorobanContext).then((result) => {
-      //      setFilteredTokens([...filteredTokens, item])
-      //  })
-      //})
     }
     const handleOutputTokenChange = (event: React.ChangeEvent<{ value: string }>) => {
       const token = tokens.find((token) => 
@@ -111,14 +102,14 @@ export function ProvideLiquidity (){
           />
         </FormControl>
 
-        <p>.</p>
+        <p>Current liquidity balance {inputToken!==null&&outputToken!==null?tokenBalance(usePairContractAddress(inputToken.token_address, outputToken.token_address, sorobanContext) ?? "", sorobanContext.address):0}</p>
         <p>Liquidity Pool tokens to receive: TODO</p>
 
       </CardContent>
       <CardActions>
         <ProvideLiquidityButton
-            inputTokenAmount_1 = {inputToken == null ? inputTokenAmount : outputTokenAmount}
-            inputTokenAmount_2 = {inputToken == null ? outputTokenAmount : inputTokenAmount}
+            inputTokenAmount_1 = {inputTokenAmount}
+            inputTokenAmount_2 = {outputTokenAmount}
         />
       </CardActions>
       
