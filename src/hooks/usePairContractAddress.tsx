@@ -4,18 +4,21 @@ import {
     accountToScVal,
   } from '../helpers/utils';
 import { useFactory } from './useFactory';
+import { xdr } from 'soroban-client';
 
 
 export function usePairContractAddress(address_0:string, address_1:string, sorobanContext: SorobanContextType):string|null{
     let pairAddress
-    if (address_0 === address_1) return null
-
+    let params: xdr.ScVal[] = []
+    try {
+        params = [accountToScVal(address_0), accountToScVal(address_1)]
+    } catch (error) { 
+    }
     const factory = useFactory(sorobanContext)
-    if (!factory) return null
     const pairAddress_scval = useContractValue({
         contractId: factory.factory_address,
         method: 'get_pair',
-        params: [accountToScVal(address_0), accountToScVal(address_1)],
+        params: params,
         sorobanContext: sorobanContext
         })
     

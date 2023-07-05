@@ -14,19 +14,21 @@ import TokensDropdown from './TokensDropwndown';
 import {ProvideLiquidityButton} from './buttons/ProvideLiquidityButton';
 import { TokenType } from '../interfaces/tokens';
 import { usePairExist } from '../hooks/usePairExist';
-import { tokenBalance } from '../hooks';
+import { tokenBalance, useFactory } from '../hooks';
 import { usePairContractAddress } from '../hooks/usePairContractAddress';
-
 
 export function ProvideLiquidity (){
     const sorobanContext=useSorobanReact()
     const tokens = useTokens(sorobanContext)
 
-    const [inputToken, setInputToken] = React.useState<TokenType| null>(null);
-    const [outputToken, setOutputToken] = React.useState<TokenType| null>(null);
+    const [inputToken, setInputToken] = React.useState<TokenType|null>(null);
+    const [outputToken, setOutputToken] = React.useState<TokenType|null>(null);
 
     const [inputTokenAmount, setInputTokenAmount] = React.useState(0);
     const [outputTokenAmount, setOutputTokenAmount] = React.useState(0);
+
+    const pairAddress = usePairContractAddress(inputToken?.token_address ?? "", outputToken?.token_address ?? "", sorobanContext)
+    //const pairBalance = tokenBalance(pairAddress ?? "", sorobanContext.address)
 
     const handleInputTokenChange = (event: React.ChangeEvent<{ value: string}>) => {
       const token = tokens.find((token) => 
@@ -102,7 +104,8 @@ export function ProvideLiquidity (){
           />
         </FormControl>
 
-        <p>Current liquidity balance {inputToken!==null&&outputToken!==null?tokenBalance(usePairContractAddress(inputToken.token_address, outputToken.token_address, sorobanContext) ?? "", sorobanContext.address):0}</p>
+        <p>Current pair address {pairAddress}</p>
+        <p>Current pair balance {}</p>
         <p>Liquidity Pool tokens to receive: TODO</p>
 
       </CardContent>
