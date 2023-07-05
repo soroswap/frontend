@@ -9,7 +9,6 @@ export const useFactory = (sorobanContext: SorobanContextType) => {
     `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/factory`,
     fetcher
   );
-  console.log("🚀 « data:", data)
 
   let factory: FactoryType = {
     factory_address: "",
