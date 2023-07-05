@@ -4,25 +4,28 @@ import { Constants } from '../constants';
 import { scvalToBigNumber, accountToScVal, contractIdToScVal } from '../helpers/utils';
 import { formatAmount } from '../helpers/utils';
 import { useTokens } from './useTokens';
+import { TokenType } from '../interfaces';
 //TODO: create Liquidity Pool Balances
 
-export function tokenBalance(tokenAddress: string, userAddress?: string) {
+export function useTokenBalance(tokenAddress: string, userAddress: string) {
   const sorobanContext = useSorobanReact();
 
-  if (!sorobanContext.address) return;
-
-  const address = userAddress ?? sorobanContext.address;
+  const address = userAddress 
 
   const user = accountToScVal(address);
 
-  let balances = {
-    tokenBalance: useContractValue({
-      contractId: tokenAddress,
-      method: 'balance',
-      params: [user],
-      sorobanContext: sorobanContext,
-    }),
-  };
+  const tokenBalance = useContractValue({
+    contractId: tokenAddress,
+    method: 'balance',
+    params: [user],
+    sorobanContext: sorobanContext,
+  });
+
+  return tokenBalance;
+}
+
+export function useTokenDecimals(tokenAddress: string) {
+  const sorobanContext = useSorobanReact();
 
   const decimals = useContractValue({
     contractId: tokenAddress,
@@ -30,28 +33,25 @@ export function tokenBalance(tokenAddress: string, userAddress?: string) {
     sorobanContext: sorobanContext,
   });
 
-  const tokenDecimals = decimals?.result && (decimals.result?.u32() ?? 7);
+  const tokenDecimals = decimals?.result?.u32() ?? 7;
 
-  const formatedBalance = formatAmount(
-    scvalToBigNumber(balances.tokenBalance.result),
-    tokenDecimals
-  );
-
-  return formatedBalance;
+  return tokenDecimals;
 }
 
-export function tokenBalances(userAddress: string) {
+export function useFormattedTokenBalance(tokenAddress: string, userAddress: string) {
+    console.log("tokenAddress: ", tokenAddress)
+    const tokenBalance = useTokenBalance(tokenAddress, userAddress);
+    const tokenDecimals = useTokenDecimals(tokenAddress);
+    const formattedBalance = formatAmount(scvalToBigNumber(tokenBalance.result), tokenDecimals);
+    return formattedBalance;
+}
+
+export function useTokenBalances(userAddress: string, tokens: TokenType[]) {
   const sorobanContext = useSorobanReact();
-
-  if (!sorobanContext.address) return;
-
-  const address = userAddress ?? sorobanContext.address;
-
-  const tokens = useTokens(sorobanContext);
-
+  const address = userAddress;
   const balances = tokens.map((token) => {
     return {
-      balance: tokenBalance(token.token_address, address),
+      balance: useFormattedTokenBalance(token.token_address, address),
       symbol: token.token_symbol,
       address: token.token_address,
     };
