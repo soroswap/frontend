@@ -6,10 +6,10 @@ import {
 import { useFactory } from './useFactory';
 
 
-export function usePairContractAddress(address_0:string, address_1:string, sorobanContext: SorobanContextType):boolean {
+export function usePairContractAddress(address_0:string, address_1:string, sorobanContext: SorobanContextType):string|null{
     let pairAddress_scval
     let pairAddress
-    if (address_0 === address_1) return false
+    if (address_0 === address_1) return null
 
     const factory = useFactory(sorobanContext)
 
@@ -22,7 +22,7 @@ export function usePairContractAddress(address_0:string, address_1:string, sorob
     
     console.log(pairAddress_scval)
     if (pairAddress_scval.result) {
-        pairAddress = pairAddress_scval.result.value() as boolean
-    } else return false
+        pairAddress = pairAddress_scval.result.value() as string
+    } else return null
     return pairAddress
 }
