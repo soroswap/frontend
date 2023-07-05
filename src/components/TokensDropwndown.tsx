@@ -3,8 +3,10 @@ import { TokenType } from "../interfaces/tokens";
 
 
 
-export default function TokensDropdown({tokens, onChange, title}: {tokens: TokenType[], onChange: any, title: string}) {
-
+export default function TokensDropdown({tokens, onChange, title, pairExist}: {tokens: TokenType[], onChange: any, title: string, pairExist?: (value: TokenType) => boolean}) {
+  if (pairExist === undefined) {
+    pairExist = () => {return true}
+  }
 
   return (
     <TextField
@@ -14,9 +16,9 @@ export default function TokensDropdown({tokens, onChange, title}: {tokens: Token
           onChange={onChange}
         >
           {tokens.map((option) => (
-            <MenuItem key={option.token_id} value={option.token_symbol}>
+            pairExist!(option)?<MenuItem key={option.token_id} value={option.token_symbol}>
               {`${option.token_name} (${option.token_symbol})`}
-            </MenuItem>
+            </MenuItem>:null
           ))}
         </TextField>
   )

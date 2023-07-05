@@ -13,13 +13,15 @@ import TokensDropdown from './TokensDropwndown';
 
 import {ProvideLiquidityButton} from './buttons/ProvideLiquidityButton';
 import { TokenType } from '../interfaces/tokens';
-import { getPairExist } from '../functions/getPairExist';
+import { usePairExist } from '../hooks/usePairExist';
+import { useFactory } from '../hooks';
 
-let factoryId = "b490a625067ebcc5967c9e6ddaff924dee2fdd296b97b0f59497155f8f618f63"
 
 export function ProvideLiquidity (){
     const sorobanContext=useSorobanReact()
     const tokens = useTokens(sorobanContext)
+    const factory = useFactory(sorobanContext)
+
     const [filteredTokens, setFilteredTokens] = React.useState<TokenType[]>([]);
 
     const [inputToken, setInputToken] = React.useState<TokenType| null>(null);
@@ -35,11 +37,11 @@ export function ProvideLiquidity (){
       setInputToken(token);
       if (token === null) return
       setFilteredTokens([])
-      tokens.map((item) => {
-        getPairExist(token.token_address, item.token_address, factoryId, sorobanContext).then((result) => {
-            setFilteredTokens([...filteredTokens, item])
-        })
-      })
+      //tokens.map((item) => {
+      //  getPairExist(token.token_address, item.token_address, factoryId, sorobanContext).then((result) => {
+      //      setFilteredTokens([...filteredTokens, item])
+      //  })
+      //})
     }
     const handleOutputTokenChange = (event: React.ChangeEvent<{ value: string }>) => {
       const token = tokens.find((token) => 
@@ -90,7 +92,9 @@ export function ProvideLiquidity (){
           />
         </FormControl>
         <p>.</p>
-        <TokensDropdown tokens={filteredTokens} onChange={handleOutputTokenChange} title={"Output token"}/>
+        <TokensDropdown tokens={tokens} onChange={handleOutputTokenChange} title={"Output token"} pairExist={
+          (option: TokenType) => inputToken!=null?usePairExist(inputToken.token_address, option.token_address, sorobanContext):false
+        }/>
         <FormControl>
           
         
