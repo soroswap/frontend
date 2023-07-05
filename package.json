@@ -11,6 +11,7 @@
   "dependencies": {
     "@emotion/react": "^11.10.5",
     "@emotion/styled": "^11.10.5",
+    "@mui/icons-material": "^5.13.7",
     "@mui/material": "^5.10.17",
     "@next/font": "13.0.7",
     "@soroban-react/chains": "^5.3.12",
