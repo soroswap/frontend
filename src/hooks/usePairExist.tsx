@@ -4,23 +4,67 @@ import {
     accountToScVal,
   } from '../helpers/utils';
 import { useFactory } from './useFactory';
+import { TokenType } from '../interfaces';
+import { useSorobanReact } from '@soroban-react/core';
 
-
-export function usePairExist(token_address_0:string, token_address_1:string, sorobanContext: SorobanContextType):boolean {
-    let pairExist
+export function usePairExistScVal(token_address_0:string,
+    token_address_1:string,
+    sorobanContext: SorobanContextType) {
+        
+        let pairExist
+    const addressScVal0 = accountToScVal(token_address_0)
+    const addressScVal1 = accountToScVal(token_address_1)
+    const params = [addressScVal0, addressScVal1]
+    
 
     const factory = useFactory(sorobanContext)
-    const pairExist_scval = useContractValue({
+    const pairExistScVal =  useContractValue({
         contractId: factory.factory_address,
         method: 'pair_exists',
-        params: [accountToScVal(token_address_0), accountToScVal(token_address_1)],
+        params: params,
         sorobanContext: sorobanContext
         })
-    if (token_address_0 === token_address_1) return false
+    return pairExistScVal
     
-    
-    if (pairExist_scval.result) {
-        pairExist = pairExist_scval.result.value() as boolean
-    } else return false
-    return pairExist
+      
 }
+
+function formatBool(pairExistScVal: any){
+    if (!pairExistScVal.result) return false
+    else {
+        return pairExistScVal.result.value() as boolean
+    }
+
+}
+export function usePairExist(token_address_0:string,
+    token_address_1:string,
+    sorobanContext: SorobanContextType): boolean {
+        const pairExistScVal = usePairExistScVal(token_address_0, token_address_1, sorobanContext);
+       const pairExist = formatBool(pairExistScVal);
+
+       console.log("Checking token ", token_address_0, "and token ", token_address_1, "pair exist: ", pairExist)
+       
+       return pairExist;
+
+    }
+export function useTokensWithPair(tokens: TokenType[],
+    inputToken: TokenType) {
+        const sorobanContext = useSorobanReact();
+        let tokensWithPair: TokenType[] = []
+    
+    tokens.map((token) => {
+        console.log("🚀 ~ file: usePairExist.tsx:61 ~ tokens.map ~ token:", token)
+        console.log("🚀 ~ file: usePairExist.tsx:59 ~ tokens.map ~ inputToken:", inputToken)
+        const pairExist = usePairExist(inputToken.token_address, token.token_address, sorobanContext)
+        console.log("🚀 ~ file: usePairExist.tsx:59 ~ tokens.map ~ pairExist:", pairExist)
+        
+        
+        if (pairExist){
+            tokensWithPair.push(token)
+        }
+
+    });    
+
+    return tokensWithPair;
+  }
+  
