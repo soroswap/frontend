@@ -4,24 +4,25 @@ import {useTokensWithPair} from '../hooks/usePairExist';
 
 
 export default function TokensDropdown(
-  {tokens, onChange, title, inputToken}:
+  {tokens, onChange, title, inputToken, isOutput}:
   { tokens: TokenType[],
     onChange: any, 
     title: string, 
-    inputToken: TokenType}) {
+    inputToken?: TokenType,
+    isOutput: boolean}) {
       
-
   let tokensToShow = tokens;
-  if (inputToken){
+  if (isOutput && inputToken){
     tokensToShow = useTokensWithPair(tokens, inputToken)
   }
   
   return (
-    <TextField
+    (tokensToShow.length>0 ? 
+      <TextField
           id="outlined-select-currency"
           select
           label={title}
-          // defaultValue={tokensToShow[0].token_symbol}
+          defaultValue={!isOutput ? tokensToShow[0].token_symbol : tokensToShow[0].token_symbol}
           onChange={onChange}
         >
           {tokensToShow.map((option) => ( 
@@ -29,6 +30,7 @@ export default function TokensDropdown(
               {`${option.token_name} (${option.token_symbol})`}
             </MenuItem>
           ))}
-        </TextField>
+        </TextField>: null)
+    
   )
 }
