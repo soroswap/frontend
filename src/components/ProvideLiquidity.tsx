@@ -8,6 +8,9 @@ import InputLabel from '@mui/material/InputLabel';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import InputAdornment from '@mui/material/InputAdornment';
 import { useTokens } from '../hooks/useTokens';
+import { usePairs } from '../hooks/usePairs';
+import { useReservesBigNumber } from '../hooks/useReserves';
+
 import { useSorobanReact } from '@soroban-react/core'
 import TokensDropdown from './TokensDropwndown';
 import { SorobanContextType } from '@soroban-react/core';
@@ -20,6 +23,7 @@ export function ProvideLiquidity (){
    
     const sorobanContext=useSorobanReact()
     const tokens = useTokens(sorobanContext)
+    const pairs = usePairs(sorobanContext)
 
     return (   
     <Card sx={{ maxWidth: 345 }}>
@@ -28,23 +32,28 @@ export function ProvideLiquidity (){
        Provide Liquidity
         </Typography>
         </CardContent>
-        {(sorobanContext.address && tokens.length>0) ?
-      (<ProvideLiquidityWallet sorobanContext={sorobanContext} tokens={tokens}/>):(<div>Connect your Wallet</div>)}
+        {(sorobanContext.address && tokens.length>0 && pairs.length >0) ?
+      (<ProvideLiquidityWallet sorobanContext={sorobanContext} tokens={tokens} pairs={pairs}/>):(<div>Connect your Wallet</div>)}
        
     </Card>
   );
 }
 
 
-function ProvideLiquidityWallet({sorobanContext, tokens}: {sorobanContext: SorobanContextType, tokens: TokenType[]}) {
+function ProvideLiquidityWallet({sorobanContext, tokens, pairs}: {sorobanContext: SorobanContextType, tokens: TokenType[], pairs: any}) {
+  let pairAddress = pairs[0].pair_address;  
+  let reserves = useReservesBigNumber(pairAddress, sorobanContext)
+  console.log("🚀 ~ file: ProvideLiquidity.tsx:49 ~ ProvideLiquidityWallet ~ reserves.reserve0.toString():", reserves.reserve0.toString())
+  console.log("🚀 ~ file: ProvideLiquidity.tsx:49 ~ ProvideLiquidityWallet ~ reserves.reserve1.toString():", reserves.reserve1.toString())
+  
   
   const [inputToken, setInputToken] = React.useState<TokenType>(tokens[0]);
   const [outputToken, setOutputToken] = React.useState<TokenType|null>(null);
   const [inputTokenAmount, setInputTokenAmount] = React.useState(0);
   const [outputTokenAmount, setOutputTokenAmount] = React.useState(0);
+
   
-  const pairAddress: string = "CAQXADDMZOBFXSETOO76XTKLIZI2JM4ZUU5XZVZWUCYL4Y3ZWLZJG4MR";
-  //const pairAddress = usePairContractAddress(inputToken?.token_address ?? "", outputToken?.token_address ?? "", sorobanContext)
+
 
   const handleInputTokenChange = (event: React.ChangeEvent<{ value: string}>) => {
     const token = tokens.find((token) => 
@@ -78,14 +87,7 @@ function ProvideLiquidityWallet({sorobanContext, tokens}: {sorobanContext: Sorob
   };
 
   return (   
-  <Card sx={{ maxWidth: 345 }}>
-    <CardContent>
-      <Typography gutterBottom variant="h5" component="div">
-     Provide Liquidity
-      </Typography>
-      </CardContent>
-      {(sorobanContext.address && tokens.length>0) ?
-    (<div>
+ <div>
 
       <CardContent>
       <p>.</p>
@@ -144,9 +146,6 @@ function ProvideLiquidityWallet({sorobanContext, tokens}: {sorobanContext: Sorob
       </CardActions>
 
     </div>
-    
-    ):(<div>Connect your Wallet</div>)}
-     
-  </Card>
+   
 );
 }
