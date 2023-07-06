@@ -6,8 +6,9 @@ Prerequisites
 Before you begin, ensure you have met the following requirements:
 
     You have Docker installed. This repository is tested and confirmed to work with Docker version 24.0.2. Other versions might not be compatible and may cause issues.
-    
+
 ## 🛠 Setting Up Soroswap 🛠
+
 1. Clone the Repository
 
 ```bash
@@ -23,8 +24,9 @@ Copy the .env.example file to create a new .env file:
 ```bash
 cp .env.local.example .env
 ```
+
 Now, edit the `.env` file and fill in the missing information.
-Where `PUBLICKEY` and `SECRETKEY` are the token admin keys for minting the tokens deployed on __soroswap/core__
+Where `PUBLICKEY` and `SECRETKEY` are the token admin keys for minting the tokens deployed on **soroswap/core**
 
 3. Start Docker
 
@@ -34,8 +36,8 @@ Navigate to the docker folder and execute the run.sh script:
 cd docker
 bash run.sh
 ```
-This script will set up and start the Docker containers required for Soroswap.
-4. Install the Dependencies
+
+This script will set up and start the Docker containers required for Soroswap. 4. Install the Dependencies
 
 After the Docker container is up, you will be inside the root folder on the container. Then, install the dependencies using Yarn:
 
@@ -50,6 +52,7 @@ Now you are ready to start the development instance. Run the following command:
 ```bash
 yarn dev
 ```
+
 This will start the Soroswap development instance.
 🚀 Congrats! 🚀
 

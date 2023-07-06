@@ -1,13 +1,13 @@
-import { useSorobanReact } from '@soroban-react/core';
-import { useContractValue } from '@soroban-react/contracts';
-import { Constants } from '../constants';
+import { useSorobanReact } from "@soroban-react/core";
+import { useContractValue } from "@soroban-react/contracts";
+import { Constants } from "../constants";
 import {
   scvalToBigNumber,
   accountToScVal,
   contractIdToScVal,
-} from '../helpers/utils';
-import { formatAmount } from '../helpers/utils';
-import { TokenType } from '../interfaces';
+} from "../helpers/utils";
+import { formatAmount } from "../helpers/utils";
+import { TokenType } from "../interfaces";
 //TODO: create Liquidity Pool Balances
 
 export function useTokenBalance(tokenAddress: string, userAddress: string) {
@@ -19,10 +19,14 @@ export function useTokenBalance(tokenAddress: string, userAddress: string) {
 
   const tokenBalance = useContractValue({
     contractId: tokenAddress,
-    method: 'balance',
+    method: "balance",
     params: [user],
     sorobanContext: sorobanContext,
   });
+  console.log(
+    "🚀 ~ file: useBalances.tsx:26 ~ useTokenBalance ~ tokenBalance:",
+    tokenBalance,
+  );
 
   return tokenBalance;
 }
@@ -32,7 +36,7 @@ export function useTokenDecimals(tokenAddress: string) {
 
   const decimals = useContractValue({
     contractId: tokenAddress,
-    method: 'decimals',
+    method: "decimals",
     sorobanContext: sorobanContext,
   });
 
@@ -43,14 +47,14 @@ export function useTokenDecimals(tokenAddress: string) {
 
 export function useFormattedTokenBalance(
   tokenAddress: string,
-  userAddress: string
+  userAddress: string,
 ) {
-  console.log('tokenAddress: ', tokenAddress);
+  console.log("tokenAddress: ", tokenAddress);
   const tokenBalance = useTokenBalance(tokenAddress, userAddress);
   const tokenDecimals = useTokenDecimals(tokenAddress);
   const formattedBalance = formatAmount(
     scvalToBigNumber(tokenBalance.result),
-    tokenDecimals
+    tokenDecimals,
   );
   return formattedBalance;
 }

@@ -1,13 +1,21 @@
 // material-ui
-import { useTheme } from '@mui/material/styles';
-import { Avatar, Chip, ListItemButton, ListItemIcon, ListItemText, Typography, useMediaQuery } from '@mui/material';
-import React, {useState} from 'react';
-import Link from 'next/link';
+import { useTheme } from "@mui/material/styles";
+import {
+  Avatar,
+  Chip,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+  Typography,
+  useMediaQuery,
+} from "@mui/material";
+import React, { useState } from "react";
+import Link from "next/link";
 
 export default function NavItem({ item, level }) {
   const theme = useTheme();
   // const customization = useSelector((state) => state.customization);
-  const matchesSM = useMediaQuery(theme.breakpoints.down('lg'));
+  const matchesSM = useMediaQuery(theme.breakpoints.down("lg"));
 
   const Icon = item.icon;
 
@@ -48,17 +56,19 @@ export default function NavItem({ item, level }) {
         sx={{
           borderRadius: 10,
           m: 2,
-          alignItems: 'flex-start',
+          alignItems: "flex-start",
           backgroundColor: theme.palette.primary.main,
           py: 1.25,
-          pl: `${level * 24}px`
+          pl: `${level * 24}px`,
         }}
         selected={false}
       >
-        <ListItemIcon sx={{ my: 'auto', minWidth: !item?.icon ? 18 : 36 }}><Icon/></ListItemIcon>
+        <ListItemIcon sx={{ my: "auto", minWidth: !item?.icon ? 18 : 36 }}>
+          <Icon />
+        </ListItemIcon>
         <ListItemText
           primary={
-            <Typography variant={'body1'} color="inherit">
+            <Typography variant={"body1"} color="inherit">
               {item.title}
             </Typography>
           }

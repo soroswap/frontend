@@ -1,12 +1,11 @@
-import ComponentsGrid from '../src/components/ComponentsGrid';
-import SEO from '../src/components/SEO';
+import ComponentsGrid from "../src/components/ComponentsGrid";
+import SEO from "../src/components/SEO";
 
 export default function AllPage() {
-
   return (
     <>
-      <SEO title='All - Soroswap' description='Soroswap All Components' />
-      <ComponentsGrid/>
+      <SEO title="All - Soroswap" description="Soroswap All Components" />
+      <ComponentsGrid />
     </>
-  )
+  );
 }
