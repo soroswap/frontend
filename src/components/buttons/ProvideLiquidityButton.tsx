@@ -9,9 +9,12 @@ import {useSendTransaction,
 import {bigNumberToI128, contractIdentifier, invoker} from '@soroban-react/utils'
 import BigNumber from 'bignumber.js'
 import * as SorobanClient from 'soroban-client'
+import { TokenType } from '../../interfaces/tokens';
 
 
 interface ProvideLiquidityProps {
+    inputToken: TokenType,
+    outputToken: TokenType,
     inputTokenAmount_1: number,
     inputTokenAmount_2: number
 }
@@ -19,19 +22,12 @@ interface ProvideLiquidityProps {
 
 export function ProvideLiquidityButton (
     { 
+        inputToken,
+        outputToken,
         inputTokenAmount_1,
         inputTokenAmount_2} :
         ProvideLiquidityProps){
     const sorobanContext =  useSorobanReact()
-    const { sendTransaction } = useSendTransaction()
-    const { activeChain, server, address, activeWallet } = sorobanContext
-    const networkPassphrase = sorobanContext.activeChain?.networkPassphrase ?? ''
-    const liquidityPoolId = Constants.LiquidityPoolId
-    const share_pool_id_scval = useContractValue({
-        contractId: liquidityPoolId,
-        method: 'share_id',
-        sorobanContext: sorobanContext
-      })
     
     const handleProvideLiquidity = async (): Promise<void> => {
 
