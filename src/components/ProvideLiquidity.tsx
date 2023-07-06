@@ -8,21 +8,16 @@ import InputLabel from '@mui/material/InputLabel';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import InputAdornment from '@mui/material/InputAdornment';
 import { useTokens } from '../hooks/useTokens';
-import { SorobanContext, useSorobanReact } from '@soroban-react/core'
+import { useSorobanReact } from '@soroban-react/core'
 import TokensDropdown from './TokensDropwndown';
-
-import {ProvideLiquidityButton} from './buttons/ProvideLiquidityButton';
 import { TokenType } from '../interfaces/tokens';
-import { usePairExist } from '../hooks/usePairExist';
-import { useTokenBalance, useFactory } from '../hooks';
-import { usePairContractAddress } from '../hooks/usePairContractAddress';
 import { DepositButton } from './buttons/DepositButton';
 import BigNumber from 'bignumber.js';
 import { PairBalance } from './PairBalance';
 
 export function ProvideLiquidity (){
     //Address pair hardcodeado se va a quitar!!
-    let pairAddress = "CAWMGGWVYFF3JY3BXGUPBQO7LAGGKNQEGZ6HULJ24WIUVCKHITIXKTM4"
+    let pairAddress = "CAU7LJ6A3YDYKWL6KJJESYVTUQGB7FDZMAPKPB36SXMFPFMWYFBYHCJH"
     const sorobanContext=useSorobanReact()
     const tokens = useTokens(sorobanContext)
 

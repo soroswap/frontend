@@ -58,7 +58,10 @@ export function DepositButton({
           })
     
           //Sends the transactions to the blockchain
+          console.log(tx)
+
           let result = await sendTransaction(tx, options)
+
           if (result){
             alert("Success!")
           }
