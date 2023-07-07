@@ -25,7 +25,7 @@ import { SwapButton } from "./buttons/SwapButton";
 export function ChooseTokens({isLiquidity}:{isLiquidity: boolean}) {
   // If isLiquidity == false => Means we are in Swap
   const sorobanContext = useSorobanReact();
-  const tokens = useTokens(sorobanContext);
+  const tokens = useTokens(sorobanContext); 
   
 
   return (
@@ -34,7 +34,6 @@ export function ChooseTokens({isLiquidity}:{isLiquidity: boolean}) {
         <Typography gutterBottom variant="h5" component="div">
           {isLiquidity?"Provide Liquidity":"Swap"}
         </Typography>
-      </CardContent>
       {sorobanContext.address && tokens?.length > 0 ? (
         <ChooseTokensWallet
           sorobanContext={sorobanContext}
@@ -42,8 +41,9 @@ export function ChooseTokens({isLiquidity}:{isLiquidity: boolean}) {
           isLiquidity={isLiquidity}
         />
       ) : (
-        <div>Connect your Wallet</div>
+          <div>Connect your Wallet</div>
       )}
+      </CardContent>
     </Card>
   );
 }

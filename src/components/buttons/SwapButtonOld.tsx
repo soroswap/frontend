@@ -125,7 +125,7 @@ export function SwapButtonOld({
   };
 
   return (
-    <Button size="small" variant="contained" onClick={handleSwap}>
+    <Button variant="contained" size="small" variant="contained" onClick={handleSwap}>
       Swap
     </Button>
   );

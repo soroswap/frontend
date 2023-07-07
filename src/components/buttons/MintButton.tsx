@@ -80,7 +80,7 @@ export function MintButton({
   };
 
   return (
-    <Button onClick={mintTokens} disabled={isSubmitting}>
+    <Button variant="contained" onClick={mintTokens} disabled={isSubmitting}>
       Mint!
     </Button>
   );

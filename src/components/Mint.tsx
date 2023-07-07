@@ -52,6 +52,8 @@ export function Mint() {
         <Typography gutterBottom variant="h5" component="div">
           Mint
         </Typography>
+        {sorobanContext.address ?
+        (<div> 
         <TextField
           id="outlined-select-currency"
           select
@@ -65,7 +67,6 @@ export function Mint() {
             </MenuItem>
           ))}
         </TextField>
-        <p>.</p>
         <FormControl>
           <InputLabel htmlFor="outlined-adornment-amount">
             Amount to Mint
@@ -82,7 +83,7 @@ export function Mint() {
             label="Amount"
           />
         </FormControl>
-      </CardContent>
+      
       <CardActions>
         <MintButton
           sorobanContext={sorobanContext}
@@ -90,6 +91,10 @@ export function Mint() {
           amountToMint={amount}
         />
       </CardActions>
+      </div>) : (
+        <div>Connect your Wallet</div>
+      )}
+      </CardContent>
     </Card>
   );
 }

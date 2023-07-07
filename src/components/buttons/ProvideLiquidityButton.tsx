@@ -144,7 +144,7 @@ export function ProvideLiquidityButton({
   };
 
   return (
-    <Button size="small" variant="contained" onClick={handleProvideLiquidity}>
+    <Button variant="contained" size="small" variant="contained" onClick={handleProvideLiquidity}>
       Provide Liquidity
     </Button>
   );

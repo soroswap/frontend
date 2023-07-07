@@ -89,7 +89,7 @@ export function DepositButton({
   };
 
   return (
-    <Button onClick={depositTokens} disabled={isSubmitting}>
+    <Button variant="contained" onClick={depositTokens} disabled={isSubmitting}>
       Deposit Liquidity!
     </Button>
   );

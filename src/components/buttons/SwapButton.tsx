@@ -89,7 +89,7 @@ export function SwapButton({
   };
 
   return (
-    <Button onClick={swapTokens} disabled={isSubmitting}>
+    <Button variant="contained" onClick={swapTokens} disabled={isSubmitting}>
         Swap!
     </Button>
   );
