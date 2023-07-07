@@ -23,6 +23,7 @@ import calculatePoolTokenOptimalAmount from "../functions/calculatePoolTokenOpti
 import { SwapButton } from "./buttons/SwapButton";
 
 export function ChooseTokens({isLiquidity}:{isLiquidity: boolean}) {
+  // If isLiquidity == false => Means we are in Swap
   const sorobanContext = useSorobanReact();
   const tokens = useTokens(sorobanContext);
   

@@ -1,9 +1,9 @@
 import React from "react";
 import Grid from "@mui/material/Grid";
-import { Swap } from "./Swap";
+// import { Swap } from "./Swap";
 import { Mint } from "./Mint";
 import { Balances } from "./Balances";
-import { ProvideLiquidity } from "./ProvideLiquidity";
+import { ChooseTokens } from "./ChooseTokens";
 
 export default function ComponentsGrid() {
   return (
@@ -16,8 +16,9 @@ export default function ComponentsGrid() {
     >
       <Balances />
       <Mint />
-      <ProvideLiquidity />
-      <Swap balancesBigNumber={undefined} />
+      <ChooseTokens isLiquidity={true}/>
+      <ChooseTokens isLiquidity={false}/>
+      {/* <Swap balancesBigNumber={undefined} /> */}
     </Grid>
   );
 }
