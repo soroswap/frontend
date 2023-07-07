@@ -8,7 +8,7 @@ import { PairBalance } from "./PairBalance";
 import { SwapButton } from "./buttons/SwapButton";
 
 
-function ProvideSwapPair({
+export function ProvideSwapPair({
     sorobanContext,
     pairAddress,
     inputTokenAmount,
