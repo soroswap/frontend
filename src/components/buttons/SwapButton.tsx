@@ -1,132 +1,96 @@
-import React from "react";
-import { useSorobanReact } from "@soroban-react/core";
-import Button from "@mui/material/Button";
+import { SorobanContextType } from "@soroban-react/core";
 import {
-  useSendTransaction,
   contractTransaction,
+  useSendTransaction,
 } from "@soroban-react/contracts";
-import * as SorobanClient from "soroban-client";
-import { currencies } from "../../currencies";
-import { Constants } from "../../constants";
-import {
-  bigNumberToI128,
-  invoker,
-  accountToScVal,
-  contractIdentifier,
-} from "@soroban-react/utils";
+import { bigNumberToI128 } from "../../helpers/utils";
 import BigNumber from "bignumber.js";
+import { useState } from "react";
+import * as SorobanClient from "soroban-client";
+import { Button } from "@mui/material";
 
 interface SwapButtonProps {
-  outputToken: {
-    value: string;
-    label: string;
-    shortlabel: string;
-    id: number;
-    symbol: string;
-  };
-  outputTokenAmount: number;
-  inputTokenAmount: number;
+  pairAddress: string;
+  isBuy: boolean;
+  amountOut: BigNumber;
+  maxTokenA: BigNumber;
+  sorobanContext: SorobanContextType;
 }
 
 export function SwapButton({
-  outputToken,
-  outputTokenAmount,
-  inputTokenAmount,
+  pairAddress,
+  isBuy,
+  amountOut,
+  maxTokenA,
+  sorobanContext,
 }: SwapButtonProps) {
-  console.log("outputToken: ", outputToken);
-  console.log("outputTokenAmount: ", outputTokenAmount);
-  const sorobanContext = useSorobanReact();
+  const [isSubmitting, setSubmitting] = useState(false);
+  const networkPassphrase = sorobanContext.activeChain?.networkPassphrase ?? "";
+  const server = sorobanContext.server;
+  const account = sorobanContext.address;
   const { sendTransaction } = useSendTransaction();
-  const { activeChain, server, address } = sorobanContext;
 
-  const handleSwap = async (): Promise<void> => {
-    if (!activeChain || !address || !server) {
-      console.log("No active chain");
+  const swapTokens = async () => {
+    setSubmitting(true);
+
+    //Parse amount to mint to BigNumber and then to i128 scVal
+    const amountOutScVal = bigNumberToI128(amountOut.shiftedBy(7));
+    const amountInScVal = bigNumberToI128(maxTokenA.shiftedBy(7));
+
+    let walletSource;
+
+    try {
+      walletSource = await server?.getAccount(account);
+    } catch (error) {
+      alert("Your wallet or the token admin wallet might not be funded");
+      setSubmitting(false);
       return;
-    } else {
-      try {
-        let { sequence } = await server.getAccount(address);
-        let source = new SorobanClient.Account(address, sequence);
-
-        console.log("creating 1st tx to sign");
-
-        const nonce = bigNumberToI128(BigNumber(0));
-
-        let result1;
-        if (outputToken == currencies[1]) {
-          result1 = await sendTransaction(
-            contractTransaction({
-              networkPassphrase: activeChain.networkPassphrase,
-              source: source,
-              contractId: Constants.TokenId_1,
-              method: "xfer",
-              params: [
-                invoker,
-                nonce,
-                contractIdentifier(Constants.LiquidityPoolId),
-                bigNumberToI128(BigNumber(inputTokenAmount).shiftedBy(7)),
-              ],
-            }),
-            { sorobanContext },
-          );
-        } else {
-          result1 = await sendTransaction(
-            contractTransaction({
-              networkPassphrase: activeChain.networkPassphrase,
-              source: source,
-              contractId: Constants.TokenId_2,
-              method: "xfer",
-              params: [
-                invoker,
-                nonce,
-                contractIdentifier(Constants.LiquidityPoolId),
-                bigNumberToI128(BigNumber(inputTokenAmount).shiftedBy(7)),
-              ],
-            }),
-            { sorobanContext },
-          );
-        }
-
-        console.log("result1: ", result1);
-
-        let transaction;
-        if (outputToken == currencies[1]) {
-          transaction = contractTransaction({
-            networkPassphrase: activeChain.networkPassphrase,
-            source: source,
-            contractId: Constants.LiquidityPoolId,
-            method: "swap",
-            params: [
-              accountToScVal(address),
-              bigNumberToI128(BigNumber(0)),
-              bigNumberToI128(BigNumber(outputTokenAmount).shiftedBy(7)),
-            ],
-          });
-        } else {
-          transaction = contractTransaction({
-            networkPassphrase: activeChain.networkPassphrase,
-            source: source,
-            contractId: Constants.LiquidityPoolId,
-            method: "swap",
-            params: [
-              accountToScVal(address),
-              bigNumberToI128(BigNumber(outputTokenAmount).shiftedBy(7)),
-              bigNumberToI128(BigNumber(0)),
-            ],
-          });
-        }
-        console.log("Sending swap transaction");
-        const result = await sendTransaction(transaction, { sorobanContext });
-        console.log("swap:sendTransaction:result: ", result);
-      } catch (error) {
-        console.log("Error while sending the transaction: ", error);
-      }
     }
+
+    const options = {
+      sorobanContext,
+    };
+
+    try {
+      //Builds the transaction
+      let tx = contractTransaction({
+        source: walletSource,
+        networkPassphrase,
+        contractId: pairAddress,
+        method: "swap",
+        params: [
+          new SorobanClient.Address(account).toScVal(),
+          //isBuy  TODO: Convert to scVal,
+          amountOutScVal,
+          amountInScVal,
+        ],
+      });
+
+      //Sends the transactions to the blockchain
+      console.log(tx);
+
+      let result = await sendTransaction(tx, options);
+
+      if (result) {
+        alert("Success!");
+      }
+      console.log(
+        "🚀 ~ file: SwapButton.tsx ~ swapTokens ~ result:",
+        result,
+      );
+
+      //This will connect again the wallet to fetch its data
+      sorobanContext.connect();
+    } catch (error) {
+      console.log("🚀 « error:", error);
+    }
+
+    setSubmitting(false);
   };
 
   return (
-    <Button size="small" variant="contained" onClick={handleSwap}>
-      Swap
+    <Button onClick={swapTokens} disabled={isSubmitting}>
+        Swap!
     </Button>
   );
 }

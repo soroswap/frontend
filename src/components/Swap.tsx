@@ -10,7 +10,7 @@ import InputLabel from "@mui/material/InputLabel";
 import OutlinedInput from "@mui/material/OutlinedInput";
 import InputAdornment from "@mui/material/InputAdornment";
 
-import { SwapButton } from "./buttons/SwapButton";
+import { SwapButtonOld } from "./buttons/SwapButtonOld";
 import { currencies } from "../currencies";
 
 export function Swap({ balancesBigNumber }: { balancesBigNumber: any }) {
@@ -137,11 +137,11 @@ export function Swap({ balancesBigNumber }: { balancesBigNumber: any }) {
         </p>
       </CardContent>
       <CardActions>
-        <SwapButton
+        <SwapButtonOld
           outputToken={outputToken}
           outputTokenAmount={outputTokenAmount}
           inputTokenAmount={inputTokenAmount}
-        ></SwapButton>
+        ></SwapButtonOld>
       </CardActions>
     </Card>
   );
