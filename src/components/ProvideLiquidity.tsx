@@ -64,7 +64,7 @@ function ProvideLiquidityWallet({
   const [inputTokenAmount, setInputTokenAmount] = React.useState(0);
   const [outputTokenAmount, setOutputTokenAmount] = React.useState(0);
   const [pairExist, setPairExist] = React.useState<boolean| undefined>(undefined);
-  const [pairAddress, setPairAddress] = React.useState<any>(undefined);
+  const [pairAddress, setPairAddress] = React.useState<string|undefined>(undefined);
 
   function getPairExists(token0: any, token1: any,  allPairs: any) {
     return allPairs.some((pair: any) => {
@@ -90,7 +90,7 @@ function ProvideLiquidityWallet({
     // Code to run when the component mounts or specific dependencies change
     setPairExist(getPairExists(inputToken, outputToken, allPairs))
     if(allPairs[0]){
-
+      console.log("pair address:", allPairs[0].pair_address)
       setPairAddress(allPairs[0].pair_address)
     }
     console.log("🚀 ~ file: ProvideLiquidity.tsx:90 ~ React.useEffect ~ getPairExists(inputToken, outputToken, allPairs):", getPairExists(inputToken, outputToken, allPairs))
@@ -101,8 +101,8 @@ function ProvideLiquidityWallet({
     event: React.ChangeEvent<{ value: string }>,
   ) => {
     const token =
-      tokens.find((token) => token.token_symbol === event.target.value) ?? null;
-    setInputToken(token);
+      tokens.find((token) => token.token_symbol === event.target.value);
+    setInputToken(token!);
   };
   const handleOutputTokenChange = (
     event: React.ChangeEvent<{ value: string }>,
@@ -244,7 +244,6 @@ function ProvideLiquidityPair({
             amount1={BigNumber(outputTokenAmount)}
             sorobanContext={sorobanContext}
           />
-        ) : }
       </CardActions>
   </div>
   )

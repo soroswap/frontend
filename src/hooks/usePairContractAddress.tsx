@@ -1,14 +1,15 @@
 import { SorobanContextType } from "@soroban-react/core";
 import { useContractValue } from "@soroban-react/contracts";
-import { accountToScVal } from "../helpers/utils";
+import { accountToScVal, scvalToString } from "../helpers/utils";
 import { useFactory } from "./useFactory";
 import { xdr } from "soroban-client";
+import * as SorobanClient from "soroban-client";
 
 export function usePairContractAddress(
   address_0: string,
   address_1: string,
   sorobanContext: SorobanContextType,
-): string | null {
+): string | undefined {
   let pairAddress;
   let params: xdr.ScVal[] = [];
   try {
@@ -22,9 +23,8 @@ export function usePairContractAddress(
     sorobanContext: sorobanContext,
   });
 
-  console.log(pairAddress_scval);
   if (pairAddress_scval.result) {
-    pairAddress = pairAddress_scval.result.value() as string;
-  } else return null;
+    pairAddress = SorobanClient.Address.fromScVal(pairAddress_scval.result).toString();
+  } else return undefined;
   return pairAddress;
 }
