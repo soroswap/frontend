@@ -76,27 +76,16 @@ function ProvideLiquidityWallet({
     });
   }
 
-  // function getPairAddress(token0: any, token1: any,  allPairs: any) {
-  //   return allPairs.some((pair: any) => {
-  //     if (
-  //       (pair.token_0 === token0 && pair.token_1 === token1) ||
-  //       (pair.token_1 === token1 && pair.token_0 === token0)
-  //     ){
-  //       return 
-  //     }
-  //   });
-  // }
-
   React.useEffect(() => {
     // Code to run when the component mounts or specific dependencies change
     setPairExist(getPairExists(inputToken, outputToken, allPairs))
-    if(allPairs[0]){
-      let selectedPair = allPairs.find((pair: any) => {
+
+    let selectedPair = allPairs.find((pair: any) => {
         return pair.token_0.token_address === inputToken.token_address && pair.token_1.token_address  === outputToken?.token_address
-      })
-      if (selectedPair)
-      setPairAddress(selectedPair.pair_address)
-    }
+    })
+    if (selectedPair)
+    setPairAddress(selectedPair.pair_address)
+
     console.log("🚀 ~ file: ProvideLiquidity.tsx:90 ~ React.useEffect ~ getPairExists(inputToken, outputToken, allPairs):", getPairExists(inputToken, outputToken, allPairs))
 
   }, [inputToken, outputToken]); // Dependencies array
