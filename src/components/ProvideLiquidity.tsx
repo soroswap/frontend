@@ -59,14 +59,12 @@ function ProvideLiquidityWallet({
 
   const allPairs = useAllPairsFromTokens(tokens)
   
-  let pairAddress = jsonPairs[0].pair_address;
-  let reserves = useReservesBigNumber(pairAddress, sorobanContext);
-  
   const [inputToken, setInputToken] = React.useState<TokenType>(tokens[0]);
   const [outputToken, setOutputToken] = React.useState<TokenType | null>(null);
   const [inputTokenAmount, setInputTokenAmount] = React.useState(0);
   const [outputTokenAmount, setOutputTokenAmount] = React.useState(0);
   const [pairExist, setPairExist] = React.useState<boolean| undefined>(undefined);
+  const [pairAddress, setPairAddress] = React.useState<any>(undefined);
 
   function getPairExists(token0: any, token1: any,  allPairs: any) {
     return allPairs.some((pair: any) => {
@@ -77,9 +75,24 @@ function ProvideLiquidityWallet({
     });
   }
 
+  // function getPairAddress(token0: any, token1: any,  allPairs: any) {
+  //   return allPairs.some((pair: any) => {
+  //     if (
+  //       (pair.token_0 === token0 && pair.token_1 === token1) ||
+  //       (pair.token_1 === token1 && pair.token_0 === token0)
+  //     ){
+  //       return 
+  //     }
+  //   });
+  // }
+
   React.useEffect(() => {
     // Code to run when the component mounts or specific dependencies change
     setPairExist(getPairExists(inputToken, outputToken, allPairs))
+    if(allPairs[0]){
+
+      setPairAddress(allPairs[0].pair_address)
+    }
     console.log("🚀 ~ file: ProvideLiquidity.tsx:90 ~ React.useEffect ~ getPairExists(inputToken, outputToken, allPairs):", getPairExists(inputToken, outputToken, allPairs))
 
   }, [inputToken, outputToken]); // Dependencies array
@@ -126,7 +139,8 @@ function ProvideLiquidityWallet({
     <Box sx={{ display: 'flex', flexWrap: 'wrap' }}>
             <div>
         <TokensDropdown tokens={tokens} onChange={handleInputTokenChange} title={"Input token"}/>
-        {pairExist ? <FormControl sx={{ m: 1, width: '25ch' }}>
+        {pairExist ? 
+        <FormControl sx={{ m: 1, width: '25ch' }}>
           <InputLabel htmlFor="outlined-adornment-amount">
             Amount Input
           </InputLabel>
@@ -153,7 +167,8 @@ function ProvideLiquidityWallet({
           title={"Output token"}
           inputToken={inputToken}
         />
-        {pairExist ? <FormControl>
+        {pairExist ? 
+        <FormControl>
           <InputLabel htmlFor="outlined-adornment-amount">
             Amount Output
           </InputLabel>
@@ -171,8 +186,45 @@ function ProvideLiquidityWallet({
           />
         </FormControl>: null}
         </div>
-        {pairExist ? <div>
+        {(pairExist && outputToken) ? 
+        <ProvideLiquidityPair
+          sorobanContext={sorobanContext}
+          inputToken={inputToken}
+          outputToken={outputToken}
+          pairAddress={pairAddress}
+          inputTokenAmount={inputTokenAmount}
+          outputTokenAmount={outputTokenAmount}
+          />
+        : <p>This pair does not exist!</p>}
+      </Box>
+      
+    </div>
+  );
+}
 
+
+function ProvideLiquidityPair({
+  sorobanContext,
+  inputToken,
+  outputToken,
+  pairAddress,
+  inputTokenAmount,
+  outputTokenAmount
+}: {
+  sorobanContext: SorobanContextType;
+  inputToken: TokenType;
+  outputToken: TokenType;
+  pairAddress: any;
+  inputTokenAmount: any;
+  outputTokenAmount: any
+}) {
+
+  let reserves = useReservesBigNumber(pairAddress, sorobanContext);
+  console.log("🚀 ~ file: ProvideLiquidity.tsx:223 ~ reserves:", reserves)
+
+  return(
+    
+    <div>
         <p>Current pair address {}</p>
         <p>Current pair balance</p>
         {sorobanContext.address ? (
@@ -184,18 +236,17 @@ function ProvideLiquidityWallet({
             0
             )}
         <p>Liquidity Pool tokens to receive: TODO</p>
-            </div>: null}
-      </Box>
-      <CardActions>
-        {pairExist ? (
+        <CardActions>
+        
           <DepositButton
             pairAddress={pairAddress}
             amount0={BigNumber(inputTokenAmount)}
             amount1={BigNumber(outputTokenAmount)}
             sorobanContext={sorobanContext}
           />
-        ) : <p>This pair does not exist!</p>}
+        ) : }
       </CardActions>
-    </div>
-  );
+  </div>
+  )
+
 }
