@@ -15,6 +15,7 @@ import BigNumber from "bignumber.js";
 import { MintButton } from "./buttons/MintButton";
 import { useTokens } from "../hooks/useTokens";
 import { TokenType } from "../interfaces";
+import { useFormattedTokenBalance } from "../hooks";
 
 export function Mint() {
   const sorobanContext: SorobanContextType = useSorobanReact();
@@ -52,49 +53,87 @@ export function Mint() {
         <Typography gutterBottom variant="h5" component="div">
           Mint
         </Typography>
-        {sorobanContext.address ?
-        (<div> 
-        <TextField
-          id="outlined-select-currency"
-          select
-          label="Token to Mint"
-          defaultValue="AAAA"
-          onChange={handleInputTokenChange}
-        >
-          {tokensList.map((option) => (
-            <MenuItem key={option.token_id} value={option.token_symbol}>
-              {`${option.token_name} (${option.token_symbol})`}
-            </MenuItem>
-          ))}
-        </TextField>
-        <FormControl>
-          <InputLabel htmlFor="outlined-adornment-amount">
-            Amount to Mint
-          </InputLabel>
-          <OutlinedInput
-            type="number"
-            id="outlined-adornment-amount"
-            onChange={handleAmountChange}
-            startAdornment={
-              <InputAdornment position="start">
-                {inputToken?.token_symbol}
-              </InputAdornment>
-            }
-            label="Amount"
-          />
-        </FormControl>
-      
+        {sorobanContext.address ? (
+          <div>
+            <TextField
+              id="outlined-select-currency"
+              select
+              label="Token to Mint"
+              defaultValue="AAAA"
+              onChange={handleInputTokenChange}
+            >
+              {tokensList.map((option) => (
+                <MenuItem key={option.token_id} value={option.token_symbol}>
+                  {`${option.token_name} (${option.token_symbol})`}
+                </MenuItem>
+              ))}
+            </TextField>
+            <FormControl>
+              <InputLabel htmlFor="outlined-adornment-amount">
+                Amount to Mint
+              </InputLabel>
+              <OutlinedInput
+                type="number"
+                id="outlined-adornment-amount"
+                onChange={handleAmountChange}
+                startAdornment={
+                  <InputAdornment position="start">
+                    {inputToken?.token_symbol}
+                  </InputAdornment>
+                }
+                label="Amount"
+              />
+            </FormControl>
+            {inputToken && (
+              <MintTokens
+                sorobanContext={sorobanContext}
+                address={sorobanContext.address}
+                inputToken={inputToken}
+                amountToMint={amount}
+              />
+            )}
+          </div>
+        ) : (
+          <div>Connect your Wallet</div>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
+export function MintTokens({
+  sorobanContext,
+  address,
+  inputToken,
+  amountToMint,
+}: {
+  sorobanContext: SorobanContextType;
+  address: string;
+  inputToken: TokenType;
+  amountToMint: BigNumber;
+}) {
+  let formattedTokenBalance;
+  formattedTokenBalance = useFormattedTokenBalance(
+    inputToken.token_id,
+    address,
+  );
+  console.log(
+    "🚀 ~ file: Mint.tsx:116 ~ formattedTokenBalance:",
+    formattedTokenBalance,
+  );
+
+  return (
+    <div>
+      <p>
+        Your current balance: {formattedTokenBalance} {inputToken.token_symbol}
+      </p>
       <CardActions>
         <MintButton
           sorobanContext={sorobanContext}
-          tokenId={mintTokenId}
-          amountToMint={amount}
+          tokenId={inputToken.token_id}
+          amountToMint={amountToMint}
         />
       </CardActions>
-      </div>) : (
-        <div>Connect your Wallet</div>
-      )}
-      </CardContent>
-    </Card>
+    </div>
   );
 }

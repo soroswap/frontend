@@ -16,8 +16,8 @@ export default function ComponentsGrid() {
     >
       <Balances />
       <Mint />
-      <ChooseTokens isLiquidity={true}/>
-      <ChooseTokens isLiquidity={false}/>
+      <ChooseTokens isLiquidity={true} />
+      <ChooseTokens isLiquidity={false} />
       {/* <Swap balancesBigNumber={undefined} /> */}
     </Grid>
   );

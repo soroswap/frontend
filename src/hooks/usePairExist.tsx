@@ -83,35 +83,32 @@ export function useTokensWithPair(tokens: TokenType[], inputToken: TokenType) {
   return tokensWithPair;
 }
 
+export function useAllPairsFromTokens(tokens: TokenType[]) {
+  const sorobanContext = useSorobanReact();
 
-export function useAllPairsFromTokens(tokens: TokenType[]){
+  const allPairs = [];
+  for (let i = 0; i < tokens.length; i++) {
+    for (let j = i + 1; j < tokens.length; j++) {
+      const pairExists = usePairExist(
+        tokens[i].token_address,
+        tokens[j].token_address,
+        sorobanContext,
+      );
+      const pairAddress = usePairContractAddress(
+        tokens[i].token_address,
+        tokens[j].token_address,
+        sorobanContext,
+      );
 
-  const sorobanContext = useSorobanReact()
-  
-    const allPairs = [];
-      for (let i = 0; i < tokens.length; i++) {
-        for (let j = i + 1; j < tokens.length; j++) {
-          const pairExists = usePairExist(
-            tokens[i].token_address,
-            tokens[j].token_address,
-            sorobanContext
-          );
-          const pairAddress = usePairContractAddress(
-            tokens[i].token_address,
-            tokens[j].token_address,
-            sorobanContext
-          )
-          
-
-          if (pairExists) {
-            console.log("pair address", pairAddress)
-            allPairs.push({
-              token_0: tokens[i],
-              token_1: tokens[j],
-              pair_address: pairAddress
-            });
-        }
+      if (pairExists) {
+        console.log("pair address", pairAddress);
+        allPairs.push({
+          token_0: tokens[i],
+          token_1: tokens[j],
+          pair_address: pairAddress,
+        });
       }
     }
+  }
   return allPairs;
 }

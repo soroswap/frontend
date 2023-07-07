@@ -24,7 +24,9 @@ export function usePairContractAddress(
   });
 
   if (pairAddress_scval.result) {
-    pairAddress = SorobanClient.Address.fromScVal(pairAddress_scval.result).toString();
+    pairAddress = SorobanClient.Address.fromScVal(
+      pairAddress_scval.result,
+    ).toString();
   } else return undefined;
   return pairAddress;
 }

@@ -74,10 +74,7 @@ export function SwapButton({
       if (result) {
         alert("Success!");
       }
-      console.log(
-        "🚀 ~ file: SwapButton.tsx ~ swapTokens ~ result:",
-        result,
-      );
+      console.log("🚀 ~ file: SwapButton.tsx ~ swapTokens ~ result:", result);
 
       //This will connect again the wallet to fetch its data
       sorobanContext.connect();
@@ -90,7 +87,7 @@ export function SwapButton({
 
   return (
     <Button variant="contained" onClick={swapTokens} disabled={isSubmitting}>
-        Swap!
+      Swap!
     </Button>
   );
 }
