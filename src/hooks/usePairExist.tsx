@@ -4,6 +4,7 @@ import { accountToScVal } from "../helpers/utils";
 import { useFactory } from "./useFactory";
 import { TokenType } from "../interfaces";
 import { useSorobanReact } from "@soroban-react/core";
+import { usePairContractAddress } from "./usePairContractAddress";
 
 export function usePairExistScVal(
   token_address_0: string,
@@ -95,12 +96,19 @@ export function useAllPairsFromTokens(tokens: TokenType[]){
             tokens[j].token_address,
             sorobanContext
           );
+          const pairAddress = usePairContractAddress(
+            tokens[i].token_address,
+            tokens[j].token_address,
+            sorobanContext
+          )
+          
 
           if (pairExists) {
+            console.log("pair address", pairAddress)
             allPairs.push({
               token_0: tokens[i],
               token_1: tokens[j],
-              pair_address: tokens[j]
+              pair_address: pairAddress
             });
         }
       }

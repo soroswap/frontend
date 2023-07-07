@@ -20,6 +20,7 @@ import { DepositButton } from "./buttons/DepositButton";
 import BigNumber from "bignumber.js";
 import { PairBalance } from "./PairBalance";
 import { useAllPairsFromTokens } from "../hooks/usePairExist";
+import calculatePoolTokenOptimalAmount from "../functions/calculatePoolTokenOptimalAmount";
 
 export function ProvideLiquidity() {
   const sorobanContext = useSorobanReact();
@@ -64,7 +65,7 @@ function ProvideLiquidityWallet({
   const [inputTokenAmount, setInputTokenAmount] = React.useState(0);
   const [outputTokenAmount, setOutputTokenAmount] = React.useState(0);
   const [pairExist, setPairExist] = React.useState<boolean| undefined>(undefined);
-  const [pairAddress, setPairAddress] = React.useState<any>(undefined);
+  const [pairAddress, setPairAddress] = React.useState<string|undefined>(undefined);
 
   function getPairExists(token0: any, token1: any,  allPairs: any) {
     return allPairs.some((pair: any) => {
@@ -90,7 +91,7 @@ function ProvideLiquidityWallet({
     // Code to run when the component mounts or specific dependencies change
     setPairExist(getPairExists(inputToken, outputToken, allPairs))
     if(allPairs[0]){
-
+      console.log("pair address:", allPairs[0].pair_address)
       setPairAddress(allPairs[0].pair_address)
     }
     console.log("🚀 ~ file: ProvideLiquidity.tsx:90 ~ React.useEffect ~ getPairExists(inputToken, outputToken, allPairs):", getPairExists(inputToken, outputToken, allPairs))
@@ -101,8 +102,8 @@ function ProvideLiquidityWallet({
     event: React.ChangeEvent<{ value: string }>,
   ) => {
     const token =
-      tokens.find((token) => token.token_symbol === event.target.value) ?? null;
-    setInputToken(token);
+      tokens.find((token) => token.token_symbol === event.target.value);
+    setInputToken(token!);
   };
   const handleOutputTokenChange = (
     event: React.ChangeEvent<{ value: string }>,
@@ -119,18 +120,7 @@ function ProvideLiquidityWallet({
     setOutputTokenAmount(inputToOutput(event.target.valueAsNumber));
   };
 
-  const handleOutputTokenAmountChange = (
-    event: React.ChangeEvent<HTMLInputElement>,
-  ) => {
-    setInputTokenAmount(outputToInput(event.target.valueAsNumber));
-    setOutputTokenAmount(event.target.valueAsNumber);
-  };
-
   const inputToOutput = (n: number) => {
-    return n;
-  };
-
-  const outputToInput = (n: number) => {
     return n;
   };
 
@@ -182,7 +172,7 @@ function ProvideLiquidityWallet({
             }
             value={outputTokenAmount}
             label="Amount"
-            onChange={handleOutputTokenAmountChange}
+            disabled ={true}
           />
         </FormControl>: null}
         </div>
@@ -194,6 +184,7 @@ function ProvideLiquidityWallet({
           pairAddress={pairAddress}
           inputTokenAmount={inputTokenAmount}
           outputTokenAmount={outputTokenAmount}
+          changeOutput={setOutputTokenAmount}
           />
         : <p>This pair does not exist!</p>}
       </Box>
@@ -209,7 +200,8 @@ function ProvideLiquidityPair({
   outputToken,
   pairAddress,
   inputTokenAmount,
-  outputTokenAmount
+  outputTokenAmount,
+  changeOutput
 }: {
   sorobanContext: SorobanContextType;
   inputToken: TokenType;
@@ -217,15 +209,18 @@ function ProvideLiquidityPair({
   pairAddress: any;
   inputTokenAmount: any;
   outputTokenAmount: any
+  changeOutput: any
 }) {
 
-  let reserves = useReservesBigNumber(pairAddress, sorobanContext);
+  const reserves = useReservesBigNumber(pairAddress, sorobanContext);
   console.log("🚀 ~ file: ProvideLiquidity.tsx:223 ~ reserves:", reserves)
+  let optimalToken1Amount = calculatePoolTokenOptimalAmount(BigNumber(inputTokenAmount).shiftedBy(7), reserves.reserve0, reserves.reserve1)
+  changeOutput(optimalToken1Amount.shiftedBy(-7).toNumber())
 
   return(
     
     <div>
-        <p>Current pair address {}</p>
+        <p>Current pair address {pairAddress}</p>
         <p>Current pair balance</p>
         {sorobanContext.address ? (
           <PairBalance
@@ -235,6 +230,8 @@ function ProvideLiquidityPair({
           ) : (
             0
             )}
+        <p>Current token0 reserves {reserves.reserve0.shiftedBy(-7).toString()}</p>
+        <p>Current token1 reserves {reserves.reserve1.shiftedBy(-7).toString()}</p>
         <p>Liquidity Pool tokens to receive: TODO</p>
         <CardActions>
         
@@ -244,7 +241,6 @@ function ProvideLiquidityPair({
             amount1={BigNumber(outputTokenAmount)}
             sorobanContext={sorobanContext}
           />
-        ) : }
       </CardActions>
   </div>
   )
