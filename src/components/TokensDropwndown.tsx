@@ -15,13 +15,7 @@ export default function TokensDropdown({
 }) {
   let tokensToShow = tokens;
   if (inputToken) {
-    console.log("🚀 ~ file: TokensDropwndown.tsx:18 ~ inputToken:", inputToken);
-
     tokensToShow = tokens.filter((token) => token !== inputToken);
-    console.log(
-      "🚀 ~ file: TokensDropwndown.tsx:21 ~ tokensToShow:",
-      tokensToShow,
-    );
   }
 
   return tokens.length > 0 ? (
