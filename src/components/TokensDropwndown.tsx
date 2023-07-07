@@ -7,27 +7,27 @@ export default function TokensDropdown({
   onChange,
   title,
   inputToken,
-  isOutput,
 }: {
   tokens: TokenType[];
   onChange: any;
   title: string;
   inputToken?: TokenType;
-  isOutput: boolean;
 }) {
-  let tokensToShow = tokens;
-  if (isOutput && inputToken) {
-    tokensToShow = useTokensWithPair(tokens, inputToken);
+  let tokensToShow = tokens
+  if (inputToken){
+    console.log("🚀 ~ file: TokensDropwndown.tsx:18 ~ inputToken:", inputToken)
+    
+    tokensToShow =tokens.filter(token => token !== inputToken);
+    console.log("🚀 ~ file: TokensDropwndown.tsx:21 ~ tokensToShow:", tokensToShow)
   }
+  
 
-  return tokensToShow.length > 0 ? (
+  return tokens.length > 0 ? (
     <TextField
       id="outlined-select-currency"
       select
       label={title}
-      defaultValue={
-        !isOutput ? tokensToShow[0].token_symbol : tokensToShow[0].token_symbol
-      }
+      defaultValue={!inputToken ? tokens[0].token_symbol : tokens[1].token_symbol}
       onChange={onChange}
     >
       {tokensToShow.map((option) => (

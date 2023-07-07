@@ -81,3 +81,29 @@ export function useTokensWithPair(tokens: TokenType[], inputToken: TokenType) {
 
   return tokensWithPair;
 }
+
+
+export function useAllPairsFromTokens(tokens: TokenType[]){
+
+  const sorobanContext = useSorobanReact()
+  
+    const allPairs = [];
+      for (let i = 0; i < tokens.length; i++) {
+        for (let j = i + 1; j < tokens.length; j++) {
+          const pairExists = usePairExist(
+            tokens[i].token_address,
+            tokens[j].token_address,
+            sorobanContext
+          );
+
+          if (pairExists) {
+            allPairs.push({
+              token_0: tokens[i],
+              token_1: tokens[j],
+              pair_address: tokens[j]
+            });
+        }
+      }
+    }
+  return allPairs;
+}

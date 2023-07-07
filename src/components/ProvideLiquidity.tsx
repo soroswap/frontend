@@ -1,6 +1,7 @@
 import * as React from "react";
 import Card from "@mui/material/Card";
 import CardActions from "@mui/material/CardActions";
+import Box from '@mui/material/Box';
 import CardContent from "@mui/material/CardContent";
 import { Typography } from "@mui/material";
 import FormControl from "@mui/material/FormControl";
@@ -18,11 +19,13 @@ import { TokenType } from "../interfaces/tokens";
 import { DepositButton } from "./buttons/DepositButton";
 import BigNumber from "bignumber.js";
 import { PairBalance } from "./PairBalance";
+import { useAllPairsFromTokens } from "../hooks/usePairExist";
 
 export function ProvideLiquidity() {
   const sorobanContext = useSorobanReact();
   const tokens = useTokens(sorobanContext);
-  const pairs = usePairs(sorobanContext);
+  const jsonPairs = usePairs(sorobanContext);
+  
 
   return (
     <Card sx={{ maxWidth: 345 }}>
@@ -31,11 +34,11 @@ export function ProvideLiquidity() {
           Provide Liquidity
         </Typography>
       </CardContent>
-      {sorobanContext.address && tokens?.length > 0 && pairs?.length > 0 ? (
+      {sorobanContext.address && tokens?.length > 0 && jsonPairs?.length > 0 ? (
         <ProvideLiquidityWallet
           sorobanContext={sorobanContext}
           tokens={tokens}
-          pairs={pairs}
+          jsonPairs={jsonPairs}
         />
       ) : (
         <div>Connect your Wallet</div>
@@ -47,27 +50,39 @@ export function ProvideLiquidity() {
 function ProvideLiquidityWallet({
   sorobanContext,
   tokens,
-  pairs,
+  jsonPairs,
 }: {
   sorobanContext: SorobanContextType;
   tokens: TokenType[];
-  pairs: any;
+  jsonPairs: any;
 }) {
-  let pairAddress = pairs[0].pair_address;
-  let reserves = useReservesBigNumber(pairAddress, sorobanContext);
-  console.log(
-    "🚀 ~ file: ProvideLiquidity.tsx:49 ~ ProvideLiquidityWallet ~ reserves.reserve0.toString():",
-    reserves.reserve0.toString(),
-  );
-  console.log(
-    "🚀 ~ file: ProvideLiquidity.tsx:49 ~ ProvideLiquidityWallet ~ reserves.reserve1.toString():",
-    reserves.reserve1.toString(),
-  );
 
+  const allPairs = useAllPairsFromTokens(tokens)
+  
+  let pairAddress = jsonPairs[0].pair_address;
+  let reserves = useReservesBigNumber(pairAddress, sorobanContext);
+  
   const [inputToken, setInputToken] = React.useState<TokenType>(tokens[0]);
   const [outputToken, setOutputToken] = React.useState<TokenType | null>(null);
   const [inputTokenAmount, setInputTokenAmount] = React.useState(0);
   const [outputTokenAmount, setOutputTokenAmount] = React.useState(0);
+  const [pairExist, setPairExist] = React.useState<boolean| undefined>(undefined);
+
+  function getPairExists(token0: any, token1: any,  allPairs: any) {
+    return allPairs.some((pair: any) => {
+      return (
+        (pair.token_0 === token0 && pair.token_1 === token1) ||
+        (pair.token_1 === token1 && pair.token_0 === token0)
+      );
+    });
+  }
+
+  React.useEffect(() => {
+    // Code to run when the component mounts or specific dependencies change
+    setPairExist(getPairExists(inputToken, outputToken, allPairs))
+    console.log("🚀 ~ file: ProvideLiquidity.tsx:90 ~ React.useEffect ~ getPairExists(inputToken, outputToken, allPairs):", getPairExists(inputToken, outputToken, allPairs))
+
+  }, [inputToken, outputToken]); // Dependencies array
 
   const handleInputTokenChange = (
     event: React.ChangeEvent<{ value: string }>,
@@ -108,17 +123,14 @@ function ProvideLiquidityWallet({
 
   return (
     <div>
-      <CardContent>
-        <TokensDropdown
-          tokens={tokens}
-          onChange={handleInputTokenChange}
-          title={"Input token"}
-          isOutput={false}
-        />
-        <FormControl>
+    <Box sx={{ display: 'flex', flexWrap: 'wrap' }}>
+            <div>
+        <TokensDropdown tokens={tokens} onChange={handleInputTokenChange} title={"Input token"}/>
+        {pairExist ? <FormControl sx={{ m: 1, width: '25ch' }}>
           <InputLabel htmlFor="outlined-adornment-amount">
             Amount Input
           </InputLabel>
+          
           <OutlinedInput
             type="number"
             id="outlined-adornment-amount"
@@ -131,15 +143,17 @@ function ProvideLiquidityWallet({
             label={"Amount"}
             onChange={handleInputTokenAmountChange}
           />
-        </FormControl>
+        </FormControl>: null}
+        
+      </div>
+      <div>
         <TokensDropdown
           tokens={tokens}
           onChange={handleOutputTokenChange}
           title={"Output token"}
           inputToken={inputToken}
-          isOutput={true}
         />
-        <FormControl>
+        {pairExist ? <FormControl>
           <InputLabel htmlFor="outlined-adornment-amount">
             Amount Output
           </InputLabel>
@@ -155,29 +169,32 @@ function ProvideLiquidityWallet({
             label="Amount"
             onChange={handleOutputTokenAmountChange}
           />
-        </FormControl>
+        </FormControl>: null}
+        </div>
+        {pairExist ? <div>
 
         <p>Current pair address {}</p>
         <p>Current pair balance</p>
         {sorobanContext.address ? (
           <PairBalance
-            pairAddress={pairAddress}
-            sorobanContext={sorobanContext}
+          pairAddress={pairAddress}
+          sorobanContext={sorobanContext}
           />
-        ) : (
-          0
-        )}
+          ) : (
+            0
+            )}
         <p>Liquidity Pool tokens to receive: TODO</p>
-      </CardContent>
+            </div>: null}
+      </Box>
       <CardActions>
-        {inputToken !== null && outputToken !== null ? (
+        {pairExist ? (
           <DepositButton
             pairAddress={pairAddress}
             amount0={BigNumber(inputTokenAmount)}
             amount1={BigNumber(outputTokenAmount)}
             sorobanContext={sorobanContext}
           />
-        ) : null}
+        ) : <p>This pair does not exist!</p>}
       </CardActions>
     </div>
   );
