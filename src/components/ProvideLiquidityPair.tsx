@@ -6,6 +6,7 @@ import BigNumber from "bignumber.js";
 import { PairBalance } from "./PairBalance";
 import calculatePoolTokenOptimalAmount from "../functions/calculatePoolTokenOptimalAmount";
 import { DepositButton } from "./buttons/DepositButton";
+import getLpTokensAmount from "../functions/getLpTokensAmount";
 
 
 export function ProvideLiquidityPair({
@@ -30,6 +31,12 @@ export function ProvideLiquidityPair({
       reserves.reserve0,
       reserves.reserve1,
     );
+    let expectedLpTokens = getLpTokensAmount(
+      BigNumber(inputTokenAmount).shiftedBy(7),
+      reserves.reserve0,
+      pairAddress,
+      sorobanContext,
+    )
     if (isLiquidity) {
       changeOutput(optimalLiquidityToken1Amount.decimalPlaces(0).shiftedBy(-7).toNumber());
     }
@@ -52,7 +59,7 @@ export function ProvideLiquidityPair({
         <p>
           Current token1 reserves {reserves.reserve1.shiftedBy(-7).toString()}
         </p>
-        <p>Liquidity Pool tokens to receive: TODO</p>
+        <p>Liquidity Pool tokens to receive: {expectedLpTokens.shiftedBy(-7).toString()}</p>
         <CardActions>
           <DepositButton
             pairAddress={pairAddress}
