@@ -153,7 +153,7 @@ function ChooseTokensWallet({
         </div>
         <div>
           <TokensDropdown
-            tokens={tokens}
+            tokens={!isLiquidity?tokens.filter((token) => getPairExists(inputToken, token, allPairs)):tokens}
             onChange={handleOutputTokenChange}
             title={"Output token"}
             inputToken={inputToken}
