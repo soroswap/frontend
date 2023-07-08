@@ -7,6 +7,9 @@ import { PairBalance } from "./PairBalance";
 import calculatePoolTokenOptimalAmount from "../functions/calculatePoolTokenOptimalAmount";
 import { DepositButton } from "./buttons/DepositButton";
 import getLpTokensAmount from "../functions/getLpTokensAmount";
+import { useTokenBalance, useTokenDecimals } from "../hooks";
+import { formatAmount, scvalToBigNumber } from "../helpers/utils";
+import { useTotalShares } from "../hooks/useTotalShares";
 
 
 export function ProvideLiquidityPair({
@@ -25,6 +28,9 @@ export function ProvideLiquidityPair({
     isLiquidity: boolean;
   }) {
     const reserves = useReservesBigNumber(pairAddress, sorobanContext);
+    const pairBalance = useTokenBalance(pairAddress, sorobanContext.address!).result;
+    const tokenDecimals = useTokenDecimals(pairAddress);
+    const totalShares = useTotalShares(pairAddress, sorobanContext)
     console.log("🚀 ~ file: ChooseTokens.tsx:255 ~ reserves:", reserves);
     let optimalLiquidityToken1Amount = calculatePoolTokenOptimalAmount(
       BigNumber(inputTokenAmount).shiftedBy(7),
@@ -45,14 +51,10 @@ export function ProvideLiquidityPair({
       <div>
         <p>Current pair address {pairAddress}</p>
         <p>Current pair balance</p>
-        {sorobanContext.address ? (
-          <PairBalance
-            pairAddress={pairAddress}
-            sorobanContext={sorobanContext}
-          />
-        ) : (
-          0
-        )}
+        {pairBalance !== undefined
+        ? formatAmount(scvalToBigNumber(pairBalance), tokenDecimals)
+        : "0"}
+        <p>Pool share quote: {totalShares?scvalToBigNumber(pairBalance).dividedBy(totalShares).multipliedBy(100).decimalPlaces(2).toString():0}%</p>
         <p>
           Current token0 reserves {reserves.reserve0.shiftedBy(-7).toString()}
         </p>
