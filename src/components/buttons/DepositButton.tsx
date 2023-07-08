@@ -33,13 +33,13 @@ export function DepositButton({
     setSubmitting(true);
 
     //Parse amount to mint to BigNumber and then to i128 scVal
-    const amount0ScVal = bigNumberToI128(amount0.shiftedBy(7));
-    const amount1ScVal = bigNumberToI128(amount1.shiftedBy(7));
+    const amount0ScVal = bigNumberToI128(amount0);
+    const amount1ScVal = bigNumberToI128(amount1);
 
     let walletSource;
 
     try {
-      walletSource = await server?.getAccount(account);
+      walletSource = await server?.getAccount(account!);
     } catch (error) {
       alert("Your wallet or the token admin wallet might not be funded");
       setSubmitting(false);
@@ -53,12 +53,12 @@ export function DepositButton({
     try {
       //Builds the transaction
       let tx = contractTransaction({
-        source: walletSource,
+        source: walletSource!,
         networkPassphrase,
         contractId: pairAddress,
         method: "deposit",
         params: [
-          new SorobanClient.Address(account).toScVal(),
+          new SorobanClient.Address(account!).toScVal(),
           amount0ScVal,
           amount0ScVal,
           amount1ScVal,

@@ -9,35 +9,30 @@ import { useState } from "react";
 import * as SorobanClient from "soroban-client";
 import { Button } from "@mui/material";
 
-interface SwapButtonProps {
-  pairAddress: string;
-  isBuy: boolean;
-  amountOut: BigNumber;
-  maxTokenA: BigNumber;
+interface AllowanceButtonProps {
+  tokenAddress: string;
+  spenderAddress:string;
+  amount: BigNumber;
   sorobanContext: SorobanContextType;
 }
 
-export function SwapButton({
-  pairAddress,
-  isBuy,
-  amountOut,
-  maxTokenA,
+export function AllowanceButton({
+  tokenAddress,
+  spenderAddress,
+  amount,
   sorobanContext,
-}: SwapButtonProps) {
+}: AllowanceButtonProps) {
   const [isSubmitting, setSubmitting] = useState(false);
   const networkPassphrase = sorobanContext.activeChain?.networkPassphrase ?? "";
   const server = sorobanContext.server;
   const account = sorobanContext.address;
-  let xdr = SorobanClient.xdr;
   const { sendTransaction } = useSendTransaction();
 
-
-  const swapTokens = async () => {
+  const allowTokens = async () => {
     setSubmitting(true);
 
     //Parse amount to mint to BigNumber and then to i128 scVal
-    const amountOutScVal = bigNumberToI128(amountOut);
-    const amountInScVal = bigNumberToI128(maxTokenA);
+    const amountScVal = bigNumberToI128(amount);
 
     let walletSource;
 
@@ -58,13 +53,12 @@ export function SwapButton({
       let tx = contractTransaction({
         source: walletSource!,
         networkPassphrase,
-        contractId: pairAddress,
-        method: "swap",
+        contractId: tokenAddress,
+        method: "increase_allowance",
         params: [
-          new SorobanClient.Address(account!).toScVal(),
-          xdr.ScVal.scvBool(isBuy),
-          amountOutScVal,
-          amountInScVal,
+            new SorobanClient.Address(account!).toScVal(),
+            new SorobanClient.Address(spenderAddress).toScVal(),
+            amountScVal,
         ],
       });
 
@@ -76,7 +70,7 @@ export function SwapButton({
       if (result) {
         alert("Success!");
       }
-      console.log("🚀 ~ file: SwapButton.tsx ~ swapTokens ~ result:", result);
+      console.log("🚀 ~ file: AllowanceButton.tsx ~ swapTokens ~ result:", result);
 
       //This will connect again the wallet to fetch its data
       sorobanContext.connect();
@@ -88,8 +82,8 @@ export function SwapButton({
   };
 
   return (
-    <Button variant="contained" onClick={swapTokens} disabled={isSubmitting}>
-      Swap!
+    <Button variant="contained" onClick={allowTokens} disabled={isSubmitting}>
+      Allow spending
     </Button>
   );
 }

@@ -17,9 +17,9 @@ export function ProvideLiquidityPair({
     isLiquidity,
   }: {
     sorobanContext: SorobanContextType;
-    pairAddress: any;
-    inputTokenAmount: any;
-    outputTokenAmount: any;
+    pairAddress: string;
+    inputTokenAmount: number;
+    outputTokenAmount: number;
     changeOutput: any;
     isLiquidity: boolean;
   }) {
@@ -31,7 +31,7 @@ export function ProvideLiquidityPair({
       reserves.reserve1,
     );
     if (isLiquidity) {
-      changeOutput(optimalLiquidityToken1Amount.shiftedBy(-7).toNumber());
+      changeOutput(optimalLiquidityToken1Amount.decimalPlaces(0).shiftedBy(-7).toNumber());
     }
   
     return (
@@ -56,8 +56,8 @@ export function ProvideLiquidityPair({
         <CardActions>
           <DepositButton
             pairAddress={pairAddress}
-            amount0={BigNumber(inputTokenAmount)}
-            amount1={BigNumber(outputTokenAmount)}
+            amount0={BigNumber(inputTokenAmount).shiftedBy(7)}
+            amount1={BigNumber(outputTokenAmount).shiftedBy(7)}
             sorobanContext={sorobanContext}
           />
         </CardActions>
