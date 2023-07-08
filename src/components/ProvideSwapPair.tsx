@@ -6,6 +6,8 @@ import { Checkbox } from "@mui/material";
 import BigNumber from "bignumber.js";
 import { PairBalance } from "./PairBalance";
 import { SwapButton } from "./buttons/SwapButton";
+import getExpectedAmount from "../functions/getExpectedAmount";
+
 
 
 export function ProvideSwapPair({
@@ -17,23 +19,24 @@ export function ProvideSwapPair({
     isLiquidity,
   }: {
     sorobanContext: SorobanContextType;
-    pairAddress: any;
-    inputTokenAmount: any;
-    outputTokenAmount: any;
+    pairAddress: string;
+    inputTokenAmount: number;
+    outputTokenAmount: number;
     changeOutput: any;
     isLiquidity: boolean;
   }) {
-    const reserves = useReservesBigNumber(pairAddress, sorobanContext);
-    const [isBuy, setIsBuy] = React.useState<boolean>(true);
-    // TODO calculate optimal output amount
+    const [isBuy, setIsBuy] = React.useState<boolean>(false);
+    let output = getExpectedAmount(pairAddress, BigNumber(inputTokenAmount).shiftedBy(7), sorobanContext)
     if (!isLiquidity) {
-      //changeOutput(optimalSwapOutputAmount)
+      changeOutput(BigNumber(output).decimalPlaces(0).shiftedBy(-7).toNumber())
     }
   
     return (
       <div>
-        <p>Buy token A?</p>
-        <Checkbox checked={isBuy} onChange={() => setIsBuy(!isBuy)} />
+        {
+        //<p>Buy token A?</p>
+        //<Checkbox checked={isBuy} onChange={() => setIsBuy(!isBuy)} />
+        }
         <p>Current pair address {pairAddress}</p>
         <p>Current pair balance</p>
         {sorobanContext.address ? (
@@ -44,17 +47,11 @@ export function ProvideSwapPair({
         ) : (
           0
         )}
-        <p>
-          Current token0 reserves {reserves.reserve0.shiftedBy(-7).toString()}
-        </p>
-        <p>
-          Current token1 reserves {reserves.reserve1.shiftedBy(-7).toString()}
-        </p>
         <CardActions>
           <SwapButton
             pairAddress={pairAddress}
-            maxTokenA={BigNumber(inputTokenAmount)}
-            amountOut={BigNumber(outputTokenAmount)}
+            maxTokenA={BigNumber(inputTokenAmount).shiftedBy(7)}
+            amountOut={BigNumber(outputTokenAmount).shiftedBy(7)}
             isBuy={isBuy}
             sorobanContext={sorobanContext}
           />

@@ -28,19 +28,20 @@ export function SwapButton({
   const networkPassphrase = sorobanContext.activeChain?.networkPassphrase ?? "";
   const server = sorobanContext.server;
   const account = sorobanContext.address;
+  let xdr = SorobanClient.xdr;
   const { sendTransaction } = useSendTransaction();
 
   const swapTokens = async () => {
     setSubmitting(true);
 
     //Parse amount to mint to BigNumber and then to i128 scVal
-    const amountOutScVal = bigNumberToI128(amountOut.shiftedBy(7));
-    const amountInScVal = bigNumberToI128(maxTokenA.shiftedBy(7));
+    const amountOutScVal = bigNumberToI128(amountOut);
+    const amountInScVal = bigNumberToI128(maxTokenA);
 
     let walletSource;
 
     try {
-      walletSource = await server?.getAccount(account);
+      walletSource = await server?.getAccount(account!);
     } catch (error) {
       alert("Your wallet or the token admin wallet might not be funded");
       setSubmitting(false);
@@ -54,13 +55,13 @@ export function SwapButton({
     try {
       //Builds the transaction
       let tx = contractTransaction({
-        source: walletSource,
+        source: walletSource!,
         networkPassphrase,
         contractId: pairAddress,
         method: "swap",
         params: [
-          new SorobanClient.Address(account).toScVal(),
-          //isBuy  TODO: Convert to scVal,
+          new SorobanClient.Address(account!).toScVal(),
+          xdr.ScVal.scvBool(isBuy),
           amountOutScVal,
           amountInScVal,
         ],
