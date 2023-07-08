@@ -195,6 +195,7 @@ function ChooseTokensWallet({
           <ProvideSwapPair
             sorobanContext={sorobanContext}
             pairAddress={pairAddress}
+            inputToken={inputToken}
             inputTokenAmount={inputTokenAmount}
             outputTokenAmount={outputTokenAmount}
             changeOutput={setOutputTokenAmount}
