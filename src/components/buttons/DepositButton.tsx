@@ -33,8 +33,11 @@ export function DepositButton({
     setSubmitting(true);
 
     //Parse amount to mint to BigNumber and then to i128 scVal
-    const amount0ScVal = bigNumberToI128(amount0);
-    const amount1ScVal = bigNumberToI128(amount1);
+    const desiredAScVal = bigNumberToI128(amount0);
+    const desiredBScVal = bigNumberToI128(amount1);
+
+    const minAScVal = bigNumberToI128(amount0.multipliedBy(0.9).decimalPlaces(0));
+    const minBScVal = bigNumberToI128(amount1.multipliedBy(0.9).decimalPlaces(0));
 
     let walletSource;
 
@@ -59,10 +62,10 @@ export function DepositButton({
         method: "deposit",
         params: [
           new SorobanClient.Address(account!).toScVal(),
-          amount0ScVal,
-          amount0ScVal,
-          amount1ScVal,
-          amount1ScVal,
+          desiredAScVal,
+          minAScVal,
+          desiredBScVal,
+          minBScVal
         ],
       });
 
