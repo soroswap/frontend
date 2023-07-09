@@ -10,7 +10,6 @@ import getLpTokensAmount from "../functions/getLpTokensAmount";
 import { useTokenBalance, useTokenDecimals } from "../hooks";
 import { formatAmount, scvalToBigNumber } from "../helpers/utils";
 import { useTotalShares } from "../hooks/useTotalShares";
-import { TokenType } from "../interfaces";
 import { useTokensFromPair } from "../hooks/useTokensFromPair";
 import { useTokens } from "../hooks";
 
@@ -47,6 +46,8 @@ export function ProvideLiquidityPair({
     let expectedLpTokens = getLpTokensAmount(
       BigNumber(inputTokenAmount).shiftedBy(7),
       reserves.reserve0,
+      BigNumber(outputTokenAmount).shiftedBy(7),
+      reserves.reserve1,
       pairAddress,
       sorobanContext,
     )
@@ -57,14 +58,14 @@ export function ProvideLiquidityPair({
     return (
       <div>
         <p>..</p>
-        <p>### CURRENT INFORMATION</p> 
+        <p>### CURRENT INFORMATION</p>  
         
         <p>- token0: {token0Name}</p>
         <p>- token1: {token1Name}</p>
         <p>- Your LP tokens balance: {pairBalance !== undefined
         ? formatAmount(scvalToBigNumber(pairBalance), tokenDecimals)
         : "0"} LP</p>
-        <p>- Your pool share {totalShares?scvalToBigNumber(pairBalance).dividedBy(totalShares).multipliedBy(100).decimalPlaces(2).toString():0}%</p>
+        <p>- Your pool share {totalShares?scvalToBigNumber(pairBalance).dividedBy(totalShares).multipliedBy(100).decimalPlaces(7).toString():0}%</p>
         <p>- token0 reserves {formatAmount(reserves.reserve0)}</p>
         <p>- token1 reserves {formatAmount(reserves.reserve1)}</p>
         <p>..</p>
@@ -73,7 +74,7 @@ export function ProvideLiquidityPair({
         <p>LP tokens to receive: {formatAmount(expectedLpTokens)}</p>
         <p>Your new pool share will be: {
             totalShares?
-            (scvalToBigNumber(pairBalance).plus(expectedLpTokens)).dividedBy(totalShares.plus(expectedLpTokens)).multipliedBy(100).decimalPlaces(2).toString():0}%</p>
+            (scvalToBigNumber(pairBalance).plus(expectedLpTokens)).dividedBy(totalShares.plus(expectedLpTokens)).multipliedBy(100).decimalPlaces(7).toString():100}%</p>
         <p>..</p>
         <p>..</p>
         <p>Pair address: {pairAddress}</p>
