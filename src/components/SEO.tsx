@@ -1,6 +1,6 @@
 import React from "react";
 import Grid from "@mui/material/Grid";
-import { Swap } from "./Swap";
+import { ProvideSwapPair } from "./ProvideSwapPair";
 import { Mint } from "./Mint";
 import { Balances } from "./Balances";
 import { ProvideLiquidityPair } from "./ProvideLiquidityPair";
