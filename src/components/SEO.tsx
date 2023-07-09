@@ -3,7 +3,7 @@ import Grid from "@mui/material/Grid";
 import { Swap } from "./Swap";
 import { Mint } from "./Mint";
 import { Balances } from "./Balances";
-import { ProvideLiquidity } from "./ProvideLiquidity";
+import { ProvideLiquidityPair } from "./ProvideLiquidityPair";
 import Head from "next/head";
 
 interface SEOProps {
