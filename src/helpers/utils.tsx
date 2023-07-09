@@ -198,6 +198,6 @@ export function contractIdToScVal(contractId: string): any {
 export const formatAmount = (value: BigNumber, decimals = 7): string => {
   return value
     .shiftedBy(decimals * -1)
-    .toNumber()
-    .toLocaleString();
+    .toFixed(7)
+    .toString();
 };

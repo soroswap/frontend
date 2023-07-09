@@ -6,55 +6,79 @@ import { Checkbox } from "@mui/material";
 import BigNumber from "bignumber.js";
 import { PairBalance } from "./PairBalance";
 import { SwapButton } from "./buttons/SwapButton";
+import getExpectedAmount from "../functions/getExpectedAmount";
+import { AllowanceButton } from "./buttons/AllowanceButton";
+import { TokenType } from "../interfaces";
+import { useAllowance } from "../hooks/useAllowance";
+import { useSlipaggeFactor } from "../hooks/useSlippageFactor";
+import { useTokensFromPair } from "../hooks/useTokensFromPair";
+import { useTokens } from "../hooks";
+import { formatAmount, scvalToBigNumber } from "../helpers/utils";
+
 
 
 export function ProvideSwapPair({
     sorobanContext,
     pairAddress,
+    inputToken,
     inputTokenAmount,
     outputTokenAmount,
     changeOutput,
     isLiquidity,
   }: {
     sorobanContext: SorobanContextType;
-    pairAddress: any;
-    inputTokenAmount: any;
-    outputTokenAmount: any;
+    pairAddress: string;
+    inputToken: TokenType;
+    inputTokenAmount: number;
+    outputTokenAmount: number;
     changeOutput: any;
     isLiquidity: boolean;
   }) {
+    const tokens = useTokens(sorobanContext);
+    const tokensFromPair = useTokensFromPair(pairAddress, sorobanContext);
+
+    const token0Name = tokens.find(token => token.token_address === tokensFromPair?.token0)?.token_name;
+    const token1Name = tokens.find(token => token.token_address === tokensFromPair?.token1)?.token_name;
+
     const reserves = useReservesBigNumber(pairAddress, sorobanContext);
-    const [isBuy, setIsBuy] = React.useState<boolean>(true);
-    // TODO calculate optimal output amount
+    const [isBuy, setIsBuy] = React.useState<boolean>(false);
+    let output = getExpectedAmount(pairAddress, BigNumber(inputTokenAmount).shiftedBy(7), sorobanContext)
+    let allowance = useAllowance(inputToken.token_address, sorobanContext.address!, pairAddress, sorobanContext)
+    let slippage = useSlipaggeFactor()
     if (!isLiquidity) {
-      //changeOutput(optimalSwapOutputAmount)
+      changeOutput(BigNumber(output).decimalPlaces(0).shiftedBy(-7).toNumber())
     }
   
     return (
       <div>
-        <p>Buy token A?</p>
-        <Checkbox checked={isBuy} onChange={() => setIsBuy(!isBuy)} />
-        <p>Current pair address {pairAddress}</p>
-        <p>Current pair balance</p>
-        {sorobanContext.address ? (
-          <PairBalance
-            pairAddress={pairAddress}
+        {
+        //<p>Buy token A?</p>
+        //<Checkbox checked={isBuy} onChange={() => setIsBuy(!isBuy)} />
+        }
+        <p>..</p>
+        <p>### CURRENT INFORMATION</p>  
+        
+        <p>- token0: {token0Name}</p>
+        <p>- token1: {token1Name}</p>
+        <p>- token0 reserves {formatAmount(reserves.reserve0)} {token0Name}</p>
+        <p>- token1 reserves {formatAmount(reserves.reserve1)} {token1Name}</p>
+        <p>..</p>
+        <p>..</p>
+        <p>### IF YOU SWAP:</p> 
+        
+        <CardActions>
+          <AllowanceButton
+            tokenAddress={inputToken.token_address}
+            spenderAddress={pairAddress}
+            amount={BigNumber(inputTokenAmount).shiftedBy(7)}
             sorobanContext={sorobanContext}
           />
-        ) : (
-          0
-        )}
-        <p>
-          Current token0 reserves {reserves.reserve0.shiftedBy(-7).toString()}
-        </p>
-        <p>
-          Current token1 reserves {reserves.reserve1.shiftedBy(-7).toString()}
-        </p>
+        </CardActions>
         <CardActions>
           <SwapButton
             pairAddress={pairAddress}
-            maxTokenA={BigNumber(inputTokenAmount)}
-            amountOut={BigNumber(outputTokenAmount)}
+            maxTokenA={BigNumber(inputTokenAmount).shiftedBy(7)}
+            amountOut={slippage.multipliedBy(BigNumber(outputTokenAmount)).shiftedBy(7)}
             isBuy={isBuy}
             sorobanContext={sorobanContext}
           />

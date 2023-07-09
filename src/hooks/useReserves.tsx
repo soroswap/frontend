@@ -37,7 +37,7 @@ export function useReservesBigNumber(
 
   return {
     reserve0: scvalToBigNumber(reservesScVal.reserve0ScVal),
-    reserve1: scvalToBigNumber(reservesScVal.reserve0ScVal),
+    reserve1: scvalToBigNumber(reservesScVal.reserve1ScVal),
   };
   // }
 }
