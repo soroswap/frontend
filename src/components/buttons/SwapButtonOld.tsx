@@ -128,7 +128,6 @@ export function SwapButtonOld({
     <Button
       variant="contained"
       size="small"
-      variant="contained"
       onClick={handleSwap}
     >
       Swap
