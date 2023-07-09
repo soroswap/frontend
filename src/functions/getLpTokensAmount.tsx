@@ -10,6 +10,7 @@ export default function getLpTokensAmount(
   pairAddress: string,
   sorobanContext: SorobanContextType,
 ): BigNumber {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     const totalShares = useTotalShares(pairAddress, sorobanContext)
     if (!totalShares || reserve1.isEqualTo(0) || reserve0.isEqualTo(0)) {
         return amount0.multipliedBy(amount1).squareRoot()

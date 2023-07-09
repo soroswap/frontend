@@ -50,6 +50,15 @@ export function MintButton({
       sorobanContext,
     };
 
+    if(!account) {
+      console.log("Error on account:", account)
+      return
+    }
+    if(!adminSource) {
+      console.log("Error on adminSource:",adminSource)
+      return
+    }
+
     try {
       //Builds the transaction
       let tx = contractTransaction({
