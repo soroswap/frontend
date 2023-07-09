@@ -153,7 +153,7 @@ function ChooseTokensWallet({
         </div>
         <div>
           <TokensDropdown
-            tokens={tokens}
+            tokens={!isLiquidity?tokens.filter((token) => getPairExists(inputToken, token, allPairs)):tokens}
             onChange={handleOutputTokenChange}
             title={"Output token"}
             inputToken={inputToken}
@@ -179,7 +179,7 @@ function ChooseTokensWallet({
           ) : null}
         </div>
         {isLiquidity ? (
-          pairExist && outputToken ? (
+          pairExist && outputToken && pairAddress ? (
             <ProvideLiquidityPair
               sorobanContext={sorobanContext}
               pairAddress={pairAddress}
@@ -191,10 +191,11 @@ function ChooseTokensWallet({
           ) : (
             <p>This pair does not exist!</p>
           )
-        ) : pairExist && outputToken ? (
+        ) : pairExist && outputToken && pairAddress ? (
           <ProvideSwapPair
             sorobanContext={sorobanContext}
             pairAddress={pairAddress}
+            inputToken={inputToken}
             inputTokenAmount={inputTokenAmount}
             outputTokenAmount={outputTokenAmount}
             changeOutput={setOutputTokenAmount}
