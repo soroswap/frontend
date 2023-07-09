@@ -1,4 +1,4 @@
-import { StellarWalletsKit } from "stellar-wallets-kit";
+// import { StellarWalletsKit } from "stellar-wallets-kit";
 
 export interface NetworkDetails {
   network: string;
@@ -16,11 +16,11 @@ export const FUTURENET_DETAILS = {
 export const signTx = async (
   xdr: string,
   publicKey: string,
-  kit: StellarWalletsKit,
+  // kit: StellarWalletsKit,
 ) => {
-  const { signedXDR } = await kit.sign({
-    xdr,
-    publicKey,
-  });
-  return signedXDR;
+  // const { signedXDR } = await kit.sign({
+  //   xdr,
+  //   publicKey,
+  // });
+  // return signedXDR;
 };

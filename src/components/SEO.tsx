@@ -1,9 +1,9 @@
 import React from "react";
 import Grid from "@mui/material/Grid";
-import { Swap } from "./Swap";
+import { ProvideSwapPair } from "./ProvideSwapPair";
 import { Mint } from "./Mint";
 import { Balances } from "./Balances";
-import { ProvideLiquidity } from "./ProvideLiquidity";
+import { ProvideLiquidityPair } from "./ProvideLiquidityPair";
 import Head from "next/head";
 
 interface SEOProps {

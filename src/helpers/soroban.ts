@@ -117,42 +117,42 @@ export const accountToScVal = (account: string) =>
   new SorobanClient.Address(account).toScVal();
 
 // Can be used whenever you need an i128 argument for a contract method
-export const numberToI128 = (value: number): SorobanClient.xdr.ScVal => {
-  const bigValue = BigNumber(value);
-  const b: bigint = BigInt(bigValue.toFixed(0));
-  const buf = bigintToBuf(b);
-  if (buf.length > 16) {
-    throw new Error("BigNumber overflows i128");
-  }
+// export const numberToI128 = (value: number): SorobanClient.xdr.ScVal => {
+//   const bigValue = BigNumber(value);
+//   const b: bigint = BigInt(bigValue.toFixed(0));
+//   const buf = bigintToBuf(b);
+//   if (buf.length > 16) {
+//     throw new Error("BigNumber overflows i128");
+//   }
 
-  if (bigValue.isNegative()) {
-    // Clear the top bit
-    buf[0] &= 0x7f;
-  }
+//   if (bigValue.isNegative()) {
+//     // Clear the top bit
+//     buf[0] &= 0x7f;
+//   }
 
-  // left-pad with zeros up to 16 bytes
-  const padded = Buffer.alloc(16);
-  buf.copy(padded, padded.length - buf.length);
-  console.debug({ value: value.toString(), padded });
+//   // left-pad with zeros up to 16 bytes
+//   const padded = Buffer.alloc(16);
+//   buf.copy(padded, padded.length - buf.length);
+//   console.debug({ value: value.toString(), padded });
 
-  if (bigValue.isNegative()) {
-    // Set the top bit
-    padded[0] |= 0x80;
-  }
+//   if (bigValue.isNegative()) {
+//     // Set the top bit
+//     padded[0] |= 0x80;
+//   }
 
-  const hi = new SorobanClient.xdr.Int64(
-    bigNumberFromBytes(false, ...padded.slice(4, 8)).toNumber(),
-    bigNumberFromBytes(false, ...padded.slice(0, 4)).toNumber(),
-  );
-  const lo = new SorobanClient.xdr.Uint64(
-    bigNumberFromBytes(false, ...padded.slice(12, 16)).toNumber(),
-    bigNumberFromBytes(false, ...padded.slice(8, 12)).toNumber(),
-  );
+//   const hi = new SorobanClient.xdr.Int64(
+//     bigNumberFromBytes(false, ...padded.slice(4, 8)).toNumber(),
+//     bigNumberFromBytes(false, ...padded.slice(0, 4)).toNumber(),
+//   );
+//   const lo = new SorobanClient.xdr.Uint64(
+//     bigNumberFromBytes(false, ...padded.slice(12, 16)).toNumber(),
+//     bigNumberFromBytes(false, ...padded.slice(8, 12)).toNumber(),
+//   );
 
-  return SorobanClient.xdr.ScVal.scvI128(
-    new SorobanClient.xdr.Int128Parts({ lo, hi }),
-  );
-};
+//   return SorobanClient.xdr.ScVal.scvI128(
+//     new SorobanClient.xdr.Int128Parts({ lo, hi }),
+//   );
+// };
 
 // Given a display value for a token and a number of decimals, return the correspding BigNumber
 export const parseTokenAmount = (value: string, decimals: number) => {
@@ -189,10 +189,10 @@ export const parseTokenAmount = (value: string, decimals: number) => {
 };
 
 // Get a server configfured for a specific network
-export const getServer = (networkDetails: NetworkDetails) =>
-  new SorobanClient.Server(RPC_URLS[networkDetails.network], {
-    allowHttp: networkDetails.networkUrl.startsWith("http://"),
-  });
+// export const getServer = (networkDetails: NetworkDetails) =>
+//   new SorobanClient.Server(RPC_URLS[networkDetails.network], {
+//     allowHttp: networkDetails.networkUrl.startsWith("http://"),
+//   });
 
 // Get a TransactionBuilder configured with our public key
 export const getTxBuilder = async (
@@ -352,7 +352,7 @@ export const makePayment = async (
         ...[
           accountToScVal(pubKey), // from
           accountToScVal(to), // to
-          numberToI128(amount), // amount
+          // numberToI128(amount), // amount
         ],
       ),
     )
@@ -387,7 +387,7 @@ export const getEstimatedFee = async (
         ...[
           accountToScVal(pubKey), // from
           accountToScVal(to), // to
-          numberToI128(amount), // amount
+          // numberToI128(amount), // amount
         ],
       ),
     )
