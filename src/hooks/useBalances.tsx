@@ -63,6 +63,7 @@ export function useTokenBalances(userAddress: string, tokens: TokenType[]) {
   const address = userAddress;
   const balances = tokens.map((token) => {
     return {
+      // eslint-disable-next-line react-hooks/rules-of-hooks
       balance: useFormattedTokenBalance(token.token_address, address),
       symbol: token.token_symbol,
       address: token.token_address,

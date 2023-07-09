@@ -12,7 +12,12 @@ import {
 import React, { useState } from "react";
 import Link from "next/link";
 
-export default function NavItem({ item, level }) {
+interface NavItemProps {
+  item: any;
+  level: any;
+}
+
+export default function NavItem({ item, level }:NavItemProps) {
   const theme = useTheme();
   // const customization = useSelector((state) => state.customization);
   const matchesSM = useMediaQuery(theme.breakpoints.down("lg"));

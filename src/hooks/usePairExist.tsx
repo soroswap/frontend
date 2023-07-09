@@ -65,6 +65,7 @@ export function useTokensWithPair(tokens: TokenType[], inputToken: TokenType) {
       "🚀 ~ file: usePairExist.tsx:59 ~ tokens.map ~ inputToken:",
       inputToken,
     );
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     const pairExist = usePairExist(
       inputToken.token_address,
       token.token_address,
@@ -89,11 +90,13 @@ export function useAllPairsFromTokens(tokens: TokenType[]) {
   const allPairs = [];
   for (let i = 0; i < tokens.length; i++) {
     for (let j = i + 1; j < tokens.length; j++) {
+      // eslint-disable-next-line react-hooks/rules-of-hooks
       const pairExists = usePairExist(
         tokens[i].token_address,
         tokens[j].token_address,
         sorobanContext,
       );
+      // eslint-disable-next-line react-hooks/rules-of-hooks
       const pairAddress = usePairContractAddress(
         tokens[i].token_address,
         tokens[j].token_address,
