@@ -38,6 +38,11 @@ export function DepositButton({
 
     let walletSource;
 
+    if (!account) {
+      console.log("Error on account:", account)
+      return;
+    }
+
     try {
       walletSource = await server?.getAccount(account);
     } catch (error) {
@@ -45,6 +50,10 @@ export function DepositButton({
       setSubmitting(false);
       return;
     }
+    if(!walletSource){
+      console.log("Error on walletSource:", walletSource)
+      return
+    }    
 
     const options = {
       sorobanContext,
