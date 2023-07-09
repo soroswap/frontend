@@ -11,6 +11,9 @@ import { AllowanceButton } from "./buttons/AllowanceButton";
 import { TokenType } from "../interfaces";
 import { useAllowance } from "../hooks/useAllowance";
 import { useSlipaggeFactor } from "../hooks/useSlippageFactor";
+import { useTokensFromPair } from "../hooks/useTokensFromPair";
+import { useTokens } from "../hooks";
+import { formatAmount, scvalToBigNumber } from "../helpers/utils";
 
 
 
@@ -31,6 +34,12 @@ export function ProvideSwapPair({
     changeOutput: any;
     isLiquidity: boolean;
   }) {
+    const tokens = useTokens(sorobanContext);
+    const tokensFromPair = useTokensFromPair(pairAddress, sorobanContext);
+
+    const token0Name = tokens.find(token => token.token_address === tokensFromPair?.token0)?.token_name;
+    const token1Name = tokens.find(token => token.token_address === tokensFromPair?.token1)?.token_name;
+
     const reserves = useReservesBigNumber(pairAddress, sorobanContext);
     const [isBuy, setIsBuy] = React.useState<boolean>(false);
     let output = getExpectedAmount(pairAddress, BigNumber(inputTokenAmount).shiftedBy(7), sorobanContext)
@@ -46,14 +55,17 @@ export function ProvideSwapPair({
         //<p>Buy token A?</p>
         //<Checkbox checked={isBuy} onChange={() => setIsBuy(!isBuy)} />
         }
-        <p>Current pair address {pairAddress}</p>
-        <p>
-          Current token0 reserves {reserves.reserve0.shiftedBy(-7).toString()}
-        </p>
-        <p>
-          Current token1 reserves {reserves.reserve1.shiftedBy(-7).toString()}
-        </p>
-        <p>Current spending allowed {allowance?allowance.shiftedBy(-7).toNumber():0}</p>
+        <p>..</p>
+        <p>### CURRENT INFORMATION</p>  
+        
+        <p>- token0: {token0Name}</p>
+        <p>- token1: {token1Name}</p>
+        <p>- token0 reserves {formatAmount(reserves.reserve0)} {token0Name}</p>
+        <p>- token1 reserves {formatAmount(reserves.reserve1)} {token1Name}</p>
+        <p>..</p>
+        <p>..</p>
+        <p>### IF YOU SWAP:</p> 
+        
         <CardActions>
           <AllowanceButton
             tokenAddress={inputToken.token_address}
