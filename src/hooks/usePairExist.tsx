@@ -84,8 +84,7 @@ export function useTokensWithPair(tokens: TokenType[], inputToken: TokenType) {
   return tokensWithPair;
 }
 
-export function useAllPairsFromTokens(tokens: TokenType[]) {
-  const sorobanContext = useSorobanReact();
+export function useAllPairsFromTokens(tokens: TokenType[], sorobanContext: SorobanContextType) {
 
   const allPairs = [];
   for (let i = 0; i < tokens.length; i++) {
