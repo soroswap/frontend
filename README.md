@@ -1,7 +1,7 @@
-# 🌟 Soroswap 🌟
+# 🌟 Soroswap Frontend 🌟
 
-Welcome to Soroswap, a decentralized exchange (DEX) that is built upon the Uniswap V2 protocol and is specifically tailored for the Soroban network.
-Prerequisites
+Welcome to Soroswap, a decentralized exchange (DEX) that draws inspiration from the Uniswap V2 protocol and is specifically tailored for the Soroban network.
+
 
 Before you begin, ensure you have met the following requirements:
 
@@ -25,8 +25,24 @@ Copy the .env.example file to create a new .env file:
 cp .env.local.example .env
 ```
 
-Now, edit the `.env` file and fill in the missing information.
-Where `PUBLICKEY` and `SECRETKEY` are the token admin keys for minting the tokens deployed on **soroswap/core**
+Now, edit the `.env` file and provide the `NEXT_PUBLIC_BACKEND_URL` variable.
+This will tell the frontend where to look for:
+- the list of known tokens
+- the SoroswapFactory address
+- the tokens admin's private key (in order to mint tokens)
+
+If you are following the instructions in `https://github.com/soroswap/core` in order to deploy the smart contacts in your local environment and serve the API, your .env should look like this:
+```bash
+NEXT_PUBLIC_BACKEND_URL=http://localhost:8010
+```
+
+If you are ready for production, you can take Futurenet Contracts information from `https://api.soroswap.finance` and just do
+
+```bash
+cp .env.production.example .env
+```
+
+❗️❗️ Note that some Futurenet RPC's might not have the same version, so we recomend you to connect to a local quickstart node following the instructions in `https://github.com/soroswap/core`; and setting up your Freighter Wallet as in step 6.
 
 3. Start Docker
 
@@ -37,7 +53,9 @@ cd docker
 bash run.sh
 ```
 
-This script will set up and start the Docker containers required for Soroswap. 4. Install the Dependencies
+This script will set up and start the Docker containers required for Soroswap. 
+
+4. Install the Dependencies
 
 After the Docker container is up, you will be inside the root folder on the container. Then, install the dependencies using Yarn:
 
@@ -54,6 +72,35 @@ yarn dev
 ```
 
 This will start the Soroswap development instance.
+
+6. Configure your Freigher Wallet 
+
+For a local Futurenet node:
+   |   |   |
+   |---|---|
+   | Name | Futurenet Local RPC|
+   | URL | http://localhost:8000/soroban/rpc |
+   | Passphrase | Test SDF Future Network ; October 2022 |
+   | Allow HTTP connection | Enabled |
+   | Switch to this network | Enabled |
+
+For a local Standalone node:
+
+   |   |   |
+   |---|---|
+   | Name | Standalone |
+   | URL | http://localhost:8000/soroban/rpc |
+   | Passphrase | Standalone Network ; February 2017 |
+   | Allow HTTP connection | Enabled |
+   | Switch to this network | Enabled |
+
+7. Last, but not least, add some lumens to your Freighter wallet!
+
+   For Standalone: `http://localhost:8000/friendbot?addr=<your address>`
+   For Futurenet, visit: https://laboratory.stellar.org/#create-account
+
+
+
 🚀 Congrats! 🚀
 
 You have successfully set up Soroswap on your local machine! Start swapping, pooling, and exploring the possibilities of decentralized finance (DeFi) on the Soroban network.
@@ -61,11 +108,14 @@ You have successfully set up Soroswap on your local machine! Start swapping, poo
 ## Contributing
 
 If you find a bug or have a feature request, please create an issue or submit a pull request. Contributions are always welcome!
-License
+
+License: MIT
 
 ## Acknowledgments
 
     Special thanks to the Uniswap team for providing the base protocol on which Soroswap is built.
     Thank you to the Stellar Community for the continuous support.
+___
+___
 
 Made with ❤️ by the Soroswap Team.
