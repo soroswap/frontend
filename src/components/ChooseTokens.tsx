@@ -23,6 +23,7 @@ import calculatePoolTokenOptimalAmount from "../functions/calculatePoolTokenOpti
 import { SwapButton } from "./buttons/SwapButton";
 import { ProvideLiquidityPair } from "./ProvideLiquidityPair";
 import {ProvideSwapPair} from "./ProvideSwapPair";
+import { CreatePairButton } from "./buttons/CreatePairButton";
 
 
 export function ChooseTokens({ isLiquidity }: { isLiquidity: boolean }) {
@@ -59,7 +60,7 @@ function ChooseTokensWallet({
   tokens: TokenType[];
   isLiquidity: boolean;
 }) {
-  const allPairs = useAllPairsFromTokens(tokens);
+  const allPairs = useAllPairsFromTokens(tokens, sorobanContext);
 
   const [inputToken, setInputToken] = React.useState<TokenType>(tokens[0]);
   const [outputToken, setOutputToken] = React.useState<TokenType | null>(null);
@@ -97,7 +98,7 @@ function ChooseTokensWallet({
       "🚀 ~ file: ChooseTokens.tsx:88 ~ React.useEffect ~ getPairExists(inputToken, outputToken, allPairs):",
       getPairExists(inputToken, outputToken, allPairs),
     );
-  }, [inputToken, outputToken]); // Dependencies array
+  }, [inputToken, outputToken, allPairs]); // Dependencies array
 
   const handleInputTokenChange = (
     event: React.ChangeEvent<{ value: string }>,
@@ -189,7 +190,14 @@ function ChooseTokensWallet({
               isLiquidity={isLiquidity}
             />
           ) : (
-            <p>This pair does not exist!</p>
+            ( (outputToken && inputToken) ?  
+            <div>
+            <p>Pair does not exist</p>
+            <CreatePairButton
+              token0={inputToken}
+              token1={outputToken}
+              sorobanContext={sorobanContext}
+            /></div> : <p>Choose tokens</p>)
           )
         ) : pairExist && outputToken && pairAddress ? (
           <ProvideSwapPair
@@ -202,7 +210,14 @@ function ChooseTokensWallet({
             isLiquidity={isLiquidity}
           />
         ) : (
-          <p>This pair does not exist!</p>
+          ( (outputToken && inputToken) ?  
+          <div>
+          <p>Pair does not exist</p>
+          <CreatePairButton
+            token0={inputToken}
+            token1={outputToken}
+            sorobanContext={sorobanContext}
+          /></div> : <p>Choose tokens</p>)
         )}
       </Box>
     </div>
