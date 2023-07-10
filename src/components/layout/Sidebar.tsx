@@ -4,6 +4,8 @@ import Typography from "@mui/material/Typography";
 import { useTheme } from "@mui/material/styles";
 import { Box, Chip, Drawer, Stack, useMediaQuery } from "@mui/material";
 import MenuList from "./MenuList";
+import logo from '../../assets/images/soroswap-circle-no-background.png'
+
 
 interface SidebarProps {
   drawerState: boolean;
@@ -25,9 +27,7 @@ export default function Sidebar({ drawerState, drawerToggle }: SidebarProps) {
           sx={{ display: { xs: "block", md: "none" }, flexGrow: 1 }}
         >
           <img
-            src={
-              "https://upload.wikimedia.org/wikipedia/commons/e/e7/Uniswap_Logo.svg"
-            }
+            src={logo.src}
             height={64}
             width={64}
             alt={"Soroswap"}

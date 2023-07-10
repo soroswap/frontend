@@ -8,7 +8,7 @@ import MenuIcon from "@mui/icons-material/Menu";
 import Brightness4Icon from "@mui/icons-material/Brightness4";
 import Brightness7Icon from "@mui/icons-material/Brightness7";
 import { ColorModeContext } from "../../contexts";
-
+import logo from '../../assets/images/soroswap-circle-no-background.png'
 interface HeaderProps {
   handleDrawerToggle: () => void;
 }
@@ -34,9 +34,7 @@ export default function Header({ handleDrawerToggle }: HeaderProps) {
           sx={{ display: { xs: "none", md: "block" }, flexGrow: 1 }}
         >
           <img
-            src={
-              "https://upload.wikimedia.org/wikipedia/commons/e/e7/Uniswap_Logo.svg"
-            }
+            src={logo.src}
             height={64}
             width={64}
             alt={"Soroswap"}
