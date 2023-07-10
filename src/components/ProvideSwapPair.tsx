@@ -66,25 +66,28 @@ export function ProvideSwapPair({
       <p>..</p>
       <p>### IF YOU SWAP:</p>
 
-      <CardActions>
+      {/* <CardActions>
         <AllowanceButton
           tokenAddress={inputToken.token_address}
           spenderAddress={pairAddress}
           amount={BigNumber(inputTokenAmount).shiftedBy(7)}
           sorobanContext={sorobanContext}
         />
-      </CardActions>
+      </CardActions> */}
       <CardActions>
         <SwapButton
           pairAddress={pairAddress}
-          maxTokenA={BigNumber(inputTokenAmount).shiftedBy(7)}
-          amountOut={slippage.multipliedBy(BigNumber(outputTokenAmount)).shiftedBy(7)}
-          isBuy={isBuy}
+          maxTokenA={BigNumber("1.1").multipliedBy(BigNumber(inputTokenAmount)).shiftedBy(7)}
+          amountOut={BigNumber(outputTokenAmount).shiftedBy(7)}
+          isBuy={inputToken.token_name==token1Name}
           sorobanContext={sorobanContext}
         />
       </CardActions>
     </div>
   );
+
+  // amountOut={slippage.multipliedBy(BigNumber(outputTokenAmount)).shiftedBy(7)}
+
 }
 
 function twoDecimalsPercentage(value: string) {
