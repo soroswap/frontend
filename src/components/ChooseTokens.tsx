@@ -179,8 +179,7 @@ function ChooseTokensWallet({
             </FormControl>
           ) : null}
         </div>
-        {isLiquidity ? (
-          pairExist && outputToken && pairAddress ? (
+        {isLiquidity && pairExist && outputToken && pairAddress && (
             <ProvideLiquidityPair
               sorobanContext={sorobanContext}
               pairAddress={pairAddress}
@@ -189,17 +188,8 @@ function ChooseTokensWallet({
               changeOutput={setOutputTokenAmount}
               isLiquidity={isLiquidity}
             />
-          ) : (
-            ( (outputToken && inputToken) ?  
-            <div>
-            <p>Pair does not exist</p>
-            <CreatePairButton
-              token0={inputToken}
-              token1={outputToken}
-              sorobanContext={sorobanContext}
-            /></div> : <p>Choose tokens</p>)
-          )
-        ) : pairExist && outputToken && pairAddress ? (
+          )}
+        {!isLiquidity && pairExist && outputToken && pairAddress &&
           <ProvideSwapPair
             sorobanContext={sorobanContext}
             pairAddress={pairAddress}
@@ -209,16 +199,16 @@ function ChooseTokensWallet({
             changeOutput={setOutputTokenAmount}
             isLiquidity={isLiquidity}
           />
-        ) : (
-          ( (outputToken && inputToken) ?  
-          <div>
-          <p>Pair does not exist</p>
-          <CreatePairButton
-            token0={inputToken}
-            token1={outputToken}
-            sorobanContext={sorobanContext}
-          /></div> : <p>Choose tokens</p>)
-        )}
+        }
+        {outputToken && inputToken && !pairExist && <div>
+            <p>Pair does not exist</p>
+            <CreatePairButton
+              token0={inputToken}
+              token1={outputToken}
+              sorobanContext={sorobanContext}
+            /></div> 
+        }
+    
       </Box>
     </div>
   );
