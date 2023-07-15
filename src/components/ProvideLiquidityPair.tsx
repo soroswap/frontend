@@ -19,14 +19,16 @@ export function ProvideLiquidityPair({
     pairAddress,
     inputTokenAmount,
     outputTokenAmount,
-    changeOutput,
+    setInputTokenAmount,
+    setOutputTokenAmount,
     isLiquidity,
   }: {
     sorobanContext: SorobanContextType;
     pairAddress: string;
     inputTokenAmount: number;
     outputTokenAmount: number;
-    changeOutput: any;
+    setInputTokenAmount: (amount: number) => void;
+    setOutputTokenAmount: (amount: number) => void;
     isLiquidity: boolean;
   }) {
     const tokens = useTokens(sorobanContext);
@@ -38,11 +40,6 @@ export function ProvideLiquidityPair({
     const pairBalance = useTokenBalance(pairAddress, sorobanContext.address!).result;
     const tokenDecimals = useTokenDecimals(pairAddress);
     const totalShares = useTotalShares(pairAddress, sorobanContext)
-    let optimalLiquidityToken1Amount = calculatePoolTokenOptimalAmount(
-      BigNumber(inputTokenAmount).shiftedBy(7),
-      reserves.reserve0,
-      reserves.reserve1,
-    );
     let expectedLpTokens = getLpTokensAmount(
       BigNumber(inputTokenAmount).shiftedBy(7),
       reserves.reserve0,
@@ -51,9 +48,6 @@ export function ProvideLiquidityPair({
       pairAddress,
       sorobanContext,
     )
-    if (isLiquidity) {
-      changeOutput(optimalLiquidityToken1Amount.decimalPlaces(0).shiftedBy(-7).toNumber());
-    }
   
     return (
       <div>

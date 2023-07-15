@@ -107,6 +107,8 @@ function ChooseTokensWallet({
       (token) => token.token_symbol === event.target.value,
     );
     setInputToken(token!);
+    setInputTokenAmount(0);
+    setOutputTokenAmount(0);
   };
   const handleOutputTokenChange = (
     event: React.ChangeEvent<{ value: string }>,
@@ -114,12 +116,38 @@ function ChooseTokensWallet({
     const token =
       tokens.find((token) => token.token_symbol === event.target.value) ?? null;
     setOutputToken(token);
+    setInputTokenAmount(0);
+    setOutputTokenAmount(0);
   };
+
+  const reserves = useReservesBigNumber(pairAddress??"", sorobanContext);
 
   const handleInputTokenAmountChange = (
     event: React.ChangeEvent<HTMLInputElement>,
   ) => {
     setInputTokenAmount(event.target.valueAsNumber);
+    if (isLiquidity && reserves.reserve0.isGreaterThan(0) && reserves.reserve1.isGreaterThan(0)) {
+      let optimalLiquidityToken1Amount = calculatePoolTokenOptimalAmount(
+        BigNumber(event.target.valueAsNumber).shiftedBy(7),
+        reserves.reserve0,
+        reserves.reserve1,
+      );
+      setOutputTokenAmount(optimalLiquidityToken1Amount.decimalPlaces(0).shiftedBy(-7).toNumber());
+    }
+  };
+
+  const handleOutputTokenAmountChange = (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    setOutputTokenAmount(event.target.valueAsNumber);
+    let optimalLiquidityToken0Amount = calculatePoolTokenOptimalAmount(
+      BigNumber(event.target.valueAsNumber).shiftedBy(7),
+      reserves.reserve1,
+      reserves.reserve0,
+    );
+    if (isLiquidity && reserves.reserve0.isGreaterThan(0) && reserves.reserve1.isGreaterThan(0)) {
+      setInputTokenAmount(optimalLiquidityToken0Amount.decimalPlaces(0).shiftedBy(-7).toNumber());
+    }
   };
 
   return (
@@ -127,7 +155,7 @@ function ChooseTokensWallet({
       <Box sx={{ display: "flex", flexWrap: "wrap" }}>
         <div>
           <TokensDropdown
-            tokens={tokens}
+            tokens={tokens.filter((token) => token.token_symbol !== outputToken?.token_symbol)}
             onChange={handleInputTokenChange}
             title={"Input token"}
           />
@@ -154,7 +182,7 @@ function ChooseTokensWallet({
         </div>
         <div>
           <TokensDropdown
-            tokens={!isLiquidity?tokens.filter((token) => getPairExists(inputToken, token, allPairs)):tokens}
+            tokens={!isLiquidity?tokens.filter((token) => getPairExists(inputToken, token, allPairs)):tokens.filter((token) => token.token_symbol !== inputToken?.token_symbol)}
             onChange={handleOutputTokenChange}
             title={"Output token"}
             inputToken={inputToken}
@@ -174,7 +202,7 @@ function ChooseTokensWallet({
                 }
                 value={outputTokenAmount}
                 label="Amount"
-                disabled={true}
+                onChange={handleOutputTokenAmountChange}
               />
             </FormControl>
           ) : null}
@@ -185,7 +213,8 @@ function ChooseTokensWallet({
               pairAddress={pairAddress}
               inputTokenAmount={inputTokenAmount}
               outputTokenAmount={outputTokenAmount}
-              changeOutput={setOutputTokenAmount}
+              setInputTokenAmount={setInputTokenAmount}
+              setOutputTokenAmount={setOutputTokenAmount}
               isLiquidity={isLiquidity}
             />
           )}
