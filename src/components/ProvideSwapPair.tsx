@@ -12,7 +12,7 @@ import { TokenType } from "../interfaces";
 import { useAllowance } from "../hooks/useAllowance";
 import { useSlipaggeFactor } from "../hooks/useSlippageFactor";
 import { useTokensFromPair } from "../hooks/useTokensFromPair";
-import { useTokens } from "../hooks";
+import { useTokenBalances, useTokens } from "../hooks";
 import { formatAmount, scvalToBigNumber } from "../helpers/utils";
 import { useMemo } from "react";
 
@@ -43,6 +43,7 @@ export function ProvideSwapPair({
 }) {
   const tokens = useTokens(sorobanContext);
   const tokensFromPair = useTokensFromPair(pairAddress, sorobanContext);
+  const tokenBalancesResponse = useTokenBalances(sorobanContext.address??"", tokens);
 
   const reserves = useReservesBigNumber(pairAddress, sorobanContext);
   useMemo(() => {
@@ -80,6 +81,7 @@ export function ProvideSwapPair({
           sorobanContext={sorobanContext}
         />
       </CardActions> */}
+
       <CardActions>
         <SwapButton
           pairAddress={pairAddress}

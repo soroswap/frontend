@@ -19,7 +19,7 @@ export default function TokensDropdown({
       id="outlined-select-currency"
       select
       label={title}
-      defaultValue={""}
+      defaultValue={inputToken?.token_symbol}
       onChange={onChange}
     >
       {tokensToShow.map((option) => (
