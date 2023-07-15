@@ -12,6 +12,8 @@ import { formatAmount, scvalToBigNumber } from "../helpers/utils";
 import { useTotalShares } from "../hooks/useTotalShares";
 import { useTokensFromPair } from "../hooks/useTokensFromPair";
 import { useTokens } from "../hooks";
+import { TokenType } from "../interfaces";
+import { useEffect, useMemo } from "react";
 
 
 export function ProvideLiquidityPair({
@@ -19,23 +21,31 @@ export function ProvideLiquidityPair({
     pairAddress,
     inputTokenAmount,
     outputTokenAmount,
-    setInputTokenAmount,
-    setOutputTokenAmount,
-    isLiquidity,
+    setToken0,
+    setToken1,
+    token0,
+    token1,
+    inputToken,
+    outputToken,
   }: {
     sorobanContext: SorobanContextType;
     pairAddress: string;
     inputTokenAmount: number;
     outputTokenAmount: number;
-    setInputTokenAmount: (amount: number) => void;
-    setOutputTokenAmount: (amount: number) => void;
-    isLiquidity: boolean;
+    setToken0: (token: TokenType|null) => void;
+    setToken1: (token: TokenType|null) => void;
+    token0: TokenType|null;
+    token1: TokenType|null;
+    inputToken: TokenType;
+    outputToken: TokenType;
   }) {
     const tokens = useTokens(sorobanContext);
     const tokensFromPair = useTokensFromPair(pairAddress, sorobanContext);
 
-    const token0Name = tokens.find(token => token.token_address === tokensFromPair?.token0)?.token_name;
-    const token1Name = tokens.find(token => token.token_address === tokensFromPair?.token1)?.token_name;
+    useMemo(() => {
+      setToken0(tokens.find(token => token.token_address === tokensFromPair?.token0)??null);
+      setToken1(tokens.find(token => token.token_address === tokensFromPair?.token1)??null);
+    }, [setToken0, setToken1, tokensFromPair, tokens])
     const reserves = useReservesBigNumber(pairAddress, sorobanContext);
     const pairBalance = useTokenBalance(pairAddress, sorobanContext.address!).result;
     const tokenDecimals = useTokenDecimals(pairAddress);
@@ -54,8 +64,8 @@ export function ProvideLiquidityPair({
         <p>..</p>
         <p>### CURRENT INFORMATION</p>  
         
-        <p>- token0: {token0Name}</p>
-        <p>- token1: {token1Name}</p>
+        <p>- token0: {token0?.token_name}</p>
+        <p>- token1: {token1?.token_name}</p>
         <p>- Your LP tokens balance: {pairBalance !== undefined
         ? formatAmount(scvalToBigNumber(pairBalance), tokenDecimals)
         : "0"} LP</p>
@@ -75,8 +85,8 @@ export function ProvideLiquidityPair({
         <CardActions>
           <DepositButton
             pairAddress={pairAddress}
-            amount0={BigNumber(inputTokenAmount).shiftedBy(7)}
-            amount1={BigNumber(outputTokenAmount).shiftedBy(7)}
+            amount0={token0?.token_address===inputToken.token_address?BigNumber(inputTokenAmount).shiftedBy(7):BigNumber(outputTokenAmount).shiftedBy(7)}
+            amount1={token1?.token_address===outputToken.token_address?BigNumber(outputTokenAmount).shiftedBy(7):BigNumber(inputTokenAmount).shiftedBy(7)}
             sorobanContext={sorobanContext}
           />
         </CardActions>

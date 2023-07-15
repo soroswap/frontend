@@ -24,6 +24,8 @@ import { SwapButton } from "./buttons/SwapButton";
 import { ProvideLiquidityPair } from "./ProvideLiquidityPair";
 import {ProvideSwapPair} from "./ProvideSwapPair";
 import { CreatePairButton } from "./buttons/CreatePairButton";
+import fromExactInputGetExpectedOutput from "../functions/fromExactInputGetExpectedOutput";
+import fromExactOutputGetExpectedInput from "../functions/fromExactOutputGetExpectedInput";
 
 
 export function ChooseTokens({ isLiquidity }: { isLiquidity: boolean }) {
@@ -64,6 +66,8 @@ function ChooseTokensWallet({
 
   const [inputToken, setInputToken] = React.useState<TokenType>(tokens[0]);
   const [outputToken, setOutputToken] = React.useState<TokenType | null>(null);
+  const [token0, setToken0] = React.useState<TokenType | null>(null);
+  const [token1, setToken1] = React.useState<TokenType | null>(null);
   const [inputTokenAmount, setInputTokenAmount] = React.useState(0);
   const [outputTokenAmount, setOutputTokenAmount] = React.useState(0);
   const [pairExist, setPairExist] = React.useState<boolean | undefined>(
@@ -76,8 +80,8 @@ function ChooseTokensWallet({
   function getPairExists(token0: any, token1: any, allPairs: any) {
     return allPairs.some((pair: any) => {
       return (
-        (pair.token_0 === token0 && pair.token_1 === token1) ||
-        (pair.token_1 === token1 && pair.token_0 === token0)
+        (pair.token_0 === token0 && pair.token_1 === token1) 
+        ||(pair.token_0 === token1 && pair.token_1 === token0)
       );
     });
   }
@@ -88,8 +92,10 @@ function ChooseTokensWallet({
 
     let selectedPair = allPairs.find((pair: any) => {
       return (
-        pair.token_0.token_address === inputToken.token_address &&
-        pair.token_1.token_address === outputToken?.token_address
+        (pair.token_0.token_address === inputToken.token_address &&
+        pair.token_1.token_address === outputToken?.token_address) 
+        || (pair.token_1.token_address === inputToken.token_address &&
+          pair.token_0.token_address === outputToken?.token_address)
       );
     });
     if (selectedPair) setPairAddress(selectedPair.pair_address);
@@ -129,10 +135,20 @@ function ChooseTokensWallet({
     if (isLiquidity && reserves.reserve0.isGreaterThan(0) && reserves.reserve1.isGreaterThan(0)) {
       let optimalLiquidityToken1Amount = calculatePoolTokenOptimalAmount(
         BigNumber(event.target.valueAsNumber).shiftedBy(7),
-        reserves.reserve0,
-        reserves.reserve1,
+        token0?.token_address === inputToken.token_address?reserves.reserve0:reserves.reserve1,
+        token1?.token_address === outputToken?.token_address?reserves.reserve1:reserves.reserve0,
       );
       setOutputTokenAmount(optimalLiquidityToken1Amount.decimalPlaces(0).shiftedBy(-7).toNumber());
+    }
+    if (!isLiquidity) {
+      let output = fromExactInputGetExpectedOutput(
+        pairAddress??"", 
+        BigNumber(event.target.valueAsNumber).shiftedBy(7), 
+        token0?.token_address === inputToken.token_address?reserves.reserve0:reserves.reserve1,
+        token1?.token_address === outputToken?.token_address?reserves.reserve1:reserves.reserve0,
+        sorobanContext
+        )
+      setOutputTokenAmount(BigNumber(output).decimalPlaces(0).shiftedBy(-7).toNumber())
     }
   };
 
@@ -140,13 +156,23 @@ function ChooseTokensWallet({
     event: React.ChangeEvent<HTMLInputElement>,
   ) => {
     setOutputTokenAmount(event.target.valueAsNumber);
-    let optimalLiquidityToken0Amount = calculatePoolTokenOptimalAmount(
-      BigNumber(event.target.valueAsNumber).shiftedBy(7),
-      reserves.reserve1,
-      reserves.reserve0,
-    );
     if (isLiquidity && reserves.reserve0.isGreaterThan(0) && reserves.reserve1.isGreaterThan(0)) {
+      let optimalLiquidityToken0Amount = calculatePoolTokenOptimalAmount(
+        BigNumber(event.target.valueAsNumber).shiftedBy(7),
+        token0?.token_address === inputToken.token_address?reserves.reserve1:reserves.reserve0,
+        token1?.token_address === outputToken?.token_address?reserves.reserve0:reserves.reserve1,
+      );
       setInputTokenAmount(optimalLiquidityToken0Amount.decimalPlaces(0).shiftedBy(-7).toNumber());
+    }
+    if (!isLiquidity) {
+      let output = fromExactOutputGetExpectedInput(
+        pairAddress??"", 
+        BigNumber(event.target.valueAsNumber).shiftedBy(7), 
+        token0?.token_address === inputToken.token_address?reserves.reserve0:reserves.reserve1,
+        token1?.token_address === outputToken?.token_address?reserves.reserve1:reserves.reserve0,
+        sorobanContext
+        )
+      setInputTokenAmount(BigNumber(output).decimalPlaces(0).shiftedBy(-7).toNumber())
     }
   };
 
@@ -213,20 +239,27 @@ function ChooseTokensWallet({
               pairAddress={pairAddress}
               inputTokenAmount={inputTokenAmount}
               outputTokenAmount={outputTokenAmount}
-              setInputTokenAmount={setInputTokenAmount}
-              setOutputTokenAmount={setOutputTokenAmount}
-              isLiquidity={isLiquidity}
+              setToken0={setToken0}
+              setToken1={setToken1}
+              token0={token0}
+              token1={token1}
+              inputToken={inputToken}
+              outputToken={outputToken}
             />
           )}
         {!isLiquidity && pairExist && outputToken && pairAddress &&
           <ProvideSwapPair
             sorobanContext={sorobanContext}
             pairAddress={pairAddress}
-            inputToken={inputToken}
             inputTokenAmount={inputTokenAmount}
             outputTokenAmount={outputTokenAmount}
-            changeOutput={setOutputTokenAmount}
-            isLiquidity={isLiquidity}
+            setToken0={setToken0}
+            setToken1={setToken1}
+            token0={token0}
+            token1={token1}
+            inputToken={inputToken}
+            outputToken={outputToken}
+
           />
         }
         {outputToken && inputToken && !pairExist && <div>

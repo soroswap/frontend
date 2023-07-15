@@ -6,7 +6,7 @@ import { Checkbox } from "@mui/material";
 import BigNumber from "bignumber.js";
 import { PairBalance } from "./PairBalance";
 import { SwapButton } from "./buttons/SwapButton";
-import getExpectedAmount, { getPriceImpact } from "../functions/getExpectedAmount";
+import getExpectedAmount, { getPriceImpact } from "../functions/fromExactInputGetExpectedOutput";
 import { AllowanceButton } from "./buttons/AllowanceButton";
 import { TokenType } from "../interfaces";
 import { useAllowance } from "../hooks/useAllowance";
@@ -14,40 +14,41 @@ import { useSlipaggeFactor } from "../hooks/useSlippageFactor";
 import { useTokensFromPair } from "../hooks/useTokensFromPair";
 import { useTokens } from "../hooks";
 import { formatAmount, scvalToBigNumber } from "../helpers/utils";
+import { useMemo } from "react";
 
 
 
 export function ProvideSwapPair({
   sorobanContext,
   pairAddress,
-  inputToken,
   inputTokenAmount,
   outputTokenAmount,
-  changeOutput,
-  isLiquidity,
+  setToken0,
+  setToken1,
+  token0,
+  token1,
+  inputToken,
+  outputToken,
 }: {
   sorobanContext: SorobanContextType;
   pairAddress: string;
-  inputToken: TokenType;
   inputTokenAmount: number;
   outputTokenAmount: number;
-  changeOutput: any;
-  isLiquidity: boolean;
+  setToken0: (token: TokenType|null) => void;
+    setToken1: (token: TokenType|null) => void;
+    token0: TokenType|null;
+    token1: TokenType|null;
+    inputToken: TokenType;
+    outputToken: TokenType;
 }) {
   const tokens = useTokens(sorobanContext);
   const tokensFromPair = useTokensFromPair(pairAddress, sorobanContext);
 
-  const token0Name = tokens.find(token => token.token_address === tokensFromPair?.token0)?.token_name;
-  const token1Name = tokens.find(token => token.token_address === tokensFromPair?.token1)?.token_name;
-
   const reserves = useReservesBigNumber(pairAddress, sorobanContext);
-  const [isBuy, setIsBuy] = React.useState<boolean>(false);
-  let output = getExpectedAmount(pairAddress, BigNumber(inputTokenAmount).shiftedBy(7), sorobanContext)
-  let allowance = useAllowance(inputToken.token_address, sorobanContext.address!, pairAddress, sorobanContext)
-  let slippage = useSlipaggeFactor()
-  if (!isLiquidity) {
-    changeOutput(BigNumber(output).decimalPlaces(0).shiftedBy(-7).toNumber())
-  }
+  useMemo(() => {
+    setToken0(tokens.find(token => token.token_address === tokensFromPair?.token0)??null);
+    setToken1(tokens.find(token => token.token_address === tokensFromPair?.token1)??null);
+  }, [setToken0, setToken1, tokensFromPair, tokens])
 
   return (
     <div>
@@ -58,11 +59,16 @@ export function ProvideSwapPair({
       <p>..</p>
       <p>### CURRENT INFORMATION</p>
 
-      <p>- token0: {token0Name}</p>
-      <p>- token1: {token1Name}</p>
-      <p>- token0 reserves {formatAmount(reserves.reserve0)} {token0Name}</p>
-      <p>- token1 reserves {formatAmount(reserves.reserve1)} {token1Name}</p>
-      <p>- Price Impact: {twoDecimalsPercentage(getPriceImpact(pairAddress, BigNumber(inputTokenAmount).shiftedBy(7), sorobanContext).toString())}%</p>
+      <p>- token0: {token0?.token_name}</p>
+      <p>- token1: {token1?.token_name}</p>
+      <p>- token0 reserves {formatAmount(reserves.reserve0)} {token0?.token_name}</p>
+      <p>- token1 reserves {formatAmount(reserves.reserve1)} {token1?.token_name}</p>
+      <p>- Price Impact: {twoDecimalsPercentage(getPriceImpact(
+        pairAddress, 
+        BigNumber(inputTokenAmount).shiftedBy(7), 
+        token0?.token_address === inputToken.token_address?reserves.reserve0:reserves.reserve1,
+        token1?.token_address === outputToken?.token_address?reserves.reserve1:reserves.reserve0,
+        sorobanContext).toString())}%</p>
       <p>..</p>
       <p>### IF YOU SWAP:</p>
 
@@ -79,7 +85,7 @@ export function ProvideSwapPair({
           pairAddress={pairAddress}
           maxTokenA={BigNumber("1.1").multipliedBy(BigNumber(inputTokenAmount)).shiftedBy(7)}
           amountOut={BigNumber(outputTokenAmount).shiftedBy(7)}
-          isBuy={inputToken.token_name==token1Name}
+          isBuy={inputToken.token_address==token1?.token_address}
           sorobanContext={sorobanContext}
         />
       </CardActions>
