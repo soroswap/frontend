@@ -275,7 +275,7 @@ function ChooseTokensWallet({
               sorobanContext={sorobanContext}
             /></div> 
         }
-    </div>:<p> You don't have enought balance to trade this token</p>}
+    </div>:<p> You do not have enough balance to trade this token</p>}
       </Box>
     </div>
   );
