@@ -6,17 +6,15 @@ import { SorobanContextType } from "@soroban-react/core";
 import BigNumber from "bignumber.js";
 import { useReservesBigNumber } from "../hooks/useReserves";
 
-export default function getExpectedAmount(
+export default function fromExactInputGetExpectedOutput(
   pairAddress: string,
   amountIn: BigNumber,
+  reserve0: BigNumber,
+  reserve1: BigNumber,
   sorobanContext: SorobanContextType
 ): BigNumber {
-  // eslint-disable-next-line react-hooks/rules-of-hooks
-  const reserves = useReservesBigNumber(pairAddress, sorobanContext);
-  let reserveIn = reserves.reserve0
-  let reserveOut = reserves.reserve1
 
-  return getExpectedAmountFromReserves(amountIn, reserveIn, reserveOut);
+  return getExpectedAmountFromReserves(amountIn, reserve0, reserve1);
 }
 
 function getExpectedAmountFromReserves(
@@ -34,15 +32,13 @@ function getExpectedAmountFromReserves(
 export function getPriceImpact(
   pairAddress: string,
   amountIn: BigNumber,
+  reserve0: BigNumber,
+  reserve1: BigNumber,
   sorobanContext: SorobanContextType) {
-  // eslint-disable-next-line react-hooks/rules-of-hooks
-  const reserves = useReservesBigNumber(pairAddress, sorobanContext);
-  const reserveIn = reserves.reserve0
-  const reserveOut = reserves.reserve1
 
-  const reserveInAfter = reserveIn.plus(amountIn)
-  const expectedAmount = getExpectedAmount(pairAddress, amountIn, sorobanContext)
-  const reserveOutAfter = reserveOut.minus(expectedAmount)
+  const reserveInAfter = reserve0.plus(amountIn)
+  const expectedAmount = fromExactInputGetExpectedOutput(pairAddress, amountIn, reserve0, reserve1, sorobanContext)
+  const reserveOutAfter = reserve1.minus(expectedAmount)
 
   const expectedAmountAfter = getExpectedAmountFromReserves(amountIn, reserveInAfter, reserveOutAfter)
 
