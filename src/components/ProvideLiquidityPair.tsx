@@ -52,9 +52,9 @@ export function ProvideLiquidityPair({
     const totalShares = useTotalShares(pairAddress, sorobanContext)
     let expectedLpTokens = getLpTokensAmount(
       BigNumber(inputTokenAmount).shiftedBy(7),
-      reserves.reserve0,
+      token0?.token_address === inputToken?.token_address?reserves.reserve0:reserves.reserve1,
       BigNumber(outputTokenAmount).shiftedBy(7),
-      reserves.reserve1,
+      token1?.token_address === outputToken?.token_address?reserves.reserve1:reserves.reserve0,
       pairAddress,
       sorobanContext,
     )
