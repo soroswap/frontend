@@ -1,5 +1,5 @@
 import { useSorobanReact } from "@soroban-react/core";
-import { useContractValue } from "@soroban-react/contracts";
+import { ContractValueType, useContractValue } from "@soroban-react/contracts";
 import { Constants } from "../constants";
 import {
   scvalToBigNumber,
@@ -7,7 +7,8 @@ import {
   contractIdToScVal,
 } from "../helpers/utils";
 import { formatAmount } from "../helpers/utils";
-import { TokenType } from "../interfaces";
+import { TokenMapType, TokenType } from "../interfaces";
+import { useEffect, useState } from "react";
 //TODO: create Liquidity Pool Balances
 
 export function useTokenBalance(tokenAddress: string, userAddress: string) {
@@ -23,10 +24,10 @@ export function useTokenBalance(tokenAddress: string, userAddress: string) {
     params: [user],
     sorobanContext: sorobanContext,
   });
-  console.log(
-    "🚀 ~ file: useBalances.tsx:26 ~ useTokenBalance ~ tokenBalance:",
-    tokenBalance,
-  );
+  // console.log(
+  //   "🚀 ~ file: useBalances.tsx:26 ~ useTokenBalance ~ tokenBalance:",
+  //   tokenBalance,
+  // );
 
   return tokenBalance;
 }
@@ -49,26 +50,34 @@ export function useFormattedTokenBalance(
   tokenAddress: string,
   userAddress: string,
 ) {
-  console.log("tokenAddress: ", tokenAddress);
+  // console.log("tokenAddress: ", tokenAddress);
   const tokenBalance = useTokenBalance(tokenAddress, userAddress);
   const tokenDecimals = useTokenDecimals(tokenAddress);
   const formattedBalance = formatAmount(
-    scvalToBigNumber(tokenBalance.result),
+    scvalToBigNumber(tokenBalance?.result),
     tokenDecimals,
   );
   return formattedBalance;
 }
 
-export function useTokenBalances(userAddress: string, tokens: TokenType[]) {
+export function useTokenBalances(userAddress: string, tokens: TokenType[] | TokenMapType) {
   const address = userAddress;
-  const balances = tokens.map((token) => {
+  const balances = Object.values(tokens).map((token) => {
     return {
       // eslint-disable-next-line react-hooks/rules-of-hooks
       balance: useFormattedTokenBalance(token.token_address, address),
+      usdValue: 0,//should get usd value
       symbol: token.token_symbol,
       address: token.token_address,
     };
   });
 
-  return balances;
+  // Calculate the loading state
+  const loading = balances.some((balance) => balance.balance === null);
+
+  return {
+    balances: balances,
+    loading: loading,
+  };
 }
+
