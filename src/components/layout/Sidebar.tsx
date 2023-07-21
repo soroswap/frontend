@@ -4,8 +4,8 @@ import Typography from "@mui/material/Typography";
 import { useTheme } from "@mui/material/styles";
 import { Box, Chip, Drawer, Stack, useMediaQuery } from "@mui/material";
 import MenuList from "./MenuList";
-import logo from '../../assets/images/soroswap-circle-no-background.png'
-
+import logo from '../../assets/svg/LogoAndText.svg'
+import Image from "next/image";
 
 interface SidebarProps {
   drawerState: boolean;
@@ -26,18 +26,12 @@ export default function Sidebar({ drawerState, drawerToggle }: SidebarProps) {
           component="span"
           sx={{ display: { xs: "block", md: "none" }, flexGrow: 1 }}
         >
-          <img
+          <Image
             src={logo.src}
             height={64}
-            width={64}
+            width={234}
             alt={"Soroswap"}
           />
-        </Box>
-
-        <Box component="span" sx={{ display: { xs: "block", md: "none" } }}>
-          <Typography variant="h6" component="div">
-            Soroswap AMM
-          </Typography>
         </Box>
       </Box>
       {/* <BrowserView> */}
@@ -87,7 +81,7 @@ export default function Sidebar({ drawerState, drawerToggle }: SidebarProps) {
         sx={{
           "& .MuiDrawer-paper": {
             width: 260,
-            background: theme.palette.primary.dark,
+            background: theme.palette.background.default,
             color: theme.palette.text.primary,
             borderRight: "none",
             [theme.breakpoints.up("md")]: {
