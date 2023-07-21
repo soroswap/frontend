@@ -5,7 +5,7 @@ import { SorobanContextType } from "@soroban-react/core";
 import BigNumber from "bignumber.js";
 import { PairBalance } from "./PairBalance";
 import calculatePoolTokenOptimalAmount from "../functions/calculatePoolTokenOptimalAmount";
-import { DepositButton } from "./buttons/DepositButton";
+import { DepositButton } from "./Buttons/DepositButton";
 import getLpTokensAmount from "../functions/getLpTokensAmount";
 import { useTokenBalance, useTokenDecimals } from "../hooks";
 import { formatAmount, scvalToBigNumber } from "../helpers/utils";

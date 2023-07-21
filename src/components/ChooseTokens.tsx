@@ -15,15 +15,15 @@ import { useSorobanReact } from "@soroban-react/core";
 import TokensDropdown from "./TokensDropwndown";
 import { SorobanContextType } from "@soroban-react/core";
 import { TokenType } from "../interfaces/tokens";
-import { DepositButton } from "./buttons/DepositButton";
+import { DepositButton } from "./Buttons/DepositButton";
 import BigNumber from "bignumber.js";
 import { PairBalance } from "./PairBalance";
 import { useAllPairsFromTokens } from "../hooks/usePairExist";
 import calculatePoolTokenOptimalAmount from "../functions/calculatePoolTokenOptimalAmount";
-import { SwapButton } from "./buttons/SwapButton";
+import { SwapButton } from "./Buttons/SwapButton";
 import { ProvideLiquidityPair } from "./ProvideLiquidityPair";
 import {ProvideSwapPair} from "./ProvideSwapPair";
-import { CreatePairButton } from "./buttons/CreatePairButton";
+import { CreatePairButton } from "./Buttons/CreatePairButton";
 
 
 export function ChooseTokens({ isLiquidity }: { isLiquidity: boolean }) {
