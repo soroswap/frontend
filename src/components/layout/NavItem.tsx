@@ -62,7 +62,7 @@ export default function NavItem({ item, level }:NavItemProps) {
           borderRadius: 10,
           m: 2,
           alignItems: "flex-start",
-          backgroundColor: theme.palette.primary.main,
+          backgroundColor: theme.palette.background.default,
           py: 1.25,
           pl: `${level * 24}px`,
         }}

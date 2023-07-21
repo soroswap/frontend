@@ -5,9 +5,7 @@ import { SorobanContextType } from "@soroban-react/core";
 import { Checkbox } from "@mui/material";
 import BigNumber from "bignumber.js";
 import { PairBalance } from "./PairBalance";
-import { SwapButton } from "./buttons/SwapButton";
 import getExpectedAmount, { getPriceImpact } from "../functions/fromExactInputGetExpectedOutput";
-import { AllowanceButton } from "./buttons/AllowanceButton";
 import { TokenType } from "../interfaces";
 import { useAllowance } from "../hooks/useAllowance";
 import { useSlipaggeFactor } from "../hooks/useSlippageFactor";
@@ -15,6 +13,7 @@ import { useTokensFromPair } from "../hooks/useTokensFromPair";
 import { useTokenBalances, useTokens } from "../hooks";
 import { formatAmount, scvalToBigNumber } from "../helpers/utils";
 import { useMemo } from "react";
+import { SwapButton } from "./Buttons/SwapButton";
 
 
 

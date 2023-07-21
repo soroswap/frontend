@@ -1,5 +1,5 @@
 import React from "react";
-import MainLayout from "../src/components/layout/MainLayout";
+import MainLayout from "../src/components/Layout/MainLayout";
 import MySorobanReactProvider from "../src/soroban/MySorobanReactProvider";
 import "../styles/globals.css";
 import type { AppProps } from "next/app";

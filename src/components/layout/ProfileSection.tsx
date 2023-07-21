@@ -38,10 +38,10 @@ export default function ProfileSection() {
           borderRadius: "10px",
           transition: "all .2s ease-in-out",
           borderColor: theme.palette.primary.light,
-          backgroundColor: theme.palette.primary.light,
+          backgroundColor: theme.palette.background.default,
           '&[aria-controls="menu-list-grow"], &:hover': {
             borderColor: theme.palette.primary.main,
-            background: `${theme.palette.primary.main}!important`,
+            background: `${theme.palette.background.paper}!important`,
             color: theme.palette.primary.light,
             "& svg": {
               stroke: theme.palette.primary.light,

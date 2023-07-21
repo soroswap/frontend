@@ -1,15 +1,17 @@
 import React, { useState } from "react";
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
-import { useTheme } from "@mui/material/styles";
+import { styled, useTheme } from "@mui/material/styles";
 import { Paper, Theme, useMediaQuery } from "@mui/material";
 import Header from "./Header";
 import Sidebar from "./Sidebar";
-import styled from "@emotion/styled";
 
 const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })(
   ({ theme, open }: { theme: Theme; open: boolean }) => ({
     backgroundColor: theme.palette.background.default,
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "flex-start",
     width: "100%",
     marginTop: "68px",
     minHeight: "calc(100vh - 68px)",
@@ -62,7 +64,7 @@ export default function MainLayout({
         color="inherit"
         elevation={0}
         sx={{
-          bgcolor: theme.palette.primary.dark,
+          bgcolor: theme.palette.background.default,
           transition: drawerState ? theme.transitions.create("width") : "none",
         }}
       >
@@ -77,7 +79,8 @@ export default function MainLayout({
       />
 
       <Main theme={theme} open={drawerState}>
-        <Paper>{children}</Paper>
+        {/* <Paper></Paper> */}
+        {children}
       </Main>
     </>
   );

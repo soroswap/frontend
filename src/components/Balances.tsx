@@ -41,7 +41,7 @@ const WalletBalances = ({ address, tokens }: WalletBalancesProps) => {
 
   return (
     <>
-      {tokenBalancesResponse?.map((useTokenBalance) => (
+      {tokenBalancesResponse.balances?.map((useTokenBalance) => (
         <p key={useTokenBalance.address}>
           {useTokenBalance.symbol} : {useTokenBalance.balance}
         </p>

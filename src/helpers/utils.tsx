@@ -7,7 +7,7 @@ let xdr = SorobanClient.xdr;
 export function scvalToBigNumber(
   scval: SorobanClient.xdr.ScVal | undefined,
 ): BigNumber {
-  console.log("🚀 ~ file: utils.tsx:8 ~ scvalToBigNumber ~ scval:", scval);
+  // console.log("🚀 ~ file: utils.tsx:8 ~ scvalToBigNumber ~ scval:", scval);
   switch (scval?.switch()) {
     case undefined: {
       return BigNumber(0);

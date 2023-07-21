@@ -1,6 +1,4 @@
 import React from "react";
-import Typography from "@mui/material/Typography";
-
 import { useTheme } from "@mui/material/styles";
 import { Avatar, Box, ButtonBase, IconButton } from "@mui/material";
 import ProfileSection from "./ProfileSection";
@@ -8,7 +6,8 @@ import MenuIcon from "@mui/icons-material/Menu";
 import Brightness4Icon from "@mui/icons-material/Brightness4";
 import Brightness7Icon from "@mui/icons-material/Brightness7";
 import { ColorModeContext } from "../../contexts";
-import logo from '../../assets/images/soroswap-circle-no-background.png'
+import logo from '../../assets/svg/LogoAndText.svg'
+import Image from "next/image";
 interface HeaderProps {
   handleDrawerToggle: () => void;
 }
@@ -33,18 +32,13 @@ export default function Header({ handleDrawerToggle }: HeaderProps) {
           component="span"
           sx={{ display: { xs: "none", md: "block" }, flexGrow: 1 }}
         >
-          <img
+          <Image
             src={logo.src}
             height={64}
-            width={64}
+            width={234}
             alt={"Soroswap"}
           />
         </Box>
-
-        <Box component="span" sx={{ display: { xs: "none", md: "block" } }}>
-          <Typography component="div">Soroswap AMM</Typography>
-        </Box>
-
         {/* Hamburger button */}
         <ButtonBase
           sx={{ borderRadius: "8px", overflow: "hidden", height: "34px" }}

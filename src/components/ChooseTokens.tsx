@@ -15,15 +15,15 @@ import { useSorobanReact } from "@soroban-react/core";
 import TokensDropdown from "./TokensDropwndown";
 import { SorobanContextType } from "@soroban-react/core";
 import { TokenType } from "../interfaces/tokens";
-import { DepositButton } from "./buttons/DepositButton";
+import { DepositButton } from "./Buttons/DepositButton";
 import BigNumber from "bignumber.js";
 import { PairBalance } from "./PairBalance";
 import { useAllPairsFromTokens } from "../hooks/usePairExist";
 import calculatePoolTokenOptimalAmount from "../functions/calculatePoolTokenOptimalAmount";
-import { SwapButton } from "./buttons/SwapButton";
+import { SwapButton } from "./Buttons/SwapButton";
 import { ProvideLiquidityPair } from "./ProvideLiquidityPair";
 import {ProvideSwapPair} from "./ProvideSwapPair";
-import { CreatePairButton } from "./buttons/CreatePairButton";
+import { CreatePairButton } from "./Buttons/CreatePairButton";
 import fromExactInputGetExpectedOutput from "../functions/fromExactInputGetExpectedOutput";
 import fromExactOutputGetExpectedInput from "../functions/fromExactOutputGetExpectedInput";
 import { useTokenBalances } from "../hooks";
@@ -177,7 +177,7 @@ function ChooseTokensWallet({
       setInputTokenAmount(BigNumber(output).decimalPlaces(0).shiftedBy(-7).toNumber())
     }
   };
-  let inputTokenBalance = tokenBalancesResponse.find((token) => token.address === inputToken?.token_address)?.balance 
+  let inputTokenBalance = tokenBalancesResponse.balances.find((token) => token.address === inputToken?.token_address)?.balance 
   return (
     <div>
       <Box sx={{ display: "flex", flexDirection: "column" }}>
@@ -236,7 +236,7 @@ function ChooseTokensWallet({
               />
             </FormControl>
           ) : null}
-           <p>balance: {outputToken !== null ? tokenBalancesResponse.find((token) => token.address === outputToken.token_address)?.balance : 0}</p>
+           <p>balance: {outputToken !== null ? tokenBalancesResponse.balances.find((token) => token.address === outputToken.token_address)?.balance : 0}</p>
         </Box>
         {isLiquidity && pairExist && outputToken && inputToken && pairAddress && (
             <ProvideLiquidityPair
