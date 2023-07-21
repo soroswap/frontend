@@ -3,7 +3,7 @@ import { LoadingBubble } from "../Tokens/loading";
 import React from "react";
 import Row from "../Row";
 import { BodySmall } from "../Text";
-import { MouseoverTooltip } from "../../Tooltip";
+import { MouseoverTooltip } from "../Tooltip";
 
 const FiatLoadingBubble = styled(LoadingBubble)`
   border-radius: 4px;

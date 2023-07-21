@@ -26,7 +26,7 @@
 import { Typography, styled, useTheme } from '@mui/material'
 import Column from '../Column'
 import Row, { RowBetween } from '../Row'
-import CommonBases from './CommonBases'
+// import CommonBases from './CommonBases'
 import { CurrencyRow, formatAnalyticsEventProperties } from './CurrencyList'
 import CurrencyList from './CurrencyList'
 import { PaddedColumn, SearchInput, Separator } from './styleds'
@@ -255,7 +255,7 @@ export function CurrencySearch({
       ) : searchCurrencies?.length > 0 || isLoading ? (
         <div style={{ flex: '1' }}>
           <AutoSizer disableWidth>
-              {({ height }) => (
+              {({ height }: {height: number})  => (
                 <CurrencyList
                   height={height}
                   currencies={searchCurrencies}

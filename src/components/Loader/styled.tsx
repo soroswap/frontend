@@ -29,9 +29,9 @@ export const LoadingRows = styled('div')`
   }
 `
 
-export const loadingOpacityMixin = css<{ $loading: boolean }>`
-  filter: ${({ $loading }) => ($loading ? 'grayscale(1)' : 'none')};
-  opacity: ${({ $loading }) => ($loading ? '0.4' : '1')};
+export const loadingOpacityMixin = css`
+  filter: grayscale(1);
+  opacity: '0.4';
   transition: opacity 0.2s ease-in-out;
 `
 

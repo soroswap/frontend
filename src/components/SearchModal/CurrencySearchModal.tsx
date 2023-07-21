@@ -1,7 +1,7 @@
 // import { Currency, Token } from '@uniswap/sdk-core'
 // import TokenSafety from 'components/TokenSafety'
 import { memo, useCallback, useEffect, useState } from 'react'
-import { TokenType } from '../../interfaces'
+import { TokenMapType, TokenType } from '../../interfaces'
 import useLast from '../../hooks/useLast'
 import { useWindowSize } from '../../hooks/useWindowSize'
 import { CurrencySearch } from './CurrencySearch'
@@ -51,19 +51,19 @@ export default memo(function CurrencySearchModal({
     }
   }, [isOpen, lastOpen])
 
-  const showTokenSafetySpeedbump = (token: Token) => {
-    setWarningToken(token)
+  const showTokenSafetySpeedbump = (token: TokenType) => {
+    // setWarningToken(token)
     setModalView(CurrencyModalView.tokenSafety)
   }
 
   const handleCurrencySelect = useCallback(
-    (currency: Currency, hasWarning?: boolean) => {
-      if (hasWarning && currency.isToken && !userAddedTokens.find((token) => token.equals(currency))) {
-        showTokenSafetySpeedbump(currency)
-      } else {
+    (currency: TokenType, hasWarning?: boolean) => {
+      // if (hasWarning && currency.isToken && !userAddedTokens.find((token) => token.equals(currency))) {
+      //   // showTokenSafetySpeedbump(currency)
+      // } else {
         onCurrencySelect(currency)
         onDismiss()
-      }
+      // }
     },
     [onDismiss, onCurrencySelect]
   )

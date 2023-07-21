@@ -174,16 +174,16 @@ const StyledNumericalInput = styled(NumericalInput)<{ $loading: boolean }>`
 `
 
 interface SwapCurrencyInputPanelProps {
-  value: string
+  value: any
   onUserInput: (value: string) => void
   onMax?: () => void
   showMaxButton: boolean
   label?: string
-  onCurrencySelect?: (currency: number) => void
+  onCurrencySelect?: (currency: TokenType) => void
   currency?: TokenType | null
   hideBalance?: boolean
   hideInput?: boolean
-  otherCurrency?: string | null
+  otherCurrency?: TokenType | null
   fiatValue?: { data?: number; isLoading: boolean }
   priceImpact?: string
   id: string
