@@ -12,7 +12,7 @@ import OutlinedInput from "@mui/material/OutlinedInput";
 import InputAdornment from "@mui/material/InputAdornment";
 
 import BigNumber from "bignumber.js";
-import { MintButton } from "./Buttons/MintButton";
+import { MintButton } from "../components/Buttons/MintButton";
 import { useTokens } from "../hooks/useTokens";
 import { TokenType } from "../interfaces";
 import { useFormattedTokenBalance } from "../hooks";

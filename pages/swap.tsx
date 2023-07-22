@@ -38,13 +38,8 @@ const SwapSection = styled('div')(({ theme }) => ({
 }));
 
 export default function SwapPage() {
-  const [inputAmount, setInputAmount] = useState();
-  const [selectedToken, setSelectedToken] = useState({
-    "token_id": "b00817cae188c95611f69ab7ec194c09ca5e5a2561572179da28910840e835b6",
-    "token_address": "CCYAQF6K4GEMSVQR62NLP3AZJQE4UXS2EVQVOILZ3IUJCCCA5A23NDDB",
-    "token_name": "AAAA",
-    "token_symbol": "AAAA"
-  })
+  const [inputAmount, setInputAmount] = useState<number>(0);
+  const [selectedToken, setSelectedToken] = useState<TokenType|null>(null)
 
   const handleInputSelect = useCallback(
     (inputCurrency: TokenType) => {
@@ -54,8 +49,9 @@ export default function SwapPage() {
     []
   )
 
-  const handleMaxInput = useCallback(() => {
+  const handleMaxInput = useCallback((maxValue: number) => {
     console.log("MAX INPUT")
+    setInputAmount(maxValue)
   }, [])
 
   const fiatValueInput = {data: 0, isLoading: false}
