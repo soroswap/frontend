@@ -11,7 +11,7 @@ import { TokenMapType, TokenType } from "../interfaces";
 import { useEffect, useState } from "react";
 //TODO: create Liquidity Pool Balances
 
-export function useTokenBalance(tokenAddress: string, userAddress: string) {
+export function useTokenScVal(tokenAddress: string, userAddress: string) {
   const sorobanContext = useSorobanReact();
 
   const address = userAddress;
@@ -51,7 +51,7 @@ export function useFormattedTokenBalance(
   userAddress: string,
 ) {
   // console.log("tokenAddress: ", tokenAddress);
-  const tokenBalance = useTokenBalance(tokenAddress, userAddress);
+  const tokenBalance = useTokenScVal(tokenAddress, userAddress);
   const tokenDecimals = useTokenDecimals(tokenAddress);
   const formattedBalance = formatAmount(
     scvalToBigNumber(tokenBalance?.result),
@@ -81,3 +81,20 @@ export function useTokenBalances(userAddress: string, tokens: TokenType[] | Toke
   };
 }
 
+export function useTokenBalance(userAddress: string, token: TokenType) {
+  const address = userAddress;
+  const balance = {
+      balance: useFormattedTokenBalance(token.token_address, address),
+      usdValue: 0,//should get usd value
+      symbol: token.token_symbol,
+      address: token.token_address,
+    };
+
+  // Calculate the loading state
+  const loading = false;
+
+  return {
+    balance: balance,
+    loading: loading,
+  };
+}

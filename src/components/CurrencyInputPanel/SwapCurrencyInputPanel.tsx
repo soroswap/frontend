@@ -160,7 +160,7 @@ interface SwapCurrencyInputPanelProps {
   onMax: (maxValue: number) => void
   showMaxButton: boolean
   label?: string
-  onCurrencySelect?: (currency: TokenType) => void
+  onCurrencySelect: (currency: TokenType) => void
   currency?: TokenType | null
   hideBalance?: boolean
   hideInput?: boolean
@@ -229,9 +229,7 @@ export default function SwapCurrencyInputPanel({
             hideInput={hideInput}
             className="open-currency-select-button"
             onClick={() => {
-              if (onCurrencySelect) {
                 setModalOpen(true)
-              }
             }}
           >
             <Aligner>
@@ -247,7 +245,7 @@ export default function SwapCurrencyInputPanel({
                     : currency?.token_symbol) || 'Select token'}
                 </StyledTokenName>
               </RowFixed>
-              {onCurrencySelect && <StyledDropDown selected={!!currency} />}
+              {<StyledDropDown selected={!!currency} />}
             </Aligner>
           </CurrencySelect>
         </InputRow>
@@ -272,7 +270,7 @@ export default function SwapCurrencyInputPanel({
           </FiatRow>
         )}
       </Container>
-      {onCurrencySelect && (
+      
         <CurrencySearchModal
           isOpen={modalOpen}
           onDismiss={handleDismissSearch}
@@ -283,7 +281,7 @@ export default function SwapCurrencyInputPanel({
           showCurrencyAmount={showCurrencyAmount}
           disableNonToken={disableNonToken}
         />
-      )}
+      
     </InputPanel>
   )
 }

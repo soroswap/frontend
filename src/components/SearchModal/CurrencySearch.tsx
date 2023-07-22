@@ -112,42 +112,9 @@ export function CurrencySearch({
     return Object.values(defaultTokens).filter(getTokenFilter(debouncedQuery))
   }, [defaultTokens, debouncedQuery])
 
-  // const { data, loading: balancesAreLoading } = useCachedPortfolioBalancesQuery({ address })
-  const { balances: data, loading: balancesAreLoading } = useTokenBalances(address??"", defaultTokens);
-  const balances: TokenBalancesMap = useMemo(() => {
-    return (
-      data.reduce((balanceMap, tokenBalance) => {
-        const address = tokenBalance.address
-        const usdValue = tokenBalance.usdValue
-        const balance = tokenBalance.balance
-        balanceMap[address] = { usdValue, balance: balance ?? 0 }
-        return balanceMap
-      }, {} as TokenBalancesMap) ?? {}
-    )
-  }, [data])
 
-  const sortedTokens: TokenType[] = useMemo(
-    () =>
-      !balancesAreLoading
-        ? filteredTokens
-            .filter((token) => {
-              if (onlyShowCurrenciesWithBalance) {
-                return Number(balances[token.token_address]?.balance) > 0
-              }
-              return true
-            })
-            .sort(tokenComparator.bind(null, balances))
-        : filteredTokens,
-    [
-      balancesAreLoading,
-      filteredTokens,
-      balances,
-      onlyShowCurrenciesWithBalance,
-    ]
-  )
-  const isLoading = Boolean(balancesAreLoading && !tokenLoaderTimerElapsed)
 
-  const searchCurrencies = useSortTokensByQuery(debouncedQuery, sortedTokens)
+  const searchCurrencies = useSortTokensByQuery(debouncedQuery, filteredTokens)
 
   const handleCurrencySelect = useCallback(
     (currency: TokenType, hasWarning?: boolean) => {
@@ -252,7 +219,7 @@ export function CurrencySearch({
             )}
           />
         </Column>
-      ) : searchCurrencies?.length > 0 || isLoading ? (
+      ) : searchCurrencies?.length > 0 ? (
         <div style={{ flex: '1' }}>
           <AutoSizer disableWidth>
               {({ height }: {height: number})  => (
@@ -264,10 +231,8 @@ export function CurrencySearch({
                   selectedCurrency={selectedCurrency}
                   fixedListRef={fixedList}
                   showCurrencyAmount={showCurrencyAmount}
-                  isLoading={isLoading}
                   searchQuery={searchQuery}
                   isAddressSearch={isAddressSearch}
-                  balances={balances}
                 />
               )
             }
