@@ -155,10 +155,8 @@ export default function CurrencyList({
   otherCurrency,
   fixedListRef,
   showCurrencyAmount,
-  //isLoading,
   searchQuery,
   isAddressSearch,
-  //balances,
 }: {
   height: number
   currencies: TokenType[]
@@ -168,10 +166,8 @@ export default function CurrencyList({
   otherCurrency?: TokenType | null
   fixedListRef?: MutableRefObject<FixedSizeList | undefined>
   showCurrencyAmount?: boolean
-  //isLoading: boolean
   searchQuery: string
   isAddressSearch: string | false
-  //balances: TokenBalancesMap
 }) {
   const itemData: TokenType[] = useMemo(() => {
     if (otherListTokens && otherListTokens?.length > 0) {
@@ -202,7 +198,6 @@ export default function CurrencyList({
             otherSelected={otherSelected}
             showCurrencyAmount={showCurrencyAmount}
             eventProperties={formatAnalyticsEventProperties(token, index, data, searchQuery, isAddressSearch)}
-            //balance={balance}
           />
         )
       } else {
