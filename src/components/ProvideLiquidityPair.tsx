@@ -5,7 +5,7 @@ import { SorobanContextType } from "@soroban-react/core";
 import BigNumber from "bignumber.js";
 import { DepositButton } from "../components/Buttons/DepositButton";
 import getLpTokensAmount from "../functions/getLpTokensAmount";
-import { useTokenBalance, useTokenDecimals } from "../hooks";
+import { useTokenScVal, useTokenDecimals } from "../hooks";
 import { formatAmount, scvalToBigNumber } from "../helpers/utils";
 import { useTotalShares } from "../hooks/useTotalShares";
 import { useTokensFromPair } from "../hooks/useTokensFromPair";
@@ -45,7 +45,7 @@ export function ProvideLiquidityPair({
       setToken1(tokens.find(token => token.token_address === tokensFromPair?.token1)??null);
     }, [setToken0, setToken1, tokensFromPair, tokens])
     const reserves = useReservesBigNumber(pairAddress, sorobanContext);
-    const pairBalance = useTokenBalance(pairAddress, sorobanContext.address!).result;
+    const pairBalance = useTokenScVal(pairAddress, sorobanContext.address!).result;
     const tokenDecimals = useTokenDecimals(pairAddress);
     const totalShares = useTotalShares(pairAddress, sorobanContext)
     let expectedLpTokens = getLpTokensAmount(

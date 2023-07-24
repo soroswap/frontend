@@ -1,5 +1,5 @@
 import { SorobanContextType } from "@soroban-react/core";
-import { useTokenBalance, useTokenDecimals } from "../hooks";
+import { useToken, useTokenScVal, useTokenDecimals } from "../hooks";
 import { formatAmount, scvalToBigNumber } from "../helpers/utils";
 
 interface PairBalanceProps {
@@ -8,7 +8,7 @@ interface PairBalanceProps {
 }
 
 export function PairBalance({ pairAddress, sorobanContext }: PairBalanceProps) {
-  const pairBalance = useTokenBalance(pairAddress, sorobanContext.address!);
+  const pairBalance = useTokenScVal(pairAddress, sorobanContext.address!);
   const tokenDecimals = useTokenDecimals(pairAddress);
 
   return (
