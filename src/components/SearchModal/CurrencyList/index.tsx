@@ -9,6 +9,7 @@ import Row, { RowFixed } from "components/Row"
 import { CSSProperties, MutableRefObject, useCallback, useMemo } from "react"
 import { LoadingRows, MenuItem } from "../styleds"
 import Loader from 'components/Icons/LoadingSpinner'
+import { useTokenBalance } from 'hooks'
 
 function currencyKey(currency: TokenType): string {
   return currency.token_id ? currency.token_address : 'ETHER'
@@ -53,7 +54,6 @@ export function CurrencyRow({
   style,
   showCurrencyAmount,
   eventProperties,
-  balance,
 }: {
   currency: TokenType
   onSelect: (hasWarning: boolean) => void
@@ -62,10 +62,10 @@ export function CurrencyRow({
   style?: CSSProperties
   showCurrencyAmount?: boolean
   eventProperties: Record<string, unknown>
-  balance?: string
 }) {
   const { address } = useSorobanReact()
   const key = currencyKey(currency)
+  const { balance, loading } = useTokenBalance(address!, currency)
   
   const warning = false
   const isBlockedToken = false
@@ -99,7 +99,7 @@ export function CurrencyRow({
     </AutoColumn>
     {showCurrencyAmount ? (
       <RowFixed style={{ justifySelf: 'flex-end' }}>
-        {address ? balance ? <Balance balance={Number(balance)} /> : <Loader /> : null}
+        {address ? balance ? <Balance balance={Number(balance.balance)} /> : <Loader /> : null}
         {isSelected && <CheckIcon />}
       </RowFixed>
     ) : (
@@ -155,10 +155,8 @@ export default function CurrencyList({
   otherCurrency,
   fixedListRef,
   showCurrencyAmount,
-  isLoading,
   searchQuery,
   isAddressSearch,
-  balances,
 }: {
   height: number
   currencies: TokenType[]
@@ -168,10 +166,8 @@ export default function CurrencyList({
   otherCurrency?: TokenType | null
   fixedListRef?: MutableRefObject<FixedSizeList | undefined>
   showCurrencyAmount?: boolean
-  isLoading: boolean
   searchQuery: string
   isAddressSearch: string | false
-  balances: TokenBalancesMap
 }) {
   const itemData: TokenType[] = useMemo(() => {
     if (otherListTokens && otherListTokens?.length > 0) {
@@ -186,17 +182,13 @@ export default function CurrencyList({
 
       const currency = row
 
-      const balance = balances[currency.token_address].balance ?? 0
-
       const isSelected = Boolean(currency && selectedCurrency && selectedCurrency == (currency))
       const otherSelected = Boolean(currency && otherCurrency && otherCurrency == (currency))
       const handleSelect = (hasWarning: boolean) => currency && onCurrencySelect(currency, hasWarning)
 
       const token = currency
 
-      if (isLoading) {
-        return LoadingRow()
-      } else if (currency) {
+      if (currency) {
         return (
           <CurrencyRow
             style={style}
@@ -206,14 +198,13 @@ export default function CurrencyList({
             otherSelected={otherSelected}
             showCurrencyAmount={showCurrencyAmount}
             eventProperties={formatAnalyticsEventProperties(token, index, data, searchQuery, isAddressSearch)}
-            balance={balance}
           />
         )
       } else {
         return null
       }
     },
-    [balances, selectedCurrency, otherCurrency, isLoading, onCurrencySelect, showCurrencyAmount, searchQuery, isAddressSearch]
+    [selectedCurrency, otherCurrency, onCurrencySelect, showCurrencyAmount, searchQuery, isAddressSearch]
   )
 
   const itemKey = useCallback((index: number, data: typeof itemData) => {
@@ -223,18 +214,7 @@ export default function CurrencyList({
 
   return (
     <ListWrapper data-testid="currency-list-wrapper">
-      {isLoading ? (
-        <FixedSizeList
-          height={height}
-          ref={fixedListRef as any}
-          width="100%"
-          itemData={[]}
-          itemCount={10}
-          itemSize={56}
-        >
-          {LoadingRow}
-        </FixedSizeList>
-      ) : (
+      {(
         <FixedSizeList
           height={height}
           ref={fixedListRef as any}

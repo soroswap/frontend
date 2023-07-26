@@ -13,7 +13,7 @@ import { useTokensFromPair } from "../hooks/useTokensFromPair";
 import { useTokenBalances, useTokens } from "../hooks";
 import { formatAmount, scvalToBigNumber } from "../helpers/utils";
 import { useMemo } from "react";
-import { SwapButton } from "./Buttons/SwapButton";
+import { SwapButton } from "../components/Buttons/SwapButton";
 
 
 

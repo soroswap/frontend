@@ -15,6 +15,7 @@ import { BodySmall } from "../Text"
 import CurrencySearchModal from "../SearchModal/CurrencySearchModal"
 import { FiatValue } from "./FiatValue"
 import { useFormattedTokenBalance, useTokenBalance } from "hooks"
+import CurrencyBalance from "./CurrencyBalance"
 
 const InputPanel = styled('div')<{ hideInput?: boolean }>`
   ${flexColumnNoWrap};
@@ -145,26 +146,6 @@ const StyledTokenName = styled('span')<{ active?: boolean }>`
   font-weight: 600;
 `
 
-const StyledBalanceMax = styled('button')<{ disabled?: boolean }>`
-  background-color: transparent;
-  border: none;
-  color: ${({ theme }) => theme.palette.custom.borderColor};
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: 600;
-  opacity: ${({ disabled }) => (!disabled ? 1 : 0.4)};
-  padding: 4px 6px;
-  pointer-events: ${({ disabled }) => (!disabled ? 'initial' : 'none')};
-
-  :hover {
-    opacity: ${({ disabled }) => (!disabled ? 0.8 : 0.4)};
-  }
-
-  :focus {
-    outline: none;
-  }
-`
-
 const StyledNumericalInput = styled(NumericalInput)<{ $loading: boolean }>`
   ${loadingOpacityMixin};
   text-align: left;
@@ -176,10 +157,10 @@ const StyledNumericalInput = styled(NumericalInput)<{ $loading: boolean }>`
 interface SwapCurrencyInputPanelProps {
   value: any
   onUserInput: (value: string) => void
-  onMax?: () => void
+  onMax: (maxValue: number) => void
   showMaxButton: boolean
   label?: string
-  onCurrencySelect?: (currency: TokenType) => void
+  onCurrencySelect: (currency: TokenType) => void
   currency?: TokenType | null
   hideBalance?: boolean
   hideInput?: boolean
@@ -220,7 +201,6 @@ export default function SwapCurrencyInputPanel({
 }: SwapCurrencyInputPanelProps) {
   const [modalOpen, setModalOpen] = useState(false)
   const { address, activeChain } = useSorobanReact()
-  const selectedCurrencyBalance = 1000 //useFormattedTokenBalance(currency?.token_address, address)
   const theme = useTheme()
 
   const handleDismissSearch = useCallback(() => {
@@ -249,9 +229,7 @@ export default function SwapCurrencyInputPanel({
             hideInput={hideInput}
             className="open-currency-select-button"
             onClick={() => {
-              if (onCurrencySelect) {
                 setModalOpen(true)
-              }
             }}
           >
             <Aligner>
@@ -267,7 +245,7 @@ export default function SwapCurrencyInputPanel({
                     : currency?.token_symbol) || 'Select token'}
                 </StyledTokenName>
               </RowFixed>
-              {onCurrencySelect && <StyledDropDown selected={!!currency} />}
+              {<StyledDropDown selected={!!currency} />}
             </Aligner>
           </CurrencySelect>
         </InputRow>
@@ -277,21 +255,14 @@ export default function SwapCurrencyInputPanel({
               <LoadingOpacityContainer $loading={loading}>
                 {fiatValue && <FiatValue fiatValue={fiatValue} />}
               </LoadingOpacityContainer>
-              {address ? (
-                <RowFixed style={{ height: '17px' }}>
-                  <BodySmall
-                    color={theme.palette.secondary.main}
-                  >
-                    {!hideBalance && currency && selectedCurrencyBalance ? (
-                      `Balance: ${selectedCurrencyBalance}`
-                    ) : null}
-                  </BodySmall>
-                  {showMaxButton && Number(selectedCurrencyBalance) > 0 ? (
-                    <StyledBalanceMax onClick={onMax}>
-                      Max
-                    </StyledBalanceMax>
-                  ) : null}
-                </RowFixed>
+              {address && currency? (
+                <CurrencyBalance 
+                  address={address} 
+                  currency={currency} 
+                  onMax={onMax}
+                  hideBalance={hideBalance}
+                  showMaxButton={showMaxButton}
+                  />
               ) : (
                 <span />
               )}
@@ -299,7 +270,7 @@ export default function SwapCurrencyInputPanel({
           </FiatRow>
         )}
       </Container>
-      {onCurrencySelect && (
+      
         <CurrencySearchModal
           isOpen={modalOpen}
           onDismiss={handleDismissSearch}
@@ -310,7 +281,7 @@ export default function SwapCurrencyInputPanel({
           showCurrencyAmount={showCurrencyAmount}
           disableNonToken={disableNonToken}
         />
-      )}
+      
     </InputPanel>
   )
 }
