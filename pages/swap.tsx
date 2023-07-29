@@ -2,7 +2,7 @@ import SEO from "../src/components/SEO";
 import { ChooseTokens } from "../src/components/ChooseTokens";
 import { ArrowWrapper, SwapWrapper } from "../src/components/Swap/styleds";
 import SwapHeader from "../src/components/Swap/SwapHeader";
-import { styled } from "@mui/material";
+import { styled, useTheme } from "@mui/material";
 import { opacify } from "../src/themes/utils";
 import SwapCurrencyInputPanel from "../src/components/CurrencyInputPanel/SwapCurrencyInputPanel";
 import { useCallback, useEffect, useState } from "react";
@@ -66,6 +66,7 @@ export const ArrowContainer = styled('div')`
 
 
 export default function SwapPage() {
+  const theme = useTheme()
   const [inputAmount, setInputAmount] = useState<number>(0);
   const [outputAmount, setOutputAmount] = useState<number>(0);
   const [selectedToken, setSelectedToken] = useState<TokenType|null>(null)
@@ -230,10 +231,7 @@ export default function SwapPage() {
             >
               <ArrowDown
                 size="16"
-                color={
-                  "white"
-                  //currencies[Field.INPUT] && currencies[Field.OUTPUT] ? theme.textPrimary : theme.textTertiary
-                }
+                color={theme.palette.primary.main}
               />
             </ArrowContainer>
         </ArrowWrapper>

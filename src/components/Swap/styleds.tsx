@@ -17,7 +17,6 @@ export const SwapWrapper = styled('main')`
   }
 `
 
-
 export const ArrowWrapper = styled('div')<{clickable: boolean }>`
   border-radius: 12px;
   height: 40px;
@@ -27,9 +26,9 @@ export const ArrowWrapper = styled('div')<{clickable: boolean }>`
   margin-bottom: -18px;
   margin-left: auto;
   margin-right: auto;
-  background-color: ${({ theme }) => theme.palette.customBackground.surface};
+  background-color: ${({ theme }) => theme.palette.customBackground.interactive};
   border: 4px solid;
-  border-color: ${({ theme }) => theme.palette.secondary.main};
+  border-color: ${({ theme }) => theme.palette.customBackground.surface};
   z-index: 2;
   ${({ clickable }) =>
     clickable

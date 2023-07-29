@@ -13,7 +13,7 @@ import { useTokens } from "hooks/useTokens";
 import { useTokensFromPair } from "hooks/useTokensFromPair";
 import { useReservesBigNumber } from "hooks/useReserves";
 import { useTokenBalances } from "hooks";
-import { Button as RebassButton, ButtonProps as ButtonPropsOriginal } from 'rebass/styled-components'
+import { Button as RebassButton, ButtonProps as ButtonPropsOriginal } from '@mui/material'
 import { darken } from "polished";
 import { BodyPrimary } from "components/Text";
 
