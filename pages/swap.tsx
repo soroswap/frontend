@@ -11,7 +11,7 @@ import { ArrowDown } from "react-feather";
 import { AutoColumn } from "components/Column";
 import { useSorobanReact } from "@soroban-react/core";
 import { useTokens } from "hooks/useTokens";
-import { useAllPairsFromTokens } from "hooks/usePairExist";
+import { useAllPairsFromTokens, usePairExist } from "hooks/usePairExist";
 import { useTokenBalances } from "hooks/useBalances";
 import { SwapButtonNew } from "components/Buttons/SwapButtonNew";
 import { AllPairs } from "components/AllPairs";
@@ -19,6 +19,7 @@ import { useReservesBigNumber } from "hooks/useReserves";
 import BigNumber from "bignumber.js";
 import fromExactInputGetExpectedOutput from "functions/fromExactInputGetExpectedOutput";
 import fromExactOutputGetExpectedInput from "functions/fromExactOutputGetExpectedInput";
+import { usePairContractAddress } from "hooks/usePairContractAddress";
 
 
 const SwapSection = styled('div')(({ theme }) => ({
@@ -73,44 +74,49 @@ export default function SwapPage() {
   const [token1, setToken1] = useState<TokenType | null>(null);
   const sorobanContext = useSorobanReact();
   const tokens = useTokens(sorobanContext);
-  console.log(tokens)
-  const [allPairs, setAllPairs] = useState<any[]>([]);
-  const [pairExist, setPairExist] = useState<boolean | undefined>(
-    undefined,
+  //const [allPairs, setAllPairs] = useState<any[]>([]);
+  //const [pairExist, setPairExist] = useState<boolean>(false);
+  //const [pairAddress, setPairAddress] = useState<string | null>(null);
+  const pairExist = usePairExist(
+    selectedToken?.token_address??null,
+    selectedTokenOutput?.token_address??null,
+    sorobanContext,
   );
-  const [pairAddress, setPairAddress] = useState<string | undefined>(
-    undefined,
+  const pairAddress = usePairContractAddress(
+    selectedToken?.token_address??null,
+    selectedTokenOutput?.token_address??null,
+    sorobanContext,
   );
   const reserves = useReservesBigNumber(pairAddress??"", sorobanContext);
 
-  function getPairExists(token0: any, token1: any, allPairs: any) {
-    return allPairs.some((pair: any) => {
-      return (
-        (pair.token_0 === token0 && pair.token_1 === token1) 
-        ||(pair.token_0 === token1 && pair.token_1 === token0)
-      );
-    });
-  }
+  // function getPairExists(token0: any, token1: any, allPairs: any) {
+  //   return allPairs.some((pair: any) => {
+  //     return (
+  //       (pair.token_0 === token0 && pair.token_1 === token1) 
+  //       ||(pair.token_0 === token1 && pair.token_1 === token0)
+  //     );
+  //   });
+  // }
 
-  useEffect(() => {
-    // Code to run when the component mounts or specific dependencies change
-    setPairExist(getPairExists(selectedToken, selectedTokenOutput, allPairs));
+  // useEffect(() => {
+  //   // Code to run when the component mounts or specific dependencies change
+  //   //setPairExist(getPairExists(selectedToken, selectedTokenOutput, allPairs));
 
-    let selectedPair = allPairs.find((pair: any) => {
-      return (
-        (pair.token_0.token_address === selectedToken?.token_address &&
-        pair.token_1.token_address === selectedTokenOutput?.token_address) 
-        || (pair.token_1.token_address === selectedToken?.token_address &&
-          pair.token_0.token_address === selectedTokenOutput?.token_address)
-      );
-    });
-    if (selectedPair) setPairAddress(selectedPair.pair_address);
+  //   let selectedPair = allPairs.find((pair: any) => {
+  //     return (
+  //       (pair.token_0.token_address === selectedToken?.token_address &&
+  //       pair.token_1.token_address === selectedTokenOutput?.token_address) 
+  //       || (pair.token_1.token_address === selectedToken?.token_address &&
+  //         pair.token_0.token_address === selectedTokenOutput?.token_address)
+  //     );
+  //   });
+  //   if (selectedPair) setPairAddress(selectedPair.pair_address);
 
-    console.log(
-      "🚀 ~ file: ChooseTokens.tsx:88 ~ React.useEffect ~ getPairExists(inputToken, outputToken, allPairs):",
-      getPairExists(selectedToken, selectedTokenOutput, allPairs),
-    );
-  }, [selectedToken, selectedTokenOutput, allPairs]);
+  //   console.log(
+  //     "🚀 ~ file: ChooseTokens.tsx:88 ~ React.useEffect ~ getPairExists(inputToken, outputToken, allPairs):",
+  //     getPairExists(selectedToken, selectedTokenOutput, allPairs),
+  //   );
+  // }, [selectedToken, selectedTokenOutput, allPairs]);
   
   const handleInputSelect = useCallback(
     (inputCurrency: TokenType) => {
@@ -149,6 +155,7 @@ export default function SwapPage() {
   };
 
   const handleOutputTokenAmountChange = (value: number) => {
+      setOutputAmount(value);
       let output = fromExactOutputGetExpectedInput(
         pairAddress??"", 
         BigNumber(value).shiftedBy(7), 
@@ -179,7 +186,16 @@ export default function SwapPage() {
     <>
       <SEO title="Swap - Soroswap" description="Soroswap Swap" />
       <SwapWrapper>
-        {tokens.length > 0 && sorobanContext.address!=null && <AllPairs tokens={tokens} setPairs={setAllPairs} sorobanContext={sorobanContext} />}
+        {
+        //selectedToken!==null && selectedTokenOutput!==null && sorobanContext.address!==null &&
+        // <AllPairs 
+        //   selectedToken={selectedToken}
+        //   selectedOutputToken={selectedTokenOutput}
+        //   setPairAddress={setPairAddress}
+        //   setPairExist={setPairExist}
+        //   sorobanContext={sorobanContext} 
+        //   />
+        }
         <SwapHeader />
         <div style={{ display: 'relative' }}>
           <SwapSection>
@@ -257,7 +273,6 @@ export default function SwapPage() {
         </div>
       </AutoColumn>
       </SwapWrapper>
-      {/* <ChooseTokens isLiquidity={false} /> */}
     </>
   );
 }

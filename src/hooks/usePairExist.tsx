@@ -5,18 +5,25 @@ import { useFactory } from "./useFactory";
 import { TokenType } from "../interfaces";
 import { useSorobanReact } from "@soroban-react/core";
 import { usePairContractAddress } from "./usePairContractAddress";
+import { xdr } from "soroban-client";
+import { useEffect, useState } from "react";
 
 export function usePairExistScVal(
-  token_address_0: string,
-  token_address_1: string,
+  token_address_0: string|null,
+  token_address_1: string|null,
   sorobanContext: SorobanContextType,
 ) {
-  let pairExist;
-  const addressScVal0 = accountToScVal(token_address_0);
-  const addressScVal1 = accountToScVal(token_address_1);
-  const params = [addressScVal0, addressScVal1];
-
+  const [params, setParams] = useState<xdr.ScVal[]>([]);
+  useEffect(() => {
+    if (token_address_0 !== null && token_address_1 !== null) {
+      const addressScVal0 = accountToScVal(token_address_0);
+      const addressScVal1 = accountToScVal(token_address_1);
+      setParams([]);
+      setParams([addressScVal0, addressScVal1]);
+    }
+  }, [token_address_0, token_address_1])
   const factory = useFactory(sorobanContext);
+  console.log(params)
   const pairExistScVal = useContractValue({
     contractId: factory.factory_address,
     method: "pair_exists",
@@ -33,8 +40,8 @@ function formatBool(pairExistScVal: any) {
   }
 }
 export function usePairExist(
-  token_address_0: string,
-  token_address_1: string,
+  token_address_0: string|null,
+  token_address_1: string|null,
   sorobanContext: SorobanContextType,
 ): boolean {
   const pairExistScVal = usePairExistScVal(
@@ -43,15 +50,6 @@ export function usePairExist(
     sorobanContext,
   );
   const pairExist = formatBool(pairExistScVal);
-
-  console.log(
-    "Checking token ",
-    token_address_0,
-    "and token ",
-    token_address_1,
-    "pair exist: ",
-    pairExist,
-  );
 
   return pairExist;
 }
@@ -90,7 +88,7 @@ export function useAllPairsFromTokens(tokens: TokenType[], sorobanContext: Sorob
   for (let i = 0; i < tokens.length; i++) {
     for (let j = i + 1; j < tokens.length; j++) {
       // eslint-disable-next-line react-hooks/rules-of-hooks
-      const pairExists = usePairExist(
+      const pairExist = usePairExist(
         tokens[i].token_address,
         tokens[j].token_address,
         sorobanContext,
@@ -102,7 +100,7 @@ export function useAllPairsFromTokens(tokens: TokenType[], sorobanContext: Sorob
         sorobanContext,
       );
 
-      if (pairExists) {
+      if (pairExist) {
         console.log("pair address", pairAddress);
         allPairs.push({
           token_0: tokens[i],
