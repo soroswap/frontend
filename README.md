@@ -1,4 +1,4 @@
-# 🌟 Soroswap Frontend 🌟
+# 🌟 Soroswap Frontend  @ Soroban Preview 10🌟
 
 Welcome to Soroswap, a decentralized exchange (DEX) that draws inspiration from the Uniswap V2 protocol and is specifically tailored for the Soroban network.
 
