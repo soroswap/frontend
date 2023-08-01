@@ -7,7 +7,7 @@ import BigNumber from "bignumber.js";
 import {
   contractTransaction,
   useSendTransaction,
-} from "@soroban-react/contracts";
+} from "../../soroban-react/contracts";
 import { useKeys } from "../../hooks";
 import { bigNumberToI128 } from "../../helpers/utils";
 
@@ -48,6 +48,7 @@ export function MintButton({
     const options = {
       secretKey: admin_secret,
       sorobanContext,
+      
     };
 
     if(!account) {
@@ -58,16 +59,29 @@ export function MintButton({
       console.log("Error on adminSource:",adminSource)
       return
     }
+    console.log("🚀 ~ file: MintButton.tsx:70 ~ mintTokens ~ networkPassphrase:", networkPassphrase)
+    console.log("🚀 ~ file: MintButton.tsx:68 ~ mintTokens ~ adminSource:", adminSource)
+    console.log("🚀 ~ file: MintButton.tsx:72 ~ mintTokens ~ tokenId:", tokenId)
+    console.log("🚀 ~ file: MintButton.tsx:75 ~ mintTokens ~ account:", account)
 
+    let tx
     try {
       //Builds the transaction
-      let tx = contractTransaction({
+      tx = contractTransaction({
         source: adminSource,
         networkPassphrase,
         contractId: tokenId,
         method: "mint",
         params: [new SorobanClient.Address(account).toScVal(), amountScVal],
       });
+      
+      
+    } catch (error) {
+      console.log("🚀 « error: contractTransaction: ", error);
+    }
+    
+    console.log("🚀 ~ file: MintButton.tsx:66 ~ mintTokens ~ tx:", tx)
+    try{
 
       //Sends the transactions to the blockchain
       let result = await sendTransaction(tx, options);
@@ -82,7 +96,7 @@ export function MintButton({
       //This will connect again the wallet to fetch its data
       sorobanContext.connect();
     } catch (error) {
-      console.log("🚀 « error:", error);
+      console.log("🚀 « error: sendTransaction: ", error);
     }
 
     setSubmitting(false);

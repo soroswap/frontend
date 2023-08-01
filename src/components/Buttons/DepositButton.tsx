@@ -3,7 +3,7 @@ import {
   contractTransaction,
   useContractValue,
   useSendTransaction,
-} from "@soroban-react/contracts";
+} from "../../soroban-react/contracts";
 import { accountToScVal, bigNumberToI128 } from "../../helpers/utils";
 import BigNumber from "bignumber.js";
 import { useState } from "react";
