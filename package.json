@@ -14,6 +14,7 @@
     "@mui/icons-material": "^5.13.7",
     "@mui/material": "^5.10.17",
     "@next/font": "13.0.7",
+    "@reduxjs/toolkit": "^1.9.5",
     "@soroban-react/chains": "^5.3.12",
     "@soroban-react/contracts": "^5.3.12",
     "@soroban-react/core": "^5.3.12",

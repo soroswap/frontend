@@ -20,6 +20,9 @@ import BigNumber from "bignumber.js";
 import fromExactInputGetExpectedOutput from "functions/fromExactInputGetExpectedOutput";
 import fromExactOutputGetExpectedInput from "functions/fromExactOutputGetExpectedInput";
 import { usePairContractAddress } from "hooks/usePairContractAddress";
+import { ButtonError, ButtonLight, ButtonPrimary } from "components/Buttons/Button";
+import { GrayCard } from "components/Card";
+import { ButtonText } from "components/Text";
 
 
 const SwapSection = styled('div')(({ theme }) => ({
@@ -74,6 +77,7 @@ export default function SwapPage() {
   const [token0, setToken0] = useState<TokenType | null>(null);
   const [token1, setToken1] = useState<TokenType | null>(null);
   const sorobanContext = useSorobanReact();
+  const { address, connect } = sorobanContext
   const tokens = useTokens(sorobanContext);
   //const [allPairs, setAllPairs] = useState<any[]>([]);
   //const [pairExist, setPairExist] = useState<boolean>(false);
@@ -169,8 +173,8 @@ export default function SwapPage() {
 
   const fiatValueInput = {data: 0, isLoading: false}
   const fiatValueOutput = {data: 0, isLoading: false}
-  const showFiatValueInput = true
-  const showFiatValueOutput = true
+  const showFiatValueInput = false //TODO: Change this
+  const showFiatValueOutput = false //TODO: Change this
   const showMaxButton = true //This could be Boolean(maxInputAmount?.greaterThan(0) && !parsedAmounts[Field.INPUT]?.equalTo(maxInputAmount))
 
   const onSwitchTokens = () => {
@@ -183,6 +187,12 @@ export default function SwapPage() {
     setOutputAmount(amount)
   }
 
+  const swapIsUnsupported = false//useIsSwapUnsupported(currencies[Field.INPUT], currencies[Field.OUTPUT])
+  const routeNotFound = false //Insufficient liquidity
+  const swapInputError = false
+  const priceImpactSeverity = 2 //IF is < 2 it shows Swap anyway button in red
+  const routeIsSyncing = true
+  const routeIsLoading = false
   return (
     <>
       <SEO title="Swap - Soroswap" description="Soroswap Swap" />
@@ -198,6 +208,34 @@ export default function SwapPage() {
         //   />
         }
         <SwapHeader />
+        {/* {trade && showConfirm && (
+          <ConfirmSwapModal
+            trade={trade}
+            inputCurrency={inputCurrency}
+            originalTrade={tradeToConfirm}
+            onAcceptChanges={handleAcceptChanges}
+            onCurrencySelection={onCurrencySelection}
+            swapResult={swapResult}
+            allowedSlippage={allowedSlippage}
+            onConfirm={handleSwap}
+            allowance={allowance}
+            swapError={swapError}
+            onDismiss={handleConfirmDismiss}
+            swapQuoteReceivedDate={swapQuoteReceivedDate}
+            fiatValueInput={fiatValueTradeInput}
+            fiatValueOutput={fiatValueTradeOutput}
+          />
+        )}
+        {showPriceImpactModal && showPriceImpactWarning && (
+          <PriceImpactModal
+            priceImpact={largerPriceImpact}
+            onDismiss={() => setShowPriceImpactModal(false)}
+            onContinue={() => {
+              setShowPriceImpactModal(false)
+              handleContinueToReview()
+            }}
+          />
+        )} */}
         <div style={{ display: 'relative' }}>
           <SwapSection>
             <SwapCurrencyInputPanel
@@ -214,7 +252,7 @@ export default function SwapPage() {
               //otherCurrency={selectedTokenOutput}
               // showCommonBases
               // id={InterfaceSectionName.CURRENCY_INPUT_PANEL}
-              // loading={independentField === Field.OUTPUT && routeIsSyncing}
+              // loading={independentField === Field.OUTPUT && routeIsSyncing} //TODO: ENABLE LOADING
 
               value={inputAmount}
               currency={selectedToken}
@@ -231,14 +269,14 @@ export default function SwapPage() {
             >
               <ArrowDown
                 size="16"
-                color={theme.palette.primary.main}
+                color={selectedToken && selectedTokenOutput ? theme.palette.primary.main : theme.palette.custom.textTertiary }//currencies[Field.INPUT] && currencies[Field.OUTPUT] ? theme.palette.custom.textTertiary}
               />
             </ArrowContainer>
-        </ArrowWrapper>
+          </ArrowWrapper>
         </div>
-      <AutoColumn gap="xs">
-        <div>
-          <OutputSwapSection>
+        <AutoColumn gap="xs">
+          <div>
+            <OutputSwapSection>
               <SwapCurrencyInputPanel
                 id={""} 
                 value={outputAmount}
@@ -257,19 +295,60 @@ export default function SwapPage() {
                 //id={InterfaceSectionName.CURRENCY_OUTPUT_PANEL}
                 //loading={independentField === Field.INPUT && routeIsSyncing}
               />
-          </OutputSwapSection>
-          {pairExist && selectedTokenOutput && selectedToken && pairAddress && <SwapButtonNew
-            sorobanContext={sorobanContext}
-            pairAddress={pairAddress}
-            inputTokenAmount={inputAmount}
-            outputTokenAmount={outputAmount}
-            setToken0={setToken0}
-            setToken1={setToken1}
-            isBuy={selectedToken?.token_address==token1?.token_address}
-            tokens={tokens}
-          />}
-        </div>
-      </AutoColumn>
+            </OutputSwapSection>
+          </div>
+          {/* {showDetailsDropdown && (
+            <SwapDetailsDropdown
+              trade={trade}
+              syncing={routeIsSyncing}
+              loading={routeIsLoading}
+              allowedSlippage={allowedSlippage}
+            />
+          )} */}
+          {/* {showPriceImpactWarning && <PriceImpactWarning priceImpact={largerPriceImpact} />} */}
+          <div>
+            {swapIsUnsupported ? (
+              <ButtonPrimary disabled={true}>
+                <ButtonText mb="4px">
+                  Unsupported Asset
+                </ButtonText>
+              </ButtonPrimary>
+            ) : !address ? (
+              <ButtonLight onClick={() => connect()} fontWeight={600}>
+                Connect Wallet
+              </ButtonLight>
+            ) : routeNotFound ? (
+              <GrayCard style={{ textAlign: 'center' }}>
+                <ButtonText mb="4px">
+                  Insufficient liquidity for this trade.
+                </ButtonText>
+              </GrayCard>
+            ) : (
+              <ButtonError
+                onClick={() => {
+                  console.log("Price impact error button")
+                  // showPriceImpactWarning ? setShowPriceImpactModal(true) : handleContinueToReview()
+                }}
+                id="swap-button"
+                data-testid="swap-button"
+                // disabled={!getIsValidSwapQuote(trade, tradeState, swapInputError)}
+                error={!swapInputError && priceImpactSeverity > 2}//&& allowance.state === AllowanceState.ALLOWED}
+              >
+                <ButtonText fontSize={20} fontWeight={600}>
+                  {swapInputError ? (
+                    swapInputError
+                  ) : routeIsSyncing || routeIsLoading ? (
+                    <>Swap</>
+                  ) : priceImpactSeverity > 2 ? (
+                    <>Swap Anyway</>
+                  ) : (
+                    <>Swap</>
+                  )}
+                </ButtonText>
+              </ButtonError>
+            )}
+          </div>
+        </AutoColumn>
       </SwapWrapper>
     </>
   );
