@@ -13,7 +13,8 @@ export const useTokens = (sorobanContext: SorobanContextType) => {
     fetcher,
   );
   let tokens: TokenType[] = [];
-
+  
+  //TODO: Hardcode one activeChain for default tokens
   const filtered = data?.filter(
     (item: tokensResponse) =>
       item.network === sorobanContext?.activeChain?.name?.toLowerCase(),

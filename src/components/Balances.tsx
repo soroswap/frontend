@@ -34,10 +34,6 @@ interface WalletBalancesProps {
 const WalletBalances = ({ address, tokens }: WalletBalancesProps) => {
   let tokenBalancesResponse;
   tokenBalancesResponse = useTokenBalances(address, tokens);
-  console.log(
-    "🚀 ~ file: Balances.tsx:42 ~ WalletBalances ~ tokenBalancesResponse:",
-    tokenBalancesResponse,
-  );
 
   return (
     <>

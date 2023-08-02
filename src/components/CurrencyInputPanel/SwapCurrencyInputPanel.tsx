@@ -1,7 +1,7 @@
 // import { Trans } from '@lingui/macro'
 import { ButtonBase, styled, useTheme } from "@mui/material"
 import { flexColumnNoWrap, flexRowNoWrap } from "../../themes/styles"
-import React, { useCallback, useState } from "react"
+import React, { ReactNode, useCallback, useState } from "react"
 import { useSorobanReact } from "@soroban-react/core"
 import { Input as NumericalInput } from '../NumericalInput'
 import { LoadingOpacityContainer, loadingOpacityMixin } from "../Loader/styled"
@@ -161,7 +161,7 @@ interface SwapCurrencyInputPanelProps {
   onUserInput: (value: string) => void
   onMax: (maxValue: number) => void
   showMaxButton: boolean
-  label?: string
+  label?: ReactNode
   onCurrencySelect: (currency: TokenType) => void
   currency?: TokenType | null
   hideBalance?: boolean
