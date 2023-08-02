@@ -1,7 +1,12 @@
-import { SorobanContextType } from '@soroban-react/core'
 import React from 'react'
-
+import { SorobanContextType } from '@soroban-react/core'
 import * as SorobanClient from 'soroban-client'
+import type { Account, Memo, MemoType, Operation, Transaction } from 'soroban-client';
+
+export type Tx = Transaction<Memo<MemoType>, Operation[]>
+
+export type Transaction = SorobanClient.Transaction | SorobanClient.FeeBumpTransaction
+
 
 export function strToScVal(base64Xdr: string): SorobanClient.xdr.ScVal {
   return SorobanClient.xdr.ScVal.fromXDR(Buffer.from(base64Xdr, 'base64'));
@@ -26,10 +31,12 @@ export function contractTransaction({
   params,
 }: contractTransactionProps): SorobanClient.Transaction {
   let myParams: SorobanClient.xdr.ScVal[] = params || []
+
   const contract = new SorobanClient.Contract(contractId)
+
   return new SorobanClient.TransactionBuilder(source, {
     // TODO: Figure out the fee
-    fee: '100',
+    fee: (100).toString(10),
     networkPassphrase,
   })
     .addOperation(contract.call(method, ...myParams))
@@ -45,14 +52,13 @@ export interface SendTransactionResult<E = Error> {
   isLoading: boolean
   isSuccess: boolean
   sendTransaction: (
-    txn?: Transaction,
+    txn?: Tx,
     opts?: SendTransactionOptions
   ) => Promise<SorobanClient.xdr.ScVal>
   reset: () => void
   status: TransactionStatus
 }
 
-type Transaction = SorobanClient.Transaction | SorobanClient.FeeBumpTransaction
 
 export interface SendTransactionOptions {
   timeout?: number
@@ -65,7 +71,7 @@ export interface SendTransactionOptions {
 // send a transaction. Upon sending, it will poll server.getTransactionStatus,
 // until the transaction succeeds/fails, and return the result.
 export function useSendTransaction<E = Error>(
-  defaultTxn?: Transaction,
+  defaultTxn?: Tx,
   defaultOptions?: SendTransactionOptions
 ): SendTransactionResult<E> {
   const [status, setState] = React.useState<TransactionStatus>('idle')
@@ -74,21 +80,13 @@ export function useSendTransaction<E = Error>(
   // we don't need anymore a useCallback hook. Convert useSendTransaction to a
   const sendTransaction = React.useCallback(
     async function (
-      passedTxn?: Transaction,
+      passedTxn?: Tx,
       passedOptions?: SendTransactionOptions
     ): Promise<SorobanClient.xdr.ScVal> {
-      // console.log("passedTxn: ", passedTxn)
-      // console.log("passedOptions: ", passedOptions)
 
-      let sorobanContext: SorobanContextType | undefined
-
-      if (passedOptions?.sorobanContext) {
-        sorobanContext = passedOptions?.sorobanContext
-      }
+      let sorobanContext: SorobanContextType | undefined = passedOptions?.sorobanContext
       let txn = passedTxn ?? defaultTxn
-      // console.log("sorobanContext.activeConnector: ", sorobanContext?.activeConnector)
-      // console.log("sorobanContext.activeChain: ", sorobanContext?.activeChain)
-
+      
       if (!(passedOptions?.secretKey || sorobanContext?.activeConnector)) {
         throw new Error(
           'No secret key or active wallet. Provide at least one of those'
@@ -116,10 +114,10 @@ export function useSendTransaction<E = Error>(
         ...passedOptions,
       }
       const networkPassphrase = activeChain.networkPassphrase
-      setState('loading')
+      setState('loading') 
 
       // preflight and add the footprint
-      if (!skipAddingFootprint) {
+      if (true) {
         txn = await server.prepareTransaction(txn, networkPassphrase)
         if (!txn) {
           throw new Error('No transaction after adding footprint')
