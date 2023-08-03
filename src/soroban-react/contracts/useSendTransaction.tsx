@@ -5,7 +5,9 @@ import type { Account, Memo, MemoType, Operation, Transaction } from 'soroban-cl
 
 export type Tx = Transaction<Memo<MemoType>, Operation[]>
 
-export type Transaction = SorobanClient.Transaction | SorobanClient.FeeBumpTransaction
+export type TransactionStatus = 'idle' | 'error' | 'loading' | 'success'
+
+export class NotImplementedError extends Error { }
 
 
 export function strToScVal(base64Xdr: string): SorobanClient.xdr.ScVal {
@@ -13,7 +15,6 @@ export function strToScVal(base64Xdr: string): SorobanClient.xdr.ScVal {
 }
 
 
-export type TransactionStatus = 'idle' | 'error' | 'loading' | 'success'
 
 export interface contractTransactionProps {
   networkPassphrase: string
@@ -116,22 +117,46 @@ export function useSendTransaction<E = Error>(
       const networkPassphrase = activeChain.networkPassphrase
       setState('loading') 
 
-      // preflight and add the footprint
-      if (true) {
-        txn = await server.prepareTransaction(txn, networkPassphrase)
-        if (!txn) {
-          throw new Error('No transaction after adding footprint')
-        }
+      const simulated = await server.simulateTransaction(txn)
+      console.log("🚀 ~ file: useSendTransaction.tsx:123 ~ simulated:", simulated)
+      
+      // is it possible for `auths` to be present but empty? Probably not, but let's be safe.
+      const auths = simulated.results?.[0]?.auth
+      let auth_len =  auths?.length ?? 0;
+
+      if (auth_len > 1) {
+        throw new NotImplementedError("Multiple auths not yet supported")
+      } else if (auth_len == 1) {
+        // TODO: figure out how to fix with new SorobanClient
+        // const auth = SorobanClient.xdr.SorobanAuthorizationEntry.fromXDR(auths![0]!, 'base64')
+        // if (auth.addressWithNonce() !== undefined) {
+        //   throw new NotImplementedError(
+        //     `This transaction needs to be signed by ${auth.addressWithNonce()
+        //     }; Not yet supported`
+        //   )
+        // }
       }
 
-      let signed = ''
+     txn = SorobanClient.assembleTransaction(txn, networkPassphrase, simulated) as Tx
+
+      // // preflight and add the footprint
+      // if (true) {
+      //   txn = await server.prepareTransaction(txn, networkPassphrase)
+      //   if (!txn) {
+      //     throw new Error('No transaction after adding footprint')
+      //   }
+      // }
+      // console.log("🚀 ~ file: useSendTransaction.tsx:147 ~ txn:", txn)
+
+      let signed;
       if (passedOptions?.secretKey) {
         // User as set a secretKey, txn will be signed using the secretKey
         const keypair = SorobanClient.Keypair.fromSecret(
           passedOptions.secretKey
         )
         txn.sign(keypair)
-        signed = txn.toXDR()
+        signed = txn.toXDR();
+        
       } else {
         // User has not set a secretKey, txn will be signed using the Connector (wallet) provided in the sorobanContext
         signed = await activeConnector.signTransaction(txn.toXDR(), {
@@ -139,13 +164,16 @@ export function useSendTransaction<E = Error>(
         })
       }
 
-      const transactionToSubmit = SorobanClient.TransactionBuilder.fromXDR(
-        signed,
+      let signedTx: Tx = SorobanClient.TransactionBuilder.fromXDR(
+        signed ,
         networkPassphrase
-      )
-      const { hash, errorResultXdr } = await server.sendTransaction(
-        transactionToSubmit
-      )
+      ) as Tx
+
+      const sendTransactionResponse = await server.sendTransaction(signedTx)
+      console.log("🚀 ~ file: useSendTransaction.tsx:175 ~ sendTransactionResponse:", sendTransactionResponse)
+
+      const { hash, errorResultXdr } = sendTransactionResponse
+
       if (errorResultXdr) {
         setState('error')
         throw new Error(errorResultXdr)
