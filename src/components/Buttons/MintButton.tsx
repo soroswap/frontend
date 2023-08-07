@@ -7,7 +7,7 @@ import BigNumber from "bignumber.js";
 import {
   contractTransaction,
   useSendTransaction,
-} from "../../soroban-react/contracts";
+} from "@soroban-react/contracts";
 import { useKeys } from "../../hooks";
 import { bigNumberToI128 } from "../../helpers/utils";
 
