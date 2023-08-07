@@ -5,7 +5,9 @@ Welcome to Soroswap, a decentralized exchange (DEX) that draws inspiration from 
 
 Before you begin, ensure you have met the following requirements:
 
-    You have Docker installed. This repository is tested and confirmed to work with Docker version 24.0.2. Other versions might not be compatible and may cause issues.
+- docker >= v24.0.2
+- Freighter Wallet v5.2.3
+
 
 ## 🛠 Setting Up Soroswap 🛠
 
