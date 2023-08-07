@@ -24,6 +24,7 @@ import { CreatePairButton } from "../components/Buttons/CreatePairButton";
 import fromExactInputGetExpectedOutput from "../functions/fromExactInputGetExpectedOutput";
 import fromExactOutputGetExpectedInput from "../functions/fromExactOutputGetExpectedInput";
 import { useTokenBalances } from "../hooks";
+import { usePairContractAddress } from "hooks/usePairContractAddress";
 
 
 export function ChooseTokens({ isLiquidity }: { isLiquidity: boolean }) {
@@ -77,6 +78,7 @@ function ChooseTokensWallet({
   const tokenBalancesResponse = useTokenBalances(sorobanContext.address??"", tokens);
 
   function getPairExists(token0: any, token1: any, allPairs: any) {
+
     return allPairs.some((pair: any) => {
       return (
         (pair.token_0 === token0 && pair.token_1 === token1) 

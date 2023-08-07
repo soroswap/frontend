@@ -31,7 +31,7 @@ export const LoadingRows = styled('div')`
 
 export const loadingOpacityMixin = css`
   filter: grayscale(1);
-  opacity: '0.4';
+  opacity: 0.4;
   transition: opacity 0.2s ease-in-out;
 `
 

@@ -1,7 +1,7 @@
 // import { Trans } from '@lingui/macro'
 import { ButtonBase, styled, useTheme } from "@mui/material"
 import { flexColumnNoWrap, flexRowNoWrap } from "../../themes/styles"
-import React, { useCallback, useState } from "react"
+import React, { ReactNode, useCallback, useState } from "react"
 import { useSorobanReact } from "@soroban-react/core"
 import { Input as NumericalInput } from '../NumericalInput'
 import { LoadingOpacityContainer, loadingOpacityMixin } from "../Loader/styled"
@@ -54,7 +54,7 @@ const CurrencySelect = styled(ButtonBase)<{
   background-color: ${({ selected, theme }) => (selected ? theme.palette.customBackground.interactive : theme.palette.custom.borderColor)};
   opacity: ${({ disabled }) => (!disabled ? 1 : 0.4)};
   box-shadow: ${({ selected }) => (selected ? 'none' : '0px 6px 10px rgba(0, 0, 0, 0.075)')};
-  color: ${({theme}) => theme.palette.primary.main};
+  color: ${({ selected, theme }) => (selected ? theme.palette.primary.main : "#FFFFFF")};
   height: unset;
   border-radius: 16px;
   outline: none;
@@ -147,7 +147,9 @@ const StyledTokenName = styled('span')<{ active?: boolean }>`
 `
 
 const StyledNumericalInput = styled(NumericalInput)<{ $loading: boolean }>`
-  ${loadingOpacityMixin};
+  filter: ${({ $loading }) => ($loading ? 'grayscale(1)' : 'none')};
+  opacity: ${({ $loading }) => ($loading ? '0.4' : '1')};
+  transition: opacity 0.2s ease-in-out;
   text-align: left;
   font-size: 36px;
   line-height: 44px;
@@ -159,7 +161,7 @@ interface SwapCurrencyInputPanelProps {
   onUserInput: (value: string) => void
   onMax: (maxValue: number) => void
   showMaxButton: boolean
-  label?: string
+  label?: ReactNode
   onCurrencySelect: (currency: TokenType) => void
   currency?: TokenType | null
   hideBalance?: boolean

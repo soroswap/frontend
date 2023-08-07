@@ -66,7 +66,7 @@ export function useTokenBalances(userAddress: string, tokens: TokenType[] | Toke
     return {
       // eslint-disable-next-line react-hooks/rules-of-hooks
       balance: useFormattedTokenBalance(token.token_address, address),
-      usdValue: 0,//should get usd value
+      usdValue: 0,//TODO: should get usd value
       symbol: token.token_symbol,
       address: token.token_address,
     };
