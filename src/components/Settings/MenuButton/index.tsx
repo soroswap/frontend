@@ -1,5 +1,5 @@
 import { t, Trans } from '@lingui/macro'
-import { ReactComponent as Settings } from 'assets/svg/settings.svg'
+import TuneRoundedIcon from '@mui/icons-material/TuneRounded';
 import Row from 'components/Row'
 import { useUserSlippageTolerance } from 'state/user/hooks'
 import { SlippageTolerance } from 'state/user/types'
@@ -7,7 +7,7 @@ import styled from 'styled-components/macro'
 import { ThemedText } from 'theme'
 import validateUserSlippageTolerance, { SlippageValidationResult } from 'utils/validateUserSlippageTolerance'
 
-const Icon = styled(Settings)`
+const Icon = styled(TuneRoundedIcon)`
   height: 24px;
   width: 24px;
   > * {
@@ -35,7 +35,7 @@ const IconContainer = styled(Row)`
   border-radius: 16px;
 `
 
-const IconContainerWithSlippage = styled(IconContainer)<{ displayWarning?: boolean }>`
+const IconContainerWithSlippage = styled(IconContainer) <{ displayWarning?: boolean }>`
   div {
     color: ${({ theme, displayWarning }) => (displayWarning ? theme.accentWarning : theme.textSecondary)};
   }

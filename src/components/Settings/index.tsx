@@ -1,26 +1,26 @@
-import { Percent } from '@uniswap/sdk-core'
-import { useWeb3React } from '@web3-react/core'
+// import { Percent } from '@uniswap/sdk-core'
+import { useState } from 'react'
+import { useSorobanReact } from '@soroban-react/core'
 import AnimatedDropdown from 'components/AnimatedDropdown'
 import { AutoColumn } from 'components/Column'
-import { isSupportedChain, L2_CHAIN_IDS } from 'constants/chains'
-import useDisableScrolling from 'hooks/useDisableScrolling'
 import { useOnClickOutside } from 'hooks/useOnClickOutside'
 import { useRef } from 'react'
-import { useModalIsOpen, useToggleSettingsMenu } from 'state/application/hooks'
-import { ApplicationModal } from 'state/application/reducer'
-import { InterfaceTrade } from 'state/routing/types'
-import { isUniswapXTrade } from 'state/routing/utils'
 import styled from 'styled-components/macro'
-import { Divider } from 'theme'
 
 import MaxSlippageSettings from './MaxSlippageSettings'
 import MenuButton from './MenuButton'
-import RouterPreferenceSettings from './RouterPreferenceSettings'
-import TransactionDeadlineSettings from './TransactionDeadlineSettings'
 
 const Menu = styled.div`
   position: relative;
 `
+export const Divider = styled("div")(({ theme }) => ({
+  width: "100%",
+  height: "1px",
+  borderWidth: 0,
+  margin: 0,
+  backgroundColor: theme.palette.secondary.main,
+}))
+
 
 const MenuFlyout = styled(AutoColumn)`
   min-width: 20.125rem;
@@ -50,43 +50,27 @@ const ExpandColumn = styled(AutoColumn)`
 export default function SettingsTab({
   autoSlippage,
   chainId,
-  trade,
 }: {
-  autoSlippage: Percent
+  autoSlippage: number
   chainId?: number
-  trade?: InterfaceTrade
 }) {
-  const { chainId: connectedChainId } = useWeb3React()
-  const showDeadlineSettings = Boolean(chainId && !L2_CHAIN_IDS.includes(chainId))
+  const { address } = useSorobanReact()
 
   const node = useRef<HTMLDivElement | null>(null)
-  const isOpen = useModalIsOpen(ApplicationModal.SETTINGS)
+  const [isOpen, setIsOpen] = useState(false)
+  const toggleMenu = () => setIsOpen(!isOpen)
 
-  const toggleMenu = useToggleSettingsMenu()
   useOnClickOutside(node, isOpen ? toggleMenu : undefined)
-
-  useDisableScrolling(isOpen)
-
-  const isChainSupported = isSupportedChain(chainId)
 
   return (
     <Menu ref={node}>
-      <MenuButton disabled={!isChainSupported || chainId !== connectedChainId} isActive={isOpen} onClick={toggleMenu} />
+      <MenuButton disabled={!address} isActive={isOpen} onClick={toggleMenu} />
       {isOpen && (
         <MenuFlyout>
-          <AutoColumn gap="16px">
-            <RouterPreferenceSettings />
-          </AutoColumn>
-          <AnimatedDropdown open={!isUniswapXTrade(trade)}>
+          <AnimatedDropdown open={true}>
             <ExpandColumn>
               <Divider />
               <MaxSlippageSettings autoSlippage={autoSlippage} />
-              {showDeadlineSettings && (
-                <>
-                  <Divider />
-                  <TransactionDeadlineSettings />
-                </>
-              )}
             </ExpandColumn>
           </AnimatedDropdown>
         </MenuFlyout>
