@@ -159,6 +159,7 @@ export default function SwapPage() {
   const handleInputSelect = useCallback(
     (inputCurrency: TokenType) => {
       onCurrencySelection(Field.INPUT, inputCurrency)
+      setSelectedToken(inputCurrency)
     },
     [ onCurrencySelection]
   )
@@ -166,6 +167,7 @@ export default function SwapPage() {
   const handleOutputSelect = useCallback(
     (outputCurrency: TokenType) => {
       onCurrencySelection(Field.OUTPUT, outputCurrency)
+      setSelectedTokenOutput(outputCurrency)
     },
     [onCurrencySelection]
   )
@@ -387,6 +389,19 @@ export default function SwapPage() {
               </ButtonError>
             )}
           </div>
+          {
+          //Button to test logic of swap, replace after for the correct button
+          pairAddress!==undefined&&selectedToken!==null&&selectedTokenOutput!==null?
+          <SwapButtonNew
+            sorobanContext={sorobanContext}
+            pairAddress={pairAddress}
+            inputTokenAmount={inputAmount}
+            outputTokenAmount={outputAmount}
+            setToken0={setToken0}
+            setToken1={setToken1}
+            tokens={tokens}
+            isBuy={selectedToken?.token_address==token1?.token_address}
+          />:null}
         </AutoColumn>
       </SwapWrapper>
     </>
