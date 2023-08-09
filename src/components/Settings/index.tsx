@@ -5,9 +5,9 @@ import AnimatedDropdown from 'components/AnimatedDropdown'
 import { AutoColumn } from 'components/Column'
 import { useOnClickOutside } from 'hooks/useOnClickOutside'
 import { useRef } from 'react'
-import { styled, useTheme } from "@mui/material"
+import { styled } from "@mui/material"
 
-// import MaxSlippageSettings from './MaxSlippageSettings'
+import MaxSlippageSettings from './MaxSlippageSettings'
 import MenuButton from './MenuButton'
 
 const Menu = styled("div")`
@@ -38,6 +38,8 @@ const MenuFlyout = styled(AutoColumn)`
   user-select: none;
   padding: 16px;
   `
+
+// TODO: Check if menu is showing for mobile
 // ${({ theme }) => theme.deprecated_mediaWidth.deprecated_upToMedium`
 //   min-width: 18.125rem;
 // `};
@@ -59,8 +61,6 @@ export default function SettingsTab({
   const node = useRef<HTMLDivElement | null>(null)
   const [isOpen, setIsOpen] = useState(false)
   const toggleMenu = () => {
-    // console.log("toggleMenu clicked")
-    // console.log("isOpen", isOpen)
     setIsOpen(!isOpen)
   }
 
@@ -74,7 +74,7 @@ export default function SettingsTab({
           <AnimatedDropdown open={true}>
             <ExpandColumn>
               <Divider />
-              {/* <MaxSlippageSettings autoSlippage={autoSlippage} /> */}
+              <MaxSlippageSettings autoSlippage={autoSlippage} />
             </ExpandColumn>
           </AnimatedDropdown>
         </MenuFlyout>
