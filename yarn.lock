@@ -1451,6 +1451,11 @@
     "@jridgewell/resolve-uri" "3.1.0"
     "@jridgewell/sourcemap-codec" "1.4.14"
 
+"@juanelas/base64@^1.1.2":
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/@juanelas/base64/-/base64-1.1.2.tgz#968ff0f9c48adcfa79a0802385d56a2a661cb6cd"
+  integrity sha512-mr2pfRQpWap0Uq4tlrCgp3W+Yjx1/Bpq4QJsYeAQUh1mExgyQvXz7xUhmYT2HcLLspuAL5dpnos8P2QhaCSXsQ==
+
 "@lingui/conf@4.3.0":
   version "4.3.0"
   resolved "https://registry.yarnpkg.com/@lingui/conf/-/conf-4.3.0.tgz#714c6b1b0415cb8af922daf0bc38c7339b40fada"
@@ -2330,6 +2335,13 @@ base64-js@^1.3.1:
   version "1.5.1"
   resolved "https://registry.yarnpkg.com/base64-js/-/base64-js-1.5.1.tgz#1b1b440160a5bf7ad40b650f095963481903930a"
   integrity sha512-AKpaYlHn8t4SVbOHCy+b5+KKgvR4vrsD8vbvrbiQJps7fKDTkjkDry6ji0rUJjC0kzbNePLwzxq8iypo41qeWA==
+
+bigint-conversion@^2.4.1:
+  version "2.4.1"
+  resolved "https://registry.yarnpkg.com/bigint-conversion/-/bigint-conversion-2.4.1.tgz#b473c39edbba9f62922908b37fd3461bec3bc9cb"
+  integrity sha512-/DTRevseMZoqN4KLkN5BryOiom0KbwYajiXG5Vo+ZcEPAO0WBZyZoYyDZSgfeq/v/oegLo9bjdndDBlExvAhBQ==
+  dependencies:
+    "@juanelas/base64" "^1.1.2"
 
 bignumber.js@^9.1.0, bignumber.js@^9.1.1:
   version "9.1.1"

@@ -11,6 +11,11 @@ import {
 import { useAllPairsFromTokens, usePairExist } from "./usePairExist";
 import { SorobanContext, useSorobanReact } from "@soroban-react/core";
 import { usePairContractAddress } from "./usePairContractAddress";
+import { useContractValue } from "@soroban-react/contracts";
+import { accountToScVal } from "helpers/soroban";
+import { contractInvoke } from "soroban/useContractValue";
+import { useFactory } from "./useFactory";
+import { addressToScVal, scValStrToJs } from "helpers/convert";
 
 const TRADE_NOT_FOUND = {
   state: TradeState.NO_ROUTE_FOUND,
@@ -29,10 +34,10 @@ export function useBestTrade(
   amountSpecified?: { currency: TokenType | null | undefined; value: string },
   otherCurrency?: TokenType,
   account?: string,
-): {
+): Promise<{
   state: TradeState;
   trade?: InterfaceTrade;
-} {
+}> {
   const sorobanContext = useSorobanReact();
   //TODO: Set the trade specs, getQuote
   const trade = {
@@ -42,12 +47,27 @@ export function useBestTrade(
     },
   };
 
-  const test = usePairContractAddress(
-    amountSpecified?.currency?.token_address ?? null,
-    otherCurrency?.token_address ?? null,
-    sorobanContext,
-  );
-  console.log("🚀 « test:", test);
+  const factory = useFactory(sorobanContext);
+  console.log("🚀 « factory:", factory);
+
+  if (
+    amountSpecified?.currency?.token_address &&
+    otherCurrency?.token_address
+  ) {
+    contractInvoke({
+      contractAddress: factory.factory_address,
+      method: "get_pair",
+      args: [
+        addressToScVal(amountSpecified?.currency?.token_address),
+        addressToScVal(otherCurrency?.token_address),
+      ],
+      sorobanContext,
+    }).then((response) => {
+      if (response) {
+        console.log("contractInvoke: ", scValStrToJs(response.xdr) as string);
+      }
+    });
+  }
 
   const tradeResult = { state: QuoteState.NOT_FOUND, trade: trade }; //should get the pair address and quotes
 
