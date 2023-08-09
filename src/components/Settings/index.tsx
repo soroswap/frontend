@@ -73,7 +73,6 @@ export default function SettingsTab({
         <MenuFlyout>
           <AnimatedDropdown open={true}>
             <ExpandColumn>
-              <Divider />
               <MaxSlippageSettings autoSlippage={autoSlippage} />
             </ExpandColumn>
           </AnimatedDropdown>
