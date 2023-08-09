@@ -7,7 +7,7 @@ import React, { useState } from 'react'
 // import { useUserSlippageTolerance } from 'state/user/hooks'
 // import { SlippageTolerance } from 'state/user/types'
 // import styled from 'styled-components/macro'
-import { styled, useTheme } from "@mui/material"
+import { styled, Typography, useTheme } from "@mui/material"
 // import { ThemedText } from 'theme'
 import { Alert } from '@mui/material'
 import { Input, InputContainer } from '../Input'
@@ -30,7 +30,7 @@ const Option = styled(Row) <{ isActive: boolean }>`
 const Switch = styled(Row)`
   width: auto;
   padding: 4px;
-  border: 1px solid ${({ theme }) => theme.palette.custom.borderColor};
+  border: 1px solid ${({ theme }) => theme.palette.customBackground.outline};
   border-radius: 16px;
 `
 
@@ -43,6 +43,8 @@ const MAXIMUM_RECOMMENDED_SLIPPAGE = 1
 const DEFAULT_SLIPPAGE_INPUT_VALUE = 0.5
 
 export default function MaxSlippageSettings({ autoSlippage }: { autoSlippage: number }) {
+
+  const theme = useTheme();
   // const [userSlippageTolerance, setUserSlippageTolerance] = useUserSlippageTolerance()
   const [userSlippageTolerance, setUserSlippageTolerance] = useState(DEFAULT_SLIPPAGE_INPUT_VALUE)
 
@@ -109,9 +111,9 @@ export default function MaxSlippageSettings({ autoSlippage }: { autoSlippage: nu
       onToggle={() => setIsOpen(!isOpen)}
       header={
         <Row width="auto">
-          {/* <ThemedText.BodySecondary> */}
-          <div>Max slippage</div>
-          {/* </ThemedText.BodySecondary> */}
+          <Typography color={theme.palette.secondary.main}>
+            Max slippage
+          </Typography>
           <QuestionHelper
             text={
               <div>Your transaction will revert if the price changes unfavorably by more than this percentage.</div>
@@ -120,15 +122,13 @@ export default function MaxSlippageSettings({ autoSlippage }: { autoSlippage: nu
         </Row>
       }
       button={
-        // <ThemedText.BodyPrimary>
-        <div>
+        <Typography color={theme.palette.primary.main}>
           {userSlippageTolerance === DEFAULT_SLIPPAGE_INPUT_VALUE ? (
             <div>Auto</div>
           ) : (
             `${userSlippageTolerance.toFixed(2)}%`
           )}
-        </div>
-        // </ThemedText.BodyPrimary>
+        </Typography>
       }
     >
       <RowBetween gap="md">
@@ -141,9 +141,9 @@ export default function MaxSlippageSettings({ autoSlippage }: { autoSlippage: nu
             }}
             isActive={userSlippageTolerance === DEFAULT_SLIPPAGE_INPUT_VALUE}
           >
-            {/* <ThemedText.BodyPrimary> */}
-            <div>Auto</div>
-            {/* </ThemedText.BodyPrimary> */}
+            <Typography color={theme.palette.primary.main}>
+              <div>Auto</div>
+            </Typography>
           </Option>
           <Option
             onClick={() => {
@@ -152,9 +152,9 @@ export default function MaxSlippageSettings({ autoSlippage }: { autoSlippage: nu
             }}
             isActive={userSlippageTolerance !== DEFAULT_SLIPPAGE_INPUT_VALUE}
           >
-            {/* <ThemedText.BodyPrimary> */}
-            <div>Custom</div>
-            {/* </ThemedText.BodyPrimary> */}
+            <Typography color={theme.palette.primary.main}>
+              <div>Custom</div>
+            </Typography>
           </Option>
         </Switch>
         <InputContainer gap="md" error={!!slippageError}>
@@ -169,7 +169,10 @@ export default function MaxSlippageSettings({ autoSlippage }: { autoSlippage: nu
               setSlippageError(false)
             }}
           />
-          {/* <ThemedText.BodyPrimary>%</ThemedText.BodyPrimary> */}
+          <Typography color={theme.palette.primary.main}>
+            %
+          </Typography>
+
         </InputContainer>
       </RowBetween>
       {
