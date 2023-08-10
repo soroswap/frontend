@@ -9,7 +9,7 @@ export type InvokeArgs = {
   args?: SorobanClient.xdr.ScVal[] | undefined
   signAndSend?: boolean; 
   fee?: number;
-  skipAddingFootprint?: bool;
+  skipAddingFootprint?: boolean;
   secretKey?: string;
   sorobanContext: SorobanContextType
   };
@@ -42,7 +42,7 @@ export async function contractInvoke({
       ? await server?.getAccount(address)
       : new SorobanClient.Account(defaultAddress, "0");   
       
-    const contract = new SorobanClient.Contract(contractAddress);
+    const contract = new SorobanClient.Contract(contractAddress); 
   
     let txn = new SorobanClient.TransactionBuilder(source, {
       fee: fee.toString(10),
