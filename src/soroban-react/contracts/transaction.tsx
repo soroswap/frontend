@@ -6,14 +6,17 @@ import { Sign } from 'crypto';
 export type SignAndSendArgs = {
   txn: Transaction,
   secretKey?: string,
+  skipAddingFootprint?: boolean,
   sorobanContext: SorobanContextType
 };
 
 export async function signAndSendTransaction({
   txn,
   secretKey,
+  skipAddingFootprint = false,
   sorobanContext
 }:SignAndSendArgs){
+
   let networkPassphrase = sorobanContext.activeChain?.networkPassphrase
   console.log("🚀 ~ file: transaction.tsx:18 ~ networkPassphrase:", networkPassphrase)
   let server = sorobanContext.server
@@ -22,6 +25,14 @@ export async function signAndSendTransaction({
   if (!secretKey && !sorobanContext.activeConnector) throw Error("signAndSend: no secretKey neither activeConnector")
   if (!server) throw Error("signAndSend: no server")
   if (!networkPassphrase) throw Error("signAndSend: no networkPassphrase")
+
+  // preflight and add the footprint
+  if (!skipAddingFootprint) {
+    txn = await server.prepareTransaction(txn, networkPassphrase)
+    if (!txn) {
+      throw new Error('No transaction after adding footprint')
+    }
+  }
   
   // // is it possible for `auths` to be present but empty? Probably not, but let's be safe.
   // const auths = simulated.results?.[0]?.auth;
@@ -47,12 +58,13 @@ export async function signAndSendTransaction({
     const keypair = SorobanClient.Keypair.fromSecret(secretKey)
     txn.sign(keypair)
     signed = txn.toXDR()
-  } else {
+  } else if (sorobanContext.activeConnector){
     // User has not set a secretKey, txn will be signed using the Connector (wallet) provided in the sorobanContext
     signed = await sorobanContext.activeConnector.signTransaction(txn.toXDR(), {
       networkPassphrase,
     })
   }
+  else {throw new Error("signAndSendTransaction: no secretKey, neither active Connector")}
 
   const transactionToSubmit = SorobanClient.TransactionBuilder.fromXDR(
     signed,

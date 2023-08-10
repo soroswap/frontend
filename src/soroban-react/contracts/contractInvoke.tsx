@@ -2,6 +2,7 @@ import * as SorobanClient from 'soroban-client'
 import { SorobanContextType } from '@soroban-react/core'
 import type {Transaction, Tx} from './types'
 import { signAndSendTransaction } from './transaction'
+import { contractTransaction } from './contractTransaction'
 
 export type InvokeArgs = {
   contractAddress: string
@@ -29,28 +30,38 @@ export async function contractInvoke({
     sorobanContext,
   }: InvokeArgs) {
     const { server, address, activeChain } = sorobanContext;
-
+    
     if(!activeChain){throw new Error('No active Chain')}
     if(!server){throw new Error('No connected to a Server')}
-    if(signAndSend && !source && !secretKey && !sorobanContext.activeConnector){
+    if(signAndSend && !secretKey && !sorobanContext.activeConnector){
       throw new Error("contractInvoke: You are trying to sign a txn without providing a source, secretKey or active connector")
     }
-
+    
+    const networkPassphrase = activeChain?.networkPassphrase
     const source = secretKey
     ? await server.getAccount(SorobanClient.Keypair.fromSecret(secretKey).publicKey())
     : address
       ? await server?.getAccount(address)
       : new SorobanClient.Account(defaultAddress, "0");   
+
+    //Builds the transaction
+    let txn = contractTransaction({
+      source,
+      networkPassphrase,
+      contractAddress,
+      method,
+      args,
+    });
       
-    const contract = new SorobanClient.Contract(contractAddress); 
+    // const contract = new SorobanClient.Contract(contractAddress); 
   
-    let txn = new SorobanClient.TransactionBuilder(source, {
-      fee: fee.toString(10),
-      networkPassphrase: activeChain?.networkPassphrase,
-    })
-      .addOperation(contract.call(method, ...args))
-      .setTimeout(SorobanClient.TimeoutInfinite)
-      .build();
+    // let txn = new SorobanClient.TransactionBuilder(source, {
+    //   fee: fee.toString(10),
+    //   networkPassphrase: activeChain?.networkPassphrase,
+    // })
+    //   .addOperation(contract.call(method, ...args))
+    //   .setTimeout(SorobanClient.TimeoutInfinite)
+    //   .build();
   
     const simulated = await server?.simulateTransaction(txn);
   
@@ -68,15 +79,7 @@ export async function contractInvoke({
       return results[0];
     }
     else {
-
-      // preflight and add the footprint
-      if (!skipAddingFootprint) {
-        txn = await server.prepareTransaction(txn, activeChain?.networkPassphrase) as Tx
-        if (!txn) {
-          throw new Error('No transaction after adding footprint')
-        }
-      }
-
-      return await signAndSendTransaction({txn,secretKey,sorobanContext});
+      // If signAndSend
+      return await signAndSendTransaction({txn,skipAddingFootprint, secretKey,sorobanContext});
     }
   }

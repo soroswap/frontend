@@ -5,20 +5,20 @@ import * as SorobanClient from 'soroban-client'
 export interface contractTransactionProps {
     networkPassphrase: string
     source: SorobanClient.Account
-    contractId: string
+    contractAddress: string
     method: string
-    params?: SorobanClient.xdr.ScVal[]
+    args?: SorobanClient.xdr.ScVal[]
   }
   
   export function contractTransaction({
     networkPassphrase,
     source,
-    contractId,
+    contractAddress,
     method,
-    params,
+    args,
   }: contractTransactionProps): SorobanClient.Transaction {
-    let myParams: SorobanClient.xdr.ScVal[] = params || []
-    const contract = new SorobanClient.Contract(contractId)
+    let myParams: SorobanClient.xdr.ScVal[] = args || []
+    const contract = new SorobanClient.Contract(contractAddress)
     return new SorobanClient.TransactionBuilder(source, {
       // TODO: Figure out the fee
       fee: '100',

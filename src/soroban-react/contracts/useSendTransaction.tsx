@@ -82,18 +82,10 @@ export function useSendTransaction<E = Error>(
       const networkPassphrase = activeChain.networkPassphrase
 
       setState('loading')
-
-      // preflight and add the footprint
-      if (!skipAddingFootprint) {
-        txn = await server.prepareTransaction(txn, networkPassphrase)
-        if (!txn) {
-          throw new Error('No transaction after adding footprint')
-        }
-      }
       
-      console.log("🚀 ~ file: useSendTransaction.tsx:88 ~ skipAddingFootprint:", skipAddingFootprint)
       return await signAndSendTransaction({txn,
         secretKey: passedOptions?.secretKey,
+        skipAddingFootprint,
         sorobanContext})
     },
     [defaultTxn]
