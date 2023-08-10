@@ -5,7 +5,6 @@ import { signAndSendTransaction } from './transaction'
 
 export type InvokeArgs = {
   contractAddress: string
-  source?: SorobanClient.Account;
   method: string;
   args?: SorobanClient.xdr.ScVal[] | undefined
   signAndSend?: boolean; 
@@ -21,7 +20,6 @@ const defaultAddress =
 
 export async function contractInvoke({
     contractAddress,
-    source,
     method,
     args = [],
     signAndSend = false,
@@ -31,20 +29,19 @@ export async function contractInvoke({
     sorobanContext,
   }: InvokeArgs) {
     const { server, address, activeChain } = sorobanContext;
+
     if(!activeChain){throw new Error('No active Chain')}
     if(!server){throw new Error('No connected to a Server')}
     if(signAndSend && !source && !secretKey && !sorobanContext.activeConnector){
       throw new Error("contractInvoke: You are trying to sign a txn without providing a source, secretKey or active connector")
     }
-    if (!source){
-      if (secretKey){
-        console.log("🚀 ~ file: contractInvoke.tsx:41 ~ secretKey:", secretKey)
-        let publicKey = SorobanClient.Keypair.fromSecret(secretKey).publicKey()
-        source = await server.getAccount(publicKey);
-      }
-      else source = new SorobanClient.Account(defaultAddress,"0");
-    }
-          
+
+    const source = secretKey
+    ? await server.getAccount(SorobanClient.Keypair.fromSecret(secretKey).publicKey())
+    : address
+      ? await server?.getAccount(address)
+      : new SorobanClient.Account(defaultAddress, "0");
+     
       
     const contract = new SorobanClient.Contract(contractAddress);
   
