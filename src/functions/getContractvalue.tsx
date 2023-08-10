@@ -3,17 +3,17 @@ import * as SorobanClient from "soroban-client";
 import { xdr } from "soroban-client";
 
 export default async function getContractValue({
-  contractId,
+  contractAddress,
   method,
   params,
   sorobanContext,
 }: {
-  contractId: string;
+  contractAddress: string;
   method: string;
-  params: xdr.ScVal[];
+  args: xdr.ScVal[];
   sorobanContext: SorobanContextType;
 }) {
-  const contract = new SorobanClient.Contract(contractId);
+  const contract = new SorobanClient.Contract(contractAddress);
   const networkPassphrase = sorobanContext.activeChain?.networkPassphrase ?? "";
   const transaction = new SorobanClient.TransactionBuilder(
     new SorobanClient.Account(sorobanContext.address ?? "", "0"),

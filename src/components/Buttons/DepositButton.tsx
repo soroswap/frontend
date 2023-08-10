@@ -67,9 +67,9 @@ export function DepositButton({
       let tx = contractTransaction({
         source: walletSource!,
         networkPassphrase,
-        contractId: pairAddress,
+        contractAddress: pairAddress,
         method: "deposit",
-        params: [
+        args: [
           new SorobanClient.Address(account!).toScVal(),
           desiredAScVal,
           minAScVal,

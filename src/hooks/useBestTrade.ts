@@ -13,7 +13,7 @@ import { SorobanContext, useSorobanReact } from "@soroban-react/core";
 import { usePairContractAddress } from "./usePairContractAddress";
 import { useContractValue } from "@soroban-react/contracts";
 import { accountToScVal } from "helpers/soroban";
-import { contractInvoke } from "../soroban-react/contracts";
+import { contractInvoke } from "@soroban-react/contracts";
 import { useFactory } from "./useFactory";
 import { addressToScVal, scValStrToJs } from "helpers/convert";
 

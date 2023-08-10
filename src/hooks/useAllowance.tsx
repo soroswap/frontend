@@ -11,14 +11,14 @@ export function useAllowance(
   sorobanContext: SorobanContextType,
 ): BigNumber | undefined {
   let allowance;
-  let params: xdr.ScVal[] = [];
+  let args: xdr.ScVal[] = [];
   try {
     params = [accountToScVal(from), accountToScVal(spender)];
   } catch (error) {}
   const allowance_scval = useContractValue({
-    contractId: token_address,
+    contractAddress: token_address,
     method: "allowance",
-    params: params,
+    args: params,
     sorobanContext: sorobanContext,
   });
 

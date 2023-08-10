@@ -9,7 +9,7 @@ import {
 } from "@soroban-react/contracts";
 import { useKeys } from "../../hooks";
 import { bigNumberToI128 } from "../../helpers/utils";
-import { contractInvoke, useSendTransaction } from "soroban-react/contracts";
+import { contractInvoke, useSendTransaction } from "@soroban-react/contracts";
 
 interface MintButtonProps {
   sorobanContext: SorobanContextType;
@@ -70,9 +70,9 @@ export function MintButton({
       // let tx = contractTransaction({
       //   source: adminSource,
       //   networkPassphrase,
-      //   contractId: tokenId,
+      //   contractAddress: tokenId,
       //   method: "mint",
-      //   params: [new SorobanClient.Address(account).toScVal(), amountScVal],
+      //   args: [new SorobanClient.Address(account).toScVal(), amountScVal],
       // });
       // //Sends the transactions to the blockchain
       // let result = await sendTransaction(tx, options);

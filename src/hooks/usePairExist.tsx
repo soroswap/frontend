@@ -25,9 +25,9 @@ export function usePairExistScVal(
   const factory = useFactory(sorobanContext);
   console.log(params)
   const pairExistScVal = useContractValue({
-    contractId: factory.factory_address,
+    contractAddress: factory.factory_address,
     method: "pair_exists",
-    params: params,
+    args: params,
     sorobanContext: sorobanContext,
   });
   return pairExistScVal;
