@@ -4,15 +4,15 @@ import type {Transaction, Tx} from './types'
 import { signAndSendTransaction } from './transaction'
 
 export type InvokeArgs = {
-    contractAddress: string
-    method: string;
-    args?: SorobanClient.xdr.ScVal[] | undefined
-    sorobanContext: SorobanContextType
-    fee?: number;
-    signAndSend?: boolean;
-    secretKey?: string;
-    source?: SorobanClient.Account
-    skipAddingFootprint?: bool
+  contractAddress: string
+  source?: SorobanClient.Account;
+  method: string;
+  args?: SorobanClient.xdr.ScVal[] | undefined
+  signAndSend?: boolean; 
+  fee?: number;
+  skipAddingFootprint?: bool;
+  secretKey?: string;
+  sorobanContext: SorobanContextType
   };
 
 // Dummy source account for simulation. The public key for this is all 0-bytes.
@@ -21,30 +21,30 @@ const defaultAddress =
 
 export async function contractInvoke({
     contractAddress,
+    source,
     method,
     args = [],
-    sorobanContext,
-    fee = 100,
     signAndSend = false,
-    source,
+    fee = 100,
+    skipAddingFootprint,
     secretKey,
-    skipAddingFootprint
+    sorobanContext,
   }: InvokeArgs) {
     const { server, address, activeChain } = sorobanContext;
-    if(!activeChain){
-        throw new Error('No active Chain')
+    if(!activeChain){throw new Error('No active Chain')}
+    if(!server){throw new Error('No connected to a Server')}
+    if(signAndSend && !source && !secretKey && !sorobanContext.activeConnector){
+      throw new Error("contractInvoke: You are trying to sign a txn without providing a source, secretKey or active connector")
     }
-    if(!server){
-        throw new Error('No connected to a Server')
+    if (!source){
+      if (secretKey){
+        console.log("🚀 ~ file: contractInvoke.tsx:41 ~ secretKey:", secretKey)
+        let publicKey = SorobanClient.Keypair.fromSecret(secretKey).publicKey()
+        source = await server.getAccount(publicKey);
+      }
+      else source = new SorobanClient.Account(defaultAddress,"0");
     }
-  
-    // use a placeholder account if not yet connected to the Connector so that view calls can still work
-    source = source ??
-    await server?.getAccount(address?? "") ??
-    new SorobanClient.Account(
-      defaultAddress,
-      "0",
-      );
+          
       
     const contract = new SorobanClient.Contract(contractAddress);
   

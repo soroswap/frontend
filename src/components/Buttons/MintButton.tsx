@@ -78,7 +78,6 @@ export function MintButton({
       // let result = await sendTransaction(tx, options);
 
       let result = await contractInvoke({
-        source: adminSource,
         contractAddress: tokenId,
         method: "mint",
         args: [new SorobanClient.Address(account).toScVal(), amountScVal],
