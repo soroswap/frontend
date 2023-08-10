@@ -189,9 +189,9 @@ export function accountToScVal(account: string): SorobanClient.xdr.ScVal {
   return new SorobanClient.Address(account).toScVal();
 }
 
-export function contractIdToScVal(contractId: string): any {
+export function contractAddressToScVal(contractAddress: string): any {
   return SorobanClient.Address.contract(
-    Buffer.from(contractId, "hex"),
+    Buffer.from(contractAddress, "hex"),
   ).toScVal();
 }
 

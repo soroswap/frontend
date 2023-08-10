@@ -10,9 +10,9 @@ export function useReservesScVal(
 ) {
   let reserves;
   const reserves_scval = useContractValue({
-    contractId: pairAddress,
+    contractAddress: pairAddress,
     method: "get_reserves",
-    params: [],
+    args: [],
     sorobanContext: sorobanContext,
   });
   let values: any = reserves_scval.result?.value();

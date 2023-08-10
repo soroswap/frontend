@@ -20,7 +20,7 @@ export const AutoColumn = styled('div')<{
 }>`
   display: grid;
   grid-auto-rows: auto;
-  grid-row-gap: ${({ gap, theme }) => gap};
+  grid-row-gap: ${({ gap }) => gap};
   justify-items: ${({ justify }) => justify && justify};
   flex-grow: ${({ grow }) => grow && 1};
 `

@@ -66,9 +66,9 @@ export function SwapButton({
       let tx = contractTransaction({
         source: walletSource!,
         networkPassphrase,
-        contractId: pairAddress,
+        contractAddress: pairAddress,
         method: "swap",
-        params: [
+        args: [
           new SorobanClient.Address(account!).toScVal(),
           xdr.ScVal.scvBool(isBuy),
           amountOutScVal,
