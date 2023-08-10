@@ -5,11 +5,11 @@ import Button from "@mui/material/Button";
 import * as SorobanClient from "soroban-client";
 import BigNumber from "bignumber.js";
 import {
-  contractTransaction,
-  useSendTransaction,
+  contractTransaction
 } from "@soroban-react/contracts";
 import { useKeys } from "../../hooks";
 import { bigNumberToI128 } from "../../helpers/utils";
+import { contractInvoke, useSendTransaction } from "soroban-react/contracts";
 
 interface MintButtonProps {
   sorobanContext: SorobanContextType;
@@ -64,34 +64,34 @@ export function MintButton({
     console.log("🚀 ~ file: MintButton.tsx:72 ~ mintTokens ~ tokenId:", tokenId)
     console.log("🚀 ~ file: MintButton.tsx:75 ~ mintTokens ~ account:", account)
 
-    let tx
-    try {
-      //Builds the transaction
-      tx = contractTransaction({
-        source: adminSource,
-        networkPassphrase,
-        contractId: tokenId,
-        method: "mint",
-        params: [new SorobanClient.Address(account).toScVal(), amountScVal],
-      });
-      
-      
-    } catch (error) {
-      console.log("🚀 « error: contractTransaction: ", error);
-    }
     
-    console.log("🚀 ~ file: MintButton.tsx:66 ~ mintTokens ~ tx:", tx)
     try{
 
-      //Sends the transactions to the blockchain
-      let result = await sendTransaction(tx, options);
+      // let tx = contractTransaction({
+      //   source: adminSource,
+      //   networkPassphrase,
+      //   contractId: tokenId,
+      //   method: "mint",
+      //   params: [new SorobanClient.Address(account).toScVal(), amountScVal],
+      // });
+      // //Sends the transactions to the blockchain
+      // let result = await sendTransaction(tx, options);
+
+      let result = await contractInvoke({
+        source: adminSource,
+        contractAddress: tokenId,
+        method: "mint",
+        args: [new SorobanClient.Address(account).toScVal(), amountScVal],
+        sorobanContext,
+        signAndSend: true,
+        secretKey: admin_secret
+      })
+
+
       if (result) {
         alert("Success!");
       }
-      console.log(
-        "🚀 ~ file: MintButton.tsx:63 ~ mintTokens ~ result:",
-        result,
-      );
+      
 
       //This will connect again the wallet to fetch its data
       sorobanContext.connect();
