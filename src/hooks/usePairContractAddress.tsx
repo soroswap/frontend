@@ -1,5 +1,5 @@
 import { SorobanContextType } from "@soroban-react/core";
-import { useContractValue } from "@soroban-react/contracts";
+import { useContractValue } from "../soroban-react/contracts"
 import { accountToScVal, scvalToString } from "../helpers/utils";
 import { useFactory } from "./useFactory";
 import { xdr } from "soroban-client";
@@ -11,8 +11,6 @@ export function usePairContractAddress(
   sorobanContext: SorobanContextType,
 ): string | undefined {
   const random = Math.random(); 
-  console.log("rando: ", random,"🚀 ~ file: usePairContractAddress.tsx:13 ~ address_1:", address_1)
-  console.log("rando: ", random,"🚀 ~ file: usePairContractAddress.tsx:13 ~ address_0:", address_0)
   
   let pairAddress;
   let params: xdr.ScVal[] = [];
@@ -21,18 +19,17 @@ export function usePairContractAddress(
   }
   const factory = useFactory(sorobanContext);
   const pairAddress_scval = useContractValue({
-    contractId: factory.factory_address,
+    contractAddress: factory.factory_address,
     method: "get_pair",
-    params: params,
+    args: params,
     sorobanContext: sorobanContext,
   });
-  console.log("rando: ", random,"🚀 ~ file: usePairContractAddress.tsx:29 ~ pairAddress_scval:", pairAddress_scval)
-
+  
   if (pairAddress_scval.result) {
     pairAddress = SorobanClient.Address.fromScVal(
       pairAddress_scval.result,
     ).toString();
-    console.log("rando: ", random,"🚀 ~ file: usePairContractAddress.tsx:36 ~ pairAddress:", pairAddress)
+    console.log("🚀 ~ file: usePairContractAddress.tsx:32 ~ pairAddress:", pairAddress)
   } else return undefined;
   
   console.log("rando: ", random,"🚀 ~ file: usePairContractAddress.tsx:36 ~ pairAddress:", pairAddress)
