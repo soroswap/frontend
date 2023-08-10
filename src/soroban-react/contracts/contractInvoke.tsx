@@ -40,8 +40,7 @@ export async function contractInvoke({
     ? await server.getAccount(SorobanClient.Keypair.fromSecret(secretKey).publicKey())
     : address
       ? await server?.getAccount(address)
-      : new SorobanClient.Account(defaultAddress, "0");
-     
+      : new SorobanClient.Account(defaultAddress, "0");   
       
     const contract = new SorobanClient.Contract(contractAddress);
   
