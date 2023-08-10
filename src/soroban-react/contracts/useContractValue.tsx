@@ -1,6 +1,6 @@
 import { SorobanContextType } from '@soroban-react/core'
 import React from 'react'
-
+import { contractTransaction } from './contractTransaction'
 import * as SorobanClient from 'soroban-client'
 import { defaultAddress } from './defaultAddress'
 
@@ -13,7 +13,7 @@ export type ContractValueType = {
 }
 
 export interface useContractValueProps {
-  contractId: string
+  contractAddress: string
   method: string
   args?: SorobanClient.xdr.ScVal[] | undefined
   source?: SorobanClient.Account
@@ -25,7 +25,7 @@ export interface useContractValueProps {
 // TODO: Allow user to specify the wallet of the submitter, fees, etc... Maybe
 // a separate (lower-level) hook for `useSimulateTransaction` would be cleaner?
 export function useContractValue({
-  contractId,
+  contractAddress,
   method,
   args,
   source,
@@ -55,7 +55,7 @@ export function useContractValue({
         let result = await fetchContractValue({
           server: server,
           networkPassphrase: activeChain.networkPassphrase,
-          contractId: contractId,
+          contractAddress: contractAddress,
           method: method,
           args: args,
           source: source,
@@ -76,14 +76,14 @@ export function useContractValue({
     // Have this re-fetch if the contractId/method/args change. Total hack with
     // xdr-base64 to enforce real equality instead of object equality
     // shenanigans.
-  }, [contractId, method, xdrParams, activeChain, server])
+  }, [contractAddress, method, xdrParams, activeChain, server])
   return value
 }
 
 export interface fetchContractValueProps {
   server: SorobanClient.Server
   networkPassphrase: string
-  contractId: string
+  contractAddress: string
   method: string
   args?: SorobanClient.xdr.ScVal[] | undefined
   source: SorobanClient.Account
@@ -92,27 +92,23 @@ export interface fetchContractValueProps {
 async function fetchContractValue({
   server,
   networkPassphrase,
-  contractId,
+  contractAddress,
   method,
   args,
   source,
 }: fetchContractValueProps): Promise<SorobanClient.xdr.ScVal> {
-  const contract = new SorobanClient.Contract(contractId)
 
-  let myParams: SorobanClient.xdr.ScVal[] = args || []
-
-  // TODO: Optionally include the wallet of the submitter here, so the
-  // simulation is more accurate
-  const transaction = new SorobanClient.TransactionBuilder(source, {
-    // fee doesn't matter, we're not submitting
-    fee: '100',
+  //Builds the transaction
+  let txn = contractTransaction({
+    source,
     networkPassphrase,
-  })
-    .addOperation(contract.call(method, ...myParams))
-    .setTimeout(SorobanClient.TimeoutInfinite)
-    .build()
+    contractAddress,
+    method,
+    args,
+  });
 
-  const { results } = await server.simulateTransaction(transaction)
+
+  const { results } = await server.simulateTransaction(txn)
   if (!results || results.length !== 1) {
     throw new Error('Invalid response from simulateTransaction')
   }

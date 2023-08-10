@@ -3,6 +3,8 @@ import { SorobanContextType } from '@soroban-react/core'
 import type {Transaction, Tx} from './types'
 import { signAndSendTransaction } from './transaction'
 import { contractTransaction } from './contractTransaction'
+let xdr = SorobanClient.xdr 
+
 
 export type InvokeArgs = {
   contractAddress: string
@@ -52,21 +54,13 @@ export async function contractInvoke({
       method,
       args,
     });
-      
-    // const contract = new SorobanClient.Contract(contractAddress); 
-  
-    // let txn = new SorobanClient.TransactionBuilder(source, {
-    //   fee: fee.toString(10),
-    //   networkPassphrase: activeChain?.networkPassphrase,
-    // })
-    //   .addOperation(contract.call(method, ...args))
-    //   .setTimeout(SorobanClient.TimeoutInfinite)
-    //   .build();
-  
+    console.log("🚀 ~ file: contractInvoke.tsx:57 ~ txn:", txn)
+    
     const simulated = await server?.simulateTransaction(txn);
-  
+    console.log("🚀 ~ file: contractInvoke.tsx:59 ~ simulated:", simulated)
     if (!signAndSend && simulated) {
       const { results } = simulated;
+      console.log("🚀 ~ file: contractInvoke.tsx:61 ~ results:", results)
       if (!results || results[0] === undefined) {
         if (simulated.error) {
           console.log(simulated.error as unknown as string);
@@ -74,9 +68,9 @@ export async function contractInvoke({
         }
         console.log(`Invalid response from simulateTransaction:\n{simulated}`);
         return undefined;
-      }
-  
-      return results[0];
+      } 
+      
+      return xdr.ScVal.fromXDR(results[0].xdr, 'base64');
     }
     else {
       // If signAndSend
