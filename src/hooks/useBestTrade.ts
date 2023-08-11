@@ -1,6 +1,6 @@
 import { TokenType } from "interfaces";
 import tryParseCurrencyAmount from "lib/utils/tryParseCurrencyAmount";
-import { useCallback, useEffect, useMemo } from "react";
+import { useCallback, useMemo, useState } from "react";
 import {
   InterfaceTrade,
   QuoteMethod,
@@ -39,38 +39,68 @@ export function useBestTrade(
   trade?: InterfaceTrade;
 }> {
   const sorobanContext = useSorobanReact();
-  //TODO: Set the trade specs, getQuote
-  const trade = {
-    swaps: {
-      inputAmount: amountSpecified,
-      outputAmount: tryParseCurrencyAmount("0", otherCurrency), //this should get expected amount out
-    },
-  };
+  const [pairAddress, setPairAddress] = useState<string | undefined>(undefined);
 
   const factory = useFactory(sorobanContext);
   console.log("🚀 « factory:", factory);
-  useEffect(() => {
-    if (
-      amountSpecified?.currency?.token_address &&
-      otherCurrency?.token_address
-    ) {
-      contractInvoke({
-        contractAddress: factory.factory_address,
-        method: "get_pair",
-        args: [
-          addressToScVal(amountSpecified?.currency?.token_address),
-          addressToScVal(otherCurrency?.token_address),
-        ],
-        sorobanContext,
-      }).then((response) => {
-        if (response) {
-          console.log("contractInvoke: ", scValStrToJs(response.xdr) as string);
-        }
-      })
-    }
-  }, [factory]);
 
-  const tradeResult = { state: QuoteState.NOT_FOUND, trade: trade }; //should get the pair address and quotes
+  if (
+    amountSpecified?.currency?.token_address &&
+    otherCurrency?.token_address
+  ) {
+    contractInvoke({
+      contractAddress: factory.factory_address,
+      method: "get_pair",
+      args: [
+        addressToScVal(amountSpecified?.currency?.token_address),
+        addressToScVal(otherCurrency?.token_address),
+      ],
+      sorobanContext,
+    }).then((response) => {
+      if (response) {
+        setPairAddress(scValStrToJs(response.xdr) as string);
+      } else {
+        setPairAddress(undefined);
+      }
+    });
+  }
+
+  //TODO: Set the trade specs, getQuote
+  const trade = useMemo(() => {
+    return {
+      swaps: [
+        {
+          inputAmount: amountSpecified?.value,
+          outputAmount: tryParseCurrencyAmount("0", otherCurrency)?.value, //this should get expected amount out
+          route: {
+            input: amountSpecified?.currency,
+            output: otherCurrency,
+            pairs: [
+              {
+                pairAddress,
+              },
+            ],
+          },
+          
+        },
+      ],
+      executionPrice: {
+        quoteCurrency: otherCurrency,
+        baseCurrency: amountSpecified?.currency,
+        price: "0", //this should get the price
+      }
+    };
+  }, [
+    amountSpecified?.currency,
+    amountSpecified?.value,
+    otherCurrency,
+    pairAddress,
+  ]);
+
+  const tradeResult = useMemo(() => {
+    const state = pairAddress ? QuoteState.SUCCESS : QuoteState.NOT_FOUND;
+    return { state: state, trade: trade };
+  }, [pairAddress, trade]); //should get the pair address and quotes
 
   const skipFetch: boolean = false;
 

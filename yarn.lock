@@ -2145,6 +2145,10 @@
     "@typescript-eslint/types" "5.62.0"
     eslint-visitor-keys "^3.3.0"
 
+"@uniswap/conedison@uniswap/conedison":
+  version "0.0.1"
+  resolved "https://codeload.github.com/uniswap/conedison/tar.gz/9269cf2d5ef76d0db5d1f68df97c4d3f6bbb7100"
+
 "@uniswap/sdk-core@^4.0.6":
   version "4.0.6"
   resolved "https://registry.yarnpkg.com/@uniswap/sdk-core/-/sdk-core-4.0.6.tgz#7b6d562f54293bbe0a9d101fb84e619db325f7b6"

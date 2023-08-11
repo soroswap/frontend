@@ -8,11 +8,11 @@ import { useState } from 'react'
 import { ChevronDown } from 'react-feather'
 import { InterfaceTrade } from 'state/routing/types'
 import { styled, useTheme, keyframes } from "@mui/material";
+import { AdvancedSwapDetails } from './AdvancedSwapDetails'
+import TradePrice from './TradePrice'
 
 
-//import { AdvancedSwapDetails } from './AdvancedSwapDetails'
 //import GasEstimateTooltip from './GasEstimateTooltip'
-//import TradePrice from './TradePrice'
 
 const StyledHeaderRow = styled(RowBetween)<{ disabled: boolean; open: boolean }>`
   padding: 0;
@@ -84,7 +84,7 @@ const Wrapper = styled(Column)`
 `
 
 interface SwapDetailsInlineProps {
-  trade?: InterfaceTrade
+  trade?: any
   syncing: boolean
   loading: boolean
   allowedSlippage: Percent
@@ -112,7 +112,7 @@ export default function SwapDetailsDropdown({ trade, syncing, loading, allowedSl
             )}
             {trade ? (
               <LoadingOpacityContainer $loading={syncing} data-testid="trade-price-container">
-                {//<TradePrice price={trade.executionPrice} />
+                {<TradePrice price={trade.executionPrice} />
                 }   
               </LoadingOpacityContainer>
             ) : loading || syncing ? (
@@ -122,7 +122,7 @@ export default function SwapDetailsDropdown({ trade, syncing, loading, allowedSl
             ) : null}
           </RowFixed>
           <RowFixed>
-            {//!showDetails && <GasEstimateTooltip trade={trade} loading={syncing || loading} />
+            {!showDetails //&& <GasEstimateTooltip trade={trade} loading={syncing || loading} />
             }
             <RotatingArrow
               stroke={trade ? theme.palette.text.secondary : theme.palette.text.primary}

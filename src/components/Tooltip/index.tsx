@@ -1,5 +1,11 @@
 import { Tooltip, TooltipProps, styled, tooltipClasses } from "@mui/material";
 
+export enum TooltipSize {
+  ExtraSmall = '200px',
+  Small = '256px',
+  Large = '400px',
+}
+
 export const MouseoverTooltip = styled(({ className, ...props }: TooltipProps) => (
   <Tooltip {...props} arrow classes={{ popper: className }} />
 ))(({ theme }) => ({

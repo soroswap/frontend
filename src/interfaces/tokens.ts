@@ -17,3 +17,9 @@ export type TokenMapType = {
 export type TokenBalancesMap = {
   [tokenAddress: string]: { usdValue: number; balance: string };
 };
+
+export interface Price {
+  quoteCurrency: TokenType;
+  baseCurrency: TokenType;
+  price: string;
+}
