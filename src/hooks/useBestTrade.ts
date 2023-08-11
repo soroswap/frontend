@@ -1,6 +1,6 @@
 import { TokenType } from "interfaces";
 import tryParseCurrencyAmount from "lib/utils/tryParseCurrencyAmount";
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useState } from "react";
 import {
   InterfaceTrade,
   QuoteMethod,
@@ -39,13 +39,7 @@ export function useBestTrade(
   trade?: InterfaceTrade;
 }> {
   const sorobanContext = useSorobanReact();
-  //TODO: Set the trade specs, getQuote
-  const trade = {
-    swaps: {
-      inputAmount: amountSpecified,
-      outputAmount: tryParseCurrencyAmount("0", otherCurrency), //this should get expected amount out
-    },
-  };
+  const [pairAddress, setPairAddress] = useState<string | undefined>(undefined);
 
   const factory = useFactory(sorobanContext);
   console.log("🚀 « factory:", factory);
@@ -64,12 +58,43 @@ export function useBestTrade(
       sorobanContext,
     }).then((response) => {
       if (response) {
-        console.log("contractInvoke: ", scValStrToJs(response.xdr) as string);
+        setPairAddress(scValStrToJs(response.xdr) as string);
+      } else {
+        setPairAddress(undefined);
       }
     });
   }
 
-  const tradeResult = { state: QuoteState.NOT_FOUND, trade: trade }; //should get the pair address and quotes
+  //TODO: Set the trade specs, getQuote
+  const trade = useMemo(() => {
+    return {
+      swaps: [
+        {
+          inputAmount: amountSpecified?.value,
+          outputAmount: tryParseCurrencyAmount("0", otherCurrency)?.value, //this should get expected amount out
+          route: {
+            input: amountSpecified?.currency,
+            output: otherCurrency,
+            pairs: [
+              {
+                pairAddress,
+              },
+            ],
+          },
+        },
+      ],
+    };
+  }, [
+    amountSpecified?.currency,
+    amountSpecified?.value,
+    otherCurrency,
+    pairAddress,
+  ]);
+
+  const tradeResult = useMemo(() => {
+    const state = pairAddress ? QuoteState.SUCCESS : QuoteState.NOT_FOUND;
+    return { state: state, trade: trade };
+  }, [pairAddress, trade]); //should get the pair address and quotes
 
   const skipFetch: boolean = false;
 
