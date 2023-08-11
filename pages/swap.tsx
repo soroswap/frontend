@@ -27,6 +27,7 @@ import { useDerivedSwapInfo, useSwapActionHandlers } from "state/swap/hooks";
 import swapReducer, { initialState as initialSwapState, SwapState } from 'state/swap/reducer'
 import { Field } from "state/swap/actions";
 import { InterfaceTrade, TradeState } from "state/routing/types";
+import ConfirmSwapModal from "components/Swap/ConfirmSwapModal";
 
 
 const SwapSection = styled('div')(({ theme }) => ({
@@ -145,6 +146,20 @@ export default function SwapPage() {
   //   },
   //   [selectedTokenOutput]
   // )
+
+  // modal and loading
+  const [{ showConfirm, tradeToConfirm, swapError, swapResult }, setSwapState] = useState<{
+    showConfirm: boolean
+    tradeToConfirm?: InterfaceTrade
+    swapError?: Error
+    swapResult?: any
+  }>({
+    showConfirm: false,
+    tradeToConfirm: undefined,
+    swapError: undefined,
+    swapResult: undefined,
+  })
+
   const prefilledState={
     [Field.INPUT]: { currencyId: "CDO5AFKO3CNWM2CDEZAMPJXQKJ5NLYBHAGRPSINQUZEFQJTE4HNKD243" },
     [Field.OUTPUT]: { currencyId: null },
@@ -198,16 +213,6 @@ export default function SwapPage() {
     [dependentField, independentField, typedValue]
   )
 
-  const handleContinueToReview = useCallback(() => {
-    console.log("on continue")
-    // setSwapState({
-    //   tradeToConfirm: trade,
-    //   swapError: undefined,
-    //   showConfirm: true,
-    //   swapResult: undefined,
-    // })
-  }, [])//trade])
-
   const fiatValueInput = {data: 0, isLoading: false}
   const fiatValueOutput = {data: 0, isLoading: false}
   const showFiatValueInput = false //TODO: Change this
@@ -237,6 +242,23 @@ export default function SwapPage() {
     [trade, tradeState]
   )
 
+  const handleContinueToReview = useCallback(() => {
+    setSwapState({
+      tradeToConfirm: trade,
+      swapError: undefined,
+      showConfirm: true,
+      swapResult: undefined,
+    })
+  }, [trade])
+
+  const handleConfirmDismiss = useCallback(() => {
+    setSwapState((currentState) => ({ ...currentState, showConfirm: false }))
+    // If there was a swap, we want to clear the input
+    if (swapResult) {
+      onUserInput(Field.INPUT, '')
+    }
+  }, [onUserInput, swapResult])
+
   const swapIsUnsupported = false//useIsSwapUnsupported(currencies[Field.INPUT], currencies[Field.OUTPUT])
   const priceImpactSeverity = 2 //IF is < 2 it shows Swap anyway button in red
   const showPriceImpactWarning = false
@@ -255,25 +277,25 @@ export default function SwapPage() {
         //   />
         }
         <SwapHeader />
-        {/* {trade && showConfirm && (
+        {trade && showConfirm && (
           <ConfirmSwapModal
             trade={trade}
-            inputCurrency={inputCurrency}
+            // inputCurrency={inputCurrency}
             originalTrade={tradeToConfirm}
-            onAcceptChanges={handleAcceptChanges}
+            onAcceptChanges={() => console.log("")} //handleAcceptChanges}
             onCurrencySelection={onCurrencySelection}
             swapResult={swapResult}
-            allowedSlippage={allowedSlippage}
-            onConfirm={handleSwap}
-            allowance={allowance}
+            allowedSlippage={() => console.log("")} //allowedSlippage}
+            onConfirm={() => console.log("")} //handleSwap}
+            allowance={() => console.log("")} //allowance}
             swapError={swapError}
             onDismiss={handleConfirmDismiss}
-            swapQuoteReceivedDate={swapQuoteReceivedDate}
-            fiatValueInput={fiatValueTradeInput}
-            fiatValueOutput={fiatValueTradeOutput}
+            swapQuoteReceivedDate={new Date()} //swapQuoteReceivedDate}
+            fiatValueInput={{data: 32, isLoading: false}} //fiatValueTradeInput}
+            fiatValueOutput={{data: 32, isLoading: false}} //fiatValueTradeOutput}
           />
         )}
-        {showPriceImpactModal && showPriceImpactWarning && (
+        {/* {showPriceImpactModal && showPriceImpactWarning && (
           <PriceImpactModal
             priceImpact={largerPriceImpact}
             onDismiss={() => setShowPriceImpactModal(false)}

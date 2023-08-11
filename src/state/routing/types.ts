@@ -1,3 +1,5 @@
+import { TokenType } from "interfaces";
+
 export enum TradeState {
   LOADING,
   INVALID,
@@ -230,7 +232,19 @@ export enum TradeType {
   EXACT_OUTPUT = 1,
 }
 export type InterfaceTrade = {
-  swaps: any;
+  inputAmount: string;
+  outputAmount: string;
+  swaps: {
+    inputAmount: string;
+    outputAmount: string;
+    route: {
+      input: TokenType;
+      output: TokenType;
+      pairs: {
+        pairAddress: string;
+      }[];
+    };
+  }[];
 };
 
 export enum QuoteState {

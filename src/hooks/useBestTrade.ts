@@ -66,8 +66,10 @@ export function useBestTrade(
   }
 
   //TODO: Set the trade specs, getQuote
-  const trade = useMemo(() => {
+  const trade: InterfaceTrade = useMemo(() => {
     return {
+      inputAmount: amountSpecified?.value,
+      outputAmount: tryParseCurrencyAmount("0", otherCurrency)?.value,
       swaps: [
         {
           inputAmount: amountSpecified?.value,
