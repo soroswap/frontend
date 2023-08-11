@@ -26,6 +26,7 @@
     "@types/react-dom": "18.0.9",
     "@types/react-window": "^1.8.5",
     "@types/rebass": "^4.0.10",
+    "@uniswap/sdk-core": "^4.0.6",
     "bigint-conversion": "^2.4.1",
     "bignumber.js": "^9.1.0",
     "buffer": "6.0.3",
@@ -37,6 +38,7 @@
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-feather": "^2.0.10",
+    "react-spring": "^9.7.2",
     "react-virtualized-auto-sizer": "^1.0.20",
     "react-window": "^1.8.9",
     "rebass": "^4.0.7",
@@ -44,7 +46,8 @@
     "soroban-client": "0.9.2",
     "styled-components": "^6.0.5",
     "swr": "^2.2.0",
-    "typescript": "4.9.4"
+    "typescript": "4.9.4",
+    "use-resize-observer": "^9.1.0"
   },
   "devDependencies": {
     "@lingui/macro": "^4.3.0",

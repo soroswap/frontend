@@ -27,6 +27,7 @@ import { useDerivedSwapInfo, useSwapActionHandlers } from "state/swap/hooks";
 import swapReducer, { initialState as initialSwapState, SwapState } from 'state/swap/reducer'
 import { Field } from "state/swap/actions";
 import { InterfaceTrade, TradeState } from "state/routing/types";
+import SwapDetailsDropdown from "components/Swap/SwapDetailsDropdown";
 
 
 const SwapSection = styled('div')(({ theme }) => ({
@@ -218,7 +219,7 @@ export default function SwapPage() {
   const swapInfo = useDerivedSwapInfo(state)
   const {
     trade: { state: tradeState, trade },
-    // allowedSlippage,
+    allowedSlippage,
     // autoSlippage,
     // currencyBalances,
     parsedAmount,
@@ -235,6 +236,29 @@ export default function SwapPage() {
       tradeState === TradeState.LOADING && Boolean(trade),
     ],
     [trade, tradeState]
+  )
+  const showWrap: boolean = false//wrapType !== WrapType.NOT_APPLICABLE
+
+  const parsedAmounts = useMemo(
+    () =>
+      showWrap
+        ? {
+            [Field.INPUT]: parsedAmount,
+            [Field.OUTPUT]: parsedAmount,
+          }
+        : {
+            [Field.INPUT]: independentField === Field.INPUT ? parsedAmount : trade?.inputAmount,
+            [Field.OUTPUT]: independentField === Field.OUTPUT ? parsedAmount : trade?.outputAmount,
+          },
+    [independentField, parsedAmount, showWrap, trade]
+  )
+  
+  const userHasSpecifiedInputOutput = Boolean(
+    currencies[Field.INPUT] && currencies[Field.OUTPUT] //&& parsedAmounts[independentField]?.greaterThan(BigInt(0))
+  )
+
+  const showDetailsDropdown = Boolean(
+    !showWrap && userHasSpecifiedInputOutput //&& (trade || routeIsLoading || routeIsSyncing)
   )
 
   const swapIsUnsupported = false//useIsSwapUnsupported(currencies[Field.INPUT], currencies[Field.OUTPUT])
@@ -342,15 +366,16 @@ export default function SwapPage() {
               />
             </OutputSwapSection>
           </div>
-          {/* {showDetailsDropdown && (
-            <SwapDetailsDropdown
-              trade={trade}
-              syncing={routeIsSyncing}
-              loading={routeIsLoading}
-              allowedSlippage={allowedSlippage}
-            />
-          )} */}
-          {/* {showPriceImpactWarning && <PriceImpactWarning priceImpact={largerPriceImpact} />} */}
+          {showDetailsDropdown && (
+          <SwapDetailsDropdown
+            trade={trade}
+            syncing={routeIsSyncing}
+            loading={routeIsLoading}
+            allowedSlippage={allowedSlippage}
+          />
+        )}
+        {//showPriceImpactWarning && <PriceImpactWarning priceImpact={largerPriceImpact} />
+        }
           <div>
             {swapIsUnsupported ? (
               <ButtonPrimary disabled={true}>

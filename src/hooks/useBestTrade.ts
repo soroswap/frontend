@@ -1,6 +1,6 @@
 import { TokenType } from "interfaces";
 import tryParseCurrencyAmount from "lib/utils/tryParseCurrencyAmount";
-import { useCallback, useMemo } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import {
   InterfaceTrade,
   QuoteMethod,
@@ -49,25 +49,26 @@ export function useBestTrade(
 
   const factory = useFactory(sorobanContext);
   console.log("🚀 « factory:", factory);
-
-  if (
-    amountSpecified?.currency?.token_address &&
-    otherCurrency?.token_address
-  ) {
-    contractInvoke({
-      contractAddress: factory.factory_address,
-      method: "get_pair",
-      args: [
-        addressToScVal(amountSpecified?.currency?.token_address),
-        addressToScVal(otherCurrency?.token_address),
-      ],
-      sorobanContext,
-    }).then((response) => {
-      if (response) {
-        console.log("contractInvoke: ", scValStrToJs(response.xdr) as string);
-      }
-    });
-  }
+  useEffect(() => {
+    if (
+      amountSpecified?.currency?.token_address &&
+      otherCurrency?.token_address
+    ) {
+      contractInvoke({
+        contractAddress: factory.factory_address,
+        method: "get_pair",
+        args: [
+          addressToScVal(amountSpecified?.currency?.token_address),
+          addressToScVal(otherCurrency?.token_address),
+        ],
+        sorobanContext,
+      }).then((response) => {
+        if (response) {
+          console.log("contractInvoke: ", scValStrToJs(response.xdr) as string);
+        }
+      })
+    }
+  }, [factory]);
 
   const tradeResult = { state: QuoteState.NOT_FOUND, trade: trade }; //should get the pair address and quotes
 
