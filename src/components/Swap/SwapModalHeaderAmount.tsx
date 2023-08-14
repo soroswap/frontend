@@ -11,7 +11,7 @@
 // import styled from 'styled-components/macro'
 // import { BREAKPOINTS, ThemedText } from 'theme'
 
-import { styled } from "@mui/material"
+import { TypographyProps, styled, useTheme } from "@mui/material"
 import Column from "components/Column"
 import CurrencyLogo from "components/Logo/CurrencyLogo"
 import Row from "components/Row"
@@ -19,6 +19,7 @@ import { BodySecondary, BodySmall, HeadlineLarge, HeadlineMedium } from "compone
 import { MouseoverTooltip } from "components/Tooltip"
 import { useWindowSize } from "hooks/useWindowSize"
 import { TokenType } from "interfaces"
+import { CurrencyAmount } from "lib/utils/tryParseCurrencyAmount"
 import { PropsWithChildren, ReactNode } from "react"
 import { Field } from "state/swap/actions"
 
@@ -30,15 +31,15 @@ export const Label = styled(BodySmall)<{ cursor?: string }>`
   margin-right: 8px;
 `
 
-const ResponsiveHeadline = ({ children, ...textProps }: PropsWithChildren<Text>) => {
+const ResponsiveHeadline = ({ children }: PropsWithChildren<TypographyProps>) => {
   const { width } = useWindowSize()
 
   if (width && width < 396) {
-    return <HeadlineMedium {...textProps}>{children}</HeadlineMedium>
+    return <HeadlineMedium>{children}</HeadlineMedium>
   }
 
   return (
-    <HeadlineLarge fontWeight={500} {...textProps}>
+    <HeadlineLarge fontWeight={500}>
       {children}
     </HeadlineLarge>
   )
@@ -52,28 +53,28 @@ interface AmountProps {
   usdAmount?: number
   currency: TokenType | undefined
 }
-
 export function SwapModalHeaderAmount({ tooltipText, label, amount, usdAmount, field, currency }: AmountProps) {
-  let formattedAmount = "0"//formatCurrencyAmount(amount, NumberType.TokenTx)
+  const theme = useTheme()
+  let formattedAmount = amount//formatCurrencyAmount(amount, NumberType.TokenTx)
   if (formattedAmount.length > MAX_AMOUNT_STR_LENGTH) {
     formattedAmount = ""//formatCurrencyAmount(amount, NumberType.SwapTradeAmount)
   }
 
   return (
     <Row align="center" justify="space-between" gap="12px">
-      <Column gap="4px">
+      <Column gap="4px" alignItems="flex-start">
         <BodySecondary>
-          <MouseoverTooltip text={tooltipText} disabled={!tooltipText}>
+          <MouseoverTooltip title={tooltipText} disableInteractive={!tooltipText}>
             <Label cursor="help">{label}</Label>
           </MouseoverTooltip>
         </BodySecondary>
-        <Column gap="4px">
-          {/* <ResponsiveHeadline data-testid={`${field}-amount`}>
+        <Column gap="4px" alignItems="flex-start">
+          <ResponsiveHeadline data-testid={`${field}-amount`}>
             {formattedAmount} {currency?.token_symbol}
-          </ResponsiveHeadline> */}
-          {usdAmount && (
-            <BodySmall color="textTertiary">
-              usdAmount
+          </ResponsiveHeadline>
+          {usdAmount !== undefined && (
+            <BodySmall color={theme.palette.custom.textTertiary}>
+              {usdAmount}
             </BodySmall>
           )}
         </Column>

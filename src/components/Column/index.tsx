@@ -2,10 +2,12 @@ import { styled } from "@mui/material"
 
 export const Column = styled('div')<{
   gap?: string
+  alignItems?: string
 }>`
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
+  align-items: ${({alignItems}) => alignItems};
   gap: ${({ gap, theme }) => gap};
 `
 export const ColumnCenter = styled(Column)`

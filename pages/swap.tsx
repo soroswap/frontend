@@ -259,6 +259,37 @@ export default function SwapPage() {
     }
   }, [onUserInput, swapResult])
 
+  const handleSwap = useCallback(() => {
+    // if (!swapCallback) {
+    //   return
+    // }
+    // if (stablecoinPriceImpact && !confirmPriceImpactWithoutFee(stablecoinPriceImpact)) {
+    //   return
+    // }
+    setSwapState((currentState) => ({
+      ...currentState,
+      swapError: undefined,
+      swapResult: undefined,
+    }))
+    // swapCallback()
+    //   .then((result) => {
+    //     setSwapState((currentState) => ({
+    //       ...currentState,
+    //       swapError: undefined,
+    //       swapResult: result,
+    //     }))
+    //   })
+    //   .catch((error) => {
+    //     setSwapState((currentState) => ({
+    //       ...currentState,
+    //       swapError: error,
+    //       swapResult: undefined,
+    //     }))
+    //   })
+  }, [])
+
+  const inputCurrency = currencies[Field.INPUT] ?? undefined
+  const outputCurrency = currencies[Field.OUTPUT] ?? undefined
   const swapIsUnsupported = false//useIsSwapUnsupported(currencies[Field.INPUT], currencies[Field.OUTPUT])
   const priceImpactSeverity = 2 //IF is < 2 it shows Swap anyway button in red
   const showPriceImpactWarning = false
@@ -280,14 +311,14 @@ export default function SwapPage() {
         {trade && showConfirm && (
           <ConfirmSwapModal
             trade={trade}
-            // inputCurrency={inputCurrency}
+            inputCurrency={inputCurrency}
             originalTrade={tradeToConfirm}
-            onAcceptChanges={() => console.log("")} //handleAcceptChanges}
+            onAcceptChanges={() => console.log("handleAcceptChanges")} //handleAcceptChanges}
             onCurrencySelection={onCurrencySelection}
             swapResult={swapResult}
-            allowedSlippage={() => console.log("")} //allowedSlippage}
-            onConfirm={() => console.log("")} //handleSwap}
-            allowance={() => console.log("")} //allowance}
+            allowedSlippage={() => console.log("allowedSlippage")} //allowedSlippage}
+            onConfirm={handleSwap}
+            allowance={() => console.log("allowance")} //allowance}
             swapError={swapError}
             onDismiss={handleConfirmDismiss}
             swapQuoteReceivedDate={new Date()} //swapQuoteReceivedDate}
@@ -381,7 +412,7 @@ export default function SwapPage() {
                 </ButtonText>
               </ButtonPrimary>
             ) : !address ? (
-              <ButtonLight onClick={() => connect()} fontWeight={600}>
+              <ButtonLight onClick={() => connect()}>
                 Connect Wallet
               </ButtonLight>
             ) : routeNotFound ? (

@@ -1,4 +1,5 @@
 import { TokenType } from "interfaces";
+import { CurrencyAmount } from "lib/utils/tryParseCurrencyAmount";
 
 export enum TradeState {
   LOADING,
@@ -232,11 +233,12 @@ export enum TradeType {
   EXACT_OUTPUT = 1,
 }
 export type InterfaceTrade = {
-  inputAmount: string;
-  outputAmount: string;
+  inputAmount: CurrencyAmount;
+  outputAmount: CurrencyAmount;
+  tradeType: TradeType;
   swaps: {
-    inputAmount: string;
-    outputAmount: string;
+    inputAmount: CurrencyAmount;
+    outputAmount: CurrencyAmount;
     route: {
       input: TokenType;
       output: TokenType;

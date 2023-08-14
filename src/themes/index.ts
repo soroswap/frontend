@@ -27,7 +27,6 @@ declare module "@mui/material/styles/createPalette" {
     custom: {
       textTertiary: string;
       borderColor: string;
-      accentTextLightPrimary: string;
       stateOverlayHover: string;
       stateOverlayPressed: string;
       deprecated_primary2: string;
@@ -35,9 +34,13 @@ declare module "@mui/material/styles/createPalette" {
       deprecated_primary4: string;
       deprecated_primary5: string;
       deprecated_yellow3: string;
+      accentTextLightPrimary: string;
+      accentTextLightSecondary: string;
+      accentTextLightTertiary: string;
       accentTextDarkPrimary: string;
       accentTextDarkSecondary: string;
       accentTextDarkTertiary: string;
+      shadow1: string;
     };
   }
 
@@ -66,7 +69,6 @@ declare module "@mui/material/styles/createPalette" {
     custom: {
       textTertiary: string;
       borderColor: string;
-      accentTextLightPrimary: string;
       stateOverlayHover: string;
       stateOverlayPressed: string;
       deprecated_primary2: string;
@@ -74,9 +76,13 @@ declare module "@mui/material/styles/createPalette" {
       deprecated_primary4: string;
       deprecated_primary5: string;
       deprecated_yellow3: string;
+      accentTextLightPrimary: string;
+      accentTextLightSecondary: string;
+      accentTextLightTertiary: string;
       accentTextDarkPrimary: string;
       accentTextDarkSecondary: string;
       accentTextDarkTertiary: string;
+      shadow1: string;
     };
   }
 }
@@ -129,7 +135,6 @@ export const theme = (mode: PaletteMode) => {
       custom: {
         textTertiary: isDark ? "#5D6785" : "#98A1C0",
         borderColor: isDark ? "#4C82FB" : "#FB118E",
-        accentTextLightPrimary: "#F5F6FC",
         stateOverlayHover: opacify(8, "#98A1C0"),
         stateOverlayPressed: opacify(24, "#B8C0DC"),
         deprecated_primary2: isDark ? "#4C82FB" : "#FF6FA3",
@@ -137,9 +142,13 @@ export const theme = (mode: PaletteMode) => {
         deprecated_primary4: isDark ? "#376bad70" : "#F6DDE8",
         deprecated_primary5: isDark ? "#153d6f70" : "#FDEAF1",
         deprecated_yellow3: "#5D4204",
+        accentTextLightPrimary: "#F5F6FC",
+        accentTextLightSecondary: opacify(72, "#F5F6FC"),
+        accentTextLightTertiary: opacify(12, "#F5F6FC"),
         accentTextDarkPrimary: opacify(80, "#0D111C"),
         accentTextDarkSecondary: opacify(60, "#0D111C"),
         accentTextDarkTertiary: opacify(24, "#0D111C"),
+        shadow1: isDark ? "#000" : "#2F80ED",
       },
     },
     typography: {

@@ -10,9 +10,10 @@
 import { Divider, styled } from "@mui/material"
 import Column, { AutoColumn } from "components/Column"
 import { TokenType } from "interfaces"
-import { InterfaceTrade } from "state/routing/types"
+import { InterfaceTrade, TradeType } from "state/routing/types"
 import { SwapModalHeaderAmount } from "./SwapModalHeaderAmount"
 import { Field } from "state/swap/actions"
+import { Caption } from "components/Text"
 
 // import { SwapModalHeaderAmount } from './SwapModalHeaderAmount'
 
@@ -42,40 +43,40 @@ export default function SwapModalHeader({
         <SwapModalHeaderAmount
           field={Field.INPUT}
           label={"You pay"}
-          amount={trade.inputAmount}
+          amount={trade.inputAmount.value}
           currency={inputCurrency}
           usdAmount={fiatValueInput}
         />
-        {/* <SwapModalHeaderAmount
+        <SwapModalHeaderAmount
           field={Field.OUTPUT}
-          label={<Trans>You receive</Trans>}
-          amount={trade.outputAmount}
+          label="You receive"
+          amount={trade.outputAmount.value}
           currency={trade.outputAmount.currency}
-          usdAmount={fiatValueOutput.data}
+          usdAmount={fiatValueOutput}
           tooltipText={
             trade.tradeType === TradeType.EXACT_INPUT ? (
-              <ThemedText.Caption>
-                <Trans>
+              <Caption>
+                <>
                   Output is estimated. You will receive at least{' '}
                   <b>
-                    {trade.minimumAmountOut(allowedSlippage).toSignificant(6)} {trade.outputAmount.currency.symbol}
+                    1{/* {trade.minimumAmountOut(allowedSlippage).toSignificant(6)} {trade.outputAmount.currency.symbol} */}
                   </b>{' '}
                   or the transaction will revert.
-                </Trans>
-              </ThemedText.Caption>
+                </>
+              </Caption>
             ) : (
-              <ThemedText.Caption>
-                <Trans>
+              <Caption>
+                <>
                   Input is estimated. You will sell at most{' '}
                   <b>
-                    {trade.maximumAmountIn(allowedSlippage).toSignificant(6)} {trade.inputAmount.currency.symbol}
+                    1{/* {trade.maximumAmountIn(allowedSlippage).toSignificant(6)} {trade.inputAmount.currency.symbol} */}
                   </b>{' '}
                   or the transaction will revert.
-                </Trans>
-              </ThemedText.Caption>
+                </>
+              </Caption>
             )
           }
-        /> */}
+        />
       </Column>
       <Rule />
     </HeaderContainer>
