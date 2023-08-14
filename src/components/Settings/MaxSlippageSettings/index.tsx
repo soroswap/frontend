@@ -178,16 +178,15 @@ export default function MaxSlippageSettings({ autoSlippage }: { autoSlippage: nu
       {
         tooLow || tooHigh ? (
           <RowBetween gap="md">
-            <Alert severity="warning"> </Alert>
-            {/* <ThemedText.Caption color="accentWarning"> */}
-            {tooLow ? (
-              <div>
-                Slippage below {MINIMUM_RECOMMENDED_SLIPPAGE.toFixed(2)}% may result in a failed transaction
-              </div>
-            ) : (
-              <div>Your transaction may be frontrun and result in an unfavorable trade.</div>
-            )}
-            {/* </ThemedText.Caption> */}
+            <Alert severity="warning">
+              {tooLow ? (
+                <div>
+                  Slippage below {MINIMUM_RECOMMENDED_SLIPPAGE.toFixed(2)}% may result in a failed transaction
+                </div>
+              ) : (
+                <div>Your transaction may be frontrun and result in an unfavorable trade.</div>
+              )}
+            </Alert>
           </RowBetween>
         ) : null
       }
