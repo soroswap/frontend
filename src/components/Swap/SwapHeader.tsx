@@ -37,7 +37,7 @@ export default function SwapHeader({
         </SubHeader>}
       </HeaderButtonContainer>
       <RowFixed style={{ padding: "6px 12px" }}>
-        <SettingsTab autoSlippage={1} />
+        <SettingsTab autoSlippage={0.5} />
       </RowFixed>
     </StyledSwapHeader>
   )

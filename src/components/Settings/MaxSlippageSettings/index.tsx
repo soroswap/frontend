@@ -34,7 +34,8 @@ const Switch = styled(Row)`
   border-radius: 16px;
 `
 
-const NUMBER_WITH_MAX_TWO_DECIMAL_PLACES = /^(?:\d*\.\d{0,2}|\d+)$/
+const NUMBER_WITH_MAX_TWO_DECIMAL_PLACES = /^(?:\d+(?:\.\d{0,2})?|\.\d{0,2})?$/;
+
 // const MINIMUM_RECOMMENDED_SLIPPAGE = new Percent(5, 10_000)
 const MINIMUM_RECOMMENDED_SLIPPAGE = 0.05
 // const MAXIMUM_RECOMMENDED_SLIPPAGE = new Percent(1, 100)
@@ -59,7 +60,7 @@ export default function MaxSlippageSettings({ autoSlippage }: { autoSlippage: nu
 
   // If user has previously entered a custom slippage, we want to show that value in the input field
   // instead of a placeholder.
-  const [slippageInput, setSlippageInput] = useState(DEFAULT_SLIPPAGE_INPUT_VALUE)
+  const [slippageInput, setSlippageInput] = useState<number | string>(DEFAULT_SLIPPAGE_INPUT_VALUE)
   const [slippageError, setSlippageError] = useState<SlippageError | false>(false)
 
   // If user has previously entered a custom slippage, we want to show the settings expanded by default.
@@ -67,11 +68,10 @@ export default function MaxSlippageSettings({ autoSlippage }: { autoSlippage: nu
 
   const parseSlippageInput = (value: string) => {
     // Do not allow non-numerical characters in the input field or more than two decimals
-    if (value.length > 0 && !NUMBER_WITH_MAX_TWO_DECIMAL_PLACES.test(value)) {
+    if (value.length >= 0 && !NUMBER_WITH_MAX_TWO_DECIMAL_PLACES.test(value)) {
       return
     }
-
-    setSlippageInput(parseFloat(value))
+    setSlippageInput(value)
     setSlippageError(false)
 
     // If the input is empty, set the slippage to the default
