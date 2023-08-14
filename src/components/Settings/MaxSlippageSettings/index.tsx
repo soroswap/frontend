@@ -11,6 +11,7 @@ import { styled, Typography, useTheme } from "@mui/material"
 // import { ThemedText } from 'theme'
 import { Alert } from '@mui/material'
 import { Input, InputContainer } from '../Input'
+import { useUserSlippageTolerance } from 'state/user/hooks'
 
 enum SlippageError {
   InvalidInput = 'InvalidInput',
@@ -46,8 +47,8 @@ const DEFAULT_SLIPPAGE_INPUT_VALUE = 0.5
 export default function MaxSlippageSettings({ autoSlippage }: { autoSlippage: number }) {
 
   const theme = useTheme();
-  // const [userSlippageTolerance, setUserSlippageTolerance] = useUserSlippageTolerance()
-  const [userSlippageTolerance, setUserSlippageTolerance] = useState(DEFAULT_SLIPPAGE_INPUT_VALUE)
+  const [userSlippageTolerance, setUserSlippageTolerance] = useUserSlippageTolerance()
+  // const [userSlippageTolerance, setUserSlippageTolerance] = useState(DEFAULT_SLIPPAGE_INPUT_VALUE)
 
   // In order to trigger `custom` mode, we need to set `userSlippageTolerance` to a value that is not `auto`.
   // To do so, we use `autoSlippage` value. However, since users are likely to change that value,
@@ -99,10 +100,11 @@ export default function MaxSlippageSettings({ autoSlippage }: { autoSlippage: nu
 
   const tooLow =
     // userSlippageTolerance !== SlippageTolerance.Auto && userSlippageTolerance.lessThan(MINIMUM_RECOMMENDED_SLIPPAGE)
-    userSlippageTolerance < MINIMUM_RECOMMENDED_SLIPPAGE
+    typeof userSlippageTolerance === "number" ? userSlippageTolerance < MINIMUM_RECOMMENDED_SLIPPAGE : false
   const tooHigh =
     // userSlippageTolerance !== SlippageTolerance.Auto && userSlippageTolerance.greaterThan(MAXIMUM_RECOMMENDED_SLIPPAGE)
-    userSlippageTolerance > MAXIMUM_RECOMMENDED_SLIPPAGE
+    typeof userSlippageTolerance === "number" ? userSlippageTolerance > MAXIMUM_RECOMMENDED_SLIPPAGE : false
+
 
   return (
     <Expand
@@ -126,7 +128,7 @@ export default function MaxSlippageSettings({ autoSlippage }: { autoSlippage: nu
           {userSlippageTolerance === DEFAULT_SLIPPAGE_INPUT_VALUE ? (
             <div>Auto</div>
           ) : (
-            `${userSlippageTolerance.toFixed(2)}%`
+            `${typeof userSlippageTolerance === "number" ? userSlippageTolerance.toFixed(2) : 0.5}%`
           )}
         </Typography>
       }
