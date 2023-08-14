@@ -53,9 +53,9 @@ export function AllowanceButton({
       let tx = contractTransaction({
         source: walletSource!,
         networkPassphrase,
-        contractId: tokenAddress,
+        contractAddress: tokenAddress,
         method: "increase_allowance",
-        params: [
+        args: [
             new SorobanClient.Address(account!).toScVal(),
             new SorobanClient.Address(spenderAddress).toScVal(),
             amountScVal,

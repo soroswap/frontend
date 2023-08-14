@@ -9,15 +9,15 @@ export function useTokensFromPair(
 ) {
 
   const token0ScVal = useContractValue({
-    contractId: pairAddress,
+    contractAddress: pairAddress,
     method: "token_0", 
-    params: [],
+    args: [],
     sorobanContext: sorobanContext,
   });
   const token1ScVal = useContractValue({
-    contractId: pairAddress,
+    contractAddress: pairAddress,
     method: "token_1", 
-    params: [],
+    args: [],
     sorobanContext: sorobanContext,
   });
   let tokens = {

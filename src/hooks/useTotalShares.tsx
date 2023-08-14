@@ -10,14 +10,14 @@ export function useTotalShares(
   sorobanContext: SorobanContextType,
 ): BigNumber | undefined {
     let totalShares;
-  let params: xdr.ScVal[] = [];
+  let args: xdr.ScVal[] = [];
   try {
-    params = [];
+    args = [];
   } catch (error) {}
   const totalShares_scval = useContractValue({
-    contractId: pairAddress,
+    contractAddress: pairAddress,
     method: "total_shares",
-    params: params,
+    args,
     sorobanContext: sorobanContext,
   });
 

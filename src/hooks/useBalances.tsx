@@ -4,7 +4,7 @@ import { Constants } from "../constants";
 import {
   scvalToBigNumber,
   accountToScVal,
-  contractIdToScVal,
+  contractAddressToScVal,
 } from "../helpers/utils";
 import { formatAmount } from "../helpers/utils";
 import { TokenMapType, TokenType } from "../interfaces";
@@ -19,9 +19,9 @@ export function useTokenScVal(tokenAddress: string, userAddress: string) {
   const user = accountToScVal(address);
 
   const tokenBalance = useContractValue({
-    contractId: tokenAddress,
+    contractAddress: tokenAddress,
     method: "balance",
-    params: [user],
+    args: [user],
     sorobanContext: sorobanContext,
   });
   // console.log(
@@ -36,7 +36,7 @@ export function useTokenDecimals(tokenAddress: string) {
   const sorobanContext = useSorobanReact();
 
   const decimals = useContractValue({
-    contractId: tokenAddress,
+    contractAddress: tokenAddress,
     method: "decimals",
     sorobanContext: sorobanContext,
   });

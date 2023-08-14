@@ -159,6 +159,7 @@ export default function SwapPage() {
   const handleInputSelect = useCallback(
     (inputCurrency: TokenType) => {
       onCurrencySelection(Field.INPUT, inputCurrency)
+      // setSelectedToken(inputCurrency)
     },
     [ onCurrencySelection]
   )
@@ -166,6 +167,7 @@ export default function SwapPage() {
   const handleOutputSelect = useCallback(
     (outputCurrency: TokenType) => {
       onCurrencySelection(Field.OUTPUT, outputCurrency)
+      // setSelectedTokenOutput(outputCurrency)
     },
     [onCurrencySelection]
   )
@@ -212,6 +214,7 @@ export default function SwapPage() {
   const showFiatValueOutput = false //TODO: Change this
   const showMaxButton = true //This could be Boolean(maxInputAmount?.greaterThan(0) && !parsedAmounts[Field.INPUT]?.equalTo(maxInputAmount))
 
+  console.log("🚀 « state:", state)
   const swapInfo = useDerivedSwapInfo(state)
   const {
     trade: { state: tradeState, trade },

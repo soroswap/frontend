@@ -67,9 +67,9 @@ export function CreatePairButton({
       let tx = contractTransaction({
         source: walletSource!,
         networkPassphrase,
-        contractId: factory.factory_address,
+        contractAddress: factory.factory_address,
         method: "create_pair", 
-        params: params,
+        args: params,
       });
 
       //Sends the transactions to the blockchain
