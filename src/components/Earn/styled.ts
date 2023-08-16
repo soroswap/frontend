@@ -1,5 +1,3 @@
-// import styled from 'styled-components/macro'
-
 import { styled } from "@mui/material";
 import { AutoColumn } from "components/Column";
 

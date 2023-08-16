@@ -6,9 +6,7 @@
 // import { MouseoverTooltip } from 'components/Tooltip'
 // import { useWindowSize } from 'hooks/useWindowSize'
 // import { PropsWithChildren, ReactNode } from 'react'
-// import { TextProps } from 'rebass'
 // import { Field } from 'state/swap/actions'
-// import styled from 'styled-components/macro'
 // import { BREAKPOINTS, ThemedText } from 'theme'
 
 import { TypographyProps, styled, useTheme } from "@mui/material"

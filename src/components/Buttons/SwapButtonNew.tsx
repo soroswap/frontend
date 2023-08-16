@@ -13,7 +13,7 @@ import { useTokens } from "hooks/useTokens";
 import { useTokensFromPair } from "hooks/useTokensFromPair";
 import { useReservesBigNumber } from "hooks/useReserves";
 import { useTokenBalances } from "hooks";
-import { Button as RebassButton, ButtonProps as ButtonPropsOriginal } from '@mui/material'
+import { Button as MuiButton, ButtonProps as ButtonPropsOriginal } from '@mui/material'
 import { darken } from "polished";
 import { BodyPrimary } from "components/Text";
 
@@ -38,7 +38,7 @@ type BaseButtonProps = {
 } & ButtonProps
 
 
-export const BaseButton = styled(RebassButton)<BaseButtonProps>`
+export const BaseButton = styled(MuiButton)<BaseButtonProps>`
   padding: ${({ padding }) => padding ?? '16px'};
   width: ${({ width }) => width ?? '100%'};
   font-weight: 500;

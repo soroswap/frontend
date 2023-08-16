@@ -13,7 +13,6 @@
 // import { useOrder } from 'state/signatures/hooks'
 // import { UniswapXOrderDetails } from 'state/signatures/types'
 // import { useIsTransactionConfirmed } from 'state/transactions/hooks'
-// import styled, { css, keyframes } from 'styled-components/macro'
 // import { ExternalLink } from 'theme'
 // import { ThemedText } from 'theme/components/text'
 // import { getExplorerLink } from 'utils/getExplorerLink'

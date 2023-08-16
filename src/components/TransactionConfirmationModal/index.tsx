@@ -8,7 +8,6 @@
 // import { ReactNode, useCallback, useState } from 'react'
 // import { AlertCircle, ArrowUpCircle, CheckCircle } from 'react-feather'
 // import { useIsTransactionConfirmed, useTransaction } from 'state/transactions/hooks'
-// import styled, { useTheme } from 'styled-components/macro'
 // import { isL2ChainId } from 'utils/chains'
 // import { ExplorerDataType, getExplorerLink } from 'utils/getExplorerLink'
 
