@@ -101,10 +101,7 @@ function ChooseTokensWallet({
     });
     if (selectedPair) setPairAddress(selectedPair.pair_address);
 
-    console.log(
-      "🚀 ~ file: ChooseTokens.tsx:88 ~ React.useEffect ~ getPairExists(inputToken, outputToken, allPairs):",
-      getPairExists(inputToken, outputToken, allPairs),
-    );
+    
   }, [inputToken, outputToken, allPairs]); // Dependencies array
 
   const handleInputTokenChange = (
