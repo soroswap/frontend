@@ -1,6 +1,6 @@
 {
-  "name": "pet-adopt-soroban",
-  "version": "0.1.0",
+  "name": "soroswap-frontend",
+  "version": "0.1.1",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -16,8 +16,9 @@
     "@next/font": "13.0.7",
     "@reduxjs/toolkit": "^1.9.5",
     "@soroban-react/chains": "6.1.1",
-    "@soroban-react/contracts": "6.3.1",
-    "@soroban-react/core": "6.1.1",
+    "@soroban-react/contracts": "6.4.0",
+    "@soroban-react/freighter": "6.4.0",
+    "@soroban-react/core": "6.4.0",
     "@soroban-react/types": "6.1.1",
     "@soroban-react/utils": "6.1.1",
     "@soroban-react/wallet-data": "6.1.1",
