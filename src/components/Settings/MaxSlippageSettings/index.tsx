@@ -1,14 +1,8 @@
-// import { Trans } from '@lingui/macro'
-// import { Percent } from '@uniswap/sdk-core'
 import Expand from 'components/Expand'
 import QuestionHelper from 'components/QuestionHelper'
 import Row, { RowBetween } from 'components/Row'
 import React, { useState } from 'react'
-// import { useUserSlippageTolerance } from 'state/user/hooks'
-// import { SlippageTolerance } from 'state/user/types'
-// import styled from 'styled-components/macro'
 import { styled, Typography, useTheme } from "@mui/material"
-// import { ThemedText } from 'theme'
 import { Alert } from '@mui/material'
 import { Input, InputContainer } from '../Input'
 import { useUserSlippageTolerance } from 'state/user/hooks'
@@ -37,9 +31,7 @@ const Switch = styled(Row)`
 
 const NUMBER_WITH_MAX_TWO_DECIMAL_PLACES = /^(?:\d+(?:\.\d{0,2})?|\.\d{0,2})?$/;
 
-// const MINIMUM_RECOMMENDED_SLIPPAGE = new Percent(5, 10_000)
 const MINIMUM_RECOMMENDED_SLIPPAGE = 0.05
-// const MAXIMUM_RECOMMENDED_SLIPPAGE = new Percent(1, 100)
 const MAXIMUM_RECOMMENDED_SLIPPAGE = 1
 
 const DEFAULT_SLIPPAGE_INPUT_VALUE = 0.5
@@ -48,16 +40,6 @@ export default function MaxSlippageSettings({ autoSlippage }: { autoSlippage: nu
 
   const theme = useTheme();
   const [userSlippageTolerance, setUserSlippageTolerance] = useUserSlippageTolerance()
-  // const [userSlippageTolerance, setUserSlippageTolerance] = useState(DEFAULT_SLIPPAGE_INPUT_VALUE)
-
-  // In order to trigger `custom` mode, we need to set `userSlippageTolerance` to a value that is not `auto`.
-  // To do so, we use `autoSlippage` value. However, since users are likely to change that value,
-  // we render it as a placeholder instead of a value.
-  // const defaultSlippageInputValue =
-  //   userSlippageTolerance !== SlippageTolerance.Auto && !userSlippageTolerance.equalTo(autoSlippage)
-  //   userSlippageTolerance !== SlippageTolerance.Auto && !userSlippageTolerance.equalTo(autoSlippage)
-  //     ? userSlippageTolerance.toFixed(2)
-  //     : ''
 
   // If user has previously entered a custom slippage, we want to show that value in the input field
   // instead of a placeholder.
@@ -91,7 +73,6 @@ export default function MaxSlippageSettings({ autoSlippage }: { autoSlippage: nu
       if (parsed > 5000) {
         setSlippageError(SlippageError.InvalidInput)
       } else {
-        // setUserSlippageTolerance(parsed / 100)
         setUserSlippageTolerance(Number.parseFloat(value))
       }
     } catch (e) {
@@ -100,10 +81,8 @@ export default function MaxSlippageSettings({ autoSlippage }: { autoSlippage: nu
   }
 
   const tooLow =
-    // userSlippageTolerance !== SlippageTolerance.Auto && userSlippageTolerance.lessThan(MINIMUM_RECOMMENDED_SLIPPAGE)
     typeof userSlippageTolerance === "number" ? userSlippageTolerance < MINIMUM_RECOMMENDED_SLIPPAGE : false
   const tooHigh =
-    // userSlippageTolerance !== SlippageTolerance.Auto && userSlippageTolerance.greaterThan(MAXIMUM_RECOMMENDED_SLIPPAGE)
     typeof userSlippageTolerance === "number" ? userSlippageTolerance > MAXIMUM_RECOMMENDED_SLIPPAGE : false
 
 

@@ -1,9 +1,7 @@
-// import { t, Trans } from '@lingui/macro'
 import TuneRoundedIcon from '@mui/icons-material/TuneRounded';
 import Row from 'components/Row'
 // import { useUserSlippageTolerance } from 'state/user/hooks'
 // import { SlippageTolerance } from 'state/user/types'
-// import styled from 'styled-components/macro'
 import { styled, useTheme } from "@mui/material"
 
 // import { ThemedText } from 'theme'

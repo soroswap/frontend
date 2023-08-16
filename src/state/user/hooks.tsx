@@ -1,10 +1,8 @@
-// import JSBI from 'jsbi'
 import { useCallback, useMemo } from 'react'
 import { useAppDispatch, useAppSelector } from 'state/hooks'
 import {
     updateUserSlippageTolerance,
 } from './reducer'
-// import { SlippageTolerance } from './types'
 
 export enum SlippageTolerance {
     Auto = 'auto',
@@ -25,7 +23,6 @@ export function useUserSlippageTolerance(): [
         () =>
             userSlippageToleranceRaw === SlippageTolerance.Auto
                 ? SlippageTolerance.Auto
-                // : new Percent(userSlippageToleranceRaw, 10_000),
                 : userSlippageToleranceRaw,
         [userSlippageToleranceRaw]
     )
@@ -38,7 +35,6 @@ export function useUserSlippageTolerance(): [
                 value =
                     userSlippageTolerance === SlippageTolerance.Auto
                         ? SlippageTolerance.Auto
-                        // : JSBI.toNumber(userSlippageTolerance.multiply(10_000).quotient)
                         : userSlippageTolerance
             } catch (error) {
                 value = SlippageTolerance.Auto
