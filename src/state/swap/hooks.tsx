@@ -10,7 +10,7 @@ import { AnyAction } from 'redux'
 // import { useAppDispatch } from 'state/hooks'
 // import { InterfaceTrade, TradeState } from 'state/routing/types'
 // import { isClassicTrade, isUniswapXTrade } from 'state/routing/utils'
-// import { useUserSlippageToleranceWithDefault } from 'state/user/hooks'
+import { useUserSlippageToleranceWithDefault } from 'state/user/hooks'
 
 // import { TOKEN_SHORTHANDS } from '../../constants/tokens'
 // import { useCurrency } from '../../hooks/Tokens'
@@ -109,7 +109,7 @@ export function useDerivedSwapInfo(state: SwapState, chainId?: number | undefine
   const inputCurrency = useToken(inputCurrencyId)
   console.log("🚀 « inputCurrency:", inputCurrency)
   const outputCurrency = useToken(outputCurrencyId)
-  const recipientLookup = {address: ""}//TODO: Use ENS useENS(recipient ?? undefined)
+  const recipientLookup = { address: "" }//TODO: Use ENS useENS(recipient ?? undefined)
   console.log("🚀 « outputCurrency:", outputCurrency)
   const to: string | null | undefined = account//recipient === null ? account : recipientLookup.address) ?? null
 
@@ -163,9 +163,11 @@ export function useDerivedSwapInfo(state: SwapState, chainId?: number | undefine
   // // Uniswap interface recommended slippage amount
   // const autoSlippage = uniswapXAutoSlippage ?? classicAutoSlippage
   // const classicAllowedSlippage = useUserSlippageToleranceWithDefault(autoSlippage)
+  const classicAllowedSlippage = useUserSlippageToleranceWithDefault(0.5)
 
   // // slippage amount used to submit the trade
   // const allowedSlippage = uniswapXAutoSlippage ?? classicAllowedSlippage
+  const allowedSlippage = classicAllowedSlippage
 
   const inputError = useMemo(() => {
     let inputError: ReactNode | undefined
@@ -185,7 +187,7 @@ export function useDerivedSwapInfo(state: SwapState, chainId?: number | undefine
     const formattedTo = isAddress(to)
     if (!to || !formattedTo) {
       inputError = inputError ?? "Enter a recipient"
-    } 
+    }
 
     // compare input balance to max input based on version
     // const [balanceIn, maxAmountIn] = [currencyBalances[Field.INPUT], trade?.trade?.maximumAmountIn(allowedSlippage)]
@@ -205,9 +207,9 @@ export function useDerivedSwapInfo(state: SwapState, chainId?: number | undefine
       inputError,
       trade,
       // autoSlippage,
-      // allowedSlippage,
+      allowedSlippage,
     }),
-    [currencies, inputError, trade, parsedAmount ]//allowedSlippage, autoSlippage, currencies, currencyBalances, inputError, parsedAmount, trade]
+    [currencies, inputError, trade, parsedAmount, allowedSlippage]//allowedSlippage, autoSlippage, currencies, currencyBalances, inputError, parsedAmount, trade]
   )
 }
 

@@ -3,7 +3,7 @@ import { styled } from '@mui/material/styles';
 import { RowBetween, RowFixed } from '../Row'
 import { SubHeader } from '../Text';
 import TuneRoundedIcon from '@mui/icons-material/TuneRounded';
-
+import SettingsTab from '../Settings/index';
 const StyledSwapHeader = styled(RowBetween)(({ theme }) => ({
   marginBottom: 10,
   color: theme.palette.secondary.main,
@@ -36,8 +36,8 @@ export default function SwapHeader({
           Buy
         </SubHeader>}
       </HeaderButtonContainer>
-      <RowFixed style={{padding: "6px 12px"}}>
-        <TuneRoundedIcon/>
+      <RowFixed style={{ padding: "6px 12px" }}>
+        <SettingsTab autoSlippage={0.5} />
       </RowFixed>
     </StyledSwapHeader>
   )

@@ -55,7 +55,7 @@ const SwapSection = styled('div')(({ theme }) => ({
     borderColor: opacify(8, theme.palette.secondary.main),
   },
   "&:focus-within:before": {
-    borderColor:  opacify(24, theme.palette.secondary.light),
+    borderColor: opacify(24, theme.palette.secondary.light),
   }
 }));
 
@@ -84,8 +84,8 @@ export default function SwapPage() {
   const theme = useTheme()
   const [inputAmount, setInputAmount] = useState<number>(0);
   const [outputAmount, setOutputAmount] = useState<number>(0);
-  const [selectedToken, setSelectedToken] = useState<TokenType|null>(null)
-  const [selectedTokenOutput, setSelectedTokenOutput] = useState<TokenType|null>(null)
+  const [selectedToken, setSelectedToken] = useState<TokenType | null>(null)
+  const [selectedTokenOutput, setSelectedTokenOutput] = useState<TokenType | null>(null)
   const [token0, setToken0] = useState<TokenType | null>(null);
   const [token1, setToken1] = useState<TokenType | null>(null);
   const sorobanContext = useSorobanReact();
@@ -95,16 +95,16 @@ export default function SwapPage() {
   //const [pairExist, setPairExist] = useState<boolean>(false);
   //const [pairAddress, setPairAddress] = useState<string | null>(null);
   const pairExist = usePairExist(
-    selectedToken?.token_address??null, 
-    selectedTokenOutput?.token_address??null,
+    selectedToken?.token_address ?? null,
+    selectedTokenOutput?.token_address ?? null,
     sorobanContext,
   );
   const pairAddress = usePairContractAddress(
-    selectedToken?.token_address??null,
-    selectedTokenOutput?.token_address??null,
+    selectedToken?.token_address ?? null,
+    selectedTokenOutput?.token_address ?? null,
     sorobanContext,
   );
-  const reserves = useReservesBigNumber(pairAddress??"", sorobanContext);
+  const reserves = useReservesBigNumber(pairAddress ?? "", sorobanContext);
 
   const [showPriceImpactModal, setShowPriceImpactModal] = useState<boolean>(false)
 
@@ -136,17 +136,17 @@ export default function SwapPage() {
   //     getPairExists(selectedToken, selectedTokenOutput, allPairs),
   //   );
   // }, [selectedToken, selectedTokenOutput, allPairs]);
-  
+
   // const handleInputSelect = useCallback(
   //   (inputCurrency: TokenType) => {
   //     console.log("inputCurrency", inputCurrency)
   //     if (inputCurrency.token_address === selectedTokenOutput?.token_address) setSelectedTokenOutput(null)
   //     setSelectedToken(inputCurrency)
-      
+
   //   },
   //   [selectedTokenOutput]
   // )
- 
+
   // modal and loading
   const [{ showConfirm, tradeToConfirm, swapError, swapResult }, setSwapState] = useState<{
     showConfirm: boolean
@@ -160,11 +160,11 @@ export default function SwapPage() {
     swapResult: undefined,
   })
 
-  const prefilledState={
+  const prefilledState = {
     [Field.INPUT]: { currencyId: "CDO5AFKO3CNWM2CDEZAMPJXQKJ5NLYBHAGRPSINQUZEFQJTE4HNKD243" },
     [Field.OUTPUT]: { currencyId: null },
   }
-  
+
   const [state, dispatch] = useReducer(swapReducer, { ...initialSwapState, ...prefilledState })
   const { typedValue, recipient, independentField } = state
 
@@ -176,9 +176,9 @@ export default function SwapPage() {
       onCurrencySelection(Field.INPUT, inputCurrency)
       // setSelectedToken(inputCurrency)
     },
-    [ onCurrencySelection]
+    [onCurrencySelection]
   )
-  
+
   const handleOutputSelect = useCallback(
     (outputCurrency: TokenType) => {
       onCurrencySelection(Field.OUTPUT, outputCurrency)
@@ -213,14 +213,15 @@ export default function SwapPage() {
     [dependentField, independentField, typedValue]
   )
 
-  const fiatValueInput = {data: 0, isLoading: false}
-  const fiatValueOutput = {data: 0, isLoading: false}
+  const fiatValueInput = { data: 0, isLoading: false }
+  const fiatValueOutput = { data: 0, isLoading: false }
   const showFiatValueInput = false //TODO: Change this
   const showFiatValueOutput = false //TODO: Change this
   const showMaxButton = true //This could be Boolean(maxInputAmount?.greaterThan(0) && !parsedAmounts[Field.INPUT]?.equalTo(maxInputAmount))
 
-  console.log("🚀 « state:", state)
+  console.log("🚀 « state on swap.tsx:", state)
   const swapInfo = useDerivedSwapInfo(state)
+  console.log("swapInfo:", swapInfo)
   const {
     trade: { state: tradeState, trade },
     // allowedSlippage,
@@ -298,14 +299,14 @@ export default function SwapPage() {
       <SEO title="Swap - Soroswap" description="Soroswap Swap" />
       <SwapWrapper>
         {
-        //selectedToken!==null && selectedTokenOutput!==null && sorobanContext.address!==null &&
-        // <AllPairs 
-        //   selectedToken={selectedToken}
-        //   selectedOutputToken={selectedTokenOutput}
-        //   setPairAddress={setPairAddress}
-        //   setPairExist={setPairExist}
-        //   sorobanContext={sorobanContext} 
-        //   />
+          //selectedToken!==null && selectedTokenOutput!==null && sorobanContext.address!==null &&
+          // <AllPairs 
+          //   selectedToken={selectedToken}
+          //   selectedOutputToken={selectedTokenOutput}
+          //   setPairAddress={setPairAddress}
+          //   setPairExist={setPairExist}
+          //   sorobanContext={sorobanContext} 
+          //   />
         }
         <SwapHeader />
         {trade && showConfirm && (
@@ -322,8 +323,8 @@ export default function SwapPage() {
             swapError={swapError}
             onDismiss={handleConfirmDismiss}
             swapQuoteReceivedDate={new Date()} //swapQuoteReceivedDate}
-            fiatValueInput={{data: 32, isLoading: false}} //fiatValueTradeInput}
-            fiatValueOutput={{data: 32, isLoading: false}} //fiatValueTradeOutput}
+            fiatValueInput={{ data: 32, isLoading: false }} //fiatValueTradeInput}
+            fiatValueOutput={{ data: 32, isLoading: false }} //fiatValueTradeOutput}
           />
         )}
         {/* {showPriceImpactModal && showPriceImpactWarning && (
@@ -366,7 +367,7 @@ export default function SwapPage() {
             >
               <ArrowDown
                 size="16"
-                color={selectedToken && selectedTokenOutput ? theme.palette.primary.main : theme.palette.custom.textTertiary }//currencies[Field.INPUT] && currencies[Field.OUTPUT] ? theme.palette.custom.textTertiary}
+                color={selectedToken && selectedTokenOutput ? theme.palette.primary.main : theme.palette.custom.textTertiary}//currencies[Field.INPUT] && currencies[Field.OUTPUT] ? theme.palette.custom.textTertiary}
               />
             </ArrowContainer>
           </ArrowWrapper>
@@ -375,7 +376,7 @@ export default function SwapPage() {
           <div>
             <OutputSwapSection>
               <SwapCurrencyInputPanel
-                id={""} 
+                id={""}
                 value={formattedAmounts[Field.OUTPUT]}
                 //disabled={disableTokenInputs}
                 onUserInput={handleTypeOutput}
@@ -383,7 +384,7 @@ export default function SwapPage() {
                 label={independentField === Field.INPUT ? <span>To (at least)</span> : <span>To</span>}
                 showMaxButton={false}
                 hideBalance={false}
-                onMax={() => {}}
+                onMax={() => { }}
                 fiatValue={showFiatValueOutput ? fiatValueOutput : undefined}
                 //priceImpact={stablecoinPriceImpact}
                 currency={currencies[Field.OUTPUT] ?? null}
