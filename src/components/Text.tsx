@@ -89,3 +89,7 @@ export const LabelSmall = styled(Typography)<{color?: string; fontWeight?: numbe
   color: color ?? theme.typography.subtitle1.color,
   lineHeight: "24px",
 }));
+
+export const HideSmall = styled('span')`
+  display: none;
+`

@@ -12,7 +12,8 @@
 // import { isL2ChainId } from 'utils/chains'
 // import { ExplorerDataType, getExplorerLink } from 'utils/getExplorerLink'
 
-import { styled, useTheme } from "@mui/material"
+import { Modal, styled, useTheme } from "@mui/material"
+import { useSorobanReact } from "@soroban-react/core"
 import Badge from "components/Badge"
 import { CloseButton } from "components/Buttons/CloseButton"
 import { AutoColumn, ColumnCenter } from "components/Column"
@@ -330,46 +331,47 @@ export function ConfirmationModalContent({
 //   )
 // }
 
-// interface ConfirmationModalProps {
-//   isOpen: boolean
-//   onDismiss: () => void
-//   hash?: string
-//   reviewContent: () => ReactNode
-//   attemptingTxn: boolean
-//   pendingText: ReactNode
-//   currencyToAdd?: Currency
-// }
+interface ConfirmationModalProps {
+  isOpen: boolean
+  onDismiss: () => void
+  hash?: string
+  reviewContent: () => ReactNode
+  attemptingTxn: boolean
+  pendingText: ReactNode
+  currencyToAdd?: TokenType
+}
 
-// export default function TransactionConfirmationModal({
-//   isOpen,
-//   onDismiss,
-//   attemptingTxn,
-//   hash,
-//   pendingText,
-//   reviewContent,
-//   currencyToAdd,
-// }: ConfirmationModalProps) {
-//   const { chainId } = useWeb3React()
+export default function TransactionConfirmationModal({
+  isOpen,
+  onDismiss,
+  attemptingTxn,
+  hash,
+  pendingText,
+  reviewContent,
+  currencyToAdd,
+}: ConfirmationModalProps) {
+  const sorobanContext = useSorobanReact()
+  const {activeChain} = sorobanContext
+  if (!activeChain) return null
 
-//   if (!chainId) return null
-
-//   // confirmation screen
-//   return (
-//     <Modal isOpen={isOpen} $scrollOverlay={true} onDismiss={onDismiss} maxHeight={90}>
-//       {isL2ChainId(chainId) && (hash || attemptingTxn) ? (
-//         <L2Content chainId={chainId} hash={hash} onDismiss={onDismiss} pendingText={pendingText} />
-//       ) : attemptingTxn ? (
-//         <ConfirmationPendingContent onDismiss={onDismiss} pendingText={pendingText} />
-//       ) : hash ? (
-//         <TransactionSubmittedContent
-//           chainId={chainId}
-//           hash={hash}
-//           onDismiss={onDismiss}
-//           currencyToAdd={currencyToAdd}
-//         />
-//       ) : (
-//         reviewContent()
-//       )}
-//     </Modal>
-//   )
-// }
+  // confirmation screen
+  return (
+    <Modal open={true}>
+      <>ss</>
+      {/* {isL2ChainId(chainId) && (hash || attemptingTxn) ? (
+        <L2Content chainId={chainId} hash={hash} onDismiss={onDismiss} pendingText={pendingText} />
+      ) : attemptingTxn ? (
+        <ConfirmationPendingContent onDismiss={onDismiss} pendingText={pendingText} />
+      ) : hash ? (
+        <TransactionSubmittedContent
+          chainId={chainId}
+          hash={hash}
+          onDismiss={onDismiss}
+          currencyToAdd={currencyToAdd}
+        />
+      ) : (
+        reviewContent()
+      )} */}
+    </Modal>
+  )
+}
