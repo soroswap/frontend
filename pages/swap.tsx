@@ -27,6 +27,7 @@ import { useDerivedSwapInfo, useSwapActionHandlers } from "state/swap/hooks";
 import swapReducer, { initialState as initialSwapState, SwapState } from 'state/swap/reducer'
 import { Field } from "state/swap/actions";
 import { InterfaceTrade, TradeState } from "state/routing/types";
+import ConfirmSwapModal from "components/Swap/ConfirmSwapModal";
 
 
 const SwapSection = styled('div')(({ theme }) => ({
@@ -145,6 +146,20 @@ export default function SwapPage() {
   //   },
   //   [selectedTokenOutput]
   // )
+
+  // modal and loading
+  const [{ showConfirm, tradeToConfirm, swapError, swapResult }, setSwapState] = useState<{
+    showConfirm: boolean
+    tradeToConfirm?: InterfaceTrade
+    swapError?: Error
+    swapResult?: any
+  }>({
+    showConfirm: false,
+    tradeToConfirm: undefined,
+    swapError: undefined,
+    swapResult: undefined,
+  })
+
   const prefilledState={
     [Field.INPUT]: { currencyId: "CDO5AFKO3CNWM2CDEZAMPJXQKJ5NLYBHAGRPSINQUZEFQJTE4HNKD243" },
     [Field.OUTPUT]: { currencyId: null },
@@ -198,16 +213,6 @@ export default function SwapPage() {
     [dependentField, independentField, typedValue]
   )
 
-  const handleContinueToReview = useCallback(() => {
-    console.log("on continue")
-    // setSwapState({
-    //   tradeToConfirm: trade,
-    //   swapError: undefined,
-    //   showConfirm: true,
-    //   swapResult: undefined,
-    // })
-  }, [])//trade])
-
   const fiatValueInput = {data: 0, isLoading: false}
   const fiatValueOutput = {data: 0, isLoading: false}
   const showFiatValueInput = false //TODO: Change this
@@ -237,6 +242,54 @@ export default function SwapPage() {
     [trade, tradeState]
   )
 
+  const handleContinueToReview = useCallback(() => {
+    setSwapState({
+      tradeToConfirm: trade,
+      swapError: undefined,
+      showConfirm: true,
+      swapResult: undefined,
+    })
+  }, [trade])
+
+  const handleConfirmDismiss = useCallback(() => {
+    setSwapState((currentState) => ({ ...currentState, showConfirm: false }))
+    // If there was a swap, we want to clear the input
+    if (swapResult) {
+      onUserInput(Field.INPUT, '')
+    }
+  }, [onUserInput, swapResult])
+
+  const handleSwap = useCallback(() => {
+    // if (!swapCallback) {
+    //   return
+    // }
+    // if (stablecoinPriceImpact && !confirmPriceImpactWithoutFee(stablecoinPriceImpact)) {
+    //   return
+    // }
+    setSwapState((currentState) => ({
+      ...currentState,
+      swapError: undefined,
+      swapResult: undefined,
+    }))
+    // swapCallback()
+    //   .then((result) => {
+    //     setSwapState((currentState) => ({
+    //       ...currentState,
+    //       swapError: undefined,
+    //       swapResult: result,
+    //     }))
+    //   })
+    //   .catch((error) => {
+    //     setSwapState((currentState) => ({
+    //       ...currentState,
+    //       swapError: error,
+    //       swapResult: undefined,
+    //     }))
+    //   })
+  }, [])
+
+  const inputCurrency = currencies[Field.INPUT] ?? undefined
+  const outputCurrency = currencies[Field.OUTPUT] ?? undefined
   const swapIsUnsupported = false//useIsSwapUnsupported(currencies[Field.INPUT], currencies[Field.OUTPUT])
   const priceImpactSeverity = 2 //IF is < 2 it shows Swap anyway button in red
   const showPriceImpactWarning = false
@@ -255,25 +308,25 @@ export default function SwapPage() {
         //   />
         }
         <SwapHeader />
-        {/* {trade && showConfirm && (
+        {trade && showConfirm && (
           <ConfirmSwapModal
             trade={trade}
             inputCurrency={inputCurrency}
             originalTrade={tradeToConfirm}
-            onAcceptChanges={handleAcceptChanges}
+            onAcceptChanges={() => console.log("handleAcceptChanges")} //handleAcceptChanges}
             onCurrencySelection={onCurrencySelection}
             swapResult={swapResult}
-            allowedSlippage={allowedSlippage}
+            allowedSlippage={() => console.log("allowedSlippage")} //allowedSlippage}
             onConfirm={handleSwap}
-            allowance={allowance}
+            allowance={() => console.log("allowance")} //allowance}
             swapError={swapError}
             onDismiss={handleConfirmDismiss}
-            swapQuoteReceivedDate={swapQuoteReceivedDate}
-            fiatValueInput={fiatValueTradeInput}
-            fiatValueOutput={fiatValueTradeOutput}
+            swapQuoteReceivedDate={new Date()} //swapQuoteReceivedDate}
+            fiatValueInput={{data: 32, isLoading: false}} //fiatValueTradeInput}
+            fiatValueOutput={{data: 32, isLoading: false}} //fiatValueTradeOutput}
           />
         )}
-        {showPriceImpactModal && showPriceImpactWarning && (
+        {/* {showPriceImpactModal && showPriceImpactWarning && (
           <PriceImpactModal
             priceImpact={largerPriceImpact}
             onDismiss={() => setShowPriceImpactModal(false)}
@@ -359,7 +412,7 @@ export default function SwapPage() {
                 </ButtonText>
               </ButtonPrimary>
             ) : !address ? (
-              <ButtonLight onClick={() => connect()} fontWeight={600}>
+              <ButtonLight onClick={() => connect()}>
                 Connect Wallet
               </ButtonLight>
             ) : routeNotFound ? (
