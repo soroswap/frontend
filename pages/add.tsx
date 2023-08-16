@@ -95,8 +95,9 @@ export default function AddLiquidityPage() {
               // onCurrencySelect={handleCurrencyASelect}
               showMaxButton={false}
               // currency={currencies[Field.CURRENCY_A] ?? null}
+              currency={null}
               id="add-liquidity-input-tokena"
-              // showCommonBases
+            // showCommonBases
             />
             <ColumnCenter>
               <Plus size="16" color={theme.palette.secondary.main} />
@@ -110,8 +111,10 @@ export default function AddLiquidityPage() {
               // }}
               showMaxButton={false}
               // currency={currencies[Field.CURRENCY_B] ?? null}
+              // currency={currencies[Field.CURRENCY_A] ?? null}
+              currency={null}
               id="add-liquidity-input-tokenb"
-              // showCommonBases
+            // showCommonBases
             />
             {/* {currencies[Field.CURRENCY_A] && currencies[Field.CURRENCY_B] && pairState !== PairState.INVALID && (
               <>
