@@ -1,6 +1,6 @@
+import { Theme, styled } from '@mui/material'
 import { readableColor } from 'polished'
 import { PropsWithChildren } from 'react'
-import styled, { DefaultTheme } from 'styled-components/macro'
 
 export enum BadgeVariant {
   DEFAULT = 'DEFAULT',
@@ -19,58 +19,58 @@ interface BadgeProps {
   variant?: BadgeVariant
 }
 
-function pickBackgroundColor(variant: BadgeVariant | undefined, theme: DefaultTheme): string {
+function pickBackgroundColor(variant: BadgeVariant | undefined, theme: Theme): string {
   switch (variant) {
     case BadgeVariant.BRANDED:
-      return theme.brandedGradient
+      return "linear-gradient(139.57deg, #FF79C9 4.35%, #FFB8E2 96.44%);"
     case BadgeVariant.PROMOTIONAL:
-      return theme.promotionalGradient
+      return "radial-gradient(101.8% 4091.31% at 0% 0%, #4673FA 0%, #9646FA 100%);"
     case BadgeVariant.NEGATIVE:
-      return theme.accentCritical
+      return theme.palette.customBackground.accentCritical
     case BadgeVariant.POSITIVE:
-      return theme.accentSuccess
+      return theme.palette.customBackground.accentSuccess
     case BadgeVariant.SOFT:
-      return theme.accentActionSoft
+      return theme.palette.customBackground.accentActionSoft
     case BadgeVariant.PRIMARY:
-      return theme.accentAction
+      return theme.palette.customBackground.accentAction
     case BadgeVariant.WARNING:
-      return theme.accentWarning
+      return theme.palette.customBackground.accentWarning
     case BadgeVariant.WARNING_OUTLINE:
       return 'transparent'
     default:
-      return theme.backgroundInteractive
+      return theme.palette.customBackground.interactive
   }
 }
 
-function pickBorder(variant: BadgeVariant | undefined, theme: DefaultTheme): string {
+function pickBorder(variant: BadgeVariant | undefined, theme: Theme): string {
   switch (variant) {
     case BadgeVariant.WARNING_OUTLINE:
-      return `1px solid ${theme.accentWarning}`
+      return `1px solid ${theme.palette.customBackground.accentWarning}`
     default:
       return 'unset'
   }
 }
 
-function pickFontColor(variant: BadgeVariant | undefined, theme: DefaultTheme): string {
+function pickFontColor(variant: BadgeVariant | undefined, theme: Theme): string {
   switch (variant) {
     case BadgeVariant.BRANDED:
-      return theme.darkMode ? theme.accentTextDarkPrimary : theme.white
+      return theme.palette.custom.accentTextDarkPrimary
     case BadgeVariant.NEGATIVE:
-      return readableColor(theme.accentFailure)
+      return readableColor(theme.palette.error.main)
     case BadgeVariant.POSITIVE:
-      return readableColor(theme.accentSuccess)
+      return readableColor(theme.palette.customBackground.accentSuccess)
     case BadgeVariant.SOFT:
-      return theme.accentAction
+      return theme.palette.customBackground.accentAction
     case BadgeVariant.WARNING:
-      return readableColor(theme.accentWarning)
+      return readableColor(theme.palette.customBackground.accentWarning)
     case BadgeVariant.WARNING_OUTLINE:
-      return theme.accentWarning
+      return theme.palette.customBackground.accentWarning
     default:
-      return readableColor(theme.backgroundInteractive)
+      return readableColor(theme.palette.customBackground.interactive)
   }
 }
 
-const Badge = styled.div<PropsWithChildren<BadgeProps>>`
+const Badge = styled('div')<PropsWithChildren<BadgeProps>>`
   align-items: center;
   background: ${({ theme, variant }) => pickBackgroundColor(variant, theme)};
   border: ${({ theme, variant }) => pickBorder(variant, theme)};

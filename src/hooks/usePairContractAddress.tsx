@@ -29,7 +29,7 @@ export function usePairContractAddress(
     pairAddress = SorobanClient.Address.fromScVal(
       pairAddress_scval.result,
     ).toString();
-    console.log("🚀 ~ file: usePairContractAddress.tsx:32 ~ pairAddress:", pairAddress)
+    console.log("🚀 ~ file: usePairContactAddress.tsx:32 ~ pairAdress:", pairAddress)
     
   } else return undefined;
   

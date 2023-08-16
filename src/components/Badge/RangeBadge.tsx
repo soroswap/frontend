@@ -1,30 +1,30 @@
 import { Trans } from '@lingui/macro'
 import { AlertTriangle, Slash } from 'react-feather'
-import styled, { useTheme } from 'styled-components/macro'
 
 import { MouseoverTooltip } from '../../components/Tooltip'
+import { styled, useTheme } from '@mui/material'
 
-const BadgeWrapper = styled.div`
+const BadgeWrapper = styled('div')`
   font-size: 14px;
   display: flex;
   justify-content: flex-end;
 `
 
-const BadgeText = styled.div`
+const BadgeText = styled('div')`
   font-weight: 500;
   font-size: 12px;
   line-height: 14px;
   margin-right: 8px;
 `
 
-const ActiveDot = styled.span`
-  background-color: ${({ theme }) => theme.accentSuccess};
+const ActiveDot = styled('span')`
+  background-color: ${({ theme }) => theme.palette.customBackground.accentSuccess};
   border-radius: 50%;
   height: 8px;
   width: 8px;
 `
 
-const LabelText = styled.div<{ color: string }>`
+const LabelText = styled('div')<{ color: string }>`
   align-items: center;
   color: ${({ color }) => color};
   display: flex;
@@ -38,7 +38,7 @@ export default function RangeBadge({ removed, inRange }: { removed?: boolean; in
     <BadgeWrapper>
       {removed ? (
         <MouseoverTooltip title={"Your position has 0 liquidity, and is not earning fees."}>
-          <LabelText color={theme.textSecondary}>
+          <LabelText color={theme.palette.secondary.main}>
             <BadgeText>
               Closed
             </BadgeText>
@@ -49,7 +49,7 @@ export default function RangeBadge({ removed, inRange }: { removed?: boolean; in
         <MouseoverTooltip
           title="The price of this pool is within your selected range. Your position is currently earning fees."
         >
-          <LabelText color={theme.accentSuccess}>
+          <LabelText color={theme.palette.customBackground.accentSuccess}>
             <BadgeText>
               In Range
             </BadgeText>
@@ -60,7 +60,7 @@ export default function RangeBadge({ removed, inRange }: { removed?: boolean; in
         <MouseoverTooltip
           title="The price of this pool is outside of your selected range. Your position is not currently earning fees."
         >
-          <LabelText color={theme.accentWarning}>
+          <LabelText color={theme.palette.customBackground.accentWarning}>
             <BadgeText>
               Out of range
             </BadgeText>

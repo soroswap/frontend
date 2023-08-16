@@ -8,7 +8,6 @@
 // import { useAppDispatch } from 'state/hooks'
 // import { resetMintState } from 'state/mint/actions'
 // import { resetMintState as resetMintV3State } from 'state/mint/v3/actions'
-// import styled, { useTheme } from 'styled-components/macro'
 // import { ThemedText } from 'theme'
 // import { flexRowNoWrap } from 'theme/styles'
 

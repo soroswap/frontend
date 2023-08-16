@@ -1,6 +1,6 @@
-import styled, { keyframes, useTheme } from 'styled-components/macro'
+import { keyframes, styled, useTheme } from "@mui/material"
 
-const Wrapper = styled.div<{ size?: string }>`
+const Wrapper = styled('div')<{ size?: string }>`
   height: 90px;
   width: 90px;
 `
@@ -23,14 +23,14 @@ const dashCheck = keyframes`
   }
 `
 
-const Circle = styled.circle`
+const Circle = styled('circle')`
   stroke-dasharray: 1000;
   stroke-dashoffset: 0;
   -webkit-animation: ${dash} 0.9s ease-in-out;
   animation: ${dash} 0.9s ease-in-out;
 `
 
-const PolyLine = styled.polyline`
+const PolyLine = styled('polyline')`
   stroke-dasharray: 1000;
   stroke-dashoffset: 0;
   stroke-dashoffset: -100;
@@ -47,7 +47,7 @@ export default function AnimatedConfirmation({ className }: { className?: string
         <Circle
           className="path circle"
           fill="none"
-          stroke={theme.accentSuccess}
+          stroke={theme.palette.customBackground.accentSuccess}
           strokeWidth="6"
           strokeMiterlimit="10"
           cx="65.1"
@@ -57,7 +57,7 @@ export default function AnimatedConfirmation({ className }: { className?: string
         <PolyLine
           className="path check"
           fill="none"
-          stroke={theme.accentSuccess}
+          stroke={theme.palette.customBackground.accentSuccess}
           strokeWidth="6"
           strokeLinecap="round"
           strokeMiterlimit="10"
