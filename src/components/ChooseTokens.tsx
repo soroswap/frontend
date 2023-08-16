@@ -36,7 +36,7 @@ export function ChooseTokens({ isLiquidity }: { isLiquidity: boolean }) {
     <Card sx={{ maxWidth: 345 }}>
       <CardContent>
         <Typography gutterBottom variant="h5" component="div">
-          {isLiquidity ? "Provide Liquidity" : "Swap"}
+          {isLiquidity ? "Provide Liquidity" : "Swap"} 
         </Typography>
         {sorobanContext.address && tokens?.length > 0 ? (
           <ChooseTokensWallet
@@ -101,10 +101,7 @@ function ChooseTokensWallet({
     });
     if (selectedPair) setPairAddress(selectedPair.pair_address);
 
-    console.log(
-      "🚀 ~ file: ChooseTokens.tsx:88 ~ React.useEffect ~ getPairExists(inputToken, outputToken, allPairs):",
-      getPairExists(inputToken, outputToken, allPairs),
-    );
+    
   }, [inputToken, outputToken, allPairs]); // Dependencies array
 
   const handleInputTokenChange = (

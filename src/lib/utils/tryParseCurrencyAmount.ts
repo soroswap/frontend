@@ -1,6 +1,6 @@
 import { TokenType } from "interfaces";
 
-type CurrencyAmount = {
+export type CurrencyAmount = {
   currency: TokenType;
   value: string;
 };

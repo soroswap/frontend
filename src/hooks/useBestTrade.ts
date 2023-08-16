@@ -1,5 +1,7 @@
 import { TokenType } from "interfaces";
-import tryParseCurrencyAmount from "lib/utils/tryParseCurrencyAmount";
+import tryParseCurrencyAmount, {
+  CurrencyAmount,
+} from "lib/utils/tryParseCurrencyAmount";
 import { useCallback, useMemo, useState } from "react";
 import {
   InterfaceTrade,
@@ -31,7 +33,7 @@ const TRADE_LOADING = { state: TradeState.LOADING, trade: undefined } as const;
  */
 export function useBestTrade(
   tradeType: TradeType,
-  amountSpecified?: { currency: TokenType | null | undefined; value: string },
+  amountSpecified?: CurrencyAmount,
   otherCurrency?: TokenType,
   account?: string,
 ): Promise<{
@@ -42,7 +44,6 @@ export function useBestTrade(
   const [pairAddress, setPairAddress] = useState<string | undefined>(undefined);
 
   const factory = useFactory(sorobanContext);
-  console.log("🚀 « factory:", factory);
 
   if (
     amountSpecified?.currency?.token_address &&
@@ -66,12 +67,15 @@ export function useBestTrade(
   }
 
   //TODO: Set the trade specs, getQuote
-  const trade = useMemo(() => {
+  const trade: InterfaceTrade = useMemo(() => {
     return {
+      inputAmount: amountSpecified,
+      outputAmount: tryParseCurrencyAmount("0", otherCurrency),
+      tradeType: tradeType,
       swaps: [
         {
-          inputAmount: amountSpecified?.value,
-          outputAmount: tryParseCurrencyAmount("0", otherCurrency)?.value, //this should get expected amount out
+          inputAmount: amountSpecified,
+          outputAmount: tryParseCurrencyAmount("0", otherCurrency), //this should get expected amount out
           route: {
             input: amountSpecified?.currency,
             output: otherCurrency,
@@ -84,12 +88,7 @@ export function useBestTrade(
         },
       ],
     };
-  }, [
-    amountSpecified?.currency,
-    amountSpecified?.value,
-    otherCurrency,
-    pairAddress,
-  ]);
+  }, [amountSpecified, otherCurrency, pairAddress, tradeType]);
 
   const tradeResult = useMemo(() => {
     const state = pairAddress ? QuoteState.SUCCESS : QuoteState.NOT_FOUND;

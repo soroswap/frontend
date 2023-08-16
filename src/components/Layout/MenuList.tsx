@@ -53,8 +53,8 @@ const menuItems = {
 };
 
 export default function MenuList() {
-  const navItems = menuItems.items.map((item) => {
-    return <NavItem key={item.id} item={item} level={1} />;
+  const navItems = menuItems.items.map((item, index) => {
+        return <NavItem key={`item_${index}`} item={item} level={1} />;
   });
 
   return <List>{navItems}</List>;
