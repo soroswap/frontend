@@ -95,7 +95,7 @@ export default function SwapPage() {
   //const [pairExist, setPairExist] = useState<boolean>(false);
   //const [pairAddress, setPairAddress] = useState<string | null>(null);
   const pairExist = usePairExist(
-    selectedToken?.token_address??null,
+    selectedToken?.token_address??null, 
     selectedTokenOutput?.token_address??null,
     sorobanContext,
   );

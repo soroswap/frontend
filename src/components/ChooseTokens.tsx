@@ -36,7 +36,7 @@ export function ChooseTokens({ isLiquidity }: { isLiquidity: boolean }) {
     <Card sx={{ maxWidth: 345 }}>
       <CardContent>
         <Typography gutterBottom variant="h5" component="div">
-          {isLiquidity ? "Provide Liquidity" : "Swap"}
+          {isLiquidity ? "Provide Liquidity" : "Swap"} 
         </Typography>
         {sorobanContext.address && tokens?.length > 0 ? (
           <ChooseTokensWallet

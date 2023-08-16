@@ -11,8 +11,8 @@ export function usePairContractAddress(
   sorobanContext: SorobanContextType,
 ): string | undefined {
   const random = Math.random(); 
-  
-  let pairAddress;
+   
+  let pairAddress; 
   let args: xdr.ScVal[] = []; 
   if (address_0 !== null && address_1 !== null) {
     args = [accountToScVal(address_0), accountToScVal(address_1)];

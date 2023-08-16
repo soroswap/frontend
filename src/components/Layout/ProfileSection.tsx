@@ -12,7 +12,6 @@ import { shortenAddress } from "../../helpers/address";
 export default function ProfileSection() {
   const theme = useTheme();
   const sorobanContext: SorobanContextType = useSorobanReact();
-  console.log("🚀 « sorobanContext:", sorobanContext);
 
   const [open, setOpen] = useState(false);
   const anchorRef = useRef(null);

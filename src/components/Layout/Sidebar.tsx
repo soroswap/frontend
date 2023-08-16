@@ -13,8 +13,8 @@ interface SidebarProps {
 }
 
 export default function Sidebar({ drawerState, drawerToggle }: SidebarProps) {
-  console.log("🚀 « drawerToggle:", drawerToggle);
-  console.log("🚀 « drawerState:", drawerState);
+  // console.log("🚀 « drawerToggle:", drawerToggle);
+  // console.log("🚀 « drawerState:", drawerState);
   const theme = useTheme();
 
   const matchUpMd = useMediaQuery(theme.breakpoints.up("md"));
