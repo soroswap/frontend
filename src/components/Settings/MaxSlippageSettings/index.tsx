@@ -61,7 +61,7 @@ export default function MaxSlippageSettings({ autoSlippage }: { autoSlippage: nu
 
   // If user has previously entered a custom slippage, we want to show that value in the input field
   // instead of a placeholder.
-  const [slippageInput, setSlippageInput] = useState<number | string>(DEFAULT_SLIPPAGE_INPUT_VALUE)
+  const [slippageInput, setSlippageInput] = useState<number | string>(userSlippageTolerance)
   const [slippageError, setSlippageError] = useState<SlippageError | false>(false)
 
   // If user has previously entered a custom slippage, we want to show the settings expanded by default.
@@ -91,7 +91,8 @@ export default function MaxSlippageSettings({ autoSlippage }: { autoSlippage: nu
       if (parsed > 5000) {
         setSlippageError(SlippageError.InvalidInput)
       } else {
-        setUserSlippageTolerance(parsed / 100)
+        // setUserSlippageTolerance(parsed / 100)
+        setUserSlippageTolerance(Number.parseFloat(value))
       }
     } catch (e) {
       setSlippageError(SlippageError.InvalidInput)
