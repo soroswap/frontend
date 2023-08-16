@@ -7,7 +7,6 @@ let xdr = SorobanClient.xdr;
 export function scvalToBigNumber(
   scval: SorobanClient.xdr.ScVal | undefined,
 ): BigNumber {
-  // console.log("🚀 ~ file: utils.tsx:8 ~ scvalToBigNumber ~ scval:", scval);
   switch (scval?.switch()) {
     case undefined: {
       return BigNumber(0);
@@ -112,7 +111,6 @@ export function bigNumberToI128(value: BigNumber): SorobanClient.xdr.ScVal {
   // left-pad with zeros up to 16 bytes
   let padded = Buffer.alloc(16);
   buf.copy(padded, padded.length - buf.length);
-  console.debug({ value: value.toString(), padded });
 
   if (value.isNegative()) {
     // Set the top bit

@@ -117,10 +117,7 @@ export function MintTokens({
     inputToken.token_id,
     address,
   );
-  console.log(
-    "🚀 ~ file: Mint.tsx:116 ~ formattedTokenBalance:",
-    formattedTokenBalance,
-  );
+  
 
   return (
     <div>

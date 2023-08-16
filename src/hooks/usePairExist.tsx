@@ -23,7 +23,6 @@ export function usePairExistScVal(
     }
   }, [token_address_0, token_address_1])
   const factory = useFactory(sorobanContext);
-  console.log(params)
   const pairExistScVal = useContractValue({
     contractAddress: factory.factory_address,
     method: "pair_exists",
@@ -58,20 +57,11 @@ export function useTokensWithPair(tokens: TokenType[], inputToken: TokenType) {
   let tokensWithPair: TokenType[] = [];
 
   tokens.map((token) => {
-    console.log("🚀 ~ file: usePairExist.tsx:61 ~ tokens.map ~ token:", token);
-    console.log(
-      "🚀 ~ file: usePairExist.tsx:59 ~ tokens.map ~ inputToken:",
-      inputToken,
-    );
     // eslint-disable-next-line react-hooks/rules-of-hooks
     const pairExist = usePairExist(
       inputToken.token_address,
       token.token_address,
       sorobanContext,
-    );
-    console.log(
-      "🚀 ~ file: usePairExist.tsx:59 ~ tokens.map ~ pairExist:",
-      pairExist,
     );
 
     if (pairExist) {
@@ -101,7 +91,6 @@ export function useAllPairsFromTokens(tokens: TokenType[], sorobanContext: Sorob
       );
 
       if (pairExist) {
-        console.log("pair address", pairAddress);
         allPairs.push({
           token_0: tokens[i],
           token_1: tokens[j],
