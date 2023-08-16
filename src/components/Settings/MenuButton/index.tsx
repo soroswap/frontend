@@ -1,15 +1,12 @@
 import TuneRoundedIcon from '@mui/icons-material/TuneRounded';
 import Row from 'components/Row'
-// import { useUserSlippageTolerance } from 'state/user/hooks'
-// import { SlippageTolerance } from 'state/user/types'
-import { styled, useTheme } from "@mui/material"
-
-// import { ThemedText } from 'theme'
-// import validateUserSlippageTolerance, { SlippageValidationResult } from 'utils/validateUserSlippageTolerance'
+import { useUserSlippageTolerance } from 'state/user/hooks'
+import { Typography, styled, useTheme } from "@mui/material"
 
 const Icon = styled(TuneRoundedIcon)`
   height: 24px;
   width: 24px;
+  margin: 8 px;
   > * {
     fill: ${({ theme }) => theme.palette.secondary.main};
   }
@@ -30,40 +27,37 @@ const Button = styled("button") <{ isActive: boolean }>`
   ${({ isActive }) => isActive && `opacity: 0.7`}
 `
 
-// const IconContainer = styled(Row)`
-//   padding: 6px 12px;
-//   border-radius: 16px;
-// `
+const IconContainer = styled(Row)`
+  padding: 6px 12px;
+  border-radius: 16px;
+`
 
-// const IconContainerWithSlippage = styled(IconContainer) <{ displayWarning?: boolean }>`
-//   div {
-//     color: ${({ theme, displayWarning }) => (displayWarning ? theme.accentWarning : theme.textSecondary)};
-//   }
+const IconContainerWithSlippage = styled(IconContainer)`
+  div {
+    color: ${({ theme }) => (theme.palette.secondary.main)};
+  }
 
-//   background-color: ${({ theme, displayWarning }) =>
-//     displayWarning ? theme.accentWarningSoft : theme..palette.customBackground.surface};
-// `
+  background-color: ${({ theme }) =>
+    theme.palette.customBackground.surface};
+`
 
 const ButtonContent = () => {
-  // const [userSlippageTolerance] = useUserSlippageTolerance()
+  const [userSlippageTolerance] = useUserSlippageTolerance()
 
-  // if (userSlippageTolerance === SlippageTolerance.Auto) {
-  //   return (
-  //     <IconContainer>
-  //       <Icon />
-  //     </IconContainer>
-  //   )
-  // }
-
-  // const isInvalidSlippage = validateUserSlippageTolerance(userSlippageTolerance) !== SlippageValidationResult.Valid
+  if (userSlippageTolerance === 0.5) {
+    return (
+      <IconContainer>
+        <Icon />
+      </IconContainer>
+    )
+  }
 
   return (
-    // <IconContainerWithSlippage data-testid="settings-icon-with-slippage" gap="sm" displayWarning={isInvalidSlippage}>
-    //   <ThemedText.Caption>
-    //     {/* <Trans>{userSlippageTolerance.toFixed(2)}% slippage</Trans> */}
-    //   </ThemedText.Caption>
-    <Icon />
-    // </IconContainerWithSlippage>
+    <IconContainerWithSlippage data-testid="settings-icon-with-slippage" gap="sm" >
+      <Typography>{userSlippageTolerance}% slippage</Typography>
+
+      <Icon />
+    </IconContainerWithSlippage>
   )
 }
 
