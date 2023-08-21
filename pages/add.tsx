@@ -8,6 +8,11 @@ import { AddRemoveTabs } from "components/NavigationTabs";
 import { Wrapper } from "components/Pool/styleds";
 import { BlueCard } from "components/Card";
 import { SubHeader } from "components/Text";
+import { useCallback } from "react";
+import { useDerivedMintInfo, useMintActionHandlers, useMintState } from "state/mint/hooks";
+import { useTokens } from "hooks";
+import { useSorobanReact } from '@soroban-react/core'
+import { Field } from "state/mint/actions";
 
 export default function AddLiquidityPage() {
 
@@ -24,10 +29,27 @@ export default function AddLiquidityPage() {
   //   poolTokenPercentage,
   //   error,
   // } = useDerivedMintInfo(currencyA ?? undefined, currencyB ?? undefined)
-  const noLiquidity = false
+
+  const sorobanContext = useSorobanReact()
+  const tokens = useTokens(sorobanContext)
+  console.log("pages/add tokens:", tokens)
+  const derivedMintInfo = useDerivedMintInfo(tokens[0], tokens[1])
+  const { dependentField } = derivedMintInfo
+  console.log("pages/add derivedMintInfo:", derivedMintInfo)
+  const noLiquidity = true
   const isCreate = false
 
   // TODO: Define currencyA, currencyB
+
+  const { onFieldAInput, onFieldBInput } = useMintActionHandlers(noLiquidity)
+
+  const { independentField, typedValue, otherTypedValue } = useMintState()
+
+  const formattedAmounts = {
+    [independentField]: typedValue,
+    // [dependentField]: noLiquidity ? otherTypedValue : parsedAmounts[dependentField]?.toSignificant(6) ?? '',
+    [dependentField]: otherTypedValue
+  }
 
   const theme = useTheme()
   return (
@@ -89,8 +111,8 @@ export default function AddLiquidityPage() {
                 </ColumnCenter>
               ))}
             <CurrencyInputPanel
-              value={"1"}
-              onUserInput={() => console.log("ss")}
+              value={formattedAmounts[Field.CURRENCY_A]}
+              onUserInput={onFieldAInput}
               // onMax={() => {
               //   onFieldAInput(maxAmounts[Field.CURRENCY_A]?.toExact() ?? '')
               // }}
@@ -105,8 +127,8 @@ export default function AddLiquidityPage() {
               <Plus size="16" color={theme.palette.secondary.main} />
             </ColumnCenter>
             <CurrencyInputPanel
-              value={"1"}
-              onUserInput={() => console.log("dd")}
+              value={formattedAmounts[Field.CURRENCY_B]}
+              onUserInput={onFieldBInput}
               // onCurrencySelect={handleCurrencyBSelect}
               // onMax={() => {
               //   onFieldBInput(maxAmounts[Field.CURRENCY_B]?.toExact() ?? '')
