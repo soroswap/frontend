@@ -27,6 +27,8 @@ export default function AddLiquidityPage() {
   const noLiquidity = false
   const isCreate = false
 
+  // TODO: Define currencyA, currencyB
+
   const theme = useTheme()
   return (
     <>
