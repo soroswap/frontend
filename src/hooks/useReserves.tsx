@@ -1,8 +1,9 @@
 import BigNumber from "bignumber.js";
 import * as SorobanClient from "soroban-client";
 import { SorobanContextType } from "@soroban-react/core";
-import { useContractValue } from "@soroban-react/contracts";
+import { contractInvoke, useContractValue } from "@soroban-react/contracts";
 import { scvalToBigNumber, bigNumberToI128 } from "../helpers/utils";
+import { scValStrToJs } from "helpers/convert";
 
 export function useReservesScVal(
   pairAddress: string,
@@ -40,4 +41,26 @@ export function useReservesBigNumber(
     reserve1: scvalToBigNumber(reservesScVal.reserve1ScVal),
   };
   // }
+}
+
+export async function reservesBigNumber(
+  pairAddress: string,
+  sorobanContext: SorobanContextType,
+) {
+
+  if(!sorobanContext.activeChain || !pairAddress) return
+  
+  const reserves_scval = await contractInvoke({
+    contractAddress: pairAddress,
+    method: "get_reserves",
+    args: [],
+    sorobanContext,
+  });
+
+  const reserves = scValStrToJs(reserves_scval?.xdr)
+
+  return {
+    reserve0: BigNumber(reserves[0]),
+    reserve1: BigNumber(reserves[1]),
+  };
 }

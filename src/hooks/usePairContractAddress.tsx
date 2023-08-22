@@ -1,6 +1,6 @@
 import { SorobanContextType } from "@soroban-react/core";
 import { useContractValue } from "@soroban-react/contracts"
-import { accountToScVal, scvalToString } from "../helpers/utils";
+import { accountToScVal } from "../helpers/utils";
 import { useFactory } from "./useFactory";
 import { xdr } from "soroban-client";
 import * as SorobanClient from "soroban-client";
@@ -10,9 +10,8 @@ export function usePairContractAddress(
   address_1: string|null,
   sorobanContext: SorobanContextType,
 ): string | undefined {
-  const random = Math.random(); 
-   
-  let pairAddress; 
+  
+  let pairAddress;
   let args: xdr.ScVal[] = []; 
   if (address_0 !== null && address_1 !== null) {
     args = [accountToScVal(address_0), accountToScVal(address_1)];

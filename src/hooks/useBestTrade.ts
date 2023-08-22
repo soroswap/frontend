@@ -2,22 +2,20 @@ import { TokenType } from "interfaces";
 import tryParseCurrencyAmount, {
   CurrencyAmount,
 } from "lib/utils/tryParseCurrencyAmount";
-import { useCallback, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   InterfaceTrade,
-  QuoteMethod,
   QuoteState,
   TradeState,
   TradeType,
 } from "state/routing/types";
-import { useAllPairsFromTokens, usePairExist } from "./usePairExist";
-import { SorobanContext, useSorobanReact } from "@soroban-react/core";
-import { usePairContractAddress } from "./usePairContractAddress";
-import { useContractValue } from "@soroban-react/contracts";
-import { accountToScVal } from "helpers/soroban";
+import { useSorobanReact } from "@soroban-react/core";
 import { contractInvoke } from "@soroban-react/contracts";
 import { useFactory } from "./useFactory";
 import { addressToScVal, scValStrToJs } from "helpers/convert";
+import { reservesBigNumber } from "./useReserves";
+import fromExactInputGetExpectedOutput from "functions/fromExactInputGetExpectedOutput";
+import BigNumber from "bignumber.js";
 
 const TRADE_NOT_FOUND = {
   state: TradeState.NO_ROUTE_FOUND,
@@ -66,16 +64,40 @@ export function useBestTrade(
     });
   }
 
+  console.log("Pair Address",pairAddress)
+
+  const [reserves, setReserves] = useState();
+
+  useEffect(() => {
+      let isCancelled = false; // to keep track if the component is still mounted
+  
+      const fetchReserves = async () => {
+          const reservesResponse = await reservesBigNumber(pairAddress ?? "", sorobanContext);
+          if (!isCancelled && reservesResponse != undefined) {
+              setReserves(reservesResponse);
+          }
+      };
+  
+      fetchReserves();
+  
+      // Cleanup
+      return () => {
+          isCancelled = true; // marks that the component has unmounted
+      };
+  }, [pairAddress, sorobanContext]);
+
+  const expectedOutput = reserves ? fromExactInputGetExpectedOutput(BigNumber(amountSpecified?.value).shiftedBy(7), reserves?.reserve0, reserves?.reserve1).shiftedBy(-7).toNumber() : 0
+
   //TODO: Set the trade specs, getQuote
   const trade: InterfaceTrade = useMemo(() => {
     return {
       inputAmount: amountSpecified,
-      outputAmount: tryParseCurrencyAmount("0", otherCurrency),
+      outputAmount: tryParseCurrencyAmount(expectedOutput, otherCurrency),
       tradeType: tradeType,
       swaps: [
         {
           inputAmount: amountSpecified,
-          outputAmount: tryParseCurrencyAmount("0", otherCurrency), //this should get expected amount out
+          outputAmount: tryParseCurrencyAmount(expectedOutput, otherCurrency), //this should get expected amount out
           route: {
             input: amountSpecified?.currency,
             output: otherCurrency,
@@ -88,7 +110,7 @@ export function useBestTrade(
         },
       ],
     };
-  }, [amountSpecified, otherCurrency, pairAddress, tradeType]);
+  }, [amountSpecified, expectedOutput, otherCurrency, pairAddress, tradeType]);
 
   const tradeResult = useMemo(() => {
     const state = pairAddress ? QuoteState.SUCCESS : QuoteState.NOT_FOUND;

@@ -1,12 +1,11 @@
 import { SorobanContextType, useSorobanReact } from "@soroban-react/core";
-import { useContractValue } from "@soroban-react/contracts";
+import { contractInvoke, useContractValue } from "@soroban-react/contracts";
 import {
   scvalToBigNumber,
   accountToScVal,
 } from "../helpers/utils";
 import { formatAmount } from "../helpers/utils";
 import { TokenMapType, TokenType } from "../interfaces";
-import { contractInvoke } from "utils/src";
 import { scValStrToJs } from "helpers/convert";
 import BigNumber from "bignumber.js";
 //TODO: create Liquidity Pool Balances
