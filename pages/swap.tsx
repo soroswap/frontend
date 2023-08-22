@@ -1,34 +1,25 @@
 import SEO from "../src/components/SEO";
-import { ChooseTokens } from "../src/components/ChooseTokens";
 import { ArrowWrapper, SwapWrapper } from "../src/components/Swap/styleds";
 import SwapHeader from "../src/components/Swap/SwapHeader";
 import { styled, useTheme } from "@mui/material";
 import { opacify } from "../src/themes/utils";
 import SwapCurrencyInputPanel from "../src/components/CurrencyInputPanel/SwapCurrencyInputPanel";
-import { ReactNode, useCallback, useEffect, useMemo, useReducer, useState } from "react";
+import { ReactNode, useCallback, useMemo, useReducer, useState } from "react";
 import { TokenType } from "../src/interfaces";
 import { ArrowDown } from "react-feather";
 import { AutoColumn } from "components/Column";
 import { useSorobanReact } from "@soroban-react/core";
 import { useTokens } from "hooks/useTokens";
-import { useAllPairsFromTokens, usePairExist } from "hooks/usePairExist";
-import { useTokenBalances } from "hooks/useBalances";
-import { SwapButtonNew } from "components/Buttons/SwapButtonNew";
-import { AllPairs } from "components/AllPairs";
-import { useReservesBigNumber } from "hooks/useReserves";
-import BigNumber from "bignumber.js";
-import fromExactInputGetExpectedOutput from "functions/fromExactInputGetExpectedOutput";
-import fromExactOutputGetExpectedInput from "functions/fromExactOutputGetExpectedInput";
-import { usePairContractAddress } from "hooks/usePairContractAddress";
 import { ButtonError, ButtonLight, ButtonPrimary } from "components/Buttons/Button";
 import { GrayCard } from "components/Card";
 import { ButtonText, ButtonTextSecondary } from "components/Text";
-import { useDerivedSwapInfo, useSwapActionHandlers } from "state/swap/hooks";
+import { relevantTokensType, useDerivedSwapInfo, useSwapActionHandlers } from "state/swap/hooks";
 import swapReducer, { initialState as initialSwapState, SwapState } from 'state/swap/reducer'
 import { Field } from "state/swap/actions";
 import { InterfaceTrade, TradeState } from "state/routing/types";
 import ConfirmSwapModal from "components/Swap/ConfirmSwapModal";
-
+import { useSwapCallback } from "hooks/useSwapCallback";
+import { CurrencyAmount } from "lib/utils/tryParseCurrencyAmount";
 
 const SwapSection = styled('div')(({ theme }) => ({
   position: "relative",
@@ -80,72 +71,50 @@ function getIsValidSwapQuote(
   return Boolean(!swapInputError && trade && tradeState === TradeState.VALID)
 }
 
-export default function SwapPage() {
-  const theme = useTheme()
-  const [inputAmount, setInputAmount] = useState<number>(0);
-  const [outputAmount, setOutputAmount] = useState<number>(0);
-  const [selectedToken, setSelectedToken] = useState<TokenType|null>(null)
-  const [selectedTokenOutput, setSelectedTokenOutput] = useState<TokenType|null>(null)
-  const [token0, setToken0] = useState<TokenType | null>(null);
-  const [token1, setToken1] = useState<TokenType | null>(null);
-  const sorobanContext = useSorobanReact();
-  const { address, connect } = sorobanContext
-  const tokens = useTokens(sorobanContext);
-  //const [allPairs, setAllPairs] = useState<any[]>([]);
-  //const [pairExist, setPairExist] = useState<boolean>(false);
-  //const [pairAddress, setPairAddress] = useState<string | null>(null);
-  const pairExist = usePairExist(
-    selectedToken?.token_address??null, 
-    selectedTokenOutput?.token_address??null,
-    sorobanContext,
-  );
-  const pairAddress = usePairContractAddress(
-    selectedToken?.token_address??null,
-    selectedTokenOutput?.token_address??null,
-    sorobanContext,
-  );
-  const reserves = useReservesBigNumber(pairAddress??"", sorobanContext);
+export default function SwapPage({ className }: { className?: string }) {
+  // const { chainId: connectedChainId } = useWeb3React()
+  // const loadedUrlParams = useDefaultsFromURLSearch()
 
-  const [showPriceImpactModal, setShowPriceImpactModal] = useState<boolean>(false)
+  // const location = useLocation()
 
-  // function getPairExists(token0: any, token1: any, allPairs: any) {
-  //   return allPairs.some((pair: any) => {
-  //     return (
-  //       (pair.token_0 === token0 && pair.token_1 === token1)
-  //       ||(pair.token_0 === token1 && pair.token_1 === token0)
-  //     );
-  //   });
+  //TODO: Use pathname to get prefilled tokens
+  // {
+  //   [Field.INPUT]: { currencyId: loadedUrlParams?.[Field.INPUT]?.currencyId },
+  //   [Field.OUTPUT]: { currencyId: loadedUrlParams?.[Field.OUTPUT]?.currencyId },
   // }
 
-  // useEffect(() => {
-  //   // Code to run when the component mounts or specific dependencies change
-  //   //setPairExist(getPairExists(selectedToken, selectedTokenOutput, allPairs));
+  const prefilledState={
+    [Field.INPUT]: { currencyId: "CC5HHVS5EGDBF7XR5PKJSPXFGR6KZ7NU3GV4LHC62MII4FM3CXOOQOUV" }, //TODO: This is the hardcoded default token, should we get it from the api? maybe show the native token address from stellar (XLM)
+    [Field.OUTPUT]: { currencyId: null },
+  }
 
-  //   let selectedPair = allPairs.find((pair: any) => {
-  //     return (
-  //       (pair.token_0.token_address === selectedToken?.token_address &&
-  //       pair.token_1.token_address === selectedTokenOutput?.token_address)
-  //       || (pair.token_1.token_address === selectedToken?.token_address &&
-  //         pair.token_0.token_address === selectedTokenOutput?.token_address)
-  //     );
-  //   });
-  //   if (selectedPair) setPairAddress(selectedPair.pair_address);
+  return (
+    <>
+      <SEO title="Swap - Soroswap" description="Soroswap Swap" />
+      <SwapComponent
+        className={className}
+        prefilledState={prefilledState}
+      />
+    </>
+  )
+}
 
-  //   console.log(
-  //     "🚀 ~ file: ChooseTokens.tsx:88 ~ React.useEffect ~ getPairExists(inputToken, outputToken, allPairs):",
-  //     getPairExists(selectedToken, selectedTokenOutput, allPairs),
-  //   );
-  // }, [selectedToken, selectedTokenOutput, allPairs]);
+export function SwapComponent({
+  className,
+  prefilledState = {},
+  onCurrencyChange,
+  disableTokenInputs = false,
+}: {
+  className?: string
+  prefilledState?: Partial<SwapState>
+  onCurrencyChange?: (selected: Pick<SwapState, Field.INPUT | Field.OUTPUT>) => void
+  disableTokenInputs?: boolean
+}) {
+  const theme = useTheme()
+  const sorobanContext = useSorobanReact();
+  const { address, connect } = sorobanContext
   
-  // const handleInputSelect = useCallback(
-  //   (inputCurrency: TokenType) => {
-  //     console.log("inputCurrency", inputCurrency)
-  //     if (inputCurrency.token_address === selectedTokenOutput?.token_address) setSelectedTokenOutput(null)
-  //     setSelectedToken(inputCurrency)
-      
-  //   },
-  //   [selectedTokenOutput]
-  // )
+  const [showPriceImpactModal, setShowPriceImpactModal] = useState<boolean>(false)
  
   // modal and loading
   const [{ showConfirm, tradeToConfirm, swapError, swapResult }, setSwapState] = useState<{
@@ -159,11 +128,6 @@ export default function SwapPage() {
     swapError: undefined,
     swapResult: undefined,
   })
-
-  const prefilledState={
-    [Field.INPUT]: { currencyId: "CDO5AFKO3CNWM2CDEZAMPJXQKJ5NLYBHAGRPSINQUZEFQJTE4HNKD243" },
-    [Field.OUTPUT]: { currencyId: null },
-  }
   
   const [state, dispatch] = useReducer(swapReducer, { ...initialSwapState, ...prefilledState })
   const { typedValue, recipient, independentField } = state
@@ -171,26 +135,72 @@ export default function SwapPage() {
   const { onSwitchTokens, onCurrencySelection, onUserInput, onChangeRecipient } = useSwapActionHandlers(dispatch)
   const dependentField: Field = independentField === Field.INPUT ? Field.OUTPUT : Field.INPUT
 
+  console.log("🚀 « state:", state)
+  const swapInfo = useDerivedSwapInfo(state)
+  const {
+    trade: { state: tradeState, trade },
+    // allowedSlippage,
+    // autoSlippage,
+    currencyBalances,
+    parsedAmount,
+    currencies,
+    inputError: swapInputError,
+  } = swapInfo
+  // console.log("🚀 « inputError:", swapInputError)
+  console.log("🚀 « trade:", trade)
+
+  const parsedAmounts = useMemo(
+    () => ({
+      [Field.INPUT]: independentField === Field.INPUT ? parsedAmount : trade?.inputAmount,
+      [Field.OUTPUT]: independentField === Field.OUTPUT ? parsedAmount : trade?.outputAmount,
+    }),
+    [independentField, parsedAmount, trade]
+  )
+
+  const userHasSpecifiedInputOutput = Boolean(
+    currencies[Field.INPUT] && currencies[Field.OUTPUT] && parsedAmounts[independentField]?.value > 0
+  )
+
+  const fiatValueInput = {data: 0, isLoading: false}//useUSDPrice(parsedAmounts[Field.INPUT])
+  const fiatValueOutput = {data: 0, isLoading: false}//useUSDPrice(parsedAmounts[Field.OUTPUT])
+  const showFiatValueInput = Boolean(parsedAmounts[Field.INPUT])
+  const showFiatValueOutput = Boolean(parsedAmounts[Field.OUTPUT])
+
+  const maxInputAmount: relevantTokensType | undefined = useMemo(  
+    () => currencyBalances[Field.INPUT],
+    // () => maxAmountSpend(currencyBalances[Field.INPUT]), TODO: Create maxAmountSpend if is native token (XLM) should count for the fees and minimum xlm for the account to have
+    [currencyBalances]
+  )
+
   const handleInputSelect = useCallback(
     (inputCurrency: TokenType) => {
       onCurrencySelection(Field.INPUT, inputCurrency)
-      // setSelectedToken(inputCurrency)
+      onCurrencyChange?.({
+        [Field.INPUT]: {
+          currencyId: inputCurrency.token_address,
+        },
+        [Field.OUTPUT]: state[Field.OUTPUT],
+      })
     },
-    [ onCurrencySelection]
+    [onCurrencyChange, onCurrencySelection, state]
   )
   
   const handleOutputSelect = useCallback(
     (outputCurrency: TokenType) => {
       onCurrencySelection(Field.OUTPUT, outputCurrency)
-      // setSelectedTokenOutput(outputCurrency)
+      onCurrencyChange?.({
+        [Field.INPUT]: state[Field.INPUT],
+        [Field.OUTPUT]: {
+          currencyId: outputCurrency.token_address,
+        },
+      })
     },
-    [onCurrencySelection]
+    [onCurrencyChange, onCurrencySelection, state]
   )
 
-  const handleMaxInput = useCallback((maxValue: number) => {
-    console.log("MAX INPUT")
-    setInputAmount(maxValue)
-  }, [])
+  const handleMaxInput = useCallback(() => {
+    maxInputAmount && onUserInput(Field.INPUT, maxInputAmount?.balance)
+  }, [maxInputAmount, onUserInput])
 
   const handleTypeInput = useCallback(
     (value: string) => {
@@ -208,30 +218,12 @@ export default function SwapPage() {
   const formattedAmounts = useMemo(
     () => ({
       [independentField]: typedValue,
-      [dependentField]: 0//formatCurrencyAmount(parsedAmounts[dependentField], NumberType.SwapTradeAmount, ''),
+      [dependentField]: trade ? trade.outputAmount?.value : 0,
     }),
-    [dependentField, independentField, typedValue]
+    [dependentField, independentField, trade, typedValue]
   )
 
-  const fiatValueInput = {data: 0, isLoading: false}
-  const fiatValueOutput = {data: 0, isLoading: false}
-  const showFiatValueInput = false //TODO: Change this
-  const showFiatValueOutput = false //TODO: Change this
-  const showMaxButton = true //This could be Boolean(maxInputAmount?.greaterThan(0) && !parsedAmounts[Field.INPUT]?.equalTo(maxInputAmount))
-
-  console.log("🚀 « state:", state)
-  const swapInfo = useDerivedSwapInfo(state)
-  const {
-    trade: { state: tradeState, trade },
-    // allowedSlippage,
-    // autoSlippage,
-    // currencyBalances,
-    parsedAmount,
-    currencies,
-    inputError: swapInputError,
-  } = swapInfo
-  // console.log("🚀 « inputError:", swapInputError)
-  console.log("🚀 « trade:", trade)
+  const showMaxButton = Boolean((maxInputAmount?.balance ?? 0 > 0) && !parsedAmounts[Field.INPUT]?.equalTo(maxInputAmount))
 
   const [routeNotFound, routeIsLoading, routeIsSyncing] = useMemo(
     () => [
@@ -259,10 +251,18 @@ export default function SwapPage() {
     }
   }, [onUserInput, swapResult])
 
+  const swapCallback = useSwapCallback(
+    trade,
+    // swapFiatValues,
+    // allowedSlippage,
+    // allowance.state === AllowanceState.ALLOWED ? allowance.permitSignature : undefined
+  )
+
   const handleSwap = useCallback(() => {
-    // if (!swapCallback) {
-    //   return
-    // }
+    console.log("HANDLELING SWAP")
+    if (!swapCallback) {
+      return
+    }
     // if (stablecoinPriceImpact && !confirmPriceImpactWithoutFee(stablecoinPriceImpact)) {
     //   return
     // }
@@ -271,42 +271,30 @@ export default function SwapPage() {
       swapError: undefined,
       swapResult: undefined,
     }))
-    // swapCallback()
-    //   .then((result) => {
-    //     setSwapState((currentState) => ({
-    //       ...currentState,
-    //       swapError: undefined,
-    //       swapResult: result,
-    //     }))
-    //   })
-    //   .catch((error) => {
-    //     setSwapState((currentState) => ({
-    //       ...currentState,
-    //       swapError: error,
-    //       swapResult: undefined,
-    //     }))
-    //   })
-  }, [])
+    swapCallback()
+      .then((result) => {
+        setSwapState((currentState) => ({
+          ...currentState,
+          swapError: undefined,
+          swapResult: result,
+        }))
+      })
+      .catch((error) => {
+        setSwapState((currentState) => ({
+          ...currentState,
+          swapError: error,
+          swapResult: undefined,
+        }))
+      })
+  }, [swapCallback])
 
   const inputCurrency = currencies[Field.INPUT] ?? undefined
-  const outputCurrency = currencies[Field.OUTPUT] ?? undefined
   const swapIsUnsupported = false//useIsSwapUnsupported(currencies[Field.INPUT], currencies[Field.OUTPUT])
   const priceImpactSeverity = 2 //IF is < 2 it shows Swap anyway button in red
   const showPriceImpactWarning = false
   return (
     <>
-      <SEO title="Swap - Soroswap" description="Soroswap Swap" />
       <SwapWrapper>
-        {
-        //selectedToken!==null && selectedTokenOutput!==null && sorobanContext.address!==null &&
-        // <AllPairs 
-        //   selectedToken={selectedToken}
-        //   selectedOutputToken={selectedTokenOutput}
-        //   setPairAddress={setPairAddress}
-        //   setPairExist={setPairExist}
-        //   sorobanContext={sorobanContext} 
-        //   />
-        }
         <SwapHeader />
         {trade && showConfirm && (
           <ConfirmSwapModal
@@ -366,7 +354,7 @@ export default function SwapPage() {
             >
               <ArrowDown
                 size="16"
-                color={selectedToken && selectedTokenOutput ? theme.palette.primary.main : theme.palette.custom.textTertiary }//currencies[Field.INPUT] && currencies[Field.OUTPUT] ? theme.palette.custom.textTertiary}
+                color={currencies[Field.INPUT] && currencies[Field.OUTPUT] ? theme.palette.primary.main : theme.palette.custom.textTertiary }//currencies[Field.INPUT] && currencies[Field.OUTPUT] ? theme.palette.custom.textTertiary}
               />
             </ArrowContainer>
           </ArrowWrapper>

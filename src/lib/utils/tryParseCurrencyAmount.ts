@@ -2,7 +2,7 @@ import { TokenType } from "interfaces";
 
 export type CurrencyAmount = {
   currency: TokenType;
-  value: string;
+  value: number;
 };
 
 /**
@@ -10,7 +10,7 @@ export type CurrencyAmount = {
  * Returns the CurrencyAmount, or undefined if parsing fails.
  */
 export default function tryParseCurrencyAmount(
-  value?: string,
+  value?: number,
   currency?: TokenType,
 ): CurrencyAmount | undefined {
   if (!value || !currency) {

@@ -24,7 +24,6 @@ import { CreatePairButton } from "../components/Buttons/CreatePairButton";
 import fromExactInputGetExpectedOutput from "../functions/fromExactInputGetExpectedOutput";
 import fromExactOutputGetExpectedInput from "../functions/fromExactOutputGetExpectedInput";
 import { useTokenBalances } from "../hooks";
-import { usePairContractAddress } from "hooks/usePairContractAddress";
 
 
 export function ChooseTokens({ isLiquidity }: { isLiquidity: boolean }) {
@@ -140,11 +139,9 @@ function ChooseTokensWallet({
     }
     if (!isLiquidity) {
       let output = fromExactInputGetExpectedOutput(
-        pairAddress??"", 
         BigNumber(event.target.valueAsNumber).shiftedBy(7), 
         token0?.token_address === inputToken?.token_address?reserves.reserve0:reserves.reserve1,
         token1?.token_address === outputToken?.token_address?reserves.reserve1:reserves.reserve0,
-        sorobanContext
         )
       setOutputTokenAmount(BigNumber(output).decimalPlaces(0).shiftedBy(-7).toNumber())
     }
