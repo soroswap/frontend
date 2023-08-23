@@ -1,26 +1,3 @@
-// // eslint-disable-next-line no-restricted-imports
-// import { t, Trans } from '@lingui/macro'
-// import { Trace } from '@uniswap/analytics'
-// import { InterfaceEventName, InterfaceModalName } from '@uniswap/analytics-events'
-// import { TokenType, Token } from '@uniswap/sdk-core'
-// import { useWeb3React } from '@web3-react/core'
-// import { useCachedPortfolioBalancesQuery } from 'components/AccountDrawer/PrefetchBalancesWrapper'
-// import { sendEvent } from 'components/analytics'
-// import { supportedChainIdFromGQLChain } from 'graphql/data/util'
-// import useDebounce from 'hooks/useDebounce'
-// import { useOnClickOutside } from 'hooks/useOnClickOutside'
-// import useToggle from 'hooks/useToggle'
-// import useNativeCurrency from 'lib/hooks/useNativeCurrency'
-// import { getTokenFilter } from 'lib/hooks/useTokenList/filtering'
-// import { TokenBalances, tokenComparator, useSortTokensByQuery } from 'lib/hooks/useTokenList/sorting'
-// import { ChangeEvent, KeyboardEvent, RefObject, useCallback, useEffect, useMemo, useRef, useState } from 'react'
-// import AutoSizer from 'react-virtualized-auto-sizer'
-// import { FixedSizeList } from 'react-window'
-// import { UserAddedToken } from 'types/tokens'
-
-// import { useDefaultActiveTokens, useIsUserAddedToken, useSearchInactiveTokenLists, useToken } from '../../hooks/Tokens'
-// import { CloseIcon, ThemedText } from '../../theme'
-// import { isAddress } from '../../utils'
 import { Typography, styled, useTheme } from '@mui/material'
 import Column from '../Column'
 import Row, { RowBetween } from '../Row'
@@ -28,10 +5,9 @@ import Row, { RowBetween } from '../Row'
 import { CurrencyRow, formatAnalyticsEventProperties } from './CurrencyList'
 import CurrencyList from './CurrencyList'
 import { PaddedColumn, SearchInput, Separator } from './styleds'
-import { TokenBalancesMap, TokenType } from 'interfaces'
+import { TokenType } from 'interfaces'
 import { useSorobanReact } from '@soroban-react/core'
 import { ChangeEvent, RefObject, useCallback, useRef, useState, KeyboardEvent, useMemo, useEffect } from 'react'
-import { X } from 'react-feather'
 import { CloseButton } from '../../components/Buttons/CloseButton'
 import { useDefaultActiveTokens, useToken, useTokenBalances, useTokens } from 'hooks'
 import { useWindowSize } from 'hooks/useWindowSize'
@@ -40,9 +16,9 @@ import AutoSizer from 'react-virtualized-auto-sizer'
 import useDebounce from 'hooks/useDebounce'
 import { isAddress } from 'helpers/address'
 import { getTokenFilter } from 'lib/hooks/useTokenList/filtering'
-import { tokenComparator, useSortTokensByQuery } from 'lib/hooks/useTokenList/sorting'
+import { useSortTokensByQuery } from 'lib/hooks/useTokenList/sorting'
 
-const ContentWrapper = styled(Column)<{ modalHeight?: number }>`
+const ContentWrapper = styled(Column)<{ modalheight?: number }>`
   overflow: hidden;
   border-radius: 20px;
   position: absolute;
@@ -50,7 +26,7 @@ const ContentWrapper = styled(Column)<{ modalHeight?: number }>`
   left: 50%;
   transform: translate(-50%, -50%);
   width: 420px;
-  height: ${({ modalHeight }) => modalHeight+'vh' ?? '90px'};
+  height: ${({ modalheight }) => modalheight+'vh' ?? '90px'};
   min-height: 90px;
   background-color: ${({ theme }) => theme.palette.customBackground.surface};
   border: 1px solid #98A1C03d;
@@ -168,7 +144,7 @@ export function CurrencySearch({
   }
 
   return (
-    <ContentWrapper modalHeight={modalHeight}>
+    <ContentWrapper modalheight={modalHeight}>
       <PaddedColumn gap="16px">
         <RowBetween>
           <Typography fontWeight={500} fontSize={16}>

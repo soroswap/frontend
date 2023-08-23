@@ -44,19 +44,6 @@ const Wrapper = styled('div')`
   outline: 1px solid ${({ theme }) => theme.palette.customBackground.outline};
   padding: 16px;
 `
-// const ContentWrapper = styled(Column)<{ modalHeight?: number }>`
-//   overflow: hidden;
-//   border-radius: 20px;
-//   position: absolute;
-//   top: 50%;
-//   left: 50%;
-//   transform: translate(-50%, -50%);
-//   width: 420px;
-//   height: ${({ modalHeight }) => modalHeight+'vh' ?? '90px'};
-//   min-height: 90px;
-//   background-color: ${({ theme }) => theme.palette.customBackground.surface};
-//   border: 1px solid #98A1C03d;
-// `
 
 const BottomSection = styled(AutoColumn)`
   border-bottom-left-radius: 20px;

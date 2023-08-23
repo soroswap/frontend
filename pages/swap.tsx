@@ -412,7 +412,7 @@ export function SwapComponent({
                 onClick={() => showPriceImpactWarning ? setShowPriceImpactModal(true) : handleContinueToReview()}
                 id="swap-button"
                 data-testid="swap-button"
-                disabled={swapInputError}
+                disabled={swapInputError ? true : false}
                 error={!swapInputError && priceImpactSeverity > 2}//&& allowance.state === AllowanceState.ALLOWED}
               >
                 <ButtonText fontSize={20} fontWeight={600}>
