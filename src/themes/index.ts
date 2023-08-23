@@ -40,6 +40,7 @@ declare module "@mui/material/styles/createPalette" {
       accentTextDarkPrimary: string;
       accentTextDarkSecondary: string;
       accentTextDarkTertiary: string;
+      accentFailure: string;
       shadow1: string;
     };
   }
@@ -82,6 +83,7 @@ declare module "@mui/material/styles/createPalette" {
       accentTextDarkPrimary: string;
       accentTextDarkSecondary: string;
       accentTextDarkTertiary: string;
+      accentFailure: string;
       shadow1: string;
     };
   }
@@ -148,6 +150,7 @@ export const theme = (mode: PaletteMode) => {
         accentTextDarkPrimary: opacify(80, "#0D111C"),
         accentTextDarkSecondary: opacify(60, "#0D111C"),
         accentTextDarkTertiary: opacify(24, "#0D111C"),
+        accentFailure: "#D15858",
         shadow1: isDark ? "#000" : "#2F80ED",
       },
     },

@@ -10,6 +10,7 @@ import { tokenBalances, useToken } from 'hooks'
 import { useBestTrade } from 'hooks/useBestTrade'
 import { TradeType } from 'state/routing/types'
 import tryParseCurrencyAmount from 'lib/utils/tryParseCurrencyAmount'
+import { useUserSlippageToleranceWithDefault } from 'state/user/hooks'
 
 export type relevantTokensType = {
   balance: string,
@@ -149,9 +150,11 @@ export function useDerivedSwapInfo(state: SwapState, chainId?: number | undefine
   // // Uniswap interface recommended slippage amount
   // const autoSlippage = uniswapXAutoSlippage ?? classicAutoSlippage
   // const classicAllowedSlippage = useUserSlippageToleranceWithDefault(autoSlippage)
+  const classicAllowedSlippage = useUserSlippageToleranceWithDefault(0.5)
 
   // // slippage amount used to submit the trade
   // const allowedSlippage = uniswapXAutoSlippage ?? classicAllowedSlippage
+  const allowedSlippage = classicAllowedSlippage
 
   const inputError = useMemo(() => {
     let inputError: ReactNode | undefined
@@ -171,7 +174,7 @@ export function useDerivedSwapInfo(state: SwapState, chainId?: number | undefine
     const formattedTo = isAddress(to)
     if (!to || !formattedTo) {
       inputError = inputError ?? "Enter a recipient"
-    } 
+    }
 
     // compare input balance to max input based on version
     //TODO: Fix this, not working well
@@ -192,9 +195,9 @@ export function useDerivedSwapInfo(state: SwapState, chainId?: number | undefine
       inputError,
       trade,
       // autoSlippage,
-      // allowedSlippage,
+      allowedSlippage,
     }),
-    [currencies, currencyBalances, parsedAmount, inputError, trade]//allowedSlippage, autoSlippage, currencies, currencyBalances, inputError, parsedAmount, trade]
+    [currencies, currencyBalances, parsedAmount, inputError, trade, allowedSlippage]//allowedSlippage, autoSlippage, currencies, currencyBalances, inputError, parsedAmount, trade]
   )
 }
 

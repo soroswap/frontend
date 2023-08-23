@@ -9,7 +9,6 @@ import { TokenType } from "../src/interfaces";
 import { ArrowDown } from "react-feather";
 import { AutoColumn } from "components/Column";
 import { useSorobanReact } from "@soroban-react/core";
-import { useTokens } from "hooks/useTokens";
 import { ButtonError, ButtonLight, ButtonPrimary } from "components/Buttons/Button";
 import { GrayCard } from "components/Card";
 import { ButtonText, ButtonTextSecondary } from "components/Text";
@@ -19,7 +18,6 @@ import { Field } from "state/swap/actions";
 import { InterfaceTrade, TradeState } from "state/routing/types";
 import ConfirmSwapModal from "components/Swap/ConfirmSwapModal";
 import { useSwapCallback } from "hooks/useSwapCallback";
-import { CurrencyAmount } from "lib/utils/tryParseCurrencyAmount";
 
 const SwapSection = styled('div')(({ theme }) => ({
   position: "relative",
@@ -46,7 +44,7 @@ const SwapSection = styled('div')(({ theme }) => ({
     borderColor: opacify(8, theme.palette.secondary.main),
   },
   "&:focus-within:before": {
-    borderColor:  opacify(24, theme.palette.secondary.light),
+    borderColor: opacify(24, theme.palette.secondary.light),
   }
 }));
 
@@ -184,7 +182,7 @@ export function SwapComponent({
     },
     [onCurrencyChange, onCurrencySelection, state]
   )
-  
+
   const handleOutputSelect = useCallback(
     (outputCurrency: TokenType) => {
       onCurrencySelection(Field.OUTPUT, outputCurrency)
@@ -223,7 +221,7 @@ export function SwapComponent({
     [dependentField, independentField, trade, typedValue]
   )
 
-  const showMaxButton = Boolean((maxInputAmount?.balance ?? 0 > 0) && !parsedAmounts[Field.INPUT]?.equalTo(maxInputAmount))
+  const showMaxButton = Boolean((maxInputAmount?.balance ?? 0 > 0))
 
   const [routeNotFound, routeIsLoading, routeIsSyncing] = useMemo(
     () => [
@@ -310,8 +308,8 @@ export function SwapComponent({
             swapError={swapError}
             onDismiss={handleConfirmDismiss}
             swapQuoteReceivedDate={new Date()} //swapQuoteReceivedDate}
-            fiatValueInput={{data: 32, isLoading: false}} //fiatValueTradeInput}
-            fiatValueOutput={{data: 32, isLoading: false}} //fiatValueTradeOutput}
+            fiatValueInput={{ data: 32, isLoading: false }} //fiatValueTradeInput}
+            fiatValueOutput={{ data: 32, isLoading: false }} //fiatValueTradeOutput}
           />
         )}
         {/* {showPriceImpactModal && showPriceImpactWarning && (
@@ -363,7 +361,7 @@ export function SwapComponent({
           <div>
             <OutputSwapSection>
               <SwapCurrencyInputPanel
-                id={""} 
+                id={""}
                 value={formattedAmounts[Field.OUTPUT]}
                 //disabled={disableTokenInputs}
                 onUserInput={handleTypeOutput}
@@ -371,7 +369,7 @@ export function SwapComponent({
                 label={independentField === Field.INPUT ? <span>To (at least)</span> : <span>To</span>}
                 showMaxButton={false}
                 hideBalance={false}
-                onMax={() => {}}
+                onMax={() => { }}
                 fiatValue={showFiatValueOutput ? fiatValueOutput : undefined}
                 //priceImpact={stablecoinPriceImpact}
                 currency={currencies[Field.OUTPUT] ?? null}
