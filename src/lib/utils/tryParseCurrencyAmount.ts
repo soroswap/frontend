@@ -1,8 +1,9 @@
+import BigNumber from "bignumber.js";
 import { TokenType } from "interfaces";
 
 export type CurrencyAmount = {
   currency: TokenType;
-  value: number;
+  value: string;
 };
 
 /**
@@ -10,7 +11,7 @@ export type CurrencyAmount = {
  * Returns the CurrencyAmount, or undefined if parsing fails.
  */
 export default function tryParseCurrencyAmount(
-  value?: number,
+  value?: string,
   currency?: TokenType,
 ): CurrencyAmount | undefined {
   if (!value || !currency) {

@@ -11,6 +11,7 @@ import { useBestTrade } from 'hooks/useBestTrade'
 import { TradeType } from 'state/routing/types'
 import tryParseCurrencyAmount from 'lib/utils/tryParseCurrencyAmount'
 import { useUserSlippageToleranceWithDefault } from 'state/user/hooks'
+import BigNumber from 'bignumber.js'
 
 export type relevantTokensType = {
   balance: string,
@@ -79,7 +80,7 @@ export type SwapInfo = {
 }
 
 // from the current swap inputs, compute the best trade and return it.
-export function useDerivedSwapInfo(state: SwapState, chainId?: number | undefined): any {
+export function useDerivedSwapInfo(state: SwapState): any {
   const sorobanContext = useSorobanReact()
   const { address: account } = sorobanContext
   
@@ -92,8 +93,10 @@ export function useDerivedSwapInfo(state: SwapState, chainId?: number | undefine
   } = state
 
   const inputCurrency = useToken(inputCurrencyId)
+  // console.log("🚀 « inputCurrency:", inputCurrency)
   const outputCurrency = useToken(outputCurrencyId)
   const recipientLookup = {address: ""}//TODO: Use ENS useENS(recipient ?? undefined)
+  // console.log("🚀 « outputCurrency:", outputCurrency)
   const to: string | null | undefined = account//recipient === null ? account : recipientLookup.address) ?? null
 
   const tokensArray = useMemo(() => {
@@ -104,14 +107,15 @@ export function useDerivedSwapInfo(state: SwapState, chainId?: number | undefine
   useEffect(() => {
     if (account) {
       tokenBalances(account, tokensArray, sorobanContext).then(balances => {
-          if (balances != undefined) {
-              setRelevantTokenBalances(balances.balances);
-          }
+        if (balances != undefined) {
+          setRelevantTokenBalances(balances.balances);
+        }
       });
     }
   }, [account, tokensArray, sorobanContext]);
 
   const isExactIn: boolean = independentField === Field.INPUT
+  // console.log("🚀 « isExactIn:", isExactIn)
 
   const parsedAmount = useMemo(
     () => tryParseCurrencyAmount(typedValue, (isExactIn ? inputCurrency : outputCurrency) ?? undefined),
@@ -124,6 +128,7 @@ export function useDerivedSwapInfo(state: SwapState, chainId?: number | undefine
     (isExactIn ? outputCurrency : inputCurrency) ?? undefined,
     account
   )
+  console.log("🚀 « trade:", trade)
 
   const currencyBalances = useMemo(
     () => ({
@@ -178,7 +183,7 @@ export function useDerivedSwapInfo(state: SwapState, chainId?: number | undefine
 
     // compare input balance to max input based on version
     //TODO: Fix this, not working well
-    const [balanceIn, maxAmountIn] = [currencyBalances[Field.INPUT], trade.trade?.inputAmount.value]
+    const [balanceIn, maxAmountIn] = [currencyBalances[Field.INPUT], (trade.trade?.inputAmount.value ?? 0)]
 
     if (balanceIn && maxAmountIn && balanceIn.balance < (maxAmountIn)) {
       inputError = `Insufficient ${balanceIn.symbol} balance`

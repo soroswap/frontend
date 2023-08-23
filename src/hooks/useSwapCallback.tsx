@@ -25,14 +25,16 @@ export function useSwapCallback(
 
     const pairAddress = trade.swaps[0].route.pairs[0].pairAddress
     const amountInScVal = bigNumberToI128(BigNumber(trade.inputAmount.value).shiftedBy(7))
+    // console.log("🚀 « trade.inputAmount:", trade.inputAmount.value)
     const amountOutScVal = bigNumberToI128(BigNumber(trade.outputAmount.value).shiftedBy(7))
+    // console.log("🚀 « trade.outputAmount:", trade.outputAmount.value)
 
     let result = await contractInvoke({
       contractAddress: pairAddress,
       method: "swap",
       args: [
         new SorobanClient.Address(address!).toScVal(),
-        xdr.ScVal.scvBool(true),
+        xdr.ScVal.scvBool((trade.tradeType === 0)),
         amountOutScVal,
         amountInScVal,
       ],

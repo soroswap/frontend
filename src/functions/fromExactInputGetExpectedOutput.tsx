@@ -7,7 +7,7 @@ export default function fromExactInputGetExpectedOutput(
   reserve1: BigNumber,
 ): BigNumber {
 
-  return getExpectedAmountFromReserves(amountIn, reserve0, reserve1);
+  return getExpectedAmountFromReserves(amountIn, reserve0, reserve1).dp(7); //TODO: dp is like toFixed(2) to force it to give 2 decimals, should it be the decimals of the token?
 }
 
 function getExpectedAmountFromReserves(

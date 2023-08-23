@@ -43,6 +43,14 @@ export function useBestTrade(
 
   const factory = useFactory(sorobanContext);
 
+  const [currencyIn, currencyOut]: [TokenType | undefined, TokenType | undefined] = useMemo(
+    () =>
+      tradeType === TradeType.EXACT_INPUT
+        ? [amountSpecified?.currency, otherCurrency]
+        : [otherCurrency, amountSpecified?.currency],
+    [amountSpecified, otherCurrency, tradeType]
+  )
+
   if (
     amountSpecified?.currency?.token_address &&
     otherCurrency?.token_address
@@ -64,8 +72,6 @@ export function useBestTrade(
     });
   }
 
-  console.log("Pair Address",pairAddress)
-
   const [reserves, setReserves] = useState();
 
   useEffect(() => {
@@ -77,7 +83,6 @@ export function useBestTrade(
               setReserves(reservesResponse);
           }
       };
-  
       fetchReserves();
   
       // Cleanup
@@ -86,21 +91,28 @@ export function useBestTrade(
       };
   }, [pairAddress, sorobanContext]);
 
-  const expectedOutput = reserves ? fromExactInputGetExpectedOutput(BigNumber(amountSpecified?.value).shiftedBy(7), reserves?.reserve0, reserves?.reserve1).shiftedBy(-7).toNumber() : 0
+  const expectedAmount = reserves ? fromExactInputGetExpectedOutput(BigNumber(amountSpecified?.value), reserves?.reserve0, reserves?.reserve1).toNumber() : 0 //TODO: Should get expected from input or output, currently only doing one way around
+  console.log("🚀 « expectedAmount:", expectedAmount)
+
+  const inputAmount = (currencyIn?.token_address == amountSpecified?.currency.token_address) ? tryParseCurrencyAmount(amountSpecified?.value, currencyIn) : tryParseCurrencyAmount(expectedAmount, currencyIn)
+  console.log("🚀 « inputAmount:", inputAmount?.value)
+  const outputAmount = (currencyOut?.token_address == otherCurrency?.token_address) ? tryParseCurrencyAmount(expectedAmount, currencyOut) : tryParseCurrencyAmount(amountSpecified?.value, currencyOut)
+  console.log("🚀 « outputAmount:", outputAmount?.value)
 
   //TODO: Set the trade specs, getQuote
   const trade: InterfaceTrade = useMemo(() => {
     return {
-      inputAmount: amountSpecified,
-      outputAmount: tryParseCurrencyAmount(expectedOutput, otherCurrency),
+      inputAmount: inputAmount,
+      outputAmount: outputAmount,
+      expectedAmount: isNaN(expectedAmount) ? 0 : expectedAmount,
       tradeType: tradeType,
       swaps: [
         {
-          inputAmount: amountSpecified,
-          outputAmount: tryParseCurrencyAmount(expectedOutput, otherCurrency), //this should get expected amount out
+          inputAmount: inputAmount,
+          outputAmount: outputAmount,
           route: {
-            input: amountSpecified?.currency,
-            output: otherCurrency,
+            input: currencyIn,
+            output: currencyOut,
             pairs: [
               {
                 pairAddress,
@@ -110,7 +122,7 @@ export function useBestTrade(
         },
       ],
     };
-  }, [amountSpecified, expectedOutput, otherCurrency, pairAddress, tradeType]);
+  }, [currencyIn, currencyOut, expectedAmount, inputAmount, outputAmount, pairAddress, tradeType]);
 
   const tradeResult = useMemo(() => {
     const state = pairAddress ? QuoteState.SUCCESS : QuoteState.NOT_FOUND;

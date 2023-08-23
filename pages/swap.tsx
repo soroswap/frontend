@@ -133,7 +133,7 @@ export function SwapComponent({
   const { onSwitchTokens, onCurrencySelection, onUserInput, onChangeRecipient } = useSwapActionHandlers(dispatch)
   const dependentField: Field = independentField === Field.INPUT ? Field.OUTPUT : Field.INPUT
 
-  console.log("🚀 « state:", state)
+  // console.log("🚀 « state:", state)
   const swapInfo = useDerivedSwapInfo(state)
   const {
     trade: { state: tradeState, trade },
@@ -145,7 +145,7 @@ export function SwapComponent({
     inputError: swapInputError,
   } = swapInfo
   // console.log("🚀 « inputError:", swapInputError)
-  console.log("🚀 « trade:", trade)
+  // console.log("🚀 « trade:", trade)
 
   const parsedAmounts = useMemo(
     () => ({
@@ -216,7 +216,7 @@ export function SwapComponent({
   const formattedAmounts = useMemo(
     () => ({
       [independentField]: typedValue,
-      [dependentField]: trade ? trade.outputAmount?.value : 0,
+      [dependentField]: trade?.expectedAmount,
     }),
     [dependentField, independentField, trade, typedValue]
   )
@@ -346,8 +346,7 @@ export function SwapComponent({
             <ArrowContainer
               data-testid="swap-currency-button"
               onClick={() => {
-                //!disableTokenInputs &&
-                onSwitchTokens()
+                !disableTokenInputs && onSwitchTokens()
               }}
             >
               <ArrowDown
