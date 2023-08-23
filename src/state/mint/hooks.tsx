@@ -60,6 +60,7 @@ export function useDerivedMintInfo(
 ): {
   dependentField: Field
   currencies: { [field in Field]?: TokenType }
+  pairAddress: string | undefined
   // pair?: Pair | null
   // pairState: PairState
   // currencyBalances: { [field in Field]?: CurrencyAmount<TokenType> }
@@ -267,6 +268,7 @@ export function useDerivedMintInfo(
   return {
     dependentField,
     currencies,
+    pairAddress,
     // pair,
     // pairState,
     // currencyBalances,

@@ -2,17 +2,20 @@ import { AutoColumn, ColumnCenter } from "components/Column";
 import SEO from "../src/components/SEO";
 import CurrencyInputPanel from "components/CurrencyInputPanel";
 import { Plus } from "react-feather";
-import { useTheme } from "@mui/material";
+import { Typography, useTheme } from "@mui/material";
 import AppBody from "components/AppBody";
 import { AddRemoveTabs } from "components/NavigationTabs";
 import { Wrapper } from "components/Pool/styleds";
 import { BlueCard } from "components/Card";
 import { SubHeader } from "components/Text";
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import { useDerivedMintInfo, useMintActionHandlers, useMintState } from "state/mint/hooks";
 import { useTokens } from "hooks";
 import { useSorobanReact } from '@soroban-react/core'
 import { Field } from "state/mint/actions";
+import { ButtonError, ButtonLight } from "components/Buttons/Button";
+import depositOnContract from "functions/depositOnContract";
+import { useSendTransaction } from "@soroban-react/contracts";
 
 export default function AddLiquidityPage() {
 
@@ -45,11 +48,23 @@ export default function AddLiquidityPage() {
 
   const { independentField, typedValue, otherTypedValue } = useMintState()
 
-  const formattedAmounts = {
-    [independentField]: typedValue,
-    // [dependentField]: noLiquidity ? otherTypedValue : parsedAmounts[dependentField]?.toSignificant(6) ?? '',
-    [dependentField]: otherTypedValue
-  }
+  const formattedAmounts = useMemo(() => {
+    return {
+      [independentField]: typedValue,
+      // [dependentField]: noLiquidity ? otherTypedValue : parsedAmounts[dependentField]?.toSignificant(6) ?? '',
+      [dependentField]: otherTypedValue
+    }
+  }, [dependentField, independentField, otherTypedValue, typedValue])
+
+
+  const provideLiquidity = useCallback(() => {
+    depositOnContract({
+      sorobanContext,
+      pairAddress: derivedMintInfo.pairAddress,
+      amount0: formattedAmounts[independentField],
+      amount1: formattedAmounts[dependentField],
+    })
+  }, [dependentField, derivedMintInfo.pairAddress, formattedAmounts, independentField, sorobanContext])
 
   const theme = useTheme()
   return (
@@ -234,6 +249,29 @@ export default function AddLiquidityPage() {
                 </ButtonError>
               </AutoColumn>
             )} */}
+
+            {!sorobanContext.address ? (
+
+              <ButtonLight onClick={() => { }}>
+                <>Connect Wallet</>
+              </ButtonLight>
+            ) : (
+              <AutoColumn gap="md">
+                <ButtonError
+                  onClick={() => {
+                    // setShowConfirm(true)
+                    provideLiquidity()
+                    console.log("pages/add: ButtonError onClick")
+                  }}
+                  disabled={false}
+                  error={false}
+                >
+                  <Typography >
+                    {<>Supply</>}
+                  </Typography>
+                </ButtonError>
+              </AutoColumn>
+            )}
           </AutoColumn>
         </Wrapper>
       </AppBody>
