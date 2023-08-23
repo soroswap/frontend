@@ -109,6 +109,9 @@ export function useDerivedMintInfo(
   //     JSBI.equal(pair.reserve0.quotient, ZERO) &&
   //     JSBI.equal(pair.reserve1.quotient, ZERO)
   //   )
+
+  console.log("state/mint/hooks: currencyA:", currencyA)
+  console.log("state/mint/hooks: currencyB:", currencyB)
   const pairAddress = usePairContractAddress(
     !currencyA ? null : currencyA.token_address,
     !currencyB ? null : currencyB.token_address,
