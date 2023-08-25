@@ -9,7 +9,7 @@ import {
 } from "@soroban-react/contracts";
 import { useKeys } from "../../hooks";
 import { bigNumberToI128 } from "../../helpers/utils";
-import { contractInvoke, useSendTransaction } from "@soroban-react/contracts";
+import { contractInvoke } from "@soroban-react/contracts";
 
 interface MintButtonProps {
   sorobanContext: SorobanContextType;
@@ -26,7 +26,6 @@ export function MintButton({
   const networkPassphrase = sorobanContext.activeChain?.networkPassphrase ?? "";
   const server = sorobanContext.server;
   const account = sorobanContext.address;
-  const { sendTransaction } = useSendTransaction();
   const { admin_public, admin_secret } = useKeys(sorobanContext);
 
   const mintTokens = async () => {
@@ -48,15 +47,15 @@ export function MintButton({
     const options = {
       secretKey: admin_secret,
       sorobanContext,
-      
+
     };
 
-    if(!account) {
+    if (!account) {
       console.log("Error on account:", account)
       return
     }
-    if(!adminSource) {
-      console.log("Error on adminSource:",adminSource)
+    if (!adminSource) {
+      console.log("Error on adminSource:", adminSource)
       return
     }
     console.log("🚀 ~ file: MintButton.tsx:70 ~ mintTokens ~ networkPassphrase:", networkPassphrase)
@@ -64,8 +63,8 @@ export function MintButton({
     console.log("🚀 ~ file: MintButton.tsx:72 ~ mintTokens ~ tokenId:", tokenId)
     console.log("🚀 ~ file: MintButton.tsx:75 ~ mintTokens ~ account:", account)
 
-    
-    try{
+
+    try {
 
       // let tx = contractTransaction({
       //   source: adminSource,
@@ -90,7 +89,7 @@ export function MintButton({
       if (result) {
         alert("Success!");
       }
-      
+
 
       //This will connect again the wallet to fetch its data
       sorobanContext.connect();
