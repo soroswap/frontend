@@ -20,6 +20,8 @@ import { AppState } from '../types'
 import { Field, typeInput } from './actions'
 import { Token } from 'typescript'
 import { useReservesBigNumber } from 'hooks/useReserves'
+import calculatePoolTokenOptimalAmount from 'functions/calculatePoolTokenOptimalAmount'
+import BigNumber from 'bignumber.js'
 
 // const ZERO = JSBI.BigInt(0)
 
@@ -66,21 +68,13 @@ export function useDerivedMintInfo(
   // currencyBalances: { [field in Field]?: CurrencyAmount<TokenType> }
   parsedAmounts: { [field in Field]?: CurrencyAmount }
   // price?: Price<TokenType, TokenType>
-  // noLiquidity?: boolean
+  noLiquidity?: boolean
   // liquidityMinted?: CurrencyAmount<Token>
   // poolTokenPercentage?: Percent
   error?: ReactNode
 } {
-  // const { account } = useWeb3React()
   const sorobanContext = useSorobanReact();
   const { address: account } = sorobanContext
-
-  const pairExists = usePairExist(!currencyA ? null : currencyA.token_address, !currencyB ? null : currencyB.token_address, sorobanContext)
-  console.log("state/mint/hooks: pairExists:", pairExists)
-
-  const pairs = usePairs(sorobanContext)
-  console.log("state/mint/hooks: pairs:", pairs)
-
 
   const { independentField, typedValue, otherTypedValue } = useMintState()
   console.log("state/mint/hooks: independentField, typedValue, otherTypedValue", independentField, typedValue, otherTypedValue)
@@ -95,20 +89,7 @@ export function useDerivedMintInfo(
     }),
     [currencyA, currencyB]
   )
-
-  // // pair
-  // const [pairState, pair] = useV2Pair(currencies[Field.CURRENCY_A], currencies[Field.CURRENCY_B])
-  // const totalSupply = useTotalSupply(pair?.liquidityToken)
-
-  // const noLiquidity: boolean =
-  //   pairState === PairState.NOT_EXISTS ||
-  //   Boolean(totalSupply && JSBI.equal(totalSupply.quotient, ZERO)) ||
-  //   Boolean(
-  //     pairState === PairState.EXISTS &&
-  //     pair &&
-  //     JSBI.equal(pair.reserve0.quotient, ZERO) &&
-  //     JSBI.equal(pair.reserve1.quotient, ZERO)
-  //   )
+  console.log("state/mint/hooks: currencies:", currencies)
 
   console.log("state/mint/hooks: currencyA:", currencyA)
   console.log("state/mint/hooks: currencyB:", currencyB)
@@ -146,7 +127,16 @@ export function useDerivedMintInfo(
         return tryParseCurrencyAmount(otherTypedValue, currencies[dependentField])
       }
       return undefined
-      // } else if (independentAmount) {
+    } else if (independentAmount) {
+      // We need the reserves. which are in reservesBN but how to know which corresponds to.
+      console.log("state/mint/hooks here", independentAmount)
+      const calculatedPoolTokenOptimalAmount = calculatePoolTokenOptimalAmount(
+        BigNumber(independentAmount.value),
+        reservesBN.reserve0,
+        reservesBN.reserve1,
+      )
+      console.log("state/mint/hooks calculatedPoolTokenOptimalAmount:", calculatedPoolTokenOptimalAmount)
+      return tryParseCurrencyAmount(calculatedPoolTokenOptimalAmount.toString(), currencies[dependentField])
       //   // we wrap the currencies just to get the price in terms of the other token
       //   const wrappedIndependentAmount = independentAmount?.wrapped
       //   const [tokenA, tokenB] = [currencyA?.wrapped, currencyB?.wrapped]
@@ -159,12 +149,10 @@ export function useDerivedMintInfo(
       //     return dependentCurrency?.isNative
       //       ? CurrencyAmount.fromRawAmount(dependentCurrency, dependentTokenAmount.quotient)
       //       : dependentTokenAmount
-      //   }
-      //   return undefined
     } else {
       return undefined
     }
-  }, [noLiquidity, otherTypedValue, currencies, dependentField])
+  }, [noLiquidity, independentAmount, otherTypedValue, currencies, dependentField, reservesBN.reserve0, reservesBN.reserve1])
   console.log("state/mint/hooks: independentAmount:", independentAmount)
   console.log("state/mint/hooks: dependentAmount:", dependentAmount)
 
@@ -277,7 +265,7 @@ export function useDerivedMintInfo(
     // currencyBalances,
     parsedAmounts,
     // price,
-    // noLiquidity,
+    noLiquidity,
     // liquidityMinted,
     // poolTokenPercentage,
     error,

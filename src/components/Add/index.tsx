@@ -14,7 +14,6 @@ import { useSorobanReact } from '@soroban-react/core'
 import { Field } from "state/mint/actions";
 import { ButtonError, ButtonLight } from "components/Buttons/Button";
 import depositOnContract from "functions/depositOnContract";
-import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { TokenType } from "interfaces";
 import { useRouter } from 'next/router';
 
@@ -55,9 +54,9 @@ export default function AddLiquidityPage() {
     currencyA ? currencyA : undefined,
     currencyB ? currencyB : undefined)
   // const derivedMintInfo = useDerivedMintInfo(tokens[0], tokens[1])
-  const { dependentField, currencies } = derivedMintInfo
+  const { dependentField, currencies, parsedAmounts, noLiquidity } = derivedMintInfo
   console.log("pages/add derivedMintInfo:", derivedMintInfo)
-  const noLiquidity = true
+  // const noLiquidity = true
   const isCreate = false
 
   const { onFieldAInput, onFieldBInput } = useMintActionHandlers(noLiquidity)
@@ -67,11 +66,14 @@ export default function AddLiquidityPage() {
   const formattedAmounts = useMemo(() => {
     return {
       [independentField]: typedValue,
-      // [dependentField]: noLiquidity ? otherTypedValue : parsedAmounts[dependentField]?.toSignificant(6) ?? '',
-      [dependentField]: otherTypedValue
+      [dependentField]: noLiquidity ? otherTypedValue : parsedAmounts[dependentField]?.value ?? '',
+      // [dependentField]: otherTypedValue
     }
-  }, [dependentField, independentField, otherTypedValue, typedValue])
+  }, [dependentField, independentField, noLiquidity, otherTypedValue, parsedAmounts, typedValue])
 
+  console.log("src/components/Add/index.tsx: formattedAmounts:", formattedAmounts)
+  console.log("src/components/Add/index.tsx: parsedAmounts:", parsedAmounts)
+  console.log("src/components/Add/index.tsx: noLiquidity:", noLiquidity)
 
   const provideLiquidity = useCallback(() => {
     depositOnContract({
@@ -80,7 +82,7 @@ export default function AddLiquidityPage() {
       amount0: formattedAmounts[independentField],
       amount1: formattedAmounts[dependentField],
     })
-  }, [dependentField, derivedMintInfo.pairAddress, formattedAmounts, independentField, sorobanContext])
+  }, [dependentField, derivedMintInfo, formattedAmounts, independentField, sorobanContext])
 
   const handleCurrencyASelect = useCallback(
     (currencyA: TokenType) => {
