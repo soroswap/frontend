@@ -120,10 +120,10 @@ export const theme = (mode: PaletteMode) => {
         bg4: isDark ? "#5D6785" : "#98A1C0",
         bg5: isDark ? "#7780A0" : "#7780A0",
         interactive: isDark ? "#293249" : "#E8ECFB",
-        accentAction: isDark ? "#4C82FB" : "#FB118E",
+        accentAction: isDark ? "#8866DD" : "#8866DD",
         accentActionSoft: isDark
-          ? opacify(24, "#4C82FB")
-          : opacify(24, "#FB118E"),
+          ? opacify(24, "#8866DD")
+          : opacify(24, "#8866DD"),
         accentSuccess: "#76D191",
         accentWarning: "#EEB317",
         accentWarningSoft: opacify(24, "#EEB317"),
@@ -137,7 +137,7 @@ export const theme = (mode: PaletteMode) => {
       },
       custom: {
         textTertiary: isDark ? "#E0E0E0" : "#4E4E4E",
-        borderColor: isDark ? "#4C82FB" : "#FB118E",
+        borderColor: isDark ? "#8866DD" : "#8866DD",
         stateOverlayHover: opacify(8, "#98A1C0"),
         stateOverlayPressed: opacify(24, "#B8C0DC"),
         deprecated_primary2: isDark ? "#4C82FB" : "#FF6FA3",

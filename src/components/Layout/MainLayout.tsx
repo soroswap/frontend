@@ -5,40 +5,13 @@ import { styled, useTheme } from "@mui/material/styles";
 import { Paper, Theme, useMediaQuery } from "@mui/material";
 import Header from "./Header";
 
-const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })(
-  ({ theme, open }: { theme: Theme; open: boolean }) => ({
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "flex-start",
-    width: "100%",
-    marginTop: "200px",
-    // minHeight: "calc(100vh - 68px)",
-    // flexGrow: 1,
-    // padding: "20px",
-    // marginRight: "20px",
-    // borderBottomLeftRadius: 0,
-    // borderBottomRightRadius: 0,
-    // transition: theme.transitions.create(
-    //   "margin",
-    //   open
-    //     ? {
-    //         easing: theme.transitions.easing.easeOut,
-    //         duration: theme.transitions.duration.enteringScreen,
-    //       }
-    //     : {
-    //         easing: theme.transitions.easing.sharp,
-    //         duration: theme.transitions.duration.leavingScreen,
-    //       },
-    // ),
-    // [theme.breakpoints.up("md")]: {
-    //   marginLeft: open ? 0 : 260,
-    //   width: open ? "100%" : `calc(100% - ${260}px)`,
-    // },
-    // [theme.breakpoints.down("md")]: {
-    //   marginTop: 56,
-    // },
-  }),
-);
+const Main = styled("main")`
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  width: 100%;
+  margin-top: 200px;
+`
 
 export default function MainLayout({
   children,
@@ -46,13 +19,6 @@ export default function MainLayout({
   children: React.ReactNode;
 }) {
   const theme = useTheme();
-  const [drawerState, setDrawerState] = useState<boolean>(false);
-
-  const handleDrawerToggle = () => {
-    setDrawerState((prev) => !prev);
-  };
-
-  const matchDownMd = useMediaQuery(theme.breakpoints.down("md"));
 
   return (
     <>
@@ -63,20 +29,14 @@ export default function MainLayout({
         elevation={0}
         sx={{
           bgcolor: theme.palette.background.default,
-          transition: drawerState ? theme.transitions.create("width") : "none",
         }}
       >
         <Toolbar>
-          <Header handleDrawerToggle={handleDrawerToggle} />
+          <Header/>
         </Toolbar>
       </AppBar>
 
-      {/* <Sidebar
-        drawerState={!matchDownMd ? !drawerState : drawerState}
-        drawerToggle={handleDrawerToggle}
-      /> */}
-
-      <Main theme={theme} open={drawerState}>
+      <Main theme={theme}>
         {children}
       </Main>
     </>
