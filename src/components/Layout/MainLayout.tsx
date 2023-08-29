@@ -4,13 +4,18 @@ import Toolbar from "@mui/material/Toolbar";
 import { styled, useTheme } from "@mui/material/styles";
 import { Paper, Theme, useMediaQuery } from "@mui/material";
 import Header from "./Header";
+import background1 from '../../assets/images/bg1.png'
 
-const Main = styled("main")`
+const MainBackground = styled("main")<{ isMobile: boolean }>`
+  background-image: url(${background1.src});
+  background-size: cover;
+  height: ${({ isMobile }) => isMobile ? 'calc(100vh - 78px)' : 'calc(100vh - 120px)'};
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  width: 100%;
-  margin-top: 200px;
+  width: 100vw;
+  padding-top: 100px;
+  margin-top: ${({ isMobile }) => isMobile ? '78px' : '120px'};
 `
 
 export default function MainLayout({
@@ -19,6 +24,7 @@ export default function MainLayout({
   children: React.ReactNode;
 }) {
   const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
   return (
     <>
@@ -36,9 +42,9 @@ export default function MainLayout({
         </Toolbar>
       </AppBar>
 
-      <Main theme={theme}>
+      <MainBackground isMobile={isMobile} theme={theme}>
         {children}
-      </Main>
+      </MainBackground>
     </>
   );
 }
