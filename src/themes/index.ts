@@ -1,5 +1,6 @@
 import { PaletteMode, colors, createTheme } from "@mui/material";
 import { opacify } from "./utils";
+import { rgba } from "polished";
 
 declare module "@mui/material/styles/createPalette" {
   interface Palette {
@@ -105,8 +106,8 @@ export const theme = (mode: PaletteMode) => {
         light: "#B8C0DC",
       },
       background: {
-        default: isDark ? "#0D111C" : "#f3f4f3",
-        paper: isDark ? "#323232" : "#f3f4f3",
+        default: isDark ? "#0F1016" : "#FFFFFF",
+        paper: isDark ? "#181A25" : rgba(136, 102, 221, 0.1),
       },
       error: {
         main: "#FD766B",
@@ -135,7 +136,7 @@ export const theme = (mode: PaletteMode) => {
         scrolledSurface: opacify(72, "#0D111C"),
       },
       custom: {
-        textTertiary: isDark ? "#5D6785" : "#98A1C0",
+        textTertiary: isDark ? "#E0E0E0" : "#4E4E4E",
         borderColor: isDark ? "#4C82FB" : "#FB118E",
         stateOverlayHover: opacify(8, "#98A1C0"),
         stateOverlayPressed: opacify(24, "#B8C0DC"),
@@ -155,9 +156,21 @@ export const theme = (mode: PaletteMode) => {
       },
     },
     typography: {
-      fontFamily: "Inter",
+      fontFamily: ["Inter", "Darker Grotesque"].join(","),
       subtitle1: {
         color: isDark ? "#FFFFFF" : "#0D111C",
+      },
+    },
+    components: {
+      MuiCssBaseline: {
+        styleOverrides: {
+          "@global": {
+            body: {
+              backgroundImage:
+                "url(https://designshack.net/wp-content/uploads/gradient-background.jpg)",
+            },
+          },
+        },
       },
     },
   });

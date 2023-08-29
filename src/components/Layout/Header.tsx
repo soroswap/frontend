@@ -1,13 +1,108 @@
 import React from "react";
-import { useTheme } from "@mui/material/styles";
-import { Avatar, Box, ButtonBase, IconButton } from "@mui/material";
+import { styled, useTheme } from "@mui/material/styles";
+import { Avatar, Box, ButtonBase, FormControlLabel, IconButton, Switch, SwitchProps } from "@mui/material";
 import ProfileSection from "./ProfileSection";
 import MenuIcon from "@mui/icons-material/Menu";
 import Brightness4Icon from "@mui/icons-material/Brightness4";
 import Brightness7Icon from "@mui/icons-material/Brightness7";
 import { ColorModeContext } from "../../contexts";
 import logo from '../../assets/svg/LogoAndText.svg'
+import soroswapLogoPurpleWhite from '../../assets/svg/SoroswapPurpleWhite.svg'
+import soroswapLogoPurpleBlack from '../../assets/svg/SoroswapPurpleBlack.svg'
+import darkModeMoon from '../../assets/svg/darkModeMoon.svg'
+import lightModeSun from '../../assets/svg/lightModeSun.svg'
 import Image from "next/image";
+import { useRouter } from "next/router";
+import Link from "next/link";
+
+const MainBox = styled('div')`
+  display: flex;
+  width: 100%;
+  padding: 24px 75px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 100px;
+`
+
+const NavBar = styled('div')`
+  display: flex;
+  height: 56px;
+  padding: 8px 16px;
+  align-items: center;
+  gap: 8px;
+  border-radius: 32px;
+  background: ${({ theme }) => theme.palette.background.paper};
+  box-shadow: 0px 4px 10px 0px rgba(136, 102, 221, 0.03);
+`
+
+const ButtonsBox = styled('div')`
+  display: flex;
+  align-items: center;
+  gap: 14px;
+`
+
+const NavItem = styled(Link)<{active?: boolean}>`
+  display: flex;
+  padding: 4px 24px;
+  align-items: center;
+  gap: 10px;
+  border-radius: 32px;
+  background: ${({ active }) => (active ? "#8866DD" : "")};
+  text-align: center;
+  color: ${({ theme, active }) => (active ? "#FFFFFF" : theme.palette.custom.textTertiary)};
+  font-family: Inter;
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 140%;
+`
+
+const ModeSwitch = styled((props: SwitchProps) => (
+  <Switch focusVisibleClassName=".Mui-focusVisible" disableRipple {...props} />
+))(({ theme }) => ({
+  width: 104,
+  height: 56,
+  padding: 0,
+  '& .MuiSwitch-switchBase': {
+    padding: 0,
+    margin: 8,
+    '&.Mui-checked': {
+      transform: 'translateX(46px)',
+      color: '#8866DD',
+      '& .MuiSwitch-thumb:before': {
+        backgroundColor: '#8866DD',
+        borderRadius: 32,
+        backgroundImage: `url('${darkModeMoon.src}')`,
+      },
+      '& + .MuiSwitch-track': {
+        backgroundColor: theme.palette.background.paper,
+        opacity: 1,
+        border: 0,
+      },
+    },
+  },
+  '& .MuiSwitch-thumb': {
+    backgroundColor: '#F88F6D',
+    width: 40,
+    height: 40,
+    '&:before': {
+      content: "''",
+      position: 'absolute',
+      width: '100%',
+      height: '100%',
+      left: 0,
+      top: 0,
+      backgroundRepeat: 'no-repeat',
+      backgroundPosition: 'center',
+      backgroundImage: `url('${lightModeSun.src}')`,
+    },
+  },
+  '& .MuiSwitch-track': {
+    borderRadius: 32,
+    backgroundColor: theme.palette.background.paper,
+    opacity: 1,
+  },
+}));
+
 interface HeaderProps {
   handleDrawerToggle: () => void;
 }
@@ -16,71 +111,29 @@ export default function Header({ handleDrawerToggle }: HeaderProps) {
   const theme = useTheme();
   const colorMode = React.useContext(ColorModeContext);
 
+  const router = useRouter();
+  const { pathname } = router;
+  
   return (
     <>
-      <Box
-        sx={{
-          width: 228,
-          display: "flex",
-          alignItems: "center",
-          [theme.breakpoints.down("md")]: {
-            width: "auto",
-          },
-        }}
-      >
-        <Box
-          component="span"
-          sx={{ display: { xs: "none", md: "block" }, flexGrow: 1 }}
-        >
-          <Image
-            src={logo.src}
-            height={64}
-            width={234}
-            alt={"Soroswap"}
+      <MainBox>
+        <Image src={theme.palette.mode === "dark" ? soroswapLogoPurpleWhite.src : soroswapLogoPurpleBlack.src} width={162} height={56} alt={"Soroswap"} />
+        <NavBar>
+          <NavItem href={"/"} active={pathname === "/"}>Balance</NavItem>
+          <NavItem href={"/swap"} active={pathname.includes("/swap")}>Swap</NavItem>
+          <NavItem href={"/liquidity"} active={pathname.includes("/liquidity")}>Liquidity</NavItem>
+          <NavItem href={"/mint"} active={pathname.includes("/mint")}>Mint</NavItem>
+          <NavItem href={"/all"} active={pathname.includes("/all")}>All</NavItem>
+        </NavBar>
+        <ButtonsBox>
+          <ModeSwitch
+            sx={{ m: 1 }}
+            defaultChecked={theme.palette.mode === "dark" ? true : false}
+            onChange={(e) => colorMode.toggleColorMode()}
           />
-        </Box>
-        {/* Hamburger button */}
-        <ButtonBase
-          sx={{ borderRadius: "8px", overflow: "hidden", height: "34px" }}
-        >
-          <Avatar
-            variant="rounded"
-            sx={{
-              cursor: "pointer",
-              borderRadius: "8px",
-              width: "34px",
-              height: "34px",
-              fontSize: "1.2rem",
-              transition: "all .2s ease-in-out",
-              background: theme.palette.primary.dark,
-              color: theme.palette.primary.light,
-              "&:hover": {
-                background: theme.palette.primary.light,
-                color: theme.palette.primary.dark,
-              },
-            }}
-            onClick={handleDrawerToggle}
-            color="inherit"
-          >
-            <MenuIcon />
-          </Avatar>
-        </ButtonBase>
-      </Box>
-
-      <Box sx={{ flexGrow: 1 }} />
-      <Box sx={{ flexGrow: 1 }} />
-      <IconButton
-        sx={{ ml: 1 }}
-        onClick={colorMode.toggleColorMode}
-        color="inherit"
-      >
-        {theme.palette.mode === "dark" ? (
-          <Brightness7Icon />
-        ) : (
-          <Brightness4Icon />
-        )}
-      </IconButton>
-      <ProfileSection />
+          <ProfileSection />
+        </ButtonsBox>
+      </MainBox>
     </>
   );
 }

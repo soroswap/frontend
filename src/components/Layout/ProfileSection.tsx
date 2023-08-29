@@ -32,61 +32,43 @@ export default function ProfileSection() {
     <>
       <Chip
         sx={{
-          height: "37px",
-          alignItems: "center",
-          borderRadius: "10px",
-          transition: "all .2s ease-in-out",
-          borderColor: theme.palette.primary.light,
-          backgroundColor: theme.palette.background.default,
+          display: 'inline-flex',
+          height: 56,
+          padding: '16px 24px',
+          justifyContent: 'center',
+          alignItems: 'center',
+          gap: 10,
+          flexShrink: 0,
+          borderRadius: "16px",
+          backgroundColor: '#8866DD',
           '&[aria-controls="menu-list-grow"], &:hover': {
-            borderColor: theme.palette.primary.main,
-            background: `${theme.palette.background.paper}!important`,
             color: theme.palette.primary.light,
             "& svg": {
               stroke: theme.palette.primary.light,
             },
           },
           "& .MuiChip-label": {
-            color: theme.palette.text.primary,
-            fontSize: 14,
+            color: "#FFFFFF",
+            fontSize: 20,
+            fontFamily: "Inter",
+            fontWeight: 600,
+            lineHeight: '140%', 
           },
+          ":hover": {
+            backgroundColor: '#8866DD',
+          }
         }}
-        icon={
-          sorobanContext.activeChain && (
-            <Avatar
-              src={"https://i.stack.imgur.com/frlIf.png"}
-              sx={{
-                width: "28px",
-                height: "28px",
-                fontSize: "1.2rem",
-                margin: "8px 0 8px 8px !important",
-                cursor: "pointer",
-              }}
-              ref={anchorRef}
-              aria-controls={open ? "menu-list-grow" : undefined}
-              aria-haspopup="true"
-              color="inherit"
-            />
-          )
-        }
         label={
           sorobanContext.activeChain ? (
             <div>
-              <span style={{ display: "block" }}>
-                {sorobanContext.activeChain.name}
-              </span>
               {shortenAddress(sorobanContext.address ?? "")}
             </div>
           ) : (
-            <div>Connect to a Wallet</div>
+            <div>Connect wallet</div>
           )
         }
-        variant="outlined"
         ref={anchorRef}
-        aria-controls={open ? "menu-list-grow" : undefined}
-        aria-haspopup="true"
         onClick={handleClick}
-        color="primary"
       />
     </>
   );
