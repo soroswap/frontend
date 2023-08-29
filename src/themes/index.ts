@@ -99,7 +99,7 @@ export const theme = (mode: PaletteMode) => {
     palette: {
       mode,
       primary: {
-        main: isDark ? "#FFFFFF" : "#0D111C",
+        main: isDark ? "#D9D9D9" : "#181A25",
       },
       secondary: {
         main: isDark ? "#98A1C0" : "#98A1C0",
@@ -113,8 +113,8 @@ export const theme = (mode: PaletteMode) => {
         main: "#FD766B",
       },
       customBackground: {
-        surface: isDark ? "#0D111C" : "#FFFFFF",
-        module: isDark ? "#131A2A" : "#F5F6FC",
+        surface: isDark ? "#0F1016" : "#F8F8F8",
+        module: isDark ? "#13141E" : "#FFFFFF",
         bg1: isDark ? "#131A2A" : "#F5F6FC",
         bg3: isDark ? "#404A67" : "#B8C0DC",
         bg4: isDark ? "#5D6785" : "#98A1C0",
@@ -124,7 +124,7 @@ export const theme = (mode: PaletteMode) => {
         accentActionSoft: isDark
           ? opacify(24, "#8866DD")
           : opacify(24, "#8866DD"),
-        accentSuccess: "#76D191",
+        accentSuccess: "#B4EFAF",
         accentWarning: "#EEB317",
         accentWarningSoft: opacify(24, "#EEB317"),
         accentCritical: "#FD766B",

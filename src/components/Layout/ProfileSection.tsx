@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
@@ -8,13 +8,17 @@ import { useTheme } from "@mui/material/styles";
 import { Avatar, Chip, ClickAwayListener, Paper, Popper } from "@mui/material";
 import { SorobanContextType, useSorobanReact } from "@soroban-react/core";
 import { shortenAddress } from "../../helpers/address";
+import { AppContext } from "contexts";
 
 export default function ProfileSection() {
   const theme = useTheme();
+  const { ConnectWalletModal } = useContext(AppContext)
   const sorobanContext: SorobanContextType = useSorobanReact();
 
   const [open, setOpen] = useState(false);
   const anchorRef = useRef(null);
+
+  const { isConnectWalletModalOpen, setConnectWalletModalOpen } = ConnectWalletModal;
 
   const handleClick = () => {
     if (sorobanContext.activeChain) {
@@ -23,8 +27,7 @@ export default function ProfileSection() {
       sorobanContext.disconnect();
       console.log("Disconnected");
     } else {
-      sorobanContext.connect();
-      console.log("Connected");
+      setConnectWalletModalOpen(true)
     }
   };
 

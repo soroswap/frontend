@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React from "react";
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import { styled, useTheme } from "@mui/material/styles";
-import { Paper, Theme, useMediaQuery } from "@mui/material";
+import { useMediaQuery } from "@mui/material";
 import Header from "./Header";
 import background1 from '../../assets/images/bg1.png'
+import ConnectWalletModal from "components/Modals/ConnectWalletModal";
 
 const MainBackground = styled("main")<{ isMobile: boolean }>`
   background-image: url(${background1.src});
@@ -38,9 +39,11 @@ export default function MainLayout({
         }}
       >
         <Toolbar>
-          <Header/>
+          <Header />
         </Toolbar>
       </AppBar>
+
+      <ConnectWalletModal />
 
       <MainBackground isMobile={isMobile} theme={theme}>
         {children}

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Dispatch, SetStateAction } from "react";
 import { styled, useTheme } from "@mui/material/styles";
 import { Avatar, Box, ButtonBase, FormControlLabel, IconButton, Switch, SwitchProps, useMediaQuery } from "@mui/material";
 import ProfileSection from "./ProfileSection";
