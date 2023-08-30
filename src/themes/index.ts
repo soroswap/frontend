@@ -27,6 +27,8 @@ declare module "@mui/material/styles/createPalette" {
     };
     custom: {
       textTertiary: string;
+      textQuaternary: string;
+      textLinks: string;
       borderColor: string;
       stateOverlayHover: string;
       stateOverlayPressed: string;
@@ -70,6 +72,8 @@ declare module "@mui/material/styles/createPalette" {
     };
     custom: {
       textTertiary: string;
+      textQuaternary: string;
+      textLinks: string;
       borderColor: string;
       stateOverlayHover: string;
       stateOverlayPressed: string;
@@ -137,6 +141,8 @@ export const theme = (mode: PaletteMode) => {
       },
       custom: {
         textTertiary: isDark ? "#E0E0E0" : "#4E4E4E",
+        textQuaternary: isDark ? "#B4EFAF" : "#F66B3C",
+        textLinks: isDark ? "#8866DD" : "#F66B3C",
         borderColor: isDark ? "#8866DD" : "#8866DD",
         stateOverlayHover: opacify(8, "#98A1C0"),
         stateOverlayPressed: opacify(24, "#B8C0DC"),

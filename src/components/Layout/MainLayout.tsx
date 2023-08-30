@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import { styled, useTheme } from "@mui/material/styles";
@@ -6,6 +6,7 @@ import { useMediaQuery } from "@mui/material";
 import Header from "./Header";
 import background1 from '../../assets/images/bg1.png'
 import ConnectWalletModal from "components/Modals/ConnectWalletModal";
+import MobileDrawer from "./MobileDrawer";
 
 const MainBackground = styled("main")<{ isMobile: boolean }>`
   background-image: url(${background1.src});
@@ -25,6 +26,7 @@ export default function MainLayout({
   children: React.ReactNode;
 }) {
   const theme = useTheme();
+  const [isDrawerOpen, setDrawerOpen] = useState<boolean>(false)
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
   return (
@@ -39,11 +41,13 @@ export default function MainLayout({
         }}
       >
         <Toolbar>
-          <Header />
+          <Header isDrawerOpen={isDrawerOpen} setDrawerOpen={setDrawerOpen} />
         </Toolbar>
       </AppBar>
 
       <ConnectWalletModal />
+
+      <MobileDrawer isDrawerOpen={isDrawerOpen} setDrawerOpen={setDrawerOpen} />
 
       <MainBackground isMobile={isMobile} theme={theme}>
         {children}
