@@ -19,7 +19,7 @@ import { InterfaceTrade, TradeState } from "state/routing/types";
 import ConfirmSwapModal from "components/Swap/ConfirmSwapModal";
 import { useSwapCallback } from "hooks/useSwapCallback";
 import { AppContext } from "contexts";
-import { formatStringTokenAmount } from "helpers/format";
+import { formatTokenAmount } from "helpers/format";
 
 const SwapSection = styled('div')(({ theme }) => ({
   position: "relative",
@@ -232,7 +232,7 @@ export function SwapComponent({
   const formattedAmounts = useMemo(
     () => ({
       [independentField]: typedValue,
-      [dependentField]: formatStringTokenAmount(trade?.expectedAmount, decimals[independentField]),
+      [dependentField]: formatTokenAmount(trade?.expectedAmount, decimals[independentField]),
     }),
     [dependentField, independentField, trade, typedValue]
   )

@@ -12,7 +12,7 @@ import { useSlipaggeFactor } from "../hooks/useSlippageFactor";
 import { useTokensFromPair } from "../hooks/useTokensFromPair";
 import { useTokenBalances, useTokens } from "../hooks";
 import { scvalToBigNumber } from "../helpers/utils";
-import { formatAmount } "..helpers/format";
+import { formatTokenAmount } "..helpers/format";
 import { useMemo } from "react";
 import { SwapButton } from "../components/Buttons/SwapButton";
 
@@ -62,8 +62,8 @@ export function ProvideSwapPair({
 
       <p>- token0: {token0?.name}</p>
       <p>- token1: {token1?.name}</p>
-      <p>- token0 reserves {formatAmount(reserves.reserve0)} {token0?.name}</p>
-      <p>- token1 reserves {formatAmount(reserves.reserve1)} {token1?.name}</p>
+      <p>- token0 reserves {formatTokenAmount(reserves.reserve0)} {token0?.name}</p>
+      <p>- token1 reserves {formatTokenAmount(reserves.reserve1)} {token1?.name}</p>
       <p>- Price Impact: {twoDecimalsPercentage(getPriceImpact(
         pairAddress, 
         BigNumber(inputTokenAmount).shiftedBy(7), 

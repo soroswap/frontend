@@ -22,9 +22,17 @@ export const xlmToStroop = (lumens: BigNumber | string): BigNumber => {
   return new BigNumber(Math.round(Number(lumens) * 1e7));
 };
 
+// Token BigNumber to human redeable
 // With a tokens set number of decimals, display the formatted value for an amount.
-// Example - User A has 1000000001 of a token set to 7 decimals, display should be 100.0000001
-export const formatTokenAmount = (amount: BigNumber, decimals: number) => {
+// Returns a string
+// Example - User A has 1000000001 of a token set to 7 decimals, 
+// display should be 100.0000001
+export const formatTokenAmount = (amount: BigNumber | string , decimals: number = 7): string => {
+  
+  if (!(amount instanceof BigNumber)) {
+    amount = BigNumber(amount)
+  }
+
   let formatted = amount.toString();
 
   if (decimals > 0) {
@@ -43,17 +51,6 @@ export const formatTokenAmount = (amount: BigNumber, decimals: number) => {
   return formatted;
 };
 
-export const formatStringTokenAmount = (amount: string, decimals: number) => {
-  return formatTokenAmount(BigNumber(amount), decimals)
-}
-
-
-export const formatAmount = (value: BigNumber, decimals = 7): string => {
-  return value
-    .shiftedBy(decimals * -1)
-    .toFixed(7)
-    .toString();
-};
 
 export const formatFixedAmount = (value: BigNumber, decimals = 7): string => {
   return value
@@ -61,14 +58,7 @@ export const formatFixedAmount = (value: BigNumber, decimals = 7): string => {
     .toString();
 };
 
-export const stroopsToString = (value: BigNumber, decimals = 7): string => {
-  return value
-    .shiftedBy(decimals * -1)
-    .toFixed(decimals)
-    .toString();
-};
-
-export const parseUnits(value: string, decimals: number) {
+export const parseUnits = (value: string, decimals: number): BigNumber => {
   return BigNumber(value).shiftedBy(decimals)
 }
  
