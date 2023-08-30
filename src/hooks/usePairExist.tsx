@@ -29,6 +29,7 @@ export function usePairExistScVal(
     args: params,
     sorobanContext: sorobanContext,
   });
+  console.log("🚀 ~ file: usePairExist.tsx:30 ~ pairExistScVal:", pairExistScVal)
   return pairExistScVal;
 }
 
@@ -38,7 +39,7 @@ function formatBool(pairExistScVal: any) {
     return pairExistScVal.result.value() as boolean;
   }
 }
-export function usePairExist(
+export function usePairExist( 
   token_address_0: string|null,
   token_address_1: string|null,
   sorobanContext: SorobanContextType,
