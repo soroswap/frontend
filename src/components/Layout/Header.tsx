@@ -1,12 +1,8 @@
-import React, { Dispatch, SetStateAction } from "react";
+import React from "react";
 import { styled, useTheme } from "@mui/material/styles";
-import { Avatar, Box, ButtonBase, FormControlLabel, IconButton, Switch, SwitchProps, useMediaQuery } from "@mui/material";
+import { Switch, SwitchProps, useMediaQuery } from "@mui/material";
 import ProfileSection from "./ProfileSection";
-import MenuIcon from "@mui/icons-material/Menu";
-import Brightness4Icon from "@mui/icons-material/Brightness4";
-import Brightness7Icon from "@mui/icons-material/Brightness7";
 import { ColorModeContext } from "../../contexts";
-import logo from '../../assets/svg/LogoAndText.svg'
 import soroswapLogoPurpleWhite from '../../assets/svg/SoroswapPurpleWhite.svg'
 import soroswapLogoPurpleBlack from '../../assets/svg/SoroswapPurpleBlack.svg'
 import darkModeMoon from '../../assets/svg/darkModeMoon.svg'
