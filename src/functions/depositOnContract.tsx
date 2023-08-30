@@ -1,4 +1,3 @@
-import { contractTransaction } from "@soroban-react/contracts";
 import { SorobanContextType } from "@soroban-react/core";
 import BigNumber from "bignumber.js";
 import { bigNumberToI128 } from "helpers/utils";
@@ -23,8 +22,7 @@ export default async function depositOnContract({
     amount0,
     amount1
 }: DepositOnContractProps) {
-    const networkPassphrase = sorobanContext.activeChain?.networkPassphrase ?? "";
-    const server = sorobanContext.server;
+    
     const account = sorobanContext.address;
 
     if (!account) {
