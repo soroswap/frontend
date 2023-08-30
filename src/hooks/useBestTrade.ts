@@ -52,15 +52,15 @@ export function useBestTrade(
   
   /* This is because the user can set some input amount and input token, before setting the output token */
   if (
-    amountSpecified?.currency?.token_address &&
-    otherCurrency?.token_address
+    amountSpecified?.currency?.address &&
+    otherCurrency?.address
   ) {
     contractInvoke({
       contractAddress: factory.factory_address,
       method: "get_pair",
       args: [
-        addressToScVal(amountSpecified?.currency?.token_address),
-        addressToScVal(otherCurrency?.token_address),
+        addressToScVal(amountSpecified?.currency?.address),
+        addressToScVal(otherCurrency?.address),
       ],
       sorobanContext,
     }).then((response) => {
@@ -113,9 +113,9 @@ export function useBestTrade(
   console.log("🚀 ~ file: useBestTrade.ts:99 ~ amountSpecified:", amountSpecified)
   console.log("🚀 « expectedAmount:", expectedAmount)
 
-  const inputAmount = (currencyIn?.token_address == amountSpecified?.currency.token_address) ? tryParseCurrencyAmount(amountSpecified?.value, currencyIn) : tryParseCurrencyAmount(expectedAmount, currencyIn)
+  const inputAmount = (currencyIn?.address == amountSpecified?.currency.address) ? tryParseCurrencyAmount(amountSpecified?.value, currencyIn) : tryParseCurrencyAmount(expectedAmount, currencyIn)
   console.log("🚀 « inputAmount:", inputAmount?.value)
-  const outputAmount = (currencyOut?.token_address == otherCurrency?.token_address) ? tryParseCurrencyAmount(expectedAmount, currencyOut) : tryParseCurrencyAmount(amountSpecified?.value, currencyOut)
+  const outputAmount = (currencyOut?.address == otherCurrency?.address) ? tryParseCurrencyAmount(expectedAmount, currencyOut) : tryParseCurrencyAmount(amountSpecified?.value, currencyOut)
   console.log("🚀 « outputAmount:", outputAmount?.value)
 
   //TODO: Set the trade specs, getQuote

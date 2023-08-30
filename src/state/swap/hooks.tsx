@@ -31,7 +31,7 @@ export function useSwapActionHandlers(dispatch: React.Dispatch<AnyAction>): {
       dispatch(
         selectCurrency({
           field,
-          currencyId: currency.token_address ? currency.token_address : '',
+          currencyId: currency.address ? currency.address : '',
         })
       )
     },

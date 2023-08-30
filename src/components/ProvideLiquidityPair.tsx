@@ -41,8 +41,8 @@ export function ProvideLiquidityPair({
     const tokensFromPair = useTokensFromPair(pairAddress, sorobanContext);
 
     useMemo(() => {
-      setToken0(tokens.find(token => token.token_address === tokensFromPair?.token0)??null);
-      setToken1(tokens.find(token => token.token_address === tokensFromPair?.token1)??null);
+      setToken0(tokens.find(token => token.address === tokensFromPair?.token0)??null);
+      setToken1(tokens.find(token => token.address === tokensFromPair?.token1)??null);
     }, [setToken0, setToken1, tokensFromPair, tokens])
     const reserves = useReservesBigNumber(pairAddress, sorobanContext);
     const pairBalance = useTokenScVal(pairAddress, sorobanContext.address!).result;
@@ -50,9 +50,9 @@ export function ProvideLiquidityPair({
     const totalShares = useTotalShares(pairAddress, sorobanContext)
     let expectedLpTokens = getLpTokensAmount(
       BigNumber(inputTokenAmount).shiftedBy(7),
-      token0?.token_address === inputToken?.token_address?reserves.reserve0:reserves.reserve1,
+      token0?.address === inputToken?.address?reserves.reserve0:reserves.reserve1,
       BigNumber(outputTokenAmount).shiftedBy(7),
-      token1?.token_address === outputToken?.token_address?reserves.reserve1:reserves.reserve0,
+      token1?.address === outputToken?.address?reserves.reserve1:reserves.reserve0,
       pairAddress,
       sorobanContext,
     )
@@ -62,8 +62,8 @@ export function ProvideLiquidityPair({
         <p>..</p>
         <p>### CURRENT INFORMATION</p>  
         
-        <p>- token0: {token0?.token_name}</p>
-        <p>- token1: {token1?.token_name}</p>
+        <p>- token0: {token0?.name}</p>
+        <p>- token1: {token1?.name}</p>
         <p>- Your LP tokens balance: {pairBalance !== undefined
         ? formatAmount(scvalToBigNumber(pairBalance), tokenDecimals)
         : "0"} LP</p>
@@ -83,8 +83,8 @@ export function ProvideLiquidityPair({
         <CardActions>
           <DepositButton
             pairAddress={pairAddress}
-            amount0={token0?.token_address===inputToken.token_address?BigNumber(inputTokenAmount).shiftedBy(7):BigNumber(outputTokenAmount).shiftedBy(7)}
-            amount1={token1?.token_address===outputToken.token_address?BigNumber(outputTokenAmount).shiftedBy(7):BigNumber(inputTokenAmount).shiftedBy(7)}
+            amount0={token0?.address===inputToken.address?BigNumber(inputTokenAmount).shiftedBy(7):BigNumber(outputTokenAmount).shiftedBy(7)}
+            amount1={token1?.address===outputToken.address?BigNumber(outputTokenAmount).shiftedBy(7):BigNumber(inputTokenAmount).shiftedBy(7)}
             sorobanContext={sorobanContext}
           />
         </CardActions>

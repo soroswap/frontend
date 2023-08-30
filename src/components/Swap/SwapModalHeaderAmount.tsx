@@ -57,7 +57,7 @@ export function SwapModalHeaderAmount({ tooltipText, label, amount, usdAmount, f
         </BodySecondary>
         <Column gap="4px" alignItems="flex-start">
           <ResponsiveHeadline data-testid={`${field}-amount`}>
-            {formattedAmount} {currency?.token_symbol}
+            {formattedAmount} {currency?.symbol}
           </ResponsiveHeadline>
           {usdAmount !== undefined && (
             <BodySmall color={theme.palette.custom.textTertiary}>

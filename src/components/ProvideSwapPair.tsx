@@ -46,8 +46,8 @@ export function ProvideSwapPair({
 
   const reserves = useReservesBigNumber(pairAddress, sorobanContext);
   useMemo(() => {
-    setToken0(tokens.find(token => token.token_address === tokensFromPair?.token0)??null);
-    setToken1(tokens.find(token => token.token_address === tokensFromPair?.token1)??null);
+    setToken0(tokens.find(token => token.address === tokensFromPair?.token0)??null);
+    setToken1(tokens.find(token => token.address === tokensFromPair?.token1)??null);
   }, [setToken0, setToken1, tokensFromPair, tokens])
 
   return (
@@ -59,22 +59,22 @@ export function ProvideSwapPair({
       <p>..</p>
       <p>### CURRENT INFORMATION</p>
 
-      <p>- token0: {token0?.token_name}</p>
-      <p>- token1: {token1?.token_name}</p>
-      <p>- token0 reserves {formatAmount(reserves.reserve0)} {token0?.token_name}</p>
-      <p>- token1 reserves {formatAmount(reserves.reserve1)} {token1?.token_name}</p>
+      <p>- token0: {token0?.name}</p>
+      <p>- token1: {token1?.name}</p>
+      <p>- token0 reserves {formatAmount(reserves.reserve0)} {token0?.name}</p>
+      <p>- token1 reserves {formatAmount(reserves.reserve1)} {token1?.name}</p>
       <p>- Price Impact: {twoDecimalsPercentage(getPriceImpact(
         pairAddress, 
         BigNumber(inputTokenAmount).shiftedBy(7), 
-        token0?.token_address === inputToken.token_address?reserves.reserve0:reserves.reserve1,
-        token1?.token_address === outputToken?.token_address?reserves.reserve1:reserves.reserve0,
+        token0?.address === inputToken.address?reserves.reserve0:reserves.reserve1,
+        token1?.address === outputToken?.address?reserves.reserve1:reserves.reserve0,
         sorobanContext).toString())}%</p>
       <p>..</p>
       <p>### IF YOU SWAP:</p>
 
       {/* <CardActions>
         <AllowanceButton
-          tokenAddress={inputToken.token_address}
+          tokenAddress={inputToken.address}
           spenderAddress={pairAddress}
           amount={BigNumber(inputTokenAmount).shiftedBy(7)}
           sorobanContext={sorobanContext}
@@ -86,7 +86,7 @@ export function ProvideSwapPair({
           pairAddress={pairAddress}
           maxTokenA={BigNumber("1.1").multipliedBy(BigNumber(inputTokenAmount)).shiftedBy(7)}
           amountOut={BigNumber(outputTokenAmount).shiftedBy(7)}
-          isBuy={inputToken.token_address==token1?.token_address}
+          isBuy={inputToken.address==token1?.address}
           sorobanContext={sorobanContext}
         />
       </CardActions>

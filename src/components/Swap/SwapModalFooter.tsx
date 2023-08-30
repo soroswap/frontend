@@ -92,8 +92,8 @@ export default function SwapModalFooter({
   // const { chainId } = useWeb3React()
   // const nativeCurrency = useNativeCurrency(chainId)
 
-  const label = `${trade.inputAmount.currency.token_symbol}`
-  const labelInverted = `${trade.outputAmount.currency.token_symbol}`
+  const label = `${trade.inputAmount.currency.symbol}`
+  const labelInverted = `${trade.outputAmount.currency.symbol}`
   const formattedPrice = 0//formatTransactionAmount(priceToPreciseFloat(trade.executionPrice))
   const txCount = 0//getTransactionCount(trade)
 
@@ -163,8 +163,8 @@ export default function SwapModalFooter({
             </MouseoverTooltip>
             <DetailRowValue>
               {trade.tradeType === TradeType.EXACT_INPUT
-                ? `XX ${trade.outputAmount.currency.token_symbol}`
-                : `XX ${trade.inputAmount.currency.token_symbol}`}
+                ? `XX ${trade.outputAmount.currency.symbol}`
+                : `XX ${trade.inputAmount.currency.symbol}`}
             </DetailRowValue>
           </Row>
         </BodySmall>

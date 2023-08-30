@@ -1,8 +1,8 @@
 export interface TokenType {
-  token_id: string;
-  token_address: string;
-  token_name: string;
-  token_symbol: string;
+  address: string; 
+  name: string;
+  symbol: string;
+  decimals: number;
 }
 
 export interface tokensResponse {

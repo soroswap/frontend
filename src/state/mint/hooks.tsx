@@ -76,7 +76,7 @@ export function useDerivedMintInfo(
   const sorobanContext = useSorobanReact(); 
   const { address: account } = sorobanContext
 
-  const pairExists = usePairExist(!currencyA ? null : currencyA.token_address, !currencyB ? null : currencyB.token_address, sorobanContext)
+  const pairExists = usePairExist(!currencyA ? null : currencyA.address, !currencyB ? null : currencyB.address, sorobanContext)
   console.log("state/mint/hooks: pairExists:", pairExists)
 
   const pairs = usePairs(sorobanContext)
@@ -114,8 +114,8 @@ export function useDerivedMintInfo(
   console.log("state/mint/hooks: currencyA:", currencyA)
   console.log("state/mint/hooks: currencyB:", currencyB)
   const pairAddress = usePairContractAddress(
-    !currencyA ? null : currencyA.token_address,
-    !currencyB ? null : currencyB.token_address,
+    !currencyA ? null : currencyA.address,
+    !currencyB ? null : currencyB.address,
     sorobanContext)
   console.log("state/mint/hooks: pairAddress:", pairAddress)
   const reservesBN = useReservesBigNumber(pairAddress ?? "", sorobanContext)

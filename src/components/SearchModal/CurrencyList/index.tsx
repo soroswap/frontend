@@ -12,7 +12,7 @@ import Loader from 'components/Icons/LoadingSpinner'
 import { useTokenBalance } from 'hooks'
 
 function currencyKey(currency: TokenType): string {
-  return currency.token_id ? currency.token_address : 'ETHER'
+  return currency.address ? currency.address : 'ETHER'
 }
 
 const CheckIcon = styled(Check)`
@@ -91,10 +91,10 @@ export function CurrencyRow({
     </Column>
     <AutoColumn style={{ opacity: isBlockedToken ? blockedTokenOpacity : '1' }}>
       <Row>
-        <CurrencyName title={currency.token_name}>{currency.token_name}</CurrencyName>
+        <CurrencyName title={currency.name}>{currency.name}</CurrencyName>
       </Row>
       <Typography ml="0px" fontSize="12px" fontWeight={300}>
-        {currency.token_symbol}
+        {currency.symbol}
       </Typography>
     </AutoColumn>
     {showCurrencyAmount ? (
@@ -126,8 +126,8 @@ export const formatAnalyticsEventProperties = (
   searchQuery: string,
   isAddressSearch: string | false
 ) => ({
-  token_symbol: token?.token_symbol,
-  token_address: token?.token_address,
+  symbol: token?.symbol,
+  address: token?.address,
   is_suggested_token: false,
   is_selected_from_list: true,
   scroll_position: '',

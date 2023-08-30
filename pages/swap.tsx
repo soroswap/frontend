@@ -179,7 +179,7 @@ export function SwapComponent({
       onCurrencySelection(Field.INPUT, inputCurrency)
       onCurrencyChange?.({
         [Field.INPUT]: {
-          currencyId: inputCurrency.token_address,
+          currencyId: inputCurrency.address,
         },
         [Field.OUTPUT]: state[Field.OUTPUT],
       })
@@ -193,7 +193,7 @@ export function SwapComponent({
       onCurrencyChange?.({
         [Field.INPUT]: state[Field.INPUT],
         [Field.OUTPUT]: {
-          currencyId: outputCurrency.token_address,
+          currencyId: outputCurrency.address,
         },
       })
     },

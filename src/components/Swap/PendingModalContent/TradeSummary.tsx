@@ -11,12 +11,12 @@ export function TradeSummary({ trade }: { trade: Pick<InterfaceTrade, 'inputAmou
     <Row gap="sm" justify="center" align="center">
       <CurrencyLogo currency={trade.inputAmount.currency} size="16px" />
       <LabelSmall color="textPrimary">
-        {`${trade.inputAmount.value} ${trade.inputAmount.currency.token_symbol}`}{/* {formatCurrencyAmount(trade.inputAmount, NumberType.SwapTradeAmount)} {trade.inputAmount.currency.symbol} */}
+        {`${trade.inputAmount.value} ${trade.inputAmount.currency.symbol}`}{/* {formatCurrencyAmount(trade.inputAmount, NumberType.SwapTradeAmount)} {trade.inputAmount.currency.symbol} */}
       </LabelSmall>
       <ArrowRight color={theme.palette.custom.textTertiary} size="12px" />
       <CurrencyLogo currency={trade.outputAmount.currency} size="16px" />
       <LabelSmall color="textPrimary">
-       {`${trade.outputAmount.value} ${trade.outputAmount.currency.token_symbol}`} {/* {formatCurrencyAmount(trade.outputAmount, NumberType.SwapTradeAmount)} {trade.outputAmount.currency.symbol} */}
+       {`${trade.outputAmount.value} ${trade.outputAmount.currency.symbol}`} {/* {formatCurrencyAmount(trade.outputAmount, NumberType.SwapTradeAmount)} {trade.outputAmount.currency.symbol} */}
       </LabelSmall>
     </Row>
   )

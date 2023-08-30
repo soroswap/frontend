@@ -117,7 +117,7 @@ export function CurrencySearch({
       if (e.key === 'Enter') {
         if (searchCurrencies.length > 0) {
           if (
-            searchCurrencies[0].token_symbol?.toLowerCase() === debouncedQuery.trim().toLowerCase() ||
+            searchCurrencies[0].symbol?.toLowerCase() === debouncedQuery.trim().toLowerCase() ||
             searchCurrencies.length === 1
           ) {
             handleCurrencySelect(searchCurrencies[0])

@@ -64,10 +64,10 @@ export function useTokenBalances(userAddress: string, tokens: TokenType[] | Toke
   const balances = Object.values(tokens).map((token) => {
     return {
       // eslint-disable-next-line react-hooks/rules-of-hooks
-      balance: useFormattedTokenBalance(token.token_address, address),
+      balance: useFormattedTokenBalance(token.address, address),
       usdValue: 0,//TODO: should get usd value
-      symbol: token.token_symbol,
-      address: token.token_address,
+      symbol: token.symbol,
+      address: token.address,
     };
   });
 
@@ -83,10 +83,10 @@ export function useTokenBalances(userAddress: string, tokens: TokenType[] | Toke
 export function useTokenBalance(userAddress: string, token: TokenType) {
   const address = userAddress;
   const balance = {
-      balance: useFormattedTokenBalance(token.token_address, address),
+      balance: useFormattedTokenBalance(token.address, address),
       usdValue: 0,//should get usd value
-      symbol: token.token_symbol,
-      address: token.token_address,
+      symbol: token.symbol,
+      address: token.address,
     };
 
   // Calculate the loading state
@@ -138,8 +138,8 @@ export async function tokenBalances(userAddress: string, tokens: TokenType[] | T
 
   const balances = await Promise.all(
     Object.values(tokens).map(async (token) => {
-      const balanceResponse = await tokenBalance(token.token_address, userAddress, sorobanContext);
-      const decimalsResponse = await tokenDecimals(token.token_address, userAddress, sorobanContext);
+      const balanceResponse = await tokenBalance(token.address, userAddress, sorobanContext);
+      const decimalsResponse = await tokenDecimals(token.address, userAddress, sorobanContext);
 
       const formattedBalance = formatAmount(
         BigNumber(balanceResponse),
@@ -149,8 +149,8 @@ export async function tokenBalances(userAddress: string, tokens: TokenType[] | T
       return {
         balance: formattedBalance,
         usdValue: 0, //TODO: should get usd value
-        symbol: token.token_symbol,
-        address: token.token_address,
+        symbol: token.symbol,
+        address: token.address,
       };
     })
   );
