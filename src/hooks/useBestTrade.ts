@@ -55,9 +55,6 @@ export function useBestTrade(
     amountSpecified?.currency?.address &&
     otherCurrency?.address
   ) {
-    console.log("🚀 ~ file: useBestTrade.ts:58 ~ otherCurrency?.address:", otherCurrency?.address)
-    console.log("🚀 ~ file: useBestTrade.ts:58 ~ amountSpecified?.currency?.address:", amountSpecified?.currency?.address)
-    console.log("here-- factory:", factory)
     contractInvoke({
       contractAddress: factory.factory_address,
       method: "get_pair",
@@ -202,8 +199,6 @@ export function useBestTrade(
   const tradeResult = useMemo(() => {
     // Trade is correctly updated depending on the user change (input token / amount, etc...)
     const state = pairAddress ? QuoteState.SUCCESS : QuoteState.NOT_FOUND;
-    console.log("🚀 ~ file: useBestTrade.ts:170 ~ tradeResult ~ pairAddress:", pairAddress)
-    console.log("🚀 ~ file: useBestTrade.ts:170 ~ tradeResult ~ state:", state)
     
     const myTradeResult = { state: state, trade: trade }
     return myTradeResult;
@@ -213,37 +208,31 @@ export function useBestTrade(
 
   const bestTrade = useMemo(() => {
     if (skipFetch && amountSpecified && otherCurrency) {
-      console.log("case: 1")
       // If we don't want to fetch new trades, but have valid inputs, return the stale trade.
       return { state: TradeState.STALE, trade: trade };
     } else if (!amountSpecified || (amountSpecified && !otherCurrency)) {
-      console.log("case: 2")
       return {
         state: TradeState.INVALID,
         trade: undefined
       };
     } else if (tradeResult?.state === QuoteState.NOT_FOUND) {
-      console.log("case: 3")
       return {
         state: TradeState.NO_ROUTE_FOUND,
         trade: undefined
       };
     } else if (!tradeResult?.trade) {
-      console.log("case: 4")
       // TODO(WEB-1985): use `isLoading` returned by rtk-query hook instead of checking for `trade` status
       return {
         state: TradeState.LOADING,
         trade: undefined
       };
     } else {
-      console.log("case: 5")
       return {
         state: TradeState.VALID, //isCurrent ? TradeState.VALID : TradeState.LOADING,
         trade: tradeResult.trade,
       };
     }
   }, [skipFetch, amountSpecified, otherCurrency, tradeResult, trade]);
-  console.log("🚀 ~ file: useBestTrade.ts:192 ~ bestTrade ~ bestTrade:", bestTrade)
 
   return bestTrade;
 }
