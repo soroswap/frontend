@@ -12,7 +12,7 @@ import { useSlipaggeFactor } from "../hooks/useSlippageFactor";
 import { useTokensFromPair } from "../hooks/useTokensFromPair";
 import { useTokenBalances, useTokens } from "../hooks";
 import { scvalToBigNumber } from "../helpers/utils";
-import { formatTokenAmount } "..helpers/format";
+import { formatTokenAmount } from "../helpers/format";
 import { useMemo } from "react";
 import { SwapButton } from "../components/Buttons/SwapButton";
 

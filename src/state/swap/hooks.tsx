@@ -107,6 +107,7 @@ export function useDerivedSwapInfo(state: SwapState): any {
   useEffect(() => {
     if (account) {
       tokenBalances(account, tokensArray, sorobanContext).then(balances => {
+        console.log("🚀 ~ file: hooks.tsx:110 ~ tokenBalances ~ balances:", balances)
         if (balances != undefined) {
           setRelevantTokenBalances(balances.balances);
         }

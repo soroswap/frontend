@@ -7,7 +7,7 @@ import { DepositButton } from "../components/Buttons/DepositButton";
 import getLpTokensAmount from "../functions/getLpTokensAmount";
 import { useTokenScVal, useTokenDecimals } from "../hooks";
 import { scvalToBigNumber } from "../helpers/utils";
-import { formatTokenAmount } "..helpers/format";
+import { formatTokenAmount } from "../helpers/format";
 import { useTotalShares } from "../hooks/useTotalShares";
 import { useTokensFromPair } from "../hooks/useTokensFromPair";
 import { useTokens } from "../hooks";
