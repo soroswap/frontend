@@ -170,7 +170,7 @@ function getContent(args: ContentArgs): PendingModalStep {
       }
     case ConfirmModalState.APPROVING_TOKEN:
       return {
-        title: `Enable spending ${approvalCurrency?.token_symbol ?? 'this token'} on Uniswap`,
+        title: `Enable spending ${approvalCurrency?.symbol ?? 'this token'} on Uniswap`,
         subtitle: (
           <ExternalLink href="https://support.uniswap.org/hc/en-us/articles/8120520483085">
             Why is this required?
@@ -180,7 +180,7 @@ function getContent(args: ContentArgs): PendingModalStep {
       }
     case ConfirmModalState.PERMITTING:
       return {
-        title: `Allow ${approvalCurrency?.token_symbol ?? 'this token'} to be used for swapping`,
+        title: `Allow ${approvalCurrency?.symbol ?? 'this token'} to be used for swapping`,
         subtitle: (
           <ExternalLink href="https://support.uniswap.org/hc/en-us/articles/8120520483085">
             Why is this required?

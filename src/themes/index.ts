@@ -1,5 +1,6 @@
 import { PaletteMode, colors, createTheme } from "@mui/material";
 import { opacify } from "./utils";
+import { rgba } from "polished";
 
 declare module "@mui/material/styles/createPalette" {
   interface Palette {
@@ -26,6 +27,8 @@ declare module "@mui/material/styles/createPalette" {
     };
     custom: {
       textTertiary: string;
+      textQuaternary: string;
+      textLinks: string;
       borderColor: string;
       stateOverlayHover: string;
       stateOverlayPressed: string;
@@ -69,6 +72,8 @@ declare module "@mui/material/styles/createPalette" {
     };
     custom: {
       textTertiary: string;
+      textQuaternary: string;
+      textLinks: string;
       borderColor: string;
       stateOverlayHover: string;
       stateOverlayPressed: string;
@@ -98,32 +103,32 @@ export const theme = (mode: PaletteMode) => {
     palette: {
       mode,
       primary: {
-        main: isDark ? "#FFFFFF" : "#0D111C",
+        main: isDark ? "#D9D9D9" : "#181A25",
       },
       secondary: {
         main: isDark ? "#98A1C0" : "#98A1C0",
         light: "#B8C0DC",
       },
       background: {
-        default: isDark ? "#0D111C" : "#f3f4f3",
-        paper: isDark ? "#323232" : "#f3f4f3",
+        default: isDark ? "#0F1016" : "#FFFFFF",
+        paper: isDark ? "#181A25" : rgba(136, 102, 221, 0.1),
       },
       error: {
         main: "#FD766B",
       },
       customBackground: {
-        surface: isDark ? "#0D111C" : "#FFFFFF",
-        module: isDark ? "#131A2A" : "#F5F6FC",
+        surface: isDark ? "#0F1016" : "#F8F8F8",
+        module: isDark ? "#13141E" : "#FFFFFF",
         bg1: isDark ? "#131A2A" : "#F5F6FC",
         bg3: isDark ? "#404A67" : "#B8C0DC",
         bg4: isDark ? "#5D6785" : "#98A1C0",
         bg5: isDark ? "#7780A0" : "#7780A0",
         interactive: isDark ? "#293249" : "#E8ECFB",
-        accentAction: isDark ? "#4C82FB" : "#FB118E",
+        accentAction: isDark ? "#8866DD" : "#8866DD",
         accentActionSoft: isDark
-          ? opacify(24, "#4C82FB")
-          : opacify(24, "#FB118E"),
-        accentSuccess: "#76D191",
+          ? opacify(24, "#8866DD")
+          : opacify(24, "#8866DD"),
+        accentSuccess: "#B4EFAF",
         accentWarning: "#EEB317",
         accentWarningSoft: opacify(24, "#EEB317"),
         accentCritical: "#FD766B",
@@ -135,8 +140,10 @@ export const theme = (mode: PaletteMode) => {
         scrolledSurface: opacify(72, "#0D111C"),
       },
       custom: {
-        textTertiary: isDark ? "#5D6785" : "#98A1C0",
-        borderColor: isDark ? "#4C82FB" : "#FB118E",
+        textTertiary: isDark ? "#E0E0E0" : "#4E4E4E",
+        textQuaternary: isDark ? "#B4EFAF" : "#F66B3C",
+        textLinks: isDark ? "#8866DD" : "#F66B3C",
+        borderColor: isDark ? "#8866DD" : "#8866DD",
         stateOverlayHover: opacify(8, "#98A1C0"),
         stateOverlayPressed: opacify(24, "#B8C0DC"),
         deprecated_primary2: isDark ? "#4C82FB" : "#FF6FA3",
@@ -155,9 +162,21 @@ export const theme = (mode: PaletteMode) => {
       },
     },
     typography: {
-      fontFamily: "Inter",
+      fontFamily: ["Inter", "Darker Grotesque"].join(","),
       subtitle1: {
         color: isDark ? "#FFFFFF" : "#0D111C",
+      },
+    },
+    components: {
+      MuiCssBaseline: {
+        styleOverrides: {
+          "@global": {
+            body: {
+              backgroundImage:
+                "url(https://designshack.net/wp-content/uploads/gradient-background.jpg)",
+            },
+          },
+        },
       },
     },
   });

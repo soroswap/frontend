@@ -24,7 +24,6 @@ import { CreatePairButton } from "../components/Buttons/CreatePairButton";
 import fromExactInputGetExpectedOutput from "../functions/fromExactInputGetExpectedOutput";
 import fromExactOutputGetExpectedInput from "../functions/fromExactOutputGetExpectedInput";
 import { useTokenBalances } from "../hooks";
-import { usePairContractAddress } from "hooks/usePairContractAddress";
 
 
 export function ChooseTokens({ isLiquidity }: { isLiquidity: boolean }) {
@@ -93,10 +92,10 @@ function ChooseTokensWallet({
 
     let selectedPair = allPairs.find((pair: any) => {
       return (
-        (pair.token_0.token_address === inputToken?.token_address &&
-        pair.token_1.token_address === outputToken?.token_address) 
-        || (pair.token_1.token_address === inputToken?.token_address &&
-          pair.token_0.token_address === outputToken?.token_address)
+        (pair.token_0.address === inputToken?.address &&
+        pair.token_1.address === outputToken?.address) 
+        || (pair.token_1.address === inputToken?.address &&
+          pair.token_0.address === outputToken?.address)
       );
     });
     if (selectedPair) setPairAddress(selectedPair.pair_address);
@@ -108,7 +107,7 @@ function ChooseTokensWallet({
     event: React.ChangeEvent<{ value: string }>,
   ) => {
     const token = tokens.find(
-      (token) => token.token_symbol === event.target.value,
+      (token) => token.symbol === event.target.value,
     );
     setInputToken(token!);
     setInputTokenAmount(0);
@@ -118,7 +117,7 @@ function ChooseTokensWallet({
     event: React.ChangeEvent<{ value: string }>,
   ) => {
     const token =
-      tokens.find((token) => token.token_symbol === event.target.value) ?? null;
+      tokens.find((token) => token.symbol === event.target.value) ?? null;
     setOutputToken(token);
     setInputTokenAmount(0);
     setOutputTokenAmount(0);
@@ -133,19 +132,20 @@ function ChooseTokensWallet({
     if (isLiquidity && reserves.reserve0.isGreaterThan(0) && reserves.reserve1.isGreaterThan(0)) {
       let optimalLiquidityToken1Amount = calculatePoolTokenOptimalAmount(
         BigNumber(event.target.valueAsNumber).shiftedBy(7),
-        token0?.token_address === inputToken?.token_address?reserves.reserve0:reserves.reserve1,
-        token1?.token_address === outputToken?.token_address?reserves.reserve1:reserves.reserve0,
+        token0?.address === inputToken?.address?reserves.reserve0:reserves.reserve1,
+        token1?.address === outputToken?.address?reserves.reserve1:reserves.reserve0,
       );
+
       setOutputTokenAmount(optimalLiquidityToken1Amount.decimalPlaces(0).shiftedBy(-7).toNumber());
     }
     if (!isLiquidity) {
       let output = fromExactInputGetExpectedOutput(
-        pairAddress??"", 
         BigNumber(event.target.valueAsNumber).shiftedBy(7), 
-        token0?.token_address === inputToken?.token_address?reserves.reserve0:reserves.reserve1,
-        token1?.token_address === outputToken?.token_address?reserves.reserve1:reserves.reserve0,
-        sorobanContext
+        token0?.address === inputToken?.address?reserves.reserve0:reserves.reserve1,
+        token1?.address === outputToken?.address?reserves.reserve1:reserves.reserve0,
         )
+      // The "stroops" calculated amount (from fromExactInputGetExpectedOutput) needs to be transformed to a human readeble number
+      // this is why it is shiftwd by -7
       setOutputTokenAmount(BigNumber(output).decimalPlaces(0).shiftedBy(-7).toNumber())
     }
   };
@@ -157,8 +157,8 @@ function ChooseTokensWallet({
     if (isLiquidity && reserves.reserve0.isGreaterThan(0) && reserves.reserve1.isGreaterThan(0)) {
       let optimalLiquidityToken0Amount = calculatePoolTokenOptimalAmount(
         BigNumber(event.target.valueAsNumber).shiftedBy(7),
-        token0?.token_address === inputToken?.token_address?reserves.reserve1:reserves.reserve0,
-        token1?.token_address === outputToken?.token_address?reserves.reserve0:reserves.reserve1,
+        token0?.address === inputToken?.address?reserves.reserve1:reserves.reserve0,
+        token1?.address === outputToken?.address?reserves.reserve0:reserves.reserve1,
       );
       setInputTokenAmount(optimalLiquidityToken0Amount.decimalPlaces(0).shiftedBy(-7).toNumber());
     }
@@ -166,20 +166,20 @@ function ChooseTokensWallet({
       let output = fromExactOutputGetExpectedInput(
         pairAddress??"", 
         BigNumber(event.target.valueAsNumber).shiftedBy(7), 
-        token0?.token_address === inputToken?.token_address?reserves.reserve0:reserves.reserve1,
-        token1?.token_address === outputToken?.token_address?reserves.reserve1:reserves.reserve0,
+        token0?.address === inputToken?.address?reserves.reserve0:reserves.reserve1,
+        token1?.address === outputToken?.address?reserves.reserve1:reserves.reserve0,
         sorobanContext
         )
       setInputTokenAmount(BigNumber(output).decimalPlaces(0).shiftedBy(-7).toNumber())
     }
   };
-  let inputTokenBalance = tokenBalancesResponse.balances.find((token) => token.address === inputToken?.token_address)?.balance 
+  let inputTokenBalance = tokenBalancesResponse.balances.find((token) => token.address === inputToken?.address)?.balance 
   return (
     <div>
       <Box sx={{ display: "flex", flexDirection: "column" }}>
         <Box sx={{display: "flex", flexDirection: "column", margin:"10px" }}>
           <TokensDropdown
-            tokens={tokens.filter((token) => token.token_symbol !== outputToken?.token_symbol)}
+            tokens={tokens.filter((token) => token.symbol !== outputToken?.symbol)}
             onChange={handleInputTokenChange}
             title={"Input token"}
           />
@@ -194,7 +194,7 @@ function ChooseTokensWallet({
                 id="outlined-adornment-amount"
                 startAdornment={
                   <InputAdornment position="start">
-                    {inputToken?.token_name}
+                    {inputToken?.name}
                   </InputAdornment>
                 }
                 value={inputTokenAmount}
@@ -208,7 +208,7 @@ function ChooseTokensWallet({
         {(parseFloat(inputTokenBalance??"0"))!==0?<div>
         <Box sx={{display: "flex", flexDirection: "column", margin:"10px" }}>
           <TokensDropdown
-            tokens={!isLiquidity?tokens.filter((token) => getPairExists(inputToken, token, allPairs)):tokens.filter((token) => token.token_symbol !== inputToken?.token_symbol)}
+            tokens={!isLiquidity?tokens.filter((token) => getPairExists(inputToken, token, allPairs)):tokens.filter((token) => token.symbol !== inputToken?.symbol)}
             onChange={handleOutputTokenChange}
             title={"Output token"}
             inputToken={inputToken??undefined}
@@ -223,7 +223,7 @@ function ChooseTokensWallet({
                 id="outlined-adornment-amount"
                 startAdornment={
                   <InputAdornment position="start">
-                    {outputToken?.token_name}
+                    {outputToken?.name}
                   </InputAdornment>
                 }
                 value={outputTokenAmount}
@@ -232,7 +232,7 @@ function ChooseTokensWallet({
               />
             </FormControl>
           ) : null}
-           <p>balance: {outputToken !== null ? tokenBalancesResponse.balances.find((token) => token.address === outputToken.token_address)?.balance : 0}</p>
+           <p>balance: {outputToken !== null ? tokenBalancesResponse.balances.find((token) => token.address === outputToken.address)?.balance : 0}</p>
         </Box>
         {isLiquidity && pairExist && outputToken && inputToken && pairAddress && (
             <ProvideLiquidityPair

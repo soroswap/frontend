@@ -5,7 +5,7 @@ import { xdr } from "soroban-client";
 import BigNumber from "bignumber.js";
 
 export function useAllowance(
-  token_address: string,
+  address: string,
   from: string,
   spender: string,
   sorobanContext: SorobanContextType,
@@ -16,7 +16,7 @@ export function useAllowance(
     params = [accountToScVal(from), accountToScVal(spender)];
   } catch (error) {}
   const allowance_scval = useContractValue({
-    contractAddress: token_address,
+    contractAddress: address,
     method: "allowance",
     args: params,
     sorobanContext: sorobanContext,

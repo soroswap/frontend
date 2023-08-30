@@ -1,14 +1,13 @@
-import { useSorobanReact } from "@soroban-react/core";
-import { ContractValueType, useContractValue } from "@soroban-react/contracts";
-import { Constants } from "../constants";
+import { SorobanContextType, useSorobanReact } from "@soroban-react/core";
+import { contractInvoke, useContractValue } from "@soroban-react/contracts";
 import {
   scvalToBigNumber,
   accountToScVal,
-  contractAddressToScVal,
 } from "../helpers/utils";
 import { formatAmount } from "../helpers/utils";
 import { TokenMapType, TokenType } from "../interfaces";
-import { useEffect, useState } from "react";
+import { scValStrToJs } from "helpers/convert";
+import BigNumber from "bignumber.js";
 //TODO: create Liquidity Pool Balances
 
 export function useTokenScVal(tokenAddress: string, userAddress: string) {
@@ -65,10 +64,10 @@ export function useTokenBalances(userAddress: string, tokens: TokenType[] | Toke
   const balances = Object.values(tokens).map((token) => {
     return {
       // eslint-disable-next-line react-hooks/rules-of-hooks
-      balance: useFormattedTokenBalance(token.token_address, address),
+      balance: useFormattedTokenBalance(token.address, address),
       usdValue: 0,//TODO: should get usd value
-      symbol: token.token_symbol,
-      address: token.token_address,
+      symbol: token.symbol,
+      address: token.address,
     };
   });
 
@@ -84,10 +83,10 @@ export function useTokenBalances(userAddress: string, tokens: TokenType[] | Toke
 export function useTokenBalance(userAddress: string, token: TokenType) {
   const address = userAddress;
   const balance = {
-      balance: useFormattedTokenBalance(token.token_address, address),
+      balance: useFormattedTokenBalance(token.address, address),
       usdValue: 0,//should get usd value
-      symbol: token.token_symbol,
-      address: token.token_address,
+      symbol: token.symbol,
+      address: token.address,
     };
 
   // Calculate the loading state
@@ -95,6 +94,73 @@ export function useTokenBalance(userAddress: string, token: TokenType) {
 
   return {
     balance: balance,
+    loading: loading,
+  };
+}
+
+export async function tokenBalance(tokenAddress: string, userAddress: string, sorobanContext: SorobanContextType) {
+  const user = accountToScVal(userAddress);
+
+  try {
+    const tokenBalance = await contractInvoke({
+      contractAddress: tokenAddress,
+      method: "balance",
+      args: [user],
+      sorobanContext,
+    });
+
+    return scValStrToJs(tokenBalance?.xdr ?? "") as BigNumber.Value;
+  } catch(error) {
+    console.error("Error fetching token balance:", error);
+    return 0; // or throw error;
+  }
+}
+
+export async function tokenDecimals(tokenAddress: string, userAddress: string, sorobanContext: SorobanContextType) {
+  try {
+    const decimals = await contractInvoke({
+      contractAddress: tokenAddress,
+      method: "decimals",
+      sorobanContext,
+    });
+    const tokenDecimals = scValStrToJs(decimals?.xdr ?? "") as number ?? 7;
+
+    return tokenDecimals;
+  } catch(error) {
+    console.error("Error fetching token balance:", error);
+    return 7; // or throw error;
+  }
+}
+
+
+export async function tokenBalances(userAddress: string, tokens: TokenType[] | TokenMapType | undefined, sorobanContext: SorobanContextType) {
+  if (!tokens || !sorobanContext) return;
+
+  const balances = await Promise.all(
+    Object.values(tokens).map(async (token) => {
+      const balanceResponse = await tokenBalance(token.address, userAddress, sorobanContext);
+      const decimalsResponse = await tokenDecimals(token.address, userAddress, sorobanContext);
+
+      const formattedBalance = formatAmount(
+        BigNumber(balanceResponse),
+        decimalsResponse,
+      );
+      
+      return {
+        balance: formattedBalance,
+        usdValue: 0, //TODO: should get usd value
+        symbol: token.symbol,
+        address: token.address,
+      };
+    })
+  );
+
+
+  // Calculate the loading state
+  const loading = balances.some((balance) => balance.balance === null);
+
+  return {
+    balances: balances,
     loading: loading,
   };
 }

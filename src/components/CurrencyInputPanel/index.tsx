@@ -286,15 +286,15 @@ export default function CurrencyInputPanel({
                 ) : null}
                 {pair ? (
                   <StyledTokenName className="pair-name-container">
-                    {pair?.token0.token_symbol}:{pair?.token1.token_symbol}
+                    {pair?.token0.symbol}:{pair?.token1.symbol}
                   </StyledTokenName>
                 ) : (
-                  <StyledTokenName className="token-symbol-container" active={Boolean(currency && currency.token_symbol)}>
-                    {(currency && currency.token_symbol && currency.token_symbol.length > 20
-                      ? currency.token_symbol.slice(0, 4) +
+                  <StyledTokenName className="token-symbol-container" active={Boolean(currency && currency.symbol)}>
+                    {(currency && currency.symbol && currency.symbol.length > 20
+                      ? currency.symbol.slice(0, 4) +
                         '...' +
-                        currency.token_symbol.slice(currency.token_symbol.length - 5, currency.token_symbol.length)
-                      : currency?.token_symbol) || `Select a token`}
+                        currency.symbol.slice(currency.symbol.length - 5, currency.symbol.length)
+                      : currency?.symbol) || `Select a token`}
                   </StyledTokenName>
                 )}
               </RowFixed>

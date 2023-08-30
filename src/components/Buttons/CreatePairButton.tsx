@@ -29,8 +29,8 @@ export function CreatePairButton({
   const networkPassphrase = sorobanContext.activeChain?.networkPassphrase ?? "";
   const server = sorobanContext.server;
   const account = sorobanContext.address;
-  const addressScVal0 = accountToScVal(token0.token_address);
-  const addressScVal1 = accountToScVal(token1.token_address);
+  const addressScVal0 = accountToScVal(token0.address);
+  const addressScVal1 = accountToScVal(token1.address);
   const params = [addressScVal0, addressScVal1];
 
   let xdr = SorobanClient.xdr;

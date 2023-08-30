@@ -86,7 +86,7 @@ export default function AddLiquidityPage() {
 
   const handleCurrencyASelect = useCallback(
     (currencyA: TokenType) => {
-      const newCurrencyIdA = currencyA.token_address
+      const newCurrencyIdA = currencyA.address
       if (newCurrencyIdA === currencyIdB) {
         navigate(`/add/${currencyIdB}/${currencyIdA}`)
       } else {
@@ -97,7 +97,7 @@ export default function AddLiquidityPage() {
   )
   const handleCurrencyBSelect = useCallback(
     (currencyB: TokenType) => {
-      const newCurrencyIdB = currencyB.token_address
+      const newCurrencyIdB = currencyB.address
       if (currencyIdA === newCurrencyIdB) {
         if (currencyIdB) {
           navigate(`/add/${currencyIdB}/${newCurrencyIdB}`)

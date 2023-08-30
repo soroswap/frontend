@@ -40,7 +40,7 @@ export default function CurrencyBalance({
     showMaxButton,
 
   }: CurrencyBalanceProps) {
-    const selectedCurrencyBalance = useFormattedTokenBalance(currency.token_address, address)
+    const selectedCurrencyBalance = useFormattedTokenBalance(currency.address, address)
     const theme = useTheme()
     
     return (

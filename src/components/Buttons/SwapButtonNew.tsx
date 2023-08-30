@@ -115,8 +115,8 @@ export function SwapButtonNew({
 }: SwapButtonProps) {
   const tokensFromPair = useTokensFromPair(pairAddress, sorobanContext);
   useMemo(() => {
-    setToken0(tokens.find(token => token.token_address === tokensFromPair?.token0)??null);
-    setToken1(tokens.find(token => token.token_address === tokensFromPair?.token1)??null);
+    setToken0(tokens.find(token => token.address === tokensFromPair?.token0)??null);
+    setToken1(tokens.find(token => token.address === tokensFromPair?.token1)??null);
   }, [setToken0, setToken1, tokensFromPair, tokens])
 
   const [isSubmitting, setSubmitting] = useState(false);

@@ -1,14 +1,3 @@
-// import { formatCurrencyAmount, formatNumber, NumberType } from '@uniswap/conedison/format'
-// import { Currency, CurrencyAmount } from '@uniswap/sdk-core'
-// import Column from 'components/Column'
-// import CurrencyLogo from 'components/Logo/CurrencyLogo'
-// import Row from 'components/Row'
-// import { MouseoverTooltip } from 'components/Tooltip'
-// import { useWindowSize } from 'hooks/useWindowSize'
-// import { PropsWithChildren, ReactNode } from 'react'
-// import { Field } from 'state/swap/actions'
-// import { BREAKPOINTS, ThemedText } from 'theme'
-
 import { TypographyProps, styled, useTheme } from "@mui/material"
 import Column from "components/Column"
 import CurrencyLogo from "components/Logo/CurrencyLogo"
@@ -17,7 +6,6 @@ import { BodySecondary, BodySmall, HeadlineLarge, HeadlineMedium } from "compone
 import { MouseoverTooltip } from "components/Tooltip"
 import { useWindowSize } from "hooks/useWindowSize"
 import { TokenType } from "interfaces"
-import { CurrencyAmount } from "lib/utils/tryParseCurrencyAmount"
 import { PropsWithChildren, ReactNode } from "react"
 import { Field } from "state/swap/actions"
 
@@ -47,13 +35,14 @@ interface AmountProps {
   field: Field
   tooltipText?: ReactNode
   label: ReactNode
-  amount: string
+  amount: number
   usdAmount?: number
   currency: TokenType | undefined
 }
 export function SwapModalHeaderAmount({ tooltipText, label, amount, usdAmount, field, currency }: AmountProps) {
   const theme = useTheme()
-  let formattedAmount = amount//formatCurrencyAmount(amount, NumberType.TokenTx)
+  let formattedAmount = Number(amount).toFixed(2)//formatCurrencyAmount(amount, NumberType.TokenTx)
+  console.log("🚀 « formattedAmount:", formattedAmount)
   if (formattedAmount.length > MAX_AMOUNT_STR_LENGTH) {
     formattedAmount = ""//formatCurrencyAmount(amount, NumberType.SwapTradeAmount)
   }
@@ -68,7 +57,7 @@ export function SwapModalHeaderAmount({ tooltipText, label, amount, usdAmount, f
         </BodySecondary>
         <Column gap="4px" alignItems="flex-start">
           <ResponsiveHeadline data-testid={`${field}-amount`}>
-            {formattedAmount} {currency?.token_symbol}
+            {formattedAmount} {currency?.symbol}
           </ResponsiveHeadline>
           {usdAmount !== undefined && (
             <BodySmall color={theme.palette.custom.textTertiary}>

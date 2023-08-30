@@ -5,7 +5,8 @@ import { TokenType } from 'interfaces'
 // import { useWeb3React } from '@web3-react/core'
 import { useSorobanReact } from '@soroban-react/core'
 // import JSBI from 'jsbi'
-import tryParseCurrencyAmount, { CurrencyAmount } from 'lib/utils/tryParseCurrencyAmount'
+import { CurrencyAmount } from "interfaces";
+import tryParseCurrencyAmount from 'lib/utils/tryParseCurrencyAmount'
 import { ReactNode, useCallback, useMemo } from 'react'
 import { useAppDispatch, useAppSelector } from 'state/hooks'
 
@@ -77,7 +78,7 @@ export function useDerivedMintInfo(
   const { address: account } = sorobanContext
 
   const { independentField, typedValue, otherTypedValue } = useMintState()
-  console.log("state/mint/hooks: independentField, typedValue, otherTypedValue", independentField, typedValue, otherTypedValue)
+  // console.log("state/mint/hooks: independentField, typedValue, otherTypedValue", independentField, typedValue, otherTypedValue)
 
   const dependentField = independentField === Field.CURRENCY_A ? Field.CURRENCY_B : Field.CURRENCY_A
 
@@ -94,8 +95,8 @@ export function useDerivedMintInfo(
   console.log("state/mint/hooks: currencyA:", currencyA)
   console.log("state/mint/hooks: currencyB:", currencyB)
   const pairAddress = usePairContractAddress(
-    !currencyA ? null : currencyA.token_address,
-    !currencyB ? null : currencyB.token_address,
+    !currencyA ? null : currencyA.address,
+    !currencyB ? null : currencyB.address,
     sorobanContext)
   console.log("state/mint/hooks: pairAddress:", pairAddress)
   const reservesBN = useReservesBigNumber(pairAddress ?? "", sorobanContext)

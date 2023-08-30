@@ -1,20 +1,13 @@
-// import { useSorobanReact } from "@soroban-react/core";
-// import { useContractValue } from "@soroban-react/contracts";
-// import { accountToScVal } from "../utils";
-
 import { SorobanContextType } from "@soroban-react/core";
 import BigNumber from "bignumber.js";
-import { useReservesBigNumber } from "../hooks/useReserves";
 
 export default function fromExactInputGetExpectedOutput(
-  pairAddress: string,
   amountIn: BigNumber,
   reserve0: BigNumber,
   reserve1: BigNumber,
-  sorobanContext: SorobanContextType
 ): BigNumber {
 
-  return getExpectedAmountFromReserves(amountIn, reserve0, reserve1);
+  return getExpectedAmountFromReserves(amountIn, reserve0, reserve1).dp(7); //TODO: dp is like toFixed(2) to force it to give 2 decimals, should it be the decimals of the token?
 }
 
 function getExpectedAmountFromReserves(
@@ -37,7 +30,7 @@ export function getPriceImpact(
   sorobanContext: SorobanContextType) {
 
   const reserveInAfter = reserve0.plus(amountIn)
-  const expectedAmount = fromExactInputGetExpectedOutput(pairAddress, amountIn, reserve0, reserve1, sorobanContext)
+  const expectedAmount = fromExactInputGetExpectedOutput(amountIn, reserve0, reserve1)
   const reserveOutAfter = reserve1.minus(expectedAmount)
 
   const expectedAmountAfter = getExpectedAmountFromReserves(amountIn, reserveInAfter, reserveOutAfter)

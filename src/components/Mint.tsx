@@ -29,12 +29,12 @@ export function Mint() {
     event: React.ChangeEvent<HTMLInputElement>,
   ) => {
     const selectedToken = tokensList.find(
-      (token) => token.token_symbol == event.target.value,
+      (token) => token.symbol == event.target.value,
     );
 
     if (selectedToken) {
       setInputToken(selectedToken);
-      setMintTokenId(selectedToken.token_id);
+      setMintTokenId(selectedToken.address);
     }
   };
 
@@ -44,7 +44,7 @@ export function Mint() {
 
   useEffect(() => {
     setInputToken(tokensList[0]);
-    setMintTokenId(tokensList[0]?.token_id);
+    setMintTokenId(tokensList[0]?.address);
   }, [tokensList]);
 
   return (
@@ -63,8 +63,8 @@ export function Mint() {
               onChange={handleInputTokenChange}
             >
               {tokensList.map((option) => (
-                <MenuItem key={option.token_id} value={option.token_symbol}>
-                  {`${option.token_name} (${option.token_symbol})`}
+                <MenuItem key={option.address} value={option.symbol}>
+                  {`${option.name} (${option.symbol})`}
                 </MenuItem>
               ))}
             </TextField>
@@ -78,7 +78,7 @@ export function Mint() {
                 onChange={handleAmountChange}
                 startAdornment={
                   <InputAdornment position="start">
-                    {inputToken?.token_symbol}
+                    {inputToken?.symbol}
                   </InputAdornment>
                 }
                 label="Amount"
@@ -114,7 +114,7 @@ export function MintTokens({
 }) {
   let formattedTokenBalance;
   formattedTokenBalance = useFormattedTokenBalance(
-    inputToken.token_id,
+    inputToken.address,
     address,
   );
   
@@ -122,12 +122,12 @@ export function MintTokens({
   return (
     <div>
       <p>
-        Your current balance: {formattedTokenBalance} {inputToken.token_symbol}
+        Your current balance: {formattedTokenBalance} {inputToken.symbol}
       </p>
       <CardActions>
         <MintButton
           sorobanContext={sorobanContext}
-          tokenId={inputToken.token_id}
+          tokenId={inputToken.address}
           amountToMint={amountToMint}
         />
       </CardActions>

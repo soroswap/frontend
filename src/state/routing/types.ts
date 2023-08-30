@@ -1,5 +1,4 @@
-import { TokenType } from "interfaces";
-import { CurrencyAmount } from "lib/utils/tryParseCurrencyAmount";
+import { TokenType, CurrencyAmount } from "interfaces";
 
 export enum TradeState {
   LOADING,

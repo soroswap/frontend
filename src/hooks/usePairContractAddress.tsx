@@ -1,7 +1,6 @@
 import { SorobanContextType } from "@soroban-react/core";
 import { useContractValue } from "@soroban-react/contracts"
-// import { useContractValue } from "../package/src"
-import { accountToScVal, scvalToString } from "../helpers/utils";
+import { accountToScVal } from "../helpers/utils";
 import { useFactory } from "./useFactory";
 import { xdr } from "soroban-client";
 import * as SorobanClient from "soroban-client";

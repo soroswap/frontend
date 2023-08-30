@@ -1,5 +1,5 @@
 import { AutoColumn, ColumnCenter } from "components/Column";
-import SEO from "../src/components/SEO";
+import SEO from "../../src/components/SEO";
 import CurrencyInputPanel from "components/CurrencyInputPanel";
 import { ExternalLink, Plus } from "react-feather";
 import { Typography, styled, useTheme } from "@mui/material";
@@ -121,7 +121,7 @@ export default function LiquidityPage() {
               </HideSmall>
               <ButtonRow>
                 <ResponsiveButtonPrimary padding="6px 8px">
-                  <Link href="/add">
+                  <Link href="/liquidity/add">
                     Create a pair
                   </Link>
                 </ResponsiveButtonPrimary>

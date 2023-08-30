@@ -1,33 +1,24 @@
-import { Trans } from '@lingui/macro'
-// import { ChainId, Currency, CurrencyAmount, Percent, TradeType } from '@uniswap/sdk-core'
-// import { useWeb3React } from '@web3-react/core'
-// import useAutoSlippageTolerance from 'hooks/useAutoSlippageTolerance'
-// import { useBestTrade } from 'hooks/useBestTrade'
-// import tryParseCurrencyAmount from 'lib/utils/tryParseCurrencyAmount'
 import { ParsedQs } from 'qs'
-// import { ReactNode, useCallback, useEffect, useMemo } from 'react'
 import { AnyAction } from 'redux'
-// import { useAppDispatch } from 'state/hooks'
-// import { InterfaceTrade, TradeState } from 'state/routing/types'
-// import { isClassicTrade, isUniswapXTrade } from 'state/routing/utils'
-import { useUserSlippageToleranceWithDefault } from 'state/user/hooks'
-
-// import { TOKEN_SHORTHANDS } from '../../constants/tokens'
-// import { useCurrency } from '../../hooks/Tokens'
-// import useENS from '../../hooks/useENS'
-// import useParsedQueryString from '../../hooks/useParsedQueryString'
-// import { isAddress } from '../../utils'
-// import { useCurrencyBalances } from '../connection/hooks'
-import { Field, replaceSwapState, selectCurrency, setRecipient, switchCurrencies, typeInput } from './actions'
+import { Field, selectCurrency, setRecipient, switchCurrencies, typeInput } from './actions'
 import { SwapState } from './reducer'
 import { isAddress } from 'helpers/address'
 import { useSorobanReact } from '@soroban-react/core'
 import { TokenType } from 'interfaces'
-import { ReactNode, useCallback, useMemo } from 'react'
-import { useToken, useTokenBalances } from 'hooks'
+import { ReactNode, useCallback, useEffect, useMemo, useState } from 'react'
+import { tokenBalances, useToken } from 'hooks'
 import { useBestTrade } from 'hooks/useBestTrade'
 import { TradeType } from 'state/routing/types'
 import tryParseCurrencyAmount from 'lib/utils/tryParseCurrencyAmount'
+import { useUserSlippageToleranceWithDefault } from 'state/user/hooks'
+import BigNumber from 'bignumber.js'
+
+export type relevantTokensType = {
+  balance: string,
+  usdValue: number,
+  symbol: string,
+  address: string,
+};
 
 export function useSwapActionHandlers(dispatch: React.Dispatch<AnyAction>): {
   onCurrencySelection: (field: Field, currency: TokenType) => void
@@ -40,7 +31,7 @@ export function useSwapActionHandlers(dispatch: React.Dispatch<AnyAction>): {
       dispatch(
         selectCurrency({
           field,
-          currencyId: currency.token_address ? currency.token_address : '',
+          currencyId: currency.address ? currency.address : '',
         })
       )
     },
@@ -73,12 +64,6 @@ export function useSwapActionHandlers(dispatch: React.Dispatch<AnyAction>): {
   }
 }
 
-// const BAD_RECIPIENT_ADDRESSES: { [address: string]: true } = {
-//   '0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f': true, // v2 factory
-//   '0xf164fC0Ec4E93095b804a4795bBe1e041497b92a': true, // v2 router 01
-//   '0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D': true, // v2 router 02
-// }
-
 export type SwapInfo = {
   currencies: { [field in Field]?: TokenType | null }
   currencyBalances: any//{ [field in Field]?: CurrencyAmount<Currency> }
@@ -95,9 +80,10 @@ export type SwapInfo = {
 }
 
 // from the current swap inputs, compute the best trade and return it.
-export function useDerivedSwapInfo(state: SwapState, chainId?: number | undefined): any {
-  const { address: account } = useSorobanReact()
-
+export function useDerivedSwapInfo(state: SwapState): any {
+  const sorobanContext = useSorobanReact()
+  const { address: account } = sorobanContext
+  
   const {
     independentField,
     typedValue,
@@ -107,22 +93,29 @@ export function useDerivedSwapInfo(state: SwapState, chainId?: number | undefine
   } = state
 
   const inputCurrency = useToken(inputCurrencyId)
-  console.log("🚀 « inputCurrency:", inputCurrency)
+  // console.log("🚀 « inputCurrency:", inputCurrency)
   const outputCurrency = useToken(outputCurrencyId)
-  const recipientLookup = { address: "" }//TODO: Use ENS useENS(recipient ?? undefined)
-  console.log("🚀 « outputCurrency:", outputCurrency)
+  const recipientLookup = {address: ""}//TODO: Use ENS useENS(recipient ?? undefined)
+  // console.log("🚀 « outputCurrency:", outputCurrency)
   const to: string | null | undefined = account//recipient === null ? account : recipientLookup.address) ?? null
 
-  // const relevantTokenBalances = useTokenBalances(
-  //   account ?? "",
-  //   useMemo(() => [inputCurrency, outputCurrency].filter(Boolean), [inputCurrency, outputCurrency])
-  // )
-  // console.log("🚀 « relevantTokenBalances:", relevantTokenBalances)
-  const isExactIn: boolean = independentField === Field.INPUT
+  const tokensArray = useMemo(() => {
+    return (inputCurrency && outputCurrency) ? [inputCurrency, outputCurrency] : undefined
+  }, [inputCurrency, outputCurrency]);
 
-  // const parsedAmount = useMemo(() => {
-  //   return typedValue //TODO: Parse amount to scval or bignumber
-  // }, [typedValue])
+  const [relevantTokenBalances, setRelevantTokenBalances] = useState<relevantTokensType[] | undefined>()
+  useEffect(() => {
+    if (account) {
+      tokenBalances(account, tokensArray, sorobanContext).then(balances => {
+        if (balances != undefined) {
+          setRelevantTokenBalances(balances.balances);
+        }
+      });
+    }
+  }, [account, tokensArray, sorobanContext]);
+
+  const isExactIn: boolean = independentField === Field.INPUT
+  // console.log("🚀 « isExactIn:", isExactIn)
 
   const parsedAmount = useMemo(
     () => tryParseCurrencyAmount(typedValue, (isExactIn ? inputCurrency : outputCurrency) ?? undefined),
@@ -137,14 +130,13 @@ export function useDerivedSwapInfo(state: SwapState, chainId?: number | undefine
   )
   console.log("🚀 « trade:", trade)
 
-  // const currencyBalances = useMemo(
-  //   () => ({
-  //     [Field.INPUT]: relevantTokenBalances[0],
-  //     [Field.OUTPUT]: relevantTokenBalances[1],
-  //   }),
-  //   [relevantTokenBalances]
-  // )
-  // console.log("🚀 « currencyBalances:", currencyBalances)
+  const currencyBalances = useMemo(
+    () => ({
+      [Field.INPUT]: relevantTokenBalances ? relevantTokenBalances[0] : "",
+      [Field.OUTPUT]: relevantTokenBalances ? relevantTokenBalances[1] : "",
+    }),
+    [relevantTokenBalances]
+  )
 
   const currencies: { [field in Field]?: TokenType | null } = useMemo(
     () => ({
@@ -190,26 +182,27 @@ export function useDerivedSwapInfo(state: SwapState, chainId?: number | undefine
     }
 
     // compare input balance to max input based on version
-    // const [balanceIn, maxAmountIn] = [currencyBalances[Field.INPUT], trade?.trade?.maximumAmountIn(allowedSlippage)]
+    //TODO: Fix this, not working well
+    const [balanceIn, maxAmountIn] = [currencyBalances[Field.INPUT], (trade.trade?.inputAmount.value ?? 0)]
 
-    // if (balanceIn && maxAmountIn && balanceIn.lessThan(maxAmountIn)) {
-    //   inputError = `Insufficient ${balanceIn.currency.symbol} balance`
-    // }
+    if (balanceIn && maxAmountIn && balanceIn.balance < (maxAmountIn)) {
+      inputError = `Insufficient ${balanceIn.symbol} balance`
+    }
 
     return inputError
-  }, [account, currencies, parsedAmount, to])//, currencyBalances, trade.trade, allowedSlippage])
+  }, [account, currencies, currencyBalances, parsedAmount, to, trade])//, currencyBalances, trade.trade, allowedSlippage])
 
   return useMemo(
     () => ({
       currencies,
-      // currencyBalances,
+      currencyBalances,
       parsedAmount,
       inputError,
       trade,
       // autoSlippage,
       allowedSlippage,
     }),
-    [currencies, inputError, trade, parsedAmount, allowedSlippage]//allowedSlippage, autoSlippage, currencies, currencyBalances, inputError, parsedAmount, trade]
+    [currencies, currencyBalances, parsedAmount, inputError, trade, allowedSlippage]//allowedSlippage, autoSlippage, currencies, currencyBalances, inputError, parsedAmount, trade]
   )
 }
 

@@ -29,6 +29,7 @@ export function usePairExistScVal(
     args: params,
     sorobanContext: sorobanContext,
   });
+  console.log("🚀 ~ file: usePairExist.tsx:30 ~ pairE xist ScVa l:", pairExistScVal)
   return pairExistScVal;
 }
 
@@ -38,7 +39,7 @@ function formatBool(pairExistScVal: any) {
     return pairExistScVal.result.value() as boolean;
   }
 }
-export function usePairExist(
+export function usePairExist( 
   token_address_0: string|null,
   token_address_1: string|null,
   sorobanContext: SorobanContextType,
@@ -59,8 +60,8 @@ export function useTokensWithPair(tokens: TokenType[], inputToken: TokenType) {
   tokens.map((token) => {
     // eslint-disable-next-line react-hooks/rules-of-hooks
     const pairExist = usePairExist(
-      inputToken.token_address,
-      token.token_address,
+      inputToken.address,
+      token.address,
       sorobanContext,
     );
 
@@ -79,14 +80,14 @@ export function useAllPairsFromTokens(tokens: TokenType[], sorobanContext: Sorob
     for (let j = i + 1; j < tokens.length; j++) {
       // eslint-disable-next-line react-hooks/rules-of-hooks
       const pairExist = usePairExist(
-        tokens[i].token_address,
-        tokens[j].token_address,
+        tokens[i].address,
+        tokens[j].address,
         sorobanContext,
       );
       // eslint-disable-next-line react-hooks/rules-of-hooks
       const pairAddress = usePairContractAddress(
-        tokens[i].token_address,
-        tokens[j].token_address,
+        tokens[i].address,
+        tokens[j].address,
         sorobanContext,
       );
 
@@ -99,5 +100,6 @@ export function useAllPairsFromTokens(tokens: TokenType[], sorobanContext: Sorob
       }
     }
   }
+  console.log("🚀 ~ file: usePairExist.tsx:104 ~ useAllPairsFromTokens ~ allPairs:", allPairs)
   return allPairs;
 }

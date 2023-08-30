@@ -1,9 +1,10 @@
-import { TokenType } from "interfaces";
+import BigNumber from "bignumber.js";
+import { TokenType, CurrencyAmount } from "interfaces";
 
-export type CurrencyAmount = {
-  currency: TokenType;
-  value: string;
-};
+
+function parseUnits(value: string, decimals: number) {
+  return BigNumber(value).shiftedBy(decimals)
+}
 
 /**
  * Parses a CurrencyAmount from the passed string.
@@ -17,10 +18,12 @@ export default function tryParseCurrencyAmount(
     return undefined;
   }
   try {
-    return {
-      currency: currency,
-      value: value,
-    };
+    if(value !== '0'){
+      return {
+        currency: currency,
+        value: parseUnits(value, currency.decimals ?? 7).toString(),
+      };
+    }
   } catch (error) {
     // fails if the user specifies too many decimal places of precision (or maybe exceed max uint?)
     console.debug(`Failed to parse input amount: "${value}"`, error);

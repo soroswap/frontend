@@ -34,7 +34,7 @@ function useTokensAsMap(): TokenMapType {
   return useMemo(() => {
     // reduce to just tokens
     return tokens.reduce((map: TokenMapType, token) => {
-      map[token.token_address] = token;
+      map[token.address] = token;
       return map;
     }, {})
   }, [tokens])

@@ -8,8 +8,8 @@ export default function CurrencyLogo(
 ) {
   return (
     <AssetLogo
-      address={props.currency?.token_address}
-      symbol={props.currency?.token_symbol}
+      address={props.currency?.address}
+      symbol={props.currency?.symbol}
       {...props}
     />
   )
