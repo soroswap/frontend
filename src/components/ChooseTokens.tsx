@@ -135,6 +135,7 @@ function ChooseTokensWallet({
         token0?.token_address === inputToken?.token_address?reserves.reserve0:reserves.reserve1,
         token1?.token_address === outputToken?.token_address?reserves.reserve1:reserves.reserve0,
       );
+
       setOutputTokenAmount(optimalLiquidityToken1Amount.decimalPlaces(0).shiftedBy(-7).toNumber());
     }
     if (!isLiquidity) {
@@ -143,6 +144,8 @@ function ChooseTokensWallet({
         token0?.token_address === inputToken?.token_address?reserves.reserve0:reserves.reserve1,
         token1?.token_address === outputToken?.token_address?reserves.reserve1:reserves.reserve0,
         )
+      // The "stroops" calculated amount (from fromExactInputGetExpectedOutput) needs to be transformed to a human readeble number
+      // this is why it is shiftwd by -7
       setOutputTokenAmount(BigNumber(output).decimalPlaces(0).shiftedBy(-7).toNumber())
     }
   };
