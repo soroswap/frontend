@@ -1,10 +1,6 @@
 import BigNumber from "bignumber.js";
 import { TokenType, CurrencyAmount } from "interfaces";
-
-
-function parseUnits(value: string, decimals: number) {
-  return BigNumber(value).shiftedBy(decimals)
-}
+import { parseUnits } from "helpers/format";
 
 /**
  * Parses a CurrencyAmount from the passed string.

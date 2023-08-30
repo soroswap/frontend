@@ -67,3 +67,8 @@ export const stroopsToString = (value: BigNumber, decimals = 7): string => {
     .toFixed(decimals)
     .toString();
 };
+
+export const parseUnits(value: string, decimals: number) {
+  return BigNumber(value).shiftedBy(decimals)
+}
+ 
