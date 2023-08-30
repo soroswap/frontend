@@ -4,7 +4,7 @@ import SwapHeader from "../src/components/Swap/SwapHeader";
 import { styled, useTheme } from "@mui/material";
 import { opacify } from "../src/themes/utils";
 import SwapCurrencyInputPanel from "../src/components/CurrencyInputPanel/SwapCurrencyInputPanel";
-import { ReactNode, useCallback, useMemo, useReducer, useState } from "react";
+import { ReactNode, useCallback, useContext, useMemo, useReducer, useState } from "react";
 import { TokenType } from "../src/interfaces";
 import { ArrowDown } from "react-feather";
 import { AutoColumn } from "components/Column";
@@ -18,6 +18,7 @@ import { Field } from "state/swap/actions";
 import { InterfaceTrade, TradeState } from "state/routing/types";
 import ConfirmSwapModal from "components/Swap/ConfirmSwapModal";
 import { useSwapCallback } from "hooks/useSwapCallback";
+import { AppContext } from "contexts";
 
 const SwapSection = styled('div')(({ theme }) => ({
   position: "relative",
@@ -110,7 +111,10 @@ export function SwapComponent({
 }) {
   const theme = useTheme()
   const sorobanContext = useSorobanReact();
-  const { address, connect } = sorobanContext
+  const { address } = sorobanContext
+  
+  const {ConnectWalletModal} = useContext(AppContext)
+  const { isConnectWalletModalOpen, setConnectWalletModalOpen } = ConnectWalletModal;
   
   const [showPriceImpactModal, setShowPriceImpactModal] = useState<boolean>(false)
  
@@ -397,7 +401,7 @@ export function SwapComponent({
                 </ButtonText>
               </ButtonPrimary>
             ) : !address ? (
-              <ButtonLight onClick={() => connect()}>
+              <ButtonLight onClick={() => setConnectWalletModalOpen(true)}>
                 Connect Wallet
               </ButtonLight>
             ) : routeNotFound ? (
