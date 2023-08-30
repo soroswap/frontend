@@ -29,7 +29,7 @@ export function usePairExistScVal(
     args: params,
     sorobanContext: sorobanContext,
   });
-  console.log("🚀 ~ file: usePairExist.tsx:30 ~ pairE xist ScVa l:", pairExistScVal)
+  console.log("🚀 ~ file: usePairExist.tsx:3 0 ~ pairE   xist ScVa l:", pairExistScVal)
   return pairExistScVal;
 }
 

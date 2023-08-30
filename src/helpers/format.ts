@@ -46,3 +46,24 @@ export const formatTokenAmount = (amount: BigNumber, decimals: number) => {
 export const formatStringTokenAmount = (amount: string, decimals: number) => {
   return formatTokenAmount(BigNumber(amount), decimals)
 }
+
+
+export const formatAmount = (value: BigNumber, decimals = 7): string => {
+  return value
+    .shiftedBy(decimals * -1)
+    .toFixed(7)
+    .toString();
+};
+
+export const formatFixedAmount = (value: BigNumber, decimals = 7): string => {
+  return value
+    .toFixed(decimals)
+    .toString();
+};
+
+export const stroopsToString = (value: BigNumber, decimals = 7): string => {
+  return value
+    .shiftedBy(decimals * -1)
+    .toFixed(decimals)
+    .toString();
+};

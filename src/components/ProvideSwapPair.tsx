@@ -11,7 +11,8 @@ import { useAllowance } from "../hooks/useAllowance";
 import { useSlipaggeFactor } from "../hooks/useSlippageFactor";
 import { useTokensFromPair } from "../hooks/useTokensFromPair";
 import { useTokenBalances, useTokens } from "../hooks";
-import { formatAmount, scvalToBigNumber } from "../helpers/utils";
+import { scvalToBigNumber } from "../helpers/utils";
+import { formatAmount } "..helpers/format";
 import { useMemo } from "react";
 import { SwapButton } from "../components/Buttons/SwapButton";
 

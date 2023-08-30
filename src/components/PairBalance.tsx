@@ -1,6 +1,7 @@
 import { SorobanContextType } from "@soroban-react/core";
 import { useToken, useTokenScVal, useTokenDecimals } from "../hooks";
-import { formatAmount, scvalToBigNumber } from "../helpers/utils";
+import { scvalToBigNumber } from "../helpers/utils";
+import { formatAmount } "..helpers/format";
 
 interface PairBalanceProps {
   pairAddress: string;
