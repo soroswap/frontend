@@ -91,7 +91,7 @@ const NavItemMobile = styled(Link)<{active?: boolean}>`
   line-height: 100%;
 `
 
-const ModeSwitch = styled((props: SwitchProps) => (
+export const ModeSwitch = styled((props: SwitchProps) => (
   <Switch focusVisibleClassName=".Mui-focusVisible" disableRipple {...props} />
 ))(({ theme }) => ({
   width: 104,
@@ -139,9 +139,11 @@ const ModeSwitch = styled((props: SwitchProps) => (
 }));
 
 interface HeaderProps {
+  isDrawerOpen: boolean,
+  setDrawerOpen: React.Dispatch<React.SetStateAction<boolean>>,
 }
 
-export default function Header({}: HeaderProps) {
+export default function Header({isDrawerOpen, setDrawerOpen}: HeaderProps) {
   const theme = useTheme();
   const colorMode = React.useContext(ColorModeContext);
 
@@ -177,7 +179,7 @@ export default function Header({}: HeaderProps) {
           </>
         ) : (
           <>
-              <Menu width={24} height={24} color={theme.palette.custom.borderColor} />
+              <Menu onClick={() => setDrawerOpen(!isDrawerOpen)} width={24} height={24} color={theme.palette.custom.borderColor} />
               <NavBarContainer>
                 <NavBarMobile>
                   <NavItemMobile href={"/swap"} active={pathname.includes("/swap")}>Swap</NavItemMobile>
