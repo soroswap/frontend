@@ -5,7 +5,8 @@ import { TokenType } from 'interfaces'
 // import { useWeb3React } from '@web3-react/core'
 import { useSorobanReact } from '@soroban-react/core'
 // import JSBI from 'jsbi'
-import tryParseCurrencyAmount, { CurrencyAmount } from 'lib/utils/tryParseCurrencyAmount'
+import { CurrencyAmount } from "interfaces";
+import tryParseCurrencyAmount from 'lib/utils/tryParseCurrencyAmount'
 import { ReactNode, useCallback, useMemo } from 'react'
 import { useAppDispatch, useAppSelector } from 'state/hooks'
 
@@ -72,18 +73,18 @@ export function useDerivedMintInfo(
   error?: ReactNode
 } {
   // const { account } = useWeb3React()
-  const sorobanContext = useSorobanReact();
+  const sorobanContext = useSorobanReact(); 
   const { address: account } = sorobanContext
 
   const pairExists = usePairExist(!currencyA ? null : currencyA.token_address, !currencyB ? null : currencyB.token_address, sorobanContext)
   console.log("state/mint/hooks: pairExists:", pairExists)
 
   const pairs = usePairs(sorobanContext)
-  console.log("state/mint/hooks: pairs:", pairs)
+  // console.log("state/mint/hooks: pairs:", pairs)
 
 
   const { independentField, typedValue, otherTypedValue } = useMintState()
-  console.log("state/mint/hooks: independentField, typedValue, otherTypedValue", independentField, typedValue, otherTypedValue)
+  // console.log("state/mint/hooks: independentField, typedValue, otherTypedValue", independentField, typedValue, otherTypedValue)
 
   const dependentField = independentField === Field.CURRENCY_A ? Field.CURRENCY_B : Field.CURRENCY_A
 
