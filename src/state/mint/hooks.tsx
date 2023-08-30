@@ -3,11 +3,11 @@ import { Trans } from '@lingui/macro'
 import { TokenType } from 'interfaces'
 // import { Pair } from '@uniswap/v2-sdk'
 // import { useWeb3React } from '@web3-react/core'
-import { useSorobanReact } from '@soroban-react/core'
+import { SorobanContextType, useSorobanReact } from '@soroban-react/core'
 // import JSBI from 'jsbi'
 import { CurrencyAmount } from "interfaces";
 import tryParseCurrencyAmount from 'lib/utils/tryParseCurrencyAmount'
-import { ReactNode, useCallback, useMemo } from 'react'
+import { ReactNode, useCallback, useEffect, useMemo, useState } from 'react'
 import { useAppDispatch, useAppSelector } from 'state/hooks'
 
 import { usePairExist } from 'hooks/usePairExist'
@@ -23,6 +23,10 @@ import { Token } from 'typescript'
 import { useReservesBigNumber } from 'hooks/useReserves'
 import calculatePoolTokenOptimalAmount from 'functions/calculatePoolTokenOptimalAmount'
 import BigNumber from 'bignumber.js'
+import { contractInvoke } from '@soroban-react/contracts';
+import { scValStrToJs } from 'helpers/convert';
+import { FactoryResponseType, FactoryType } from 'interfaces/factory';
+import { accountToScVal } from 'helpers/utils';
 
 // const ZERO = JSBI.BigInt(0)
 
@@ -30,6 +34,63 @@ export function useMintState(): AppState['mint'] {
   return useAppSelector((state) => state.mint)
 }
 
+export const getFactoryData = async (sorobanContext: SorobanContextType) => {
+  try {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/factory`);
+    const data = await response.json();
+
+    let factory: FactoryType = {
+      factory_address: "",
+      factory_id: "",
+    };
+
+    const filtered = data?.filter(
+      (item: FactoryResponseType) =>
+        item.network === sorobanContext?.activeChain?.name?.toLowerCase(),
+    );
+
+    if (filtered?.length > 0) {
+      factory = {
+        factory_address: filtered[0].factory_address,
+        factory_id: filtered[0].factory_id,
+      };
+    }
+
+    return factory;
+  } catch (error) {
+    // Handle error
+    console.error('Error fetching factory data:', error);
+    return {
+      factory_address: "",
+      factory_id: "",
+    };
+  }
+};
+
+export async function getPairContractAddressFromFactory(
+  factoryAddress: string,
+  sorobanContext: SorobanContextType,
+  currencyA: TokenType,
+  currencyB: TokenType
+) {
+  const args = [accountToScVal(currencyA.address), accountToScVal(currencyB.address)]
+
+  try {
+    // const factoryAddress = ""
+    const pairAddressScval = await contractInvoke({
+      contractAddress: factoryAddress,
+      method: "get_pair",
+      args,
+      sorobanContext,
+    });
+    const pairAddress = scValStrToJs(pairAddressScval?.xdr ?? "") as number ?? 7;
+
+    return pairAddress;
+  } catch (error) {
+    console.error("Error fetching token balance:", error);
+    return 7; // or throw error;
+  }
+}
 // export function useMintActionHandlers(noLiquidity: boolean | undefined): {
 export function useMintActionHandlers(noLiquidity: boolean | undefined): {
   onFieldAInput: (typedValue: string) => void
@@ -76,6 +137,11 @@ export function useDerivedMintInfo(
 } {
   const sorobanContext = useSorobanReact();
   const { address: account } = sorobanContext
+  const [factoryAddress, setFactoryAddress] = useState({
+    factory_address: "",
+    factory_id: "",
+  })
+  const [pairAddress, setPairAddress] = useState<any>(undefined)
 
   const { independentField, typedValue, otherTypedValue } = useMintState()
   // console.log("state/mint/hooks: independentField, typedValue, otherTypedValue", independentField, typedValue, otherTypedValue)
@@ -94,10 +160,30 @@ export function useDerivedMintInfo(
 
   console.log("state/mint/hooks: currencyA:", currencyA)
   console.log("state/mint/hooks: currencyB:", currencyB)
-  const pairAddress = usePairContractAddress(
-    !currencyA ? null : currencyA.address,
-    !currencyB ? null : currencyB.address,
-    sorobanContext)
+  // const pairAddress = usePairContractAddress(
+  //   !currencyA ? null : currencyA.address,
+  //   !currencyB ? null : currencyB.address,
+  //   sorobanContext)
+
+  useEffect(() => {
+    getFactoryData(sorobanContext).then(response => {
+
+      console.log("state/mint/hooks: factoryAddress response:", response)
+      setFactoryAddress(response)
+    })
+
+  }, [sorobanContext])
+
+  useEffect(() => {
+    if (factoryAddress.factory_address !== "" && currencyA && currencyB) {
+      getPairContractAddressFromFactory(factoryAddress.factory_address, sorobanContext, currencyA, currencyB)
+        .then((response) => {
+          setPairAddress(response)
+        })
+    }
+  }, [currencyA, currencyB, factoryAddress.factory_address, sorobanContext])
+
+
   console.log("state/mint/hooks: pairAddress:", pairAddress)
   const reservesBN = useReservesBigNumber(pairAddress ?? "", sorobanContext)
   console.log("state/mint/hooks: reservesBN:", reservesBN, reservesBN.reserve0.toString(), reservesBN.reserve1.toString())
