@@ -2,6 +2,10 @@ import BigNumber from "bignumber.js";
 import { TokenType, CurrencyAmount } from "interfaces";
 
 
+function parseUnits(value: string, decimals: number) {
+  return BigNumber(value).shiftedBy(decimals)
+}
+
 /**
  * Parses a CurrencyAmount from the passed string.
  * Returns the CurrencyAmount, or undefined if parsing fails.
@@ -17,7 +21,7 @@ export default function tryParseCurrencyAmount(
     if(value !== '0'){
       return {
         currency: currency,
-        value: value,
+        value: parseUnits(value, currency.decimals ?? 7).toString(),
       };
     }
   } catch (error) {

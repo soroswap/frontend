@@ -48,13 +48,16 @@ export function useBestTrade(
         : [otherCurrency, amountSpecified?.currency],
     [amountSpecified, otherCurrency, tradeType]
   )
-  console.log("🚀 ~ file: useBestTrade.ts ----------------------- ")
+  console.log("🚀 ~ file: useBestTrade.ts -------- --------------- ")
   
   /* This is because the user can set some input amount and input token, before setting the output token */
   if (
     amountSpecified?.currency?.address &&
     otherCurrency?.address
   ) {
+    console.log("🚀 ~ file: useBestTrade.ts:58 ~ otherCurrency?.address:", otherCurrency?.address)
+    console.log("🚀 ~ file: useBestTrade.ts:58 ~ amountSpecified?.currency?.address:", amountSpecified?.currency?.address)
+    console.log("here-- factory:", factory)
     contractInvoke({
       contractAddress: factory.factory_address,
       method: "get_pair",
@@ -66,7 +69,6 @@ export function useBestTrade(
     }).then((response) => {
       if (response) {
         const foundPairAddress = scValStrToJs(response.xdr) as string;
-        console.log("🚀 ~ file: useBestTrade.ts:70 ~ foundPairAddress:", foundPairAddress)
         setPairAddress(foundPairAddress);
       } else {
         setPairAddress(undefined);
@@ -75,7 +77,6 @@ export function useBestTrade(
   }
 
   const [reserves, setReserves] = useState<any>();
-  console.log("🚀 ~ file: useBestTrade.ts:80 ~ reserves:", reserves)
 
   useEffect(() => {
       let isCancelled = false; // to keep track if the component is still mounted
@@ -94,29 +95,58 @@ export function useBestTrade(
   }, [pairAddress, sorobanContext]);
 
   // EXPECTED AMOUNTS. TODO: THIS WILL CHANGE AFTER USING THE ROUTER CONTRACT
-  let expectedAmount: number = 0
-  console.log("🚀 ~ file: useBestTrade.ts:99 ~ check 1")
-  console.log("🚀 ~ file: useBestTrade.ts:102 ~ reserves:", reserves)
-  console.log("🚀 ~ file: useBestTrade.ts:103 ~ amountSpecified?.value:", amountSpecified?.value)
+  let expectedAmount: string = '0'
   if (reserves && amountSpecified?.value){
     //TODO: Should get expected from input or output, currently only doing one way around
-    console.log("🚀 ~ file: useBestTrade.ts:99 ~ check 2")
-    // amountSpeficied was set by a human. But smart contracts read in stroops. Hence needs to be shifted by 7.
-    let amountInBigNumber = BigNumber(amountSpecified?.value).shiftedBy(7)
-    console.log("🚀 ~ file: useBestTrade.ts:105 ~ amountInBigNumber.toNumber()  :", amountInBigNumber.toNumber()  )
+    
     expectedAmount = fromExactInputGetExpectedOutput(
-                      amountInBigNumber,
+                      BigNumber(amountSpecified.value),
                       reserves?.reserve0, 
                       reserves?.reserve1)
-                    .toNumber() 
+                    .toString() 
   }
-  console.log("🚀 ~ file: useBestTrade.ts:99 ~ amountSpecified:", amountSpecified)
-  console.log("🚀 « expectedAmount:", expectedAmount)
+  // Now both expectedAmount and amountSpecified are strings in stroop format
+  // Lets convert all of this to two CurrencyAmount objects: inputAmount & outputAmount
 
-  const inputAmount = (currencyIn?.address == amountSpecified?.currency.address) ? tryParseCurrencyAmount(amountSpecified?.value, currencyIn) : tryParseCurrencyAmount(expectedAmount, currencyIn)
-  console.log("🚀 « inputAmount:", inputAmount?.value)
-  const outputAmount = (currencyOut?.address == otherCurrency?.address) ? tryParseCurrencyAmount(expectedAmount, currencyOut) : tryParseCurrencyAmount(amountSpecified?.value, currencyOut)
-  console.log("🚀 « outputAmount:", outputAmount?.value)
+  let inputAmount: CurrencyAmount = undefined;
+  let outputAmount: CurrencyAmount= undefined;
+
+  // TODO: Not sure if we need to check for all of this:
+  if (amountSpecified && currencyIn && expectedAmount && currencyOut) {
+    // Set inputAmount
+    if (currencyIn?.address == amountSpecified?.currency.address) {
+      inputAmount = {
+        value: amountSpecified.value,
+        currency: currencyIn
+      }
+    }
+    else {
+      inputAmount = {
+        value: expectedAmount,
+        currency: currencyIn
+      }
+    }
+
+    // Set outputAmount
+    if(currencyOut?.address == otherCurrency?.address){
+      outputAmount={
+        value: expectedAmount,
+        currency: currencyOut
+      }
+    }
+    else {
+      outputAmount={
+        value: amountSpecified?.value,
+        currency: currencyOut
+      }
+    }
+  }
+
+
+  // const inputAmount = (currencyIn?.address == amountSpecified?.currency.address) ? tryParseCurrencyAmount(amountSpecified?.value, currencyIn) : tryParseCurrencyAmount(expectedAmount, currencyIn)
+  // console.log("🚀 ~ file: useBestTrade.ts: 🚀 « inputAmount:", inputAmount?.value)
+  // const outputAmount = (currencyOut?.address == otherCurrency?.address) ? tryParseCurrencyAmount(expectedAmount, currencyOut) : tryParseCurrencyAmount(amountSpecified?.value, currencyOut)
+  // console.log("🚀 ~ file: useBestTrade.ts: 🚀 « outputAmount:", outputAmount?.value)
 
   //TODO: Set the trade specs, getQuote
 
@@ -145,7 +175,7 @@ export function useBestTrade(
     return {
       inputAmount: inputAmount,
       outputAmount: outputAmount,
-      expectedAmount: isNaN(expectedAmount) ? 0 : expectedAmount,
+      expectedAmount, // //isNaN(expectedAmount) ? 0 : expectedAmount,
       tradeType: tradeType,
       swaps: [
         {
@@ -172,6 +202,9 @@ export function useBestTrade(
   const tradeResult = useMemo(() => {
     // Trade is correctly updated depending on the user change (input token / amount, etc...)
     const state = pairAddress ? QuoteState.SUCCESS : QuoteState.NOT_FOUND;
+    console.log("🚀 ~ file: useBestTrade.ts:170 ~ tradeResult ~ pairAddress:", pairAddress)
+    console.log("🚀 ~ file: useBestTrade.ts:170 ~ tradeResult ~ state:", state)
+    
     const myTradeResult = { state: state, trade: trade }
     return myTradeResult;
   }, [pairAddress, trade]); //should get the pair address and quotes
@@ -180,25 +213,30 @@ export function useBestTrade(
 
   const bestTrade = useMemo(() => {
     if (skipFetch && amountSpecified && otherCurrency) {
+      console.log("case: 1")
       // If we don't want to fetch new trades, but have valid inputs, return the stale trade.
       return { state: TradeState.STALE, trade: trade };
     } else if (!amountSpecified || (amountSpecified && !otherCurrency)) {
+      console.log("case: 2")
       return {
         state: TradeState.INVALID,
         trade: undefined
       };
     } else if (tradeResult?.state === QuoteState.NOT_FOUND) {
+      console.log("case: 3")
       return {
         state: TradeState.NO_ROUTE_FOUND,
         trade: undefined
       };
     } else if (!tradeResult?.trade) {
+      console.log("case: 4")
       // TODO(WEB-1985): use `isLoading` returned by rtk-query hook instead of checking for `trade` status
       return {
         state: TradeState.LOADING,
         trade: undefined
       };
     } else {
+      console.log("case: 5")
       return {
         state: TradeState.VALID, //isCurrent ? TradeState.VALID : TradeState.LOADING,
         trade: tradeResult.trade,

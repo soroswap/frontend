@@ -19,6 +19,7 @@ import { InterfaceTrade, TradeState } from "state/routing/types";
 import ConfirmSwapModal from "components/Swap/ConfirmSwapModal";
 import { useSwapCallback } from "hooks/useSwapCallback";
 import { AppContext } from "contexts";
+import { formatStringTokenAmount } from "helpers/format";
 
 const SwapSection = styled('div')(({ theme }) => ({
   position: "relative",
@@ -149,7 +150,7 @@ export function SwapComponent({
     inputError: swapInputError,
   } = swapInfo
   // console.log("🚀 « inputError:", swapInputError)
-  // console.log("🚀 « trade:", trade)
+  console.log("🚀 « swap.tsx: trade:", trade)
 
   const parsedAmounts = useMemo(
     () => ({
@@ -158,6 +159,17 @@ export function SwapComponent({
     }),
     [independentField, parsedAmount, trade]
   )
+  console.log("🚀 ~ file: swap.tsx:161 ~ parsedAmounts:", parsedAmounts)
+
+
+  const decimals = useMemo(
+    () => ({
+      [Field.INPUT]: independentField === Field.INPUT ? (trade?.outputAmount.currency.decimals ?? 7) : (trade?.inputAmount.currency.decimals ?? 7),
+      [Field.OUTPUT]: independentField === Field.OUTPUT ? (trade?.inputAmount.currency.decimals  ?? 7): (trade?.outputAmount.currency.decimals ?? 7),
+    }),
+    [independentField, trade]
+  )
+  console.log("🚀 ~ file: swap.tsx:172 ~ decimals:", decimals)
 
   const userHasSpecifiedInputOutput = Boolean(
     currencies[Field.INPUT] && currencies[Field.OUTPUT] && parsedAmounts[independentField]?.value > 0
@@ -220,7 +232,7 @@ export function SwapComponent({
   const formattedAmounts = useMemo(
     () => ({
       [independentField]: typedValue,
-      [dependentField]: trade?.expectedAmount,
+      [dependentField]: formatStringTokenAmount(trade?.expectedAmount, decimals[independentField]),
     }),
     [dependentField, independentField, trade, typedValue]
   )
