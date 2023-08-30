@@ -4,7 +4,8 @@ import { styled, useTheme } from "@mui/material/styles";
 import { Box, Modal } from "@mui/material";
 import { AppContext } from "contexts";
 import ModalBox from "./ModalBox";
-import freighterLogo from '../../assets/svg/FreighterWallet.svg'
+import freighterLogoWhite from '../../assets/svg/FreighterWalletWhite.svg'
+import freighterLogoBlack from '../../assets/svg/FreighterWalletBlack.svg'
 import Image from "next/image";
 import { useSorobanReact } from "@soroban-react/core";
 
@@ -47,7 +48,7 @@ const FooterText = styled('div')`
   font-size: 12px;
   font-weight: 600;
   & > span {
-    color: ${({theme}) => theme.palette.custom.borderColor}
+    color: ${({theme}) => theme.palette.custom.textLinks}
   }
 `
 
@@ -76,11 +77,11 @@ export default function ConnectWalletModal() {
           <Subtitle>Choose how you want to connect. <span>If you don’t have a wallet, you can select a provider and create one.</span></Subtitle>
           <WalletBox onClick={() => handleClick()}>
             <div style={{display: "flex", gap: "16px"}}>
-              <Image src={freighterLogo.src} width={24} height={24} alt="Freighter Wallet" />
+              <Image src={theme.palette.mode == 'dark' ? freighterLogoWhite.src : freighterLogoBlack.src} width={24} height={24} alt="Freighter Wallet" />
               <span>Freighter Wallet</span>
             </div>
             {/* TODO: If detected wallet show detected or if it has to be installed */}
-            <span style={{color: theme.palette.customBackground.accentSuccess}}>Detected</span>
+            <span style={{color: theme.palette.custom.textQuaternary}}>Detected</span>
           </WalletBox>
         </ContentWrapper>
         {/* TODO: add link to terms of service */}
