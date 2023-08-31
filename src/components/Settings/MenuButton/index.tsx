@@ -2,14 +2,13 @@ import TuneRoundedIcon from '@mui/icons-material/TuneRounded';
 import Row from 'components/Row'
 import { useUserSlippageTolerance } from 'state/user/hooks'
 import { Typography, styled, useTheme } from "@mui/material"
+import { Settings } from 'react-feather';
+import settingsIcon from '../../../assets/svg/settingsIcon.svg';
+import Image from 'next/image';
 
-const Icon = styled(TuneRoundedIcon)`
+const Icon = styled(Settings)`
   height: 24px;
   width: 24px;
-  margin: 8 px;
-  > * {
-    fill: ${({ theme }) => theme.palette.secondary.main};
-  }
 `
 
 const Button = styled("button") <{ isActive: boolean }>`
@@ -37,8 +36,7 @@ const IconContainerWithSlippage = styled(IconContainer)`
     color: ${({ theme }) => (theme.palette.secondary.main)};
   }
 
-  background-color: ${({ theme }) =>
-    theme.palette.customBackground.surface};
+  background-color: transparent};
 `
 
 const ButtonContent = () => {
@@ -47,16 +45,14 @@ const ButtonContent = () => {
   if (userSlippageTolerance === 0.5) {
     return (
       <IconContainer>
-        <Icon />
+        <Image width={32} height={32} src={settingsIcon.src} alt="Settings"/>
       </IconContainer>
     )
   }
 
   return (
     <IconContainerWithSlippage data-testid="settings-icon-with-slippage" gap="sm" >
-      <Typography>{userSlippageTolerance}% slippage</Typography>
-
-      <Icon />
+      <Image width={32} height={32} src={settingsIcon.src} alt="Settings"/>
     </IconContainerWithSlippage>
   )
 }
