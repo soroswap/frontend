@@ -66,7 +66,6 @@ const CurrencySelect = styled(ButtonBase)<{
   padding: ${({ selected }) => (selected ? '4px 8px 4px 4px' : '6px 6px 6px 8px')};
   gap: 8px;
   justify-content: space-between;
-  margin-left: ${({ hideInput }) => (hideInput ? '0' : '12px')};
 
   &:hover,
   &:active {
@@ -150,8 +149,8 @@ const StyledNumericalInput = styled(NumericalInput)<{ $loading: boolean }>`
   filter: ${({ $loading }) => ($loading ? 'grayscale(1)' : 'none')};
   opacity: ${({ $loading }) => ($loading ? '0.4' : '1')};
   transition: opacity 0.2s ease-in-out;
-  text-align: left;
-  font-size: 36px;
+  text-align: right;
+  font-size: 24px;
   line-height: 44px;
   font-variant: small-caps;
 `
@@ -215,15 +214,6 @@ export default function SwapCurrencyInputPanel({
     <InputPanel id={id} hideInput={hideInput} {...rest}>
       <Container hideInput={hideInput}>
         <InputRow style={hideInput ? { padding: '0', borderRadius: '8px' } : {}}>
-          {!hideInput && (
-            <StyledNumericalInput
-              className="token-amount-input"
-              value={value}
-              onUserInput={onUserInput}
-              disabled={!chainAllowed || disabled}
-              $loading={loading}
-            />
-          )}
           <CurrencySelect
             disabled={!chainAllowed || disabled}
             visible={currency !== undefined}
@@ -250,13 +240,19 @@ export default function SwapCurrencyInputPanel({
               {<StyledDropDown selected={!!currency} />}
             </Aligner>
           </CurrencySelect>
+          {!hideInput && (
+            <StyledNumericalInput
+              className="token-amount-input"
+              value={value}
+              onUserInput={onUserInput}
+              disabled={!chainAllowed || disabled}
+              $loading={loading}
+            />
+          )}
         </InputRow>
         {Boolean(!hideInput && !hideBalance) && (
           <FiatRow>
             <RowBetween>
-              <LoadingOpacityContainer $loading={loading}>
-                {fiatValue && <FiatValue fiatValue={fiatValue} />}
-              </LoadingOpacityContainer>
               {address && currency? (
                 <CurrencyBalance 
                   address={address} 
@@ -268,6 +264,9 @@ export default function SwapCurrencyInputPanel({
               ) : (
                 <span />
               )}
+              <LoadingOpacityContainer $loading={loading}>
+                {fiatValue && <FiatValue fiatValue={fiatValue} />}
+              </LoadingOpacityContainer>
             </RowBetween>
           </FiatRow>
         )}

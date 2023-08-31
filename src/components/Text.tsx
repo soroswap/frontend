@@ -16,7 +16,7 @@ export const BodySecondary = styled(Typography)<{color?: string; fontWeight?: nu
 
 export const SubHeader = styled(Typography)<{color?: string; fontWeight?: number}>(({ theme, color, fontWeight }) => ({
   fontWeight: fontWeight ?? 500,
-  fontSize: 16,
+  fontSize: 24,
   color: color ?? theme.typography.subtitle1.color,
   lineHeight: "24px",
 }));
