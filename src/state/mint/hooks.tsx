@@ -10,23 +10,17 @@ import tryParseCurrencyAmount from 'lib/utils/tryParseCurrencyAmount'
 import { ReactNode, useCallback, useEffect, useMemo, useState } from 'react'
 import { useAppDispatch, useAppSelector } from 'state/hooks'
 
-import { usePairExist } from 'hooks/usePairExist'
-import { usePairs } from 'hooks/usePairs'
-import { usePairContractAddress } from 'hooks/usePairContractAddress'
-
-// import { useTotalSupply } from '../../hooks/useTotalSupply'
-// import { PairState, useV2Pair } from '../../hooks/useV2Pairs'
-// import { useCurrencyBalances } from '../connection/hooks'
 import { AppState } from '../types'
 import { Field, typeInput } from './actions'
 import { Token } from 'typescript'
-import { useReservesBigNumber } from 'hooks/useReserves'
+import { reservesBNWithTokens, useReservesBigNumber } from 'hooks/useReserves'
 import calculatePoolTokenOptimalAmount from 'functions/calculatePoolTokenOptimalAmount'
 import BigNumber from 'bignumber.js'
 import { contractInvoke } from '@soroban-react/contracts';
 import { scValStrToJs } from 'helpers/convert';
 import { FactoryResponseType, FactoryType } from 'interfaces/factory';
 import { accountToScVal } from 'helpers/utils';
+import { formatTokenAmount } from 'helpers/format';
 
 // const ZERO = JSBI.BigInt(0)
 
@@ -142,6 +136,7 @@ export function useDerivedMintInfo(
     factory_id: "",
   })
   const [pairAddress, setPairAddress] = useState<any>(undefined)
+  const [reservesBNToken, setReservesBNToken] = useState<any>(undefined)
 
   const { independentField, typedValue, otherTypedValue } = useMintState()
   // console.log("state/mint/hooks: independentField, typedValue, otherTypedValue", independentField, typedValue, otherTypedValue)
@@ -188,6 +183,16 @@ export function useDerivedMintInfo(
   const reservesBN = useReservesBigNumber(pairAddress ?? "", sorobanContext)
   console.log("state/mint/hooks: reservesBN:", reservesBN, reservesBN.reserve0.toString(), reservesBN.reserve1.toString())
 
+  useEffect(() => {
+    if (!pairAddress) return
+    reservesBNWithTokens(pairAddress, sorobanContext).then((response) => {
+      setReservesBNToken(response)
+      console.log("reservesBNWithTokens response:", response)
+    })
+  }, [pairAddress, sorobanContext])
+
+  console.log("state/mint/hooks: reservesBNToken:", reservesBNToken)
+
   const noLiquidity: boolean =
     pairAddress === undefined ||
     (reservesBN.reserve0.isZero() && reservesBN.reserve1.isZero())
@@ -216,14 +221,28 @@ export function useDerivedMintInfo(
       return undefined
     } else if (independentAmount) {
       // We need the reserves. which are in reservesBN but how to know which corresponds to.
-      console.log("state/mint/hooks here", independentAmount)
+      console.log("state/mint/hooks: here", independentAmount)
+      // this is supposing that pair exists
+      let reserve0, reserve1;
+
+      if (independentAmount.currency.address == reservesBNToken.token0) {
+        reserve0 = reservesBNToken.reserve0
+        reserve1 = reservesBNToken.reserve1
+      } else {
+        reserve0 = reservesBNToken.reserve1
+        reserve1 = reservesBNToken.reserve0
+      }
+      console.log("state/mint/hooks: reserve0: ", reserve0.toString())
+      console.log("state/mint/hooks: reserve1: ", reserve1.toString())
+
       const calculatedPoolTokenOptimalAmount = calculatePoolTokenOptimalAmount(
         BigNumber(independentAmount.value),
-        reservesBN.reserve0,
-        reservesBN.reserve1,
+        reserve0, // it should be reserve0 if idependentAmount.currency.address == 
+        reserve1,
       )
-      console.log("state/mint/hooks calculatedPoolTokenOptimalAmount:", calculatedPoolTokenOptimalAmount)
-      return tryParseCurrencyAmount(calculatedPoolTokenOptimalAmount.toString(), currencies[dependentField])
+      console.log("state/mint/hooks: calculatedPoolTokenOptimalAmount:", calculatedPoolTokenOptimalAmount.toString())
+      const parsedCurrencyAmount = tryParseCurrencyAmount(formatTokenAmount(calculatedPoolTokenOptimalAmount.toString()), currencies[dependentField])
+      return parsedCurrencyAmount
       //   // we wrap the currencies just to get the price in terms of the other token
       //   const wrappedIndependentAmount = independentAmount?.wrapped
       //   const [tokenA, tokenB] = [currencyA?.wrapped, currencyB?.wrapped]
@@ -239,7 +258,7 @@ export function useDerivedMintInfo(
     } else {
       return undefined
     }
-  }, [noLiquidity, independentAmount, otherTypedValue, currencies, dependentField, reservesBN.reserve0, reservesBN.reserve1])
+  }, [noLiquidity, independentAmount, otherTypedValue, currencies, dependentField, reservesBNToken])
   console.log("state/mint/hooks: independentAmount:", independentAmount)
   console.log("state/mint/hooks: dependentAmount:", dependentAmount)
 
@@ -358,3 +377,14 @@ export function useDerivedMintInfo(
     error,
   }
 }
+
+/*
+10000000
+10000000 000 000 0
+
+10000000
+10000000 000 000 0
+
+10000000000
+10000000000
+*/

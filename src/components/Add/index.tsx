@@ -16,6 +16,7 @@ import { ButtonError, ButtonLight } from "components/Buttons/Button";
 import depositOnContract from "functions/depositOnContract";
 import { TokenType } from "interfaces";
 import { useRouter } from 'next/router';
+import { formatTokenAmount } from "helpers/format";
 
 
 type TokensType = [string, string];
@@ -66,12 +67,14 @@ export default function AddLiquidityPage() {
   const formattedAmounts = useMemo(() => {
     return {
       [independentField]: typedValue,
-      [dependentField]: noLiquidity ? otherTypedValue : parsedAmounts[dependentField]?.value ?? '',
+      // [dependentField]: noLiquidity ? otherTypedValue : parsedAmounts[dependentField]?.value ?? '',
+      [dependentField]: noLiquidity ? otherTypedValue : formatTokenAmount(parsedAmounts[dependentField]?.value ?? ''),
       // [dependentField]: otherTypedValue
     }
   }, [dependentField, independentField, noLiquidity, otherTypedValue, parsedAmounts, typedValue])
 
   console.log("src/components/Add/index.tsx: formattedAmounts:", formattedAmounts)
+  console.log("src/components/Add/index.tsx: formatTokenAmount(formattedAmounts[dependentField]):", formatTokenAmount(formattedAmounts[dependentField]))
   console.log("src/components/Add/index.tsx: parsedAmounts:", parsedAmounts)
   console.log("src/components/Add/index.tsx: noLiquidity:", noLiquidity)
 
