@@ -179,8 +179,8 @@ export function SwapComponent({
     currencies[Field.INPUT] && currencies[Field.OUTPUT] && parsedAmounts[independentField]?.value > 0
   )
 
-  const fiatValueInput = {data: 0, isLoading: false}//useUSDPrice(parsedAmounts[Field.INPUT])
-  const fiatValueOutput = {data: 0, isLoading: false}//useUSDPrice(parsedAmounts[Field.OUTPUT])
+  const fiatValueInput = {data: 0, isLoading: true}//useUSDPrice(parsedAmounts[Field.INPUT]) //TODO: create USDPrice function when available method to get this, for now it will be shown as loading
+  const fiatValueOutput = {data: 0, isLoading: true}//useUSDPrice(parsedAmounts[Field.OUTPUT])
   const showFiatValueInput = Boolean(parsedAmounts[Field.INPUT])
   const showFiatValueOutput = Boolean(parsedAmounts[Field.OUTPUT])
 
@@ -364,7 +364,7 @@ export function SwapComponent({
               // id={InterfaceSectionName.CURRENCY_INPUT_PANEL}
               loading={independentField === Field.OUTPUT && routeIsSyncing}
               currency={currencies[Field.INPUT] ?? null}
-              id={""} />
+              id={"swap-input"} />
           </SwapSection>
           <ArrowWrapper clickable={true}>
             <ArrowContainer
@@ -384,7 +384,7 @@ export function SwapComponent({
           <div>
             <OutputSwapSection>
               <SwapCurrencyInputPanel
-                id={""}
+                id={"swap-output"}
                 value={formattedAmounts[Field.OUTPUT]}
                 //disabled={disableTokenInputs}
                 onUserInput={handleTypeOutput}

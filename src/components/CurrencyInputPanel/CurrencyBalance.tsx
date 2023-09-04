@@ -45,19 +45,19 @@ export default function CurrencyBalance({
     
     return (
         <RowFixed style={{ height: '17px' }}>
-                  <BodySmall
-                    color={theme.palette.secondary.main}
-                  >
-                    {!hideBalance && currency && selectedCurrencyBalance ? (
-                      `Balance: ${selectedCurrencyBalance}`
-                    ) : null}
-                  </BodySmall>
-                  {showMaxButton && Number(selectedCurrencyBalance) > 0 ? (
-                    <StyledBalanceMax onClick={() => onMax(parseInt(selectedCurrencyBalance))}>
-                      Max
-                    </StyledBalanceMax>
-                  ) : null}
-                </RowFixed>
+          <BodySmall
+            color={theme.palette.secondary.main}
+          >
+            {!hideBalance && currency && selectedCurrencyBalance ? (
+              `Balance: ${selectedCurrencyBalance}`
+            ) : null}
+          </BodySmall>
+          {showMaxButton && Number(selectedCurrencyBalance) > 0 ? (
+            <StyledBalanceMax onClick={() => onMax(parseInt(selectedCurrencyBalance))}>
+              Max
+            </StyledBalanceMax>
+          ) : null}
+        </RowFixed>
     )
 
   }

@@ -1,5 +1,5 @@
 // import { Trans } from '@lingui/macro'
-import { ButtonBase, styled, useTheme } from "@mui/material"
+import { ButtonBase, styled, useMediaQuery, useTheme } from "@mui/material"
 import { flexColumnNoWrap, flexRowNoWrap } from "../../themes/styles"
 import React, { ReactNode, useCallback, useState } from "react"
 import { useSorobanReact } from "@soroban-react/core"
@@ -42,6 +42,10 @@ const Container = styled('div')<{ hideInput: boolean }>`
   min-height: 44px;
   border-radius: ${({ hideInput }) => (hideInput ? '16px' : '20px')};
   width: ${({ hideInput }) => (hideInput ? '100%' : 'initial')};
+
+  @media (max-width: ${({theme}) => theme.breakpoints.values.md}px) {
+    font-size: 12px;
+  }
 `
 
 const CurrencySelect = styled(ButtonBase)<{
@@ -143,6 +147,10 @@ const StyledTokenName = styled('span')<{ active?: boolean }>`
   ${({ active }) => (active ? '  margin: 0 0.25rem 0 0.25rem;' : '  margin: 0 0.25rem 0 0.25rem;')}
   font-size: 20px;
   font-weight: 600;
+
+  @media (max-width: ${({theme}) => theme.breakpoints.values.md}px) {
+    font-size: 14px;
+  }
 `
 
 const StyledNumericalInput = styled(NumericalInput)<{ $loading: boolean }>`
@@ -153,6 +161,10 @@ const StyledNumericalInput = styled(NumericalInput)<{ $loading: boolean }>`
   font-size: 24px;
   line-height: 44px;
   font-variant: small-caps;
+
+  @media (max-width: ${({theme}) => theme.breakpoints.values.md}px) {
+    font-size: 20px;
+  }
 `
 
 interface SwapCurrencyInputPanelProps {
@@ -203,6 +215,7 @@ export default function SwapCurrencyInputPanel({
   const [modalOpen, setModalOpen] = useState(false)
   const { address, activeChain } = useSorobanReact()
   const theme = useTheme()
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
   const handleDismissSearch = useCallback(() => {
     setModalOpen(false)
@@ -210,9 +223,12 @@ export default function SwapCurrencyInputPanel({
 
   const chainAllowed = true //isSupportedChain(activeChain)
 
+  const sellOrReceive = id == "swap-input" ? "sell" : "receive"
+
   return (
     <InputPanel id={id} hideInput={hideInput} {...rest}>
       <Container hideInput={hideInput}>
+        <div>You {sellOrReceive}</div>
         <InputRow style={hideInput ? { padding: '0', borderRadius: '8px' } : {}}>
           <CurrencySelect
             disabled={!chainAllowed || disabled}
@@ -226,8 +242,8 @@ export default function SwapCurrencyInputPanel({
           >
             <Aligner>
               <RowFixed>
-                { currency ? (
-                  <CurrencyLogo style={{ marginRight: '2px' }} currency={currency} size="24px" />
+                {currency ? (
+                  <CurrencyLogo style={{ marginRight: '2px' }} currency={currency} size={isMobile ? "16px" : "24px"} />
                 ) : null}
                 <StyledTokenName className="token-symbol-container" active={Boolean(currency && currency.symbol)}>
                   {(currency && currency.symbol && currency.symbol.length > 20
