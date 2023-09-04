@@ -6,6 +6,7 @@ declare module "@mui/material/styles/createPalette" {
   interface Palette {
     customBackground: {
       surface: string;
+      outputBackground: string;
       module: string;
       bg1: string;
       bg3: string;
@@ -52,6 +53,7 @@ declare module "@mui/material/styles/createPalette" {
     customBackground?: {
       surface: string;
       module: string;
+      outputBackground: string;
       bg1: string;
       bg3: string;
       bg4: string;
@@ -118,8 +120,9 @@ export const theme = (mode: PaletteMode) => {
       },
       customBackground: {
         surface: isDark ? "#0F1016" : "#F8F8F8",
-        module: isDark ? "#13141E" : "#FFFFFF",
-        bg1: isDark ? "#131A2A" : "#F5F6FC",
+        module: isDark ? "#13141E" : "#F8F8F8",
+        outputBackground: isDark ? "#181A25" : "#F8F8F8",
+        bg1: isDark ? "#181A25" : "#FFFFFF",
         bg3: isDark ? "#404A67" : "#B8C0DC",
         bg4: isDark ? "#5D6785" : "#98A1C0",
         bg5: isDark ? "#7780A0" : "#7780A0",
@@ -151,8 +154,8 @@ export const theme = (mode: PaletteMode) => {
         deprecated_primary4: isDark ? "#376bad70" : "#F6DDE8",
         deprecated_primary5: isDark ? "#153d6f70" : "#FDEAF1",
         deprecated_yellow3: "#5D4204",
-        accentTextLightPrimary: "#F5F6FC",
-        accentTextLightSecondary: opacify(72, "#F5F6FC"),
+        accentTextLightPrimary: isDark ? "#F5F6FC" : "#7780A0",
+        accentTextLightSecondary: isDark ? "#4E4E4E" : "#A3A3A3",
         accentTextLightTertiary: opacify(12, "#F5F6FC"),
         accentTextDarkPrimary: opacify(80, "#0D111C"),
         accentTextDarkSecondary: opacify(60, "#0D111C"),

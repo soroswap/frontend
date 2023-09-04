@@ -4,7 +4,7 @@ import {
   scvalToBigNumber,
   accountToScVal,
 } from "../helpers/utils";
-import { formatAmount } from "../helpers/utils";
+import { formatFixedAmount, formatTokenAmount } from "../helpers/format";
 import { TokenMapType, TokenType } from "../interfaces";
 import { scValStrToJs } from "helpers/convert";
 import BigNumber from "bignumber.js";
@@ -52,11 +52,10 @@ export function useFormattedTokenBalance(
   // console.log("tokenAddress: ", tokenAddress);
   const tokenBalance = useTokenScVal(tokenAddress, userAddress);
   const tokenDecimals = useTokenDecimals(tokenAddress);
-  const formattedBalance = formatAmount(
-    scvalToBigNumber(tokenBalance?.result),
-    tokenDecimals,
-  );
-  return formattedBalance;
+  const tokenBalanceBigNumber= scvalToBigNumber(tokenBalance?.result)
+
+  // We allways keep balances in string and stroops
+  return formatTokenAmount(tokenBalanceBigNumber, tokenDecimals);
 }
 
 export function useTokenBalances(userAddress: string, tokens: TokenType[] | TokenMapType) {
@@ -134,14 +133,16 @@ export async function tokenDecimals(tokenAddress: string, userAddress: string, s
 
 
 export async function tokenBalances(userAddress: string, tokens: TokenType[] | TokenMapType | undefined, sorobanContext: SorobanContextType) {
+  console.log("🚀 ~ file: useBalances.tsx:140 ~ tokenBalances ~ tokens:", tokens)
   if (!tokens || !sorobanContext) return;
 
   const balances = await Promise.all(
     Object.values(tokens).map(async (token) => {
       const balanceResponse = await tokenBalance(token.address, userAddress, sorobanContext);
+      console.log("🚀 ~ file: useBalances.tsx:145 ~ Object.values ~ balanceResponse:", balanceResponse)
       const decimalsResponse = await tokenDecimals(token.address, userAddress, sorobanContext);
 
-      const formattedBalance = formatAmount(
+      const formattedBalance = formatFixedAmount(
         BigNumber(balanceResponse),
         decimalsResponse,
       );

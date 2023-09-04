@@ -7,10 +7,11 @@ import { opacify } from 'themes/utils';
 
 export const SwapWrapper = styled('main')`
   position: relative;
-  background: ${({ theme }) => theme.palette.customBackground.surface};
+  background: ${({ theme }) => `linear-gradient(${theme.palette.customBackground.bg1}, ${theme.palette.customBackground.bg1}) padding-box,
+              linear-gradient(150deg, rgba(136,102,221,1) 0%, rgba(${theme.palette.mode == 'dark' ? "33,29,50,1" : "255,255,255,1"}) 35%, rgba(${theme.palette.mode == 'dark' ? "33,29,50,1" : "255,255,255,1"}) 65%, rgba(136,102,221,1) 100%) border-box`};
+  border: 1px solid transparent;
   border-radius: 16px;
-  border: 1px solid ${({ theme }) => opacify(24, theme.palette.secondary.main)};
-  padding: 8px;
+  padding: 32px;
   padding-top: 12px;
   box-shadow: 0px 40px 120px 0px #f00bdd29;
   transition: transform 250ms ease;
@@ -22,17 +23,15 @@ export const SwapWrapper = styled('main')`
 `
 
 export const ArrowWrapper = styled('div')<{clickable: boolean }>`
-  border-radius: 12px;
-  height: 40px;
-  width: 40px;
+  border-radius: 32px;
+  height: 32px;
+  width: 32px;
   position: relative;
-  margin-top: -18px;
-  margin-bottom: -18px;
+  margin-top: -8px;
+  margin-bottom: -8px;
   margin-left: auto;
   margin-right: auto;
-  background-color: ${({ theme }) => theme.palette.customBackground.interactive};
-  border: 4px solid;
-  border-color: ${({ theme }) => theme.palette.customBackground.surface};
+  background-color: ${({ theme }) => theme.palette.customBackground.accentSuccess};
   z-index: 2;
   ${({ clickable }) =>
     clickable

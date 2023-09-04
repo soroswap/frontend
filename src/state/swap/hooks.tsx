@@ -107,6 +107,7 @@ export function useDerivedSwapInfo(state: SwapState): any {
   useEffect(() => {
     if (account) {
       tokenBalances(account, tokensArray, sorobanContext).then(balances => {
+        console.log("🚀 ~ file: hooks.tsx:110 ~ tokenBalances ~ balances:", balances)
         if (balances != undefined) {
           setRelevantTokenBalances(balances.balances);
         }
@@ -184,6 +185,8 @@ export function useDerivedSwapInfo(state: SwapState): any {
     // compare input balance to max input based on version
     //TODO: Fix this, not working well
     const [balanceIn, maxAmountIn] = [currencyBalances[Field.INPUT], (trade.trade?.inputAmount.value ?? 0)]
+    console.log("🚀 ~ file: hooks.tsx:187 ~ inputError ~ balanceIn:", balanceIn)
+    console.log("🚀 ~ file: hooks.tsx:187 ~ inputError ~ maxAmountIn:", maxAmountIn)
 
     if (balanceIn && maxAmountIn && balanceIn.balance < (maxAmountIn)) {
       inputError = `Insufficient ${balanceIn.symbol} balance`

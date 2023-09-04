@@ -192,10 +192,3 @@ export function contractAddressToScVal(contractAddress: string): any {
     Buffer.from(contractAddress, "hex"),
   ).toScVal();
 }
-
-export const formatAmount = (value: BigNumber, decimals = 7): string => {
-  return value
-    .shiftedBy(decimals * -1)
-    .toFixed(7)
-    .toString();
-};

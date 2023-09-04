@@ -192,7 +192,7 @@ export default function SwapModalFooter({
             $borderRadius="20px"
             id={"CONFIRM_SWAP_BUTTON"}
           >
-            <HeadlineSmall color="accentTextLightPrimary">
+            <HeadlineSmall color={theme.palette.custom.accentTextLightPrimary}>
               Confirm swap
             </HeadlineSmall>
           </ConfirmButton>

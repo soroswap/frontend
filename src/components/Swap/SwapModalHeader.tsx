@@ -21,6 +21,8 @@ const Rule = styled(Divider)`
 `
 
 const HeaderContainer = styled(AutoColumn)`
+  display: flex;
+  flex-direction: column;
   margin-top: 16px;
 `
 
@@ -33,6 +35,7 @@ export default function SwapModalHeader({
   inputCurrency?: TokenType
   allowedSlippage: any
 }) {
+  console.log("🚀 « trade:", trade)
   const fiatValueInput = 0//useUSDPrice(trade.inputAmount) TODO: Get USD Value
   const fiatValueOutput = 0//useUSDPrice(trade.outputAmount)
 
@@ -41,7 +44,7 @@ export default function SwapModalHeader({
       <Column gap="24px">
         <SwapModalHeaderAmount
           field={Field.INPUT}
-          label={"You pay"}
+          label={"You sell"}
           amount={trade.inputAmount.value}
           currency={inputCurrency}
           usdAmount={fiatValueInput}

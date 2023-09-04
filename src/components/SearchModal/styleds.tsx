@@ -1,4 +1,5 @@
-import searchIcon from 'assets/svg/search.svg'
+import searchIcon from 'assets/svg/searchDark.svg'
+import searchIconLight from 'assets/svg/searchLight.svg'
 
 import { AutoColumn } from '../Column'
 import { RowBetween } from '../Row'
@@ -26,7 +27,7 @@ export const MenuItem = styled(RowBetween)<{ dim?: boolean, disabled: boolean, s
 
 export const SearchInput = styled('input')`
   background: no-repeat scroll 7px 7px;
-  background-image: url(${searchIcon});
+  background-image: ${({theme})=> theme.palette.mode == 'dark' ? `url(${searchIcon.src})` : `url(${searchIconLight.src})`};
   background-size: 20px 20px;
   background-position: 12px center;
   position: relative;
@@ -49,7 +50,7 @@ export const SearchInput = styled('input')`
   font-size: 16px;
 
   ::placeholder {
-    color: ${({ theme }) => theme.palette.custom.textTertiary};
+    color: ${({ theme }) => theme.palette.custom.accentTextLightSecondary};
     font-size: 16px;
   }
   transition: border 100ms;
