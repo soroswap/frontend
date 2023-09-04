@@ -155,7 +155,7 @@ export const theme = (mode: PaletteMode) => {
         deprecated_primary5: isDark ? "#153d6f70" : "#FDEAF1",
         deprecated_yellow3: "#5D4204",
         accentTextLightPrimary: isDark ? "#F5F6FC" : "#7780A0",
-        accentTextLightSecondary: opacify(72, "#F5F6FC"),
+        accentTextLightSecondary: isDark ? "#4E4E4E" : "#A3A3A3",
         accentTextLightTertiary: opacify(12, "#F5F6FC"),
         accentTextDarkPrimary: opacify(80, "#0D111C"),
         accentTextDarkSecondary: opacify(60, "#0D111C"),

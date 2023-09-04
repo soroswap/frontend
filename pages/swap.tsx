@@ -20,6 +20,7 @@ import ConfirmSwapModal from "components/Swap/ConfirmSwapModal";
 import { useSwapCallback } from "hooks/useSwapCallback";
 import { AppContext } from "contexts";
 import { formatTokenAmount } from "helpers/format";
+import SwapDetailsDropdown from "components/Swap/SwapDetailsDropdown";
 
 const SwapSection = styled('div')(({ theme }) => ({
   position: "relative",
@@ -52,6 +53,9 @@ const SwapSection = styled('div')(({ theme }) => ({
 
 const OutputSwapSection = styled(SwapSection)`
   border-bottom: ${({ theme }) => `1px solid ${theme.palette.customBackground.module}`};
+  border-radius: 16px;
+  border: 1px solid rgba(180, 239, 175, 0.20);
+  background: ${({theme})=> theme.palette.customBackground.outputBackground};
 `
 
 export const ArrowContainer = styled('div')`
@@ -142,7 +146,7 @@ export function SwapComponent({
   const swapInfo = useDerivedSwapInfo(state)
   const {
     trade: { state: tradeState, trade },
-    // allowedSlippage,
+    allowedSlippage,
     // autoSlippage,
     currencyBalances,
     parsedAmount,
@@ -234,7 +238,7 @@ export function SwapComponent({
       [independentField]: typedValue,
       [dependentField]: formatTokenAmount(trade?.expectedAmount, decimals[independentField]),
     }),
-    [dependentField, independentField, trade, typedValue]
+    [decimals, dependentField, independentField, trade?.expectedAmount, typedValue]
   )
 
   const showMaxButton = Boolean((maxInputAmount?.balance ?? 0 > 0))
@@ -302,6 +306,10 @@ export function SwapComponent({
       })
   }, [swapCallback])
 
+  const showDetailsDropdown = Boolean(
+    userHasSpecifiedInputOutput && (trade || routeIsLoading || routeIsSyncing)
+  )
+
   const inputCurrency = currencies[Field.INPUT] ?? undefined
   const swapIsUnsupported = false//useIsSwapUnsupported(currencies[Field.INPUT], currencies[Field.OUTPUT])
   const priceImpactSeverity = 2 //IF is < 2 it shows Swap anyway button in red
@@ -367,12 +375,12 @@ export function SwapComponent({
             >
               <ArrowDown
                 size="16"
-                color={currencies[Field.INPUT] && currencies[Field.OUTPUT] ? theme.palette.primary.main : theme.palette.custom.textTertiary }//currencies[Field.INPUT] && currencies[Field.OUTPUT] ? theme.palette.custom.textTertiary}
+                color={"#000000"}//currencies[Field.INPUT] && currencies[Field.OUTPUT] ? theme.palette.custom.textTertiary}
               />
             </ArrowContainer>
           </ArrowWrapper>
         </div>
-        <AutoColumn gap="4px">
+        <AutoColumn gap="14px">
           <div>
             <OutputSwapSection>
               <SwapCurrencyInputPanel
@@ -396,14 +404,15 @@ export function SwapComponent({
               />
             </OutputSwapSection>
           </div>
-          {/* {showDetailsDropdown && (
+          {/* //TODO: Fix SwapDetailsDropdown, trade Object is missing */}
+          {showDetailsDropdown && (
             <SwapDetailsDropdown
               trade={trade}
               syncing={routeIsSyncing}
               loading={routeIsLoading}
               allowedSlippage={allowedSlippage}
             />
-          )} */}
+          )}
           {/* {showPriceImpactWarning && <PriceImpactWarning priceImpact={largerPriceImpact} />} */}
           <div>
             {swapIsUnsupported ? (

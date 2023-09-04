@@ -39,15 +39,21 @@ const Wrapper = styled('div')`
   left: 50%;
   transform: translate(-50%, -50%);
   width: 420px;  
-  background-color: ${({ theme }) => theme.palette.customBackground.surface};
-  border-radius: 20px;
-  outline: 1px solid ${({ theme }) => theme.palette.customBackground.outline};
-  padding: 16px;
+  padding: 32px;
+  background: ${({ theme }) => `linear-gradient(${theme.palette.customBackground.bg1}, ${theme.palette.customBackground.bg1}) padding-box,
+              linear-gradient(150deg, rgba(136,102,221,1) 0%, rgba(${theme.palette.mode == 'dark' ? "33,29,50,1" : "255,255,255,1"}) 35%, rgba(${theme.palette.mode == 'dark' ? "33,29,50,1" : "255,255,255,1"}) 65%, rgba(136,102,221,1) 100%) border-box`};
+  border: 1px solid transparent;
 `
 
 const BottomSection = styled(AutoColumn)`
   border-bottom-left-radius: 20px;
   border-bottom-right-radius: 20px;
+`
+
+const CustomWrapper = styled(AutoColumn)`
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 `
 
 const ConfirmedIcon = styled(ColumnCenter)<{ inline?: boolean }>`
@@ -198,16 +204,16 @@ export function ConfirmationModalContent({
 }) {
   return (
     <Wrapper>
-      <AutoColumn gap="8px">
+      <CustomWrapper>
         <Row>
           {headerContent?.()}
-          <Row justify="center" marginLeft="24px">
+          <Row justify="left">
             <SubHeader>{title}</SubHeader>
           </Row>
           <CloseButton onClick={onDismiss} data-testid="confirmation-close-icon" />
         </Row>
         {topContent()}
-      </AutoColumn>
+      </CustomWrapper>
       {bottomContent && <BottomSection gap="12px">{bottomContent()}</BottomSection>}
     </Wrapper>
   )

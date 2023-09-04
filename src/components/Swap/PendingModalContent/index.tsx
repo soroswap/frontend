@@ -18,7 +18,7 @@
 // import { getExplorerLink } from 'utils/getExplorerLink'
 // import { ExplorerDataType } from 'utils/getExplorerLink'
 
-import { css, keyframes, styled } from '@mui/material'
+import { css, keyframes, styled, useTheme } from '@mui/material'
 import { ConfirmModalState } from '../ConfirmSwapModal'
 import {
   AnimatedEntranceConfirmationIcon,
@@ -252,6 +252,7 @@ export function PendingModalContent({
     swapResult,
     trade,
   })
+  const theme = useTheme()
 
   // const order = useOrder(swapResult?.type === TradeFillType.UniswapX ? swapResult.response.orderHash : '')
 
@@ -323,7 +324,7 @@ export function PendingModalContent({
           })}
         </AnimationWrapper>
         <Row justify="center" marginTop="32px" minHeight="24px">
-          <Caption color="textSecondary">{label}</Caption>
+          <Caption color={theme.palette.custom.accentTextLightPrimary}>{label}</Caption>
         </Row>
       </HeaderContainer>
       {button && <Row justify="center">{button}</Row>}

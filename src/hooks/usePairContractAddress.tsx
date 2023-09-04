@@ -30,6 +30,5 @@ export function usePairContractAddress(
     ).toString();
     
   } else return undefined;
-  console.log("")
   return pairAddress;
 }

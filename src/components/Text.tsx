@@ -16,7 +16,7 @@ export const BodySecondary = styled(Typography)<{color?: string; fontWeight?: nu
 
 export const SubHeader = styled(Typography)<{color?: string; fontWeight?: number}>(({ theme, color, fontWeight }) => ({
   fontWeight: fontWeight ?? 500,
-  fontSize: 16,
+  fontSize: 24,
   color: color ?? theme.typography.subtitle1.color,
   lineHeight: "24px",
 }));
@@ -86,6 +86,13 @@ export const Caption = styled(Typography)<{color?: string; fontWeight?: number}>
 export const LabelSmall = styled(Typography)<{color?: string; fontWeight?: number}>(({ theme, color, fontWeight }) => ({
   fontWeight: fontWeight ?? 600,
   fontSize: 14,
+  color: color ?? theme.typography.subtitle1.color,
+  lineHeight: "24px",
+}));
+
+export const ResponsiveMediumText = styled(Typography)<{color?: string; fontWeight?: number}>(({ theme, color, fontWeight }) => ({
+  fontWeight: fontWeight ?? 500,
+  fontSize: "1.9vh",
   color: color ?? theme.typography.subtitle1.color,
   lineHeight: "24px",
 }));

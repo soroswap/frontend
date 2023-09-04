@@ -284,7 +284,7 @@ export default function ConfirmSwapModal({
       aria-describedby="modal-modal-description"
     >
       <ConfirmationModalContent
-        title={confirmModalState === ConfirmModalState.REVIEWING ? "Review swap" : undefined}
+        title={confirmModalState === ConfirmModalState.REVIEWING ? "Swap" : undefined}
         onDismiss={onDismiss}
         topContent={modalHeader}
         bottomContent={modalBottom}
