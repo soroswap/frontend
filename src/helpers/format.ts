@@ -28,6 +28,8 @@ export const xlmToStroop = (lumens: BigNumber | string): BigNumber => {
 // Example - User A has 1000000001 of a token set to 7 decimals, 
 // display should be 100.0000001
 export const formatTokenAmount = (amount: BigNumber | string , decimals: number = 7): string => {
+
+  if (!amount){ return '0'}
   
   if (!(amount instanceof BigNumber)) {
     amount = BigNumber(amount)
