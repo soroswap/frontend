@@ -90,6 +90,13 @@ export const LabelSmall = styled(Typography)<{color?: string; fontWeight?: numbe
   lineHeight: "24px",
 }));
 
+export const ResponsiveMediumText = styled(Typography)<{color?: string; fontWeight?: number}>(({ theme, color, fontWeight }) => ({
+  fontWeight: fontWeight ?? 500,
+  fontSize: "1.9vh",
+  color: color ?? theme.typography.subtitle1.color,
+  lineHeight: "24px",
+}));
+
 export const HideSmall = styled('span')`
   display: none;
 `

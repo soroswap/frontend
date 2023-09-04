@@ -28,8 +28,9 @@ const ContentWrapper = styled(Column)<{ modalheight?: number }>`
   width: 420px;
   height: ${({ modalheight }) => modalheight+'vh' ?? '90px'};
   min-height: 90px;
-  background-color: ${({ theme }) => theme.palette.customBackground.surface};
-  border: 1px solid #98A1C03d;
+  background: ${({ theme }) => `linear-gradient(${theme.palette.customBackground.module}, ${theme.palette.customBackground.module}) padding-box,
+              linear-gradient(150deg, rgba(136,102,221,1) 0%, rgba(${theme.palette.mode == 'dark' ? "33,29,50,1" : "255,255,255,1"}) 35%, rgba(${theme.palette.mode == 'dark' ? "33,29,50,1" : "255,255,255,1"}) 65%, rgba(136,102,221,1) 100%) border-box`};
+  border: 1px solid transparent;
 `
 
 interface CurrencySearchProps {
@@ -147,7 +148,7 @@ export function CurrencySearch({
     <ContentWrapper modalheight={modalHeight}>
       <PaddedColumn gap="16px">
         <RowBetween>
-          <Typography fontWeight={500} fontSize={16}>
+          <Typography fontWeight={500} fontSize={24}>
             Select a token
           </Typography>
           <CloseButton onClick={onDismiss} />
