@@ -4,7 +4,7 @@ import {
   scvalToBigNumber,
   accountToScVal,
 } from "../helpers/utils";
-import { formatFixedAmount } from "../helpers/utils";
+import { formatFixedAmount, formatTokenAmount } from "../helpers/format";
 import { TokenMapType, TokenType } from "../interfaces";
 import { scValStrToJs } from "helpers/convert";
 import BigNumber from "bignumber.js";
@@ -52,14 +52,10 @@ export function useFormattedTokenBalance(
   // console.log("tokenAddress: ", tokenAddress);
   const tokenBalance = useTokenScVal(tokenAddress, userAddress);
   const tokenDecimals = useTokenDecimals(tokenAddress);
-  // const formattedBalance = formatFixedAmount(
-  //   scvalToBigNumber(tokenBalance?.result),
-  //   tokenDecimals,
-  // );
-  
+  const tokenBalanceBigNumber= scvalToBigNumber(tokenBalance?.result)
+
   // We allways keep balances in string and stroops
-  const formattedBalance = scvalToBigNumber(tokenBalance?.result).toFixed(7).toString()
-  return formattedBalance;
+  return formatTokenAmount(tokenBalanceBigNumber, tokenDecimals);
 }
 
 export function useTokenBalances(userAddress: string, tokens: TokenType[] | TokenMapType) {
