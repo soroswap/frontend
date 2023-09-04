@@ -146,7 +146,7 @@ export default function Header({isDrawerOpen, setDrawerOpen}: HeaderProps) {
   const router = useRouter();
   const { pathname } = router;
 
-  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+  const isMobile = useMediaQuery(theme.breakpoints.down(1220));
   
   const logoWidth = isMobile ? 88 : 162
   const logoHeight = isMobile ? 30 : 56
@@ -154,7 +154,12 @@ export default function Header({isDrawerOpen, setDrawerOpen}: HeaderProps) {
   return (
     <>
       <MainBox isMobile={isMobile}>
-        <Image src={theme.palette.mode === "dark" ? soroswapLogoPurpleWhite.src : soroswapLogoPurpleBlack.src} width={logoWidth} height={logoHeight} alt={"Soroswap"} />
+        <Image
+          src={theme.palette.mode === "dark" ? soroswapLogoPurpleWhite.src : soroswapLogoPurpleBlack.src}
+          width={88}
+          height={32}
+          style={{ width: "100%", height: "100%", maxWidth: logoWidth, maxHeight: logoHeight, minHeight: 30, minWidth: 88 }}
+          alt={"Soroswap"} />
         {!isMobile ? (
           <>
             <NavBar>

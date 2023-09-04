@@ -27,7 +27,7 @@ export default function MainLayout({
 }) {
   const theme = useTheme();
   const [isDrawerOpen, setDrawerOpen] = useState<boolean>(false)
-  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+  const isMobile = useMediaQuery(theme.breakpoints.down(1220));
 
   return (
     <>
