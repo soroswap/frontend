@@ -48,8 +48,8 @@ export async function reservesBigNumber(
   sorobanContext: SorobanContextType,
 ) {
 
-  if(!sorobanContext.activeChain || !pairAddress) return
-  
+  if (!sorobanContext.activeChain || !pairAddress) return
+
   const reserves_scval = await contractInvoke({
     contractAddress: pairAddress,
     method: "get_reserves",
@@ -63,4 +63,36 @@ export async function reservesBigNumber(
     reserve0: BigNumber(reserves[0]),
     reserve1: BigNumber(reserves[1]),
   };
+}
+
+export async function reservesBNWithTokens(
+  pairAddress: string,
+  sorobanContext: SorobanContextType,
+) {
+  const result = await reservesBigNumber(pairAddress, sorobanContext);
+  const reserve0 = result?.reserve0;
+  const reserve1 = result?.reserve1;
+
+  const token0_scval = await contractInvoke({
+    contractAddress: pairAddress,
+    method: "token_0",
+    args: [],
+    sorobanContext,
+  })
+  const token0 = scValStrToJs(token0_scval?.xdr)
+
+  const token1_scval = await contractInvoke({
+    contractAddress: pairAddress,
+    method: "token_1",
+    args: [],
+    sorobanContext,
+  })
+  const token1 = scValStrToJs(token1_scval?.xdr)
+
+  return {
+    token0: token0,
+    reserve0: reserve0,
+    token1: token1,
+    reserve1: reserve1
+  }
 }
