@@ -7,7 +7,7 @@ import { AddRemoveTabs } from "components/NavigationTabs";
 import { Wrapper } from "components/Pool/styleds";
 import { BlueCard } from "components/Card";
 import { SubHeader } from "components/Text";
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useDerivedMintInfo, useMintActionHandlers, useMintState } from "state/mint/hooks";
 import { useTokens, useToken } from "hooks";
 import { useSorobanReact } from '@soroban-react/core'
@@ -17,11 +17,14 @@ import depositOnContract from "functions/depositOnContract";
 import { TokenType } from "interfaces";
 import { useRouter } from 'next/router';
 import { formatTokenAmount } from "helpers/format";
+import TransactionConfirmationModal, { ConfirmationModalContent } from "components/TransactionConfirmationModal";
 
 
 type TokensType = [string, string];
 
 export default function AddLiquidityPage() {
+
+
   const router = useRouter();
   const { tokens } = router.query as { tokens: TokensType };
   console.log("pages/add tokens:", tokens)
@@ -78,6 +81,19 @@ export default function AddLiquidityPage() {
   console.log("src/components/Add/index.tsx: parsedAmounts:", parsedAmounts)
   console.log("src/components/Add/index.tsx: noLiquidity:", noLiquidity)
 
+  // Modal and loading
+  const [showConfirm, setShowConfirm] = useState<boolean>(false)
+  const [attemptingTxn, setAttemptingTxn] = useState<boolean>(false) // clicked confirm
+
+  const handleDismissConfirmation = useCallback(() => {
+    setShowConfirm(false)
+    // if there was a tx hash, we want to clear the input
+    // if (txHash) {
+    //   onFieldAInput('')
+    // }
+    // setTxHash('')
+  }, [])
+
   const provideLiquidity = useCallback(() => {
     depositOnContract({
       sorobanContext,
@@ -114,27 +130,33 @@ export default function AddLiquidityPage() {
     [currencyIdA, navigate, currencyIdB]
   )
   const theme = useTheme()
+
+  // TODO: modalHeader
+
+  // TODO: Bottom Header
+
   return (
     <>
       <AppBody>
         <AddRemoveTabs creating={false} adding={true} autoSlippage={"DEFAULT_ADD_V2_SLIPPAGE_TOLERANCE"} />
         <Wrapper>
-          {/* <TransactionConfirmationModal
+          <TransactionConfirmationModal
             isOpen={showConfirm}
             onDismiss={handleDismissConfirmation}
             attemptingTxn={attemptingTxn}
-            hash={txHash}
-            // reviewContent={() => (
-            //   <ConfirmationModalContent
-            //     title={noLiquidity ? <>You are creating a pool</> : <>You will receive</>}
-            //     onDismiss={handleDismissConfirmation}
-            //     topContent={modalHeader}
-            //     bottomContent={modalBottom}
-            //   />
-            // )}
-            pendingText={pendingText}
-            currencyToAdd={pair?.liquidityToken}
-          /> */}
+            // hash={txHash}
+            // reviewContent={() => (<div>review Content</div>)}
+            reviewContent={() => (
+              <ConfirmationModalContent
+                title={noLiquidity ? <>You are creating a pool</> : <>You will receive</>}
+                onDismiss={handleDismissConfirmation}
+                topContent={() => (<div>top content</div>)}
+                bottomContent={() => (<div>bottom content</div>)}
+              />
+            )}
+          // pendingText={pendingText}
+          // currencyToAdd={pair?.liquidityToken}
+          />
           <AutoColumn gap="20px">
             {noLiquidity ||
               (isCreate ? (
@@ -305,8 +327,8 @@ export default function AddLiquidityPage() {
               <AutoColumn gap="md">
                 <ButtonError
                   onClick={() => {
-                    // setShowConfirm(true)
-                    provideLiquidity()
+                    setShowConfirm(true)
+                    // provideLiquidity()
                     console.log("pages/add: ButtonError onClick")
                   }}
                   disabled={false}

@@ -56,7 +56,7 @@ const CustomWrapper = styled(AutoColumn)`
   gap: 8px;
 `
 
-const ConfirmedIcon = styled(ColumnCenter)<{ inline?: boolean }>`
+const ConfirmedIcon = styled(ColumnCenter) <{ inline?: boolean }>`
   padding: ${({ inline }) => (inline ? '20px 0' : '32px 0;')};
 `
 
@@ -329,7 +329,7 @@ interface ConfirmationModalProps {
   hash?: string
   reviewContent: () => ReactNode
   attemptingTxn: boolean
-  pendingText: ReactNode
+  // pendingText: ReactNode
   currencyToAdd?: TokenType
 }
 
@@ -337,19 +337,21 @@ export default function TransactionConfirmationModal({
   isOpen,
   onDismiss,
   attemptingTxn,
-  hash,
-  pendingText,
+  // hash,
+  // pendingText,
   reviewContent,
-  currencyToAdd,
+  // currencyToAdd,
 }: ConfirmationModalProps) {
   const sorobanContext = useSorobanReact()
-  const {activeChain} = sorobanContext
+  const { activeChain } = sorobanContext
   if (!activeChain) return null
 
   // confirmation screen
   return (
-    <Modal open={true}>
-      <>ss</>
+    <Modal open={isOpen}>
+      <>TransactionConfirmationModal
+        {reviewContent()}
+      </>
       {/* {isL2ChainId(chainId) && (hash || attemptingTxn) ? (
         <L2Content chainId={chainId} hash={hash} onDismiss={onDismiss} pendingText={pendingText} />
       ) : attemptingTxn ? (
