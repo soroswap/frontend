@@ -193,9 +193,10 @@ export function useDerivedMintInfo(
 
   console.log("state/mint/hooks: reservesBNToken:", reservesBNToken)
 
-  const noLiquidity: boolean =
-    pairAddress === undefined ||
-    (reservesBN.reserve0.isZero() && reservesBN.reserve1.isZero())
+  const noLiquidity: boolean = useMemo(() => {
+    return pairAddress === undefined ||
+      (reservesBN.reserve0.isZero() && reservesBN.reserve1.isZero())
+  }, [pairAddress, reservesBN])
   console.log("state/mint/hooks: noLiquidity:", noLiquidity)
 
   // // balances
