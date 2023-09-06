@@ -133,10 +133,6 @@ export default function AddLiquidityPage() {
   )
   const theme = useTheme()
 
-  // TODO: modalHeader
-
-  // TODO: Bottom Header
-
   return (
     <>
       <AppBody>
@@ -146,8 +142,6 @@ export default function AddLiquidityPage() {
             isOpen={showConfirm}
             onDismiss={handleDismissConfirmation}
             attemptingTxn={attemptingTxn}
-            // hash={txHash}
-            // reviewContent={() => (<div>review Content</div>)}
             reviewContent={() => (
               <ConfirmationModalContent
                 title={noLiquidity ? <>You are creating a pool</> : <>You will receive</>}
@@ -156,8 +150,7 @@ export default function AddLiquidityPage() {
                 bottomContent={() => AddModalFooter()}
               />
             )}
-          // pendingText={pendingText}
-          // currencyToAdd={pair?.liquidityToken}
+
           />
           <AutoColumn gap="20px">
             {noLiquidity ||

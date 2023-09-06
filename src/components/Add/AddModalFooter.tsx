@@ -132,21 +132,6 @@ export default function AddModalFooter() {
                 </BodySmall>
             </DetailsContainer>
             {
-                // showAcceptChanges ? (
-                //   <SwapShowAcceptChanges data-testid="show-accept-changes">
-                //     <RowBetween>
-                //       <RowFixed>
-                //         <StyledAlertTriangle size={20} />
-                //         <SubHeaderSmall color={theme.palette.customBackground.accentAction}>
-                //           Price updated
-                //         </SubHeaderSmall>
-                //       </RowFixed>
-                //       <SmallButtonPrimary onClick={onAcceptChanges}>
-                //         Accept
-                //       </SmallButtonPrimary>
-                //     </RowBetween>
-                //   </SwapShowAcceptChanges>
-                // ) : 
                 (
                     <AutoRow>
                         <ConfirmButton

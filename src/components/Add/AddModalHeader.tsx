@@ -5,17 +5,15 @@ import Row from "components/Row"
 import { BodySecondary, BodySmall, ResponsiveMediumText } from "components/Text"
 import { MouseoverTooltip } from "components/Tooltip"
 import { useRouter } from "next/router"
-const MAX_AMOUNT_STR_LENGTH = 9
 import { TokenType } from "interfaces";
 import { useToken } from "hooks"
 import { useMemo } from "react"
 
 export const Label = styled(BodySmall) <{ cursor?: string }>`
-  cursor: ${({ cursor }) => cursor};
-  color: ${({ theme }) => theme.palette.secondary.main};
+cursor: ${({ cursor }) => cursor};
+color: ${({ theme }) => theme.palette.secondary.main};
   margin-right: 8px;
-`
-
+  `
 const CurrencyWrapper = styled('div')`
   display: flex;
   flex-direction: row;
@@ -30,24 +28,15 @@ const CurrencyWrapper = styled('div')`
   font-size: 18px;
   font-style: normal;
   font-weight: 600;
-`
-
+  `
 const CustomRow = styled(Row)`
   border-radius: var(--arrendodamento, 16px);
   border: 1px solid var(--fora-do-brading-desativado, #4E4E4E);
   padding: 15px;
-`
+  `
 type TokensType = [string, string];
 
-
 export default function AddModalHeader() {
-    // return (<div>Add Modal Header</div>)
-    const theme = useTheme()
-    //   let formattedAmount = Number(amount)//formatCurrencyAmount(amount, NumberType.TokenTx)
-    //   console.log("🚀 « formattedAmount:", formattedAmount)
-    // if (formattedAmount.length > MAX_AMOUNT_STR_LENGTH) {
-    //   formattedAmount = ""//formatCurrencyAmount(amount, NumberType.SwapTradeAmount)
-    // }
     const router = useRouter();
     const { tokens } = router.query as { tokens: TokensType };
     const [currencyIdA, currencyIdB] = Array.isArray(tokens) ? tokens : ['', ''];
