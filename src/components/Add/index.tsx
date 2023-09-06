@@ -18,6 +18,8 @@ import { TokenType } from "interfaces";
 import { useRouter } from 'next/router';
 import { formatTokenAmount } from "helpers/format";
 import TransactionConfirmationModal, { ConfirmationModalContent } from "components/TransactionConfirmationModal";
+import AddModalHeader from "./AddModalHeader";
+import AddModalFooter from "./AddModalFooter";
 
 
 type TokensType = [string, string];
@@ -150,8 +152,8 @@ export default function AddLiquidityPage() {
               <ConfirmationModalContent
                 title={noLiquidity ? <>You are creating a pool</> : <>You will receive</>}
                 onDismiss={handleDismissConfirmation}
-                topContent={() => (<div>top content</div>)}
-                bottomContent={() => (<div>bottom content</div>)}
+                topContent={() => AddModalHeader()}
+                bottomContent={() => AddModalFooter()}
               />
             )}
           // pendingText={pendingText}

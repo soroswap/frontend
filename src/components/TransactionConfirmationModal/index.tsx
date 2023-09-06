@@ -349,7 +349,7 @@ export default function TransactionConfirmationModal({
   // confirmation screen
   return (
     <Modal open={isOpen}>
-      <>TransactionConfirmationModal
+      <>
         {reviewContent()}
       </>
       {/* {isL2ChainId(chainId) && (hash || attemptingTxn) ? (
