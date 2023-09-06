@@ -36,19 +36,19 @@ import { TokenType } from 'interfaces'
 import { ExternalLink, Paperclip } from 'react-feather'
 import Row from 'components/Row'
 import { Caption, LabelSmall, SubHeaderLarge } from 'components/Text'
-import { Any } from 'react-spring'
+
 
 export const PendingModalContainer = styled(ColumnCenter)`
   margin: 48px 0 8px;
 `
 
-const HeaderContainer = styled(ColumnCenter)<{ $disabled?: boolean }>`
+const HeaderContainer = styled(ColumnCenter) <{ $disabled?: boolean }>`
   ${({ $disabled }) => $disabled && `opacity: 0.5;`}
   padding: 0 32px;
   overflow: visible;
 `
 
-const StepCircle = styled('div')<{ active: boolean }>`
+const StepCircle = styled('div') <{ active: boolean }>`
   height: 10px;
   width: 10px;
   border-radius: 50%;
@@ -80,7 +80,7 @@ const AnimationWrapper = styled('div')`
   flex-grow: 1;
 `
 
-const StepTitleAnimationContainer = styled(Column)<{ disableEntranceAnimation?: boolean }>`
+const StepTitleAnimationContainer = styled(Column) <{ disableEntranceAnimation?: boolean }>`
   position: absolute;
   width: 100%;
   align-items: center;
