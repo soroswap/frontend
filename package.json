@@ -46,7 +46,8 @@
     "soroban-client": "0.10.0",
     "swr": "^2.2.0",
     "typescript": "4.9.4",
-    "use-resize-observer": "^9.1.0"
+    "use-resize-observer": "^9.1.0",
+    "yarn": "^1.22.19"
   },
   "devDependencies": {
     "@lingui/macro": "^4.3.0",
