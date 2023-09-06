@@ -7,7 +7,10 @@ import { MouseoverTooltip } from "components/Tooltip"
 import { useRouter } from "next/router"
 import { TokenType } from "interfaces";
 import { useToken } from "hooks"
-import { useMemo } from "react"
+import { useEffect, useMemo } from "react"
+import { Field } from "state/mint/actions"
+import { getTotalShares } from "functions/LiquidityPools"
+import { SorobanContext, SorobanContextType } from "@soroban-react/core"
 
 export const Label = styled(BodySmall) <{ cursor?: string }>`
 cursor: ${({ cursor }) => cursor};
@@ -36,16 +39,42 @@ const CustomRow = styled(Row)`
   `
 type TokensType = [string, string];
 
-export default function AddModalHeader() {
-    const router = useRouter();
-    const { tokens } = router.query as { tokens: TokensType };
-    const [currencyIdA, currencyIdB] = Array.isArray(tokens) ? tokens : ['', ''];
-    const currencyA = useToken(currencyIdA)
-    const currencyB = useToken(currencyIdB)
+function print(...args: any) {
+    console.log("src/components/Add/AddModalHeader.tsx:", ...args)
+}
+export default function AddModalHeader({
+    currencies,
+    formattedAmounts,
+    pairAddress,
+    sorobanContext
+}: {
+    currencies: { [field in Field]?: TokenType },
+    formattedAmounts: { [field in Field]?: string },
+    pairAddress: string | undefined,
+    sorobanContext: SorobanContextType
+}) {
+    const currencyA = useMemo(() => {
+        return currencies.CURRENCY_A;
+    }, [currencies])
+
+    const currencyB = useMemo(() => {
+        return currencies.CURRENCY_B;
+    }, [currencies])
+    // console.log("src/components/Add/AddModalHeader.tsx:", "formattedAmounts:", formattedAmounts)
 
     const amountOfLpTokensToReceive = useMemo(() => {
+        if (!pairAddress) return
+        const totalShares = getTotalShares(pairAddress, sorobanContext)
+        // print("totalShares", totalShares)
         return "2.3456"
-    }, [])
+    }, [pairAddress, sorobanContext])
+
+    useEffect(() => {
+        if (!pairAddress) return
+        getTotalShares(pairAddress, sorobanContext).then((totalShares) => {
+            print("totalShares:", totalShares)
+        })
+    }, [pairAddress, sorobanContext])
 
     return (
         <CustomRow align="end" justify="space-between">

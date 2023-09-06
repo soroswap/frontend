@@ -22,7 +22,7 @@ export default async function depositOnContract({
     amount0,
     amount1
 }: DepositOnContractProps) {
-    
+
     const account = sorobanContext.address;
 
     if (!account) {

@@ -31,7 +31,9 @@ const DetailRowValue = styled(BodySmall)`
 `
 type TokensType = [string, string];
 
-export default function AddModalFooter() {
+export default function AddModalFooter({
+    onConfirm
+}: { onConfirm: () => void }) {
 
 
     const router = useRouter();
@@ -49,9 +51,9 @@ export default function AddModalFooter() {
 
     const [disabledConfirm, setDisabledConfirm] = useState<boolean>(false)
 
-    const onConfirm = useCallback(() => {
-        console.log("onConfirm clicked")
-    }, [])
+    // const onConfirm = useCallback(() => {
+    //     console.log("onConfirm clicked")
+    // }, [])
 
     const swapErrorMessage = useMemo(() => {
         return ""

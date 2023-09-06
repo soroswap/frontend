@@ -60,7 +60,7 @@ export default function AddLiquidityPage() {
     currencyA ? currencyA : undefined,
     currencyB ? currencyB : undefined)
   // const derivedMintInfo = useDerivedMintInfo(tokens[0], tokens[1])
-  const { dependentField, currencies, parsedAmounts, noLiquidity } = derivedMintInfo
+  const { dependentField, currencies, parsedAmounts, noLiquidity, pairAddress } = derivedMintInfo
   console.log("pages/add derivedMintInfo:", derivedMintInfo)
   // const noLiquidity = true
   const isCreate = false
@@ -69,6 +69,7 @@ export default function AddLiquidityPage() {
 
   const { independentField, typedValue, otherTypedValue } = useMintState()
 
+  console.log("src/components/Add/index.tsx: independentField:", independentField)
   const formattedAmounts = useMemo(() => {
     return {
       [independentField]: typedValue,
@@ -97,13 +98,15 @@ export default function AddLiquidityPage() {
   }, [])
 
   const provideLiquidity = useCallback(() => {
+
+    // TODO: check that amount0 corresponds to token0?
     depositOnContract({
       sorobanContext,
-      pairAddress: derivedMintInfo.pairAddress,
+      pairAddress: pairAddress,
       amount0: formattedAmounts[independentField],
       amount1: formattedAmounts[dependentField],
     })
-  }, [dependentField, derivedMintInfo, formattedAmounts, independentField, sorobanContext])
+  }, [dependentField, pairAddress, formattedAmounts, independentField, sorobanContext])
 
   const handleCurrencyASelect = useCallback(
     (currencyA: TokenType) => {
@@ -146,8 +149,8 @@ export default function AddLiquidityPage() {
               <ConfirmationModalContent
                 title={noLiquidity ? <>You are creating a pool</> : <>You will receive</>}
                 onDismiss={handleDismissConfirmation}
-                topContent={() => AddModalHeader()}
-                bottomContent={() => AddModalFooter()}
+                topContent={() => AddModalHeader({ currencies, formattedAmounts, pairAddress, sorobanContext })}
+                bottomContent={() => AddModalFooter({ onConfirm: provideLiquidity })}
               />
             )}
 
