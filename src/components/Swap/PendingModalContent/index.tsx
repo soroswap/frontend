@@ -36,6 +36,7 @@ import { TokenType } from 'interfaces'
 import { ExternalLink, Paperclip } from 'react-feather'
 import Row from 'components/Row'
 import { Caption, LabelSmall, SubHeaderLarge } from 'components/Text'
+import { Any } from 'react-spring'
 
 export const PendingModalContainer = styled(ColumnCenter)`
   margin: 48px 0 8px;
@@ -115,7 +116,7 @@ interface PendingModalStep {
 
 interface PendingModalContentProps {
   steps?: PendingConfirmModalState[]
-  currentStep?: PendingConfirmModalState
+  currentStep?: any
   trade?: InterfaceTrade
   swapResult?: any//SwapResult
   wrapTxHash?: string
@@ -123,6 +124,7 @@ interface PendingModalContentProps {
   tokenApprovalPending?: boolean
   revocationPending?: boolean
 }
+
 
 interface ContentArgs {
   step: PendingConfirmModalState

@@ -57,11 +57,11 @@ export async function reservesBigNumber(
     sorobanContext,
   });
 
-  const reserves = scValStrToJs(reserves_scval?.xdr)
+  const reserves = scValStrToJs(reserves_scval?.xdr as any)
 
   return {
-    reserve0: BigNumber(reserves[0]),
-    reserve1: BigNumber(reserves[1]),
+    reserve0: BigNumber(reserves as any[0]),
+    reserve1: BigNumber(reserves as any[1]),
   };
 }
 
@@ -79,7 +79,7 @@ export async function reservesBNWithTokens(
     args: [],
     sorobanContext,
   })
-  const token0 = scValStrToJs(token0_scval?.xdr)
+  const token0 = scValStrToJs(token0_scval?.xdr as any)
 
   const token1_scval = await contractInvoke({
     contractAddress: pairAddress,
@@ -87,7 +87,7 @@ export async function reservesBNWithTokens(
     args: [],
     sorobanContext,
   })
-  const token1 = scValStrToJs(token1_scval?.xdr)
+  const token1 = scValStrToJs(token1_scval?.xdr as any)
 
   return {
     token0: token0,

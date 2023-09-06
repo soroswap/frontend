@@ -12,6 +12,7 @@ import { TradeType } from 'state/routing/types'
 import tryParseCurrencyAmount from 'lib/utils/tryParseCurrencyAmount'
 import { useUserSlippageToleranceWithDefault } from 'state/user/hooks'
 import BigNumber from 'bignumber.js'
+import { Any } from 'react-spring'
 
 export type relevantTokensType = {
   balance: string,
@@ -184,14 +185,13 @@ export function useDerivedSwapInfo(state: SwapState): any {
 
     // compare input balance to max input based on version
     //TODO: Fix this, not working well
-    const [balanceIn, maxAmountIn] = [currencyBalances[Field.INPUT], (trade.trade?.inputAmount.value ?? 0)]
+    const [balanceIn, maxAmountIn]:[any, any] = [currencyBalances[Field.INPUT], (trade.trade?.inputAmount.value ?? 0)]
     console.log("🚀 ~ file: hooks.tsx:187 ~ inputError ~ balanceIn:", balanceIn)
     console.log("🚀 ~ file: hooks.tsx:187 ~ inputError ~ maxAmountIn:", maxAmountIn)
 
     if (balanceIn && maxAmountIn && balanceIn.balance < (maxAmountIn)) {
       inputError = `Insufficient ${balanceIn.symbol} balance`
     }
-
     return inputError
   }, [account, currencies, currencyBalances, parsedAmount, to, trade])//, currencyBalances, trade.trade, allowedSlippage])
 

@@ -105,8 +105,8 @@ export function useBestTrade(
   // Now both expectedAmount and amountSpecified are strings in stroop format
   // Lets convert all of this to two CurrencyAmount objects: inputAmount & outputAmount
 
-  let inputAmount: CurrencyAmount = undefined;
-  let outputAmount: CurrencyAmount= undefined;
+  let inputAmount: any = undefined;
+  let outputAmount: any = undefined;
 
   // TODO: Not sure if we need to check for all of this:
   if (amountSpecified && currencyIn && expectedAmount && currencyOut) {
@@ -167,7 +167,7 @@ export function useBestTrade(
   
   
   */
-  const trade: InterfaceTrade = useMemo(() => {
+  const trade: any = useMemo(() => {
     console.log("Wil change trade")
     return {
       inputAmount: inputAmount,
