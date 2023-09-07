@@ -7,7 +7,7 @@ import { AddRemoveTabs } from "components/NavigationTabs";
 import { Wrapper } from "components/Pool/styleds";
 import { BlueCard } from "components/Card";
 import { SubHeader } from "components/Text";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useDerivedMintInfo, useMintActionHandlers, useMintState } from "state/mint/hooks";
 import { useTokens, useToken } from "hooks";
 import { useSorobanReact } from '@soroban-react/core'
@@ -20,12 +20,16 @@ import { formatTokenAmount } from "helpers/format";
 import TransactionConfirmationModal, { ConfirmationModalContent } from "components/TransactionConfirmationModal";
 import AddModalHeader from "./AddModalHeader";
 import AddModalFooter from "./AddModalFooter";
+import { reservesBNWithTokens } from "hooks/useReserves";
+import BigNumber from "bignumber.js";
+import { getLpTokensAmount } from "functions/LiquidityPools";
 
 
 type TokensType = [string, string];
 
 export default function AddLiquidityPage() {
 
+  const theme = useTheme()
 
   const router = useRouter();
   const { tokens } = router.query as { tokens: TokensType };
@@ -51,6 +55,9 @@ export default function AddLiquidityPage() {
 
   const currencyA = useToken(currencyIdA)
   const currencyB = useToken(currencyIdB)
+
+  const [amountOfLpTokensToReceive, setAmountOfLpTokensToReceive] = useState<string>("")
+  const [totalShares, setTotalShares] = useState<string>("")
 
   const navigate = useCallback((destination: any) => { router.push(destination) }, [router]
   )
@@ -134,7 +141,41 @@ export default function AddLiquidityPage() {
     },
     [currencyIdA, navigate, currencyIdB]
   )
-  const theme = useTheme()
+
+  // Get the LP token amount to receive
+  useEffect(() => {
+    if (!pairAddress || !currencyA || !currencyB) return
+    // LP tokens
+    // We need to get which one is amount0 
+    reservesBNWithTokens(pairAddress, sorobanContext).then((reserves) => {
+      if (!reserves.reserve0 || !reserves.reserve1 || !formattedAmounts.CURRENCY_A || !formattedAmounts.CURRENCY_B) return
+
+      let amount0, amount1
+      // Check if currencyA corresponds to token0 or token1
+      if (currencyA.address === reserves.token0) {
+        amount0 = new BigNumber(formattedAmounts.CURRENCY_A)
+        amount1 = new BigNumber(formattedAmounts.CURRENCY_B)
+      } else if (currencyA.address === reserves.token1) {
+        amount0 = new BigNumber(formattedAmounts.CURRENCY_B)
+        amount1 = new BigNumber(formattedAmounts.CURRENCY_A)
+      } else {
+        console.log("currencyA does not correspond to either token0 or token1");
+        return
+      }
+      getLpTokensAmount(
+        amount0,
+        reserves.reserve0,
+        amount1,
+        reserves.reserve1,
+        pairAddress,
+        sorobanContext
+      ).then((lpTokens) => {
+        setAmountOfLpTokensToReceive(lpTokens.toString())
+
+      })
+    })
+  }, [currencyA, currencyB, formattedAmounts, pairAddress, sorobanContext])
+
 
   return (
     <>
@@ -149,8 +190,8 @@ export default function AddLiquidityPage() {
               <ConfirmationModalContent
                 title={noLiquidity ? <>You are creating a pool</> : <>You will receive</>}
                 onDismiss={handleDismissConfirmation}
-                topContent={() => AddModalHeader({ currencies, formattedAmounts, pairAddress, sorobanContext })}
-                bottomContent={() => AddModalFooter({ onConfirm: provideLiquidity })}
+                topContent={() => AddModalHeader({ currencies, amountOfLpTokensToReceive })}
+                bottomContent={() => AddModalFooter({ currencies, formattedAmounts, onConfirm: provideLiquidity })}
               />
             )}
 

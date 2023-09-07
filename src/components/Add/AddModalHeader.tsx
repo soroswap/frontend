@@ -39,14 +39,11 @@ const CustomRow = styled(Row)`
 
 export default function AddModalHeader({
     currencies,
-    formattedAmounts,
-    pairAddress,
-    sorobanContext
+    amountOfLpTokensToReceive,
 }: {
     currencies: { [field in Field]?: TokenType },
-    formattedAmounts: { [field in Field]?: string },
-    pairAddress: string | undefined,
-    sorobanContext: SorobanContextType
+    amountOfLpTokensToReceive: string,
+
 }) {
     const currencyA = useMemo(() => {
         return currencies.CURRENCY_A;
@@ -56,41 +53,6 @@ export default function AddModalHeader({
         return currencies.CURRENCY_B;
     }, [currencies])
 
-    const [amountOfLpTokensToReceive, setAmountOfLpTokensToReceive] = useState<string>("")
-
-    // Get the LP token amount to receive
-    useEffect(() => {
-        if (!pairAddress || !currencyA || !currencyB) return
-        // LP tokens
-        // We need to get which one is amount0 
-        reservesBNWithTokens(pairAddress, sorobanContext).then((reserves) => {
-            if (!reserves.reserve0 || !reserves.reserve1 || !formattedAmounts.CURRENCY_A || !formattedAmounts.CURRENCY_B) return
-
-            let amount0, amount1
-            // Check if currencyA corresponds to token0 or token1
-            if (currencyA.address === reserves.token0) {
-                amount0 = new BigNumber(formattedAmounts.CURRENCY_A)
-                amount1 = new BigNumber(formattedAmounts.CURRENCY_B)
-            } else if (currencyA.address === reserves.token1) {
-                amount0 = new BigNumber(formattedAmounts.CURRENCY_B)
-                amount1 = new BigNumber(formattedAmounts.CURRENCY_A)
-            } else {
-                console.log("currencyA does not correspond to either token0 or token1");
-                return
-            }
-            getLpTokensAmount(
-                amount0,
-                reserves.reserve0,
-                amount1,
-                reserves.reserve1,
-                pairAddress,
-                sorobanContext
-            ).then((lpTokens) => {
-                setAmountOfLpTokensToReceive(lpTokens.toString())
-
-            })
-        })
-    }, [currencyA, currencyB, formattedAmounts, pairAddress, sorobanContext])
 
     return (
         <CustomRow align="end" justify="space-between">
