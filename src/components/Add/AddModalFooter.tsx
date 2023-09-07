@@ -10,6 +10,9 @@ import { useCallback, useMemo, useState } from "react"
 import { SwapCallbackError } from "components/Swap/styleds"
 import { useRouter } from "next/router"
 import { useToken } from "hooks"
+import { Field } from "state/mint/actions"
+import { TokenType } from "interfaces"
+import BigNumber from "bignumber.js"
 
 const DetailsContainer = styled(Column)`
   padding: 0 8px;
@@ -32,28 +35,29 @@ const DetailRowValue = styled(BodySmall)`
 type TokensType = [string, string];
 
 export default function AddModalFooter({
-    onConfirm
-}: { onConfirm: () => void }) {
-
-
-    const router = useRouter();
-    const { tokens } = router.query as { tokens: TokensType };
-    const [currencyIdA, currencyIdB] = Array.isArray(tokens) ? tokens : ['', ''];
-    const currencyA = useToken(currencyIdA)
-    const currencyB = useToken(currencyIdB)
+    currencies,
+    formattedAmounts,
+    totalShares,
+    onConfirm,
+}: {
+    currencies: { [field in Field]?: TokenType },
+    formattedAmounts: { [field in Field]?: string },
+    totalShares: string
+    onConfirm: () => void,
+}) {
 
     const theme = useTheme()
 
-    const label = `XLM`
-    const labelInverted = `XLM`
-    const formattedPrice = 0//formatTransactionAmount(priceToPreciseFloat(trade.executionPrice))
-    const txCount = 0//getTransactionCount(trade)
-
     const [disabledConfirm, setDisabledConfirm] = useState<boolean>(false)
+    // const [shareOfPool, setShareOfPool] = useState<string>("")
 
-    // const onConfirm = useCallback(() => {
-    //     console.log("onConfirm clicked")
-    // }, [])
+    const currencyA = useMemo(() => {
+        return currencies.CURRENCY_A;
+    }, [currencies])
+
+    const currencyB = useMemo(() => {
+        return currencies.CURRENCY_B;
+    }, [currencies])
 
     const swapErrorMessage = useMemo(() => {
         return ""
@@ -63,22 +67,17 @@ export default function AddModalFooter({
         return "0.5"
     }, [])
 
-    const currencyAmountA = useMemo(() => {
-        return "100"
-    }, [])
-
-    const currencyAmountB = useMemo(() => {
-        return "100"
-    }, [])
-
     const rate = useMemo(() => {
-        return `1 ${currencyA?.symbol} = 3 ${currencyB?.symbol}`
-    }, [currencyA, currencyB])
+        if (!formattedAmounts.CURRENCY_A || !formattedAmounts.CURRENCY_B) return
+        const amountA = new BigNumber(formattedAmounts.CURRENCY_A)
+        const amountB = new BigNumber(formattedAmounts.CURRENCY_B)
+
+        return `1 ${currencyA?.symbol} = ${amountB.dividedBy(amountA)} ${currencyB?.symbol}`
+    }, [currencyA, currencyB, formattedAmounts])
 
     const shareOfPool = useMemo(() => {
-        return `0.023 %`
-    }, [])
-
+        return `${totalShares} %`
+    }, [totalShares])
     return (
         <>
             <BodySmall> If prices change more than {allowedSlippage}, the transaction will revert</BodySmall>
@@ -86,17 +85,17 @@ export default function AddModalFooter({
                 <BodySmall>
                     <Row align="flex-start" justify="space-between" gap="sm">
                         <Label>
-                            {currencyA?.symbol} to deposit
+                            {currencyA?.name} to deposit
                         </Label>
-                        <DetailRowValue>{`${currencyAmountA} ${currencyA?.symbol}`}</DetailRowValue>
+                        <DetailRowValue>{`${formattedAmounts.CURRENCY_A} ${currencyA?.symbol}`}</DetailRowValue>
                     </Row>
                 </BodySmall>
                 <BodySmall>
                     <Row align="flex-start" justify="space-between" gap="sm">
                         <Label>
-                            {currencyB?.symbol} to deposit
+                            {currencyB?.name} to deposit
                         </Label>
-                        <DetailRowValue>{`${currencyAmountB} ${currencyB?.symbol}`}</DetailRowValue>
+                        <DetailRowValue>{`${formattedAmounts.CURRENCY_B} ${currencyB?.symbol}`}</DetailRowValue>
                     </Row>
                 </BodySmall>
                 <BodySmall>

@@ -22,7 +22,7 @@ import AddModalHeader from "./AddModalHeader";
 import AddModalFooter from "./AddModalFooter";
 import { reservesBNWithTokens } from "hooks/useReserves";
 import BigNumber from "bignumber.js";
-import { getLpTokensAmount } from "functions/LiquidityPools";
+import { getLpTokensAmount, getTotalShares } from "functions/LiquidityPools";
 
 
 type TokensType = [string, string];
@@ -57,6 +57,7 @@ export default function AddLiquidityPage() {
   const currencyB = useToken(currencyIdB)
 
   const [amountOfLpTokensToReceive, setAmountOfLpTokensToReceive] = useState<string>("")
+  const [amountOfLpTokensToReceiveBN, setAmountOfLpTokensToReceiveBN] = useState<BigNumber>()
   const [totalShares, setTotalShares] = useState<string>("")
 
   const navigate = useCallback((destination: any) => { router.push(destination) }, [router]
@@ -171,12 +172,20 @@ export default function AddLiquidityPage() {
         sorobanContext
       ).then((lpTokens) => {
         setAmountOfLpTokensToReceive(lpTokens.toString())
-
+        setAmountOfLpTokensToReceiveBN(lpTokens)
       })
     })
   }, [currencyA, currencyB, formattedAmounts, pairAddress, sorobanContext])
 
-
+  // Get share of Pool
+  useEffect(() => {
+    if (!pairAddress || !amountOfLpTokensToReceiveBN) return
+    getTotalShares(pairAddress, sorobanContext).then((totalShares) => {
+      console.log("Add/index:", totalShares)
+      const share = amountOfLpTokensToReceiveBN.multipliedBy(100).dividedBy(amountOfLpTokensToReceiveBN.plus(totalShares))
+      setTotalShares(share.toString())
+    })
+  }, [amountOfLpTokensToReceiveBN, pairAddress, sorobanContext])
   return (
     <>
       <AppBody>
@@ -191,7 +200,7 @@ export default function AddLiquidityPage() {
                 title={noLiquidity ? <>You are creating a pool</> : <>You will receive</>}
                 onDismiss={handleDismissConfirmation}
                 topContent={() => AddModalHeader({ currencies, amountOfLpTokensToReceive })}
-                bottomContent={() => AddModalFooter({ currencies, formattedAmounts, onConfirm: provideLiquidity })}
+                bottomContent={() => AddModalFooter({ currencies, formattedAmounts, totalShares, onConfirm: provideLiquidity })}
               />
             )}
 
