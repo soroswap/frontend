@@ -104,9 +104,9 @@ export function useBestTrade(
   }
   // Now both expectedAmount and amountSpecified are strings in stroop format
   // Lets convert all of this to two CurrencyAmount objects: inputAmount & outputAmount
-
-  let inputAmount: any = undefined;
-  let outputAmount: any = undefined;
+  
+  let inputAmount: CurrencyAmount | undefined;
+  let outputAmount: CurrencyAmount  | undefined;
 
   // TODO: Not sure if we need to check for all of this:
   if (amountSpecified && currencyIn && expectedAmount && currencyOut) {
@@ -147,28 +147,28 @@ export function useBestTrade(
 
   //TODO: Set the trade specs, getQuote
 
-  /*
-  export type InterfaceTrade = {
-  inputAmount: CurrencyAmount;
-  outputAmount: CurrencyAmount;
-  tradeType: TradeType;
-  swaps: {
-    inputAmount: CurrencyAmount;
-    outputAmount: CurrencyAmount;
-    route: {
-      input: TokenType;
-      output: TokenType;
-      pairs: {
-        pairAddress: string;
-      }[];
-    };
-  }[];
-};
+//   /*
+//   export type InterfaceTrade = {
+//   inputAmount: CurrencyAmount;
+//   outputAmount: CurrencyAmount;
+//   tradeType: TradeType;
+//   swaps: {
+//     inputAmount: CurrencyAmount;
+//     outputAmount: CurrencyAmount;
+//     route: {
+//       input: TokenType;
+//       output: TokenType;
+//       pairs: {
+//         pairAddress: string;
+//       }[];
+//     };
+//   }[];
+// };
   
   
-  */
-  const trade: any = useMemo(() => {
-    console.log("Wil change trade")
+//   */
+  const trade: InterfaceTrade  = useMemo(() => {
+
     return {
       inputAmount: inputAmount,
       outputAmount: outputAmount,

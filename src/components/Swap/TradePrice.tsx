@@ -29,14 +29,14 @@ export default function TradePrice({ trade }: TradePriceProps) {
 
   const formattedPrice = useMemo(() => {
     try {
-      return trade.inputAmount.value //TODO: This should be the price of 1 of the labelInverted currency compared with the other one
+      return trade.inputAmount ? trade.inputAmount.value : '0';
     } catch {
-      return '0'
+      return '0';
     }
   }, [trade])
 
-  const label = showInverted ? `${trade.outputAmount.currency.symbol}` : `${trade.inputAmount.currency.symbol} `
-  const labelInverted = showInverted ? `${trade.inputAmount.currency.symbol} ` : `${trade.outputAmount.currency.symbol}`
+  const label = showInverted ? `${trade.outputAmount ? trade.outputAmount.currency.symbol : ''}` : `${trade.inputAmount ? trade.inputAmount.currency.symbol : ''}`;
+  const labelInverted = showInverted ? `${trade.inputAmount ? trade.inputAmount.currency.symbol : ''} ` : `${trade.outputAmount ? trade.outputAmount.currency.symbol : ''}`;
   const flipPrice = useCallback(() => setShowInverted(!showInverted), [setShowInverted, showInverted])
 
   const text = `${'1 ' + labelInverted + ' = ' + formattedPrice ?? '-'} ${label}`

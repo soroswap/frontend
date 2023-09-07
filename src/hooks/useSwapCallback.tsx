@@ -24,13 +24,13 @@ export function useSwapCallback(
     if (!address || !activeChain) throw new Error('wallet must be connected to swap')
 
     const pairAddress = trade.swaps[0].route.pairs[0].pairAddress
-    const amountInScVal = bigNumberToI128(BigNumber(trade.inputAmount.value))
+    const amountInScVal = bigNumberToI128(BigNumber(trade.inputAmount?.value || 0));
     // console.log("🚀 « trade.inputAmount:", trade.inputAmount.value)
-    const amountOutScVal = bigNumberToI128(BigNumber(trade.outputAmount.value))
+    const amountOutScVal = bigNumberToI128(BigNumber(trade.outputAmount?.value || 0));
     // console.log("🚀 « trade.outputAmount:", trade.outputAmount.value)
 
     let result = await contractInvoke({
-      contractAddress: pairAddress,
+      contractAddress : pairAddress as string,
       method: "swap",
       args: [
         new SorobanClient.Address(address!).toScVal(),

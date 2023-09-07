@@ -185,13 +185,22 @@ export function useDerivedSwapInfo(state: SwapState): any {
 
     // compare input balance to max input based on version
     //TODO: Fix this, not working well
-    const [balanceIn, maxAmountIn]:[any, any] = [currencyBalances[Field.INPUT], (trade.trade?.inputAmount.value ?? 0)]
-    console.log("🚀 ~ file: hooks.tsx:187 ~ inputError ~ balanceIn:", balanceIn)
-    console.log("🚀 ~ file: hooks.tsx:187 ~ inputError ~ maxAmountIn:", maxAmountIn)
+    // const [balanceIn, maxAmountIn] = [currencyBalances[Field.INPUT], (trade.trade?.inputAmount.value ?? 0)];
 
-    if (balanceIn && maxAmountIn && balanceIn.balance < (maxAmountIn)) {
-      inputError = `Insufficient ${balanceIn.symbol} balance`
+    const [balanceIn, maxAmountIn] = [
+      currencyBalances[Field.INPUT],
+      (trade.trade?.inputAmount?.value ?? 0)
+    ];
+    
+    interface relevantTokensType {
+      balance: number;
+      symbol: string;
     }
+    
+    if (balanceIn && typeof balanceIn !== 'string' && balanceIn.balance < maxAmountIn) {
+      inputError = `Insufficient ${balanceIn.symbol} balance`;
+    }
+    
     return inputError
   }, [account, currencies, currencyBalances, parsedAmount, to, trade])//, currencyBalances, trade.trade, allowedSlippage])
 

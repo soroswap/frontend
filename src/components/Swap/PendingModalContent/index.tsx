@@ -36,19 +36,19 @@ import { TokenType } from 'interfaces'
 import { ExternalLink, Paperclip } from 'react-feather'
 import Row from 'components/Row'
 import { Caption, LabelSmall, SubHeaderLarge } from 'components/Text'
-
+import { Any } from 'react-spring'
 
 export const PendingModalContainer = styled(ColumnCenter)`
   margin: 48px 0 8px;
 `
 
-const HeaderContainer = styled(ColumnCenter) <{ $disabled?: boolean }>`
+const HeaderContainer = styled(ColumnCenter)<{ $disabled?: boolean }>`
   ${({ $disabled }) => $disabled && `opacity: 0.5;`}
   padding: 0 32px;
   overflow: visible;
 `
 
-const StepCircle = styled('div') <{ active: boolean }>`
+const StepCircle = styled('div')<{ active: boolean }>`
   height: 10px;
   width: 10px;
   border-radius: 50%;
@@ -80,7 +80,7 @@ const AnimationWrapper = styled('div')`
   flex-grow: 1;
 `
 
-const StepTitleAnimationContainer = styled(Column) <{ disableEntranceAnimation?: boolean }>`
+const StepTitleAnimationContainer = styled(Column)<{ disableEntranceAnimation?: boolean }>`
   position: absolute;
   width: 100%;
   align-items: center;
@@ -116,7 +116,7 @@ interface PendingModalStep {
 
 interface PendingModalContentProps {
   steps?: PendingConfirmModalState[]
-  currentStep?: any
+  currentStep?: any // The type of currentStep is inferred based on the values passed to it when the function is called.
   trade?: InterfaceTrade
   swapResult?: any//SwapResult
   wrapTxHash?: string
@@ -245,7 +245,7 @@ export function PendingModalContent({
 
   const { label, button } = getContent({
     step: currentStep,
-    approvalCurrency: trade?.inputAmount.currency,
+    approvalCurrency : trade?.inputAmount?.currency,
     swapConfirmed,
     swapPending,
     wrapPending,
@@ -277,9 +277,9 @@ export function PendingModalContent({
     <PendingModalContainer gap="24px">
       <LogoContainer>
         {currentStep === ConfirmModalState.APPROVING_TOKEN && <>dd</>}
-        {currentStep !== ConfirmModalState.PENDING_CONFIRMATION && (
+        {currentStep !== ConfirmModalState.PENDING_CONFIRMATION && trade && trade.inputAmount && (
           <CurrencyLoader
-            currency={trade?.inputAmount.currency}
+            currency={trade.inputAmount.currency}
             asBadge={currentStep === ConfirmModalState.APPROVING_TOKEN}
           />
         )}
@@ -293,38 +293,42 @@ export function PendingModalContent({
         gap="12px"
         $disabled={revocationPending || tokenApprovalPending || wrapPending || (swapPending && !showSuccess)}
       >
+        {trade && trade.inputAmount && 
+        
         <AnimationWrapper>
-          {steps?.map((step) => {
-            const { title, subtitle } = getContent({
-              step,
-              approvalCurrency: trade?.inputAmount.currency,
-              swapConfirmed,
-              swapPending,
-              wrapPending,
-              revocationPending,
-              tokenApprovalPending,
-              swapResult,
-              trade,
-            })
-            // We only render one step at a time, but looping through the array allows us to keep
-            // the exiting step in the DOM during its animation.
-            return (
-              Boolean(step === currentStep) && (
-                <StepTitleAnimationContainer
-                  disableEntranceAnimation={steps[0] === currentStep}
-                  gap="12px"
-                  key={step}
-                  ref={step === currentStep ? currentStepContainerRef : undefined}
-                >
-                  <SubHeaderLarge textAlign="center" data-testid="pending-modal-content-title">
-                    {title}
-                  </SubHeaderLarge>
-                  <LabelSmall textAlign="center">{subtitle}</LabelSmall>
-                </StepTitleAnimationContainer>
-              )
+        {steps?.map((step) => {
+          const { title, subtitle } = getContent({
+            step,
+            approvalCurrency: trade?.inputAmount?.currency,
+            swapConfirmed,
+            swapPending,
+            wrapPending,
+            revocationPending,
+            tokenApprovalPending,
+            swapResult,
+            trade,
+          });
+          // We only render one step at a time, but looping through the array allows us to keep
+          // the exiting step in the DOM during its animation.
+          return (
+            Boolean(step === currentStep) && (
+              <StepTitleAnimationContainer
+                disableEntranceAnimation={steps[0] === currentStep}
+                gap="12px"
+                key={step}
+                ref={step === currentStep ? currentStepContainerRef : undefined}
+              >
+                <SubHeaderLarge textAlign="center" data-testid="pending-modal-content-title">
+                  {title}
+                </SubHeaderLarge>
+                <LabelSmall textAlign="center">{subtitle}</LabelSmall>
+              </StepTitleAnimationContainer>
             )
-          })}
-        </AnimationWrapper>
+          );
+        })}
+      </AnimationWrapper>
+      
+        }
         <Row justify="center" marginTop="32px" minHeight="24px">
           <Caption color={theme.palette.custom.accentTextLightPrimary}>{label}</Caption>
         </Row>

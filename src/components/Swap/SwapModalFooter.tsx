@@ -21,18 +21,18 @@
 // import { formatSwapButtonClickEventProperties } from 'utils/loggingFormatters'
 // import { getPriceImpactWarning } from 'utils/prices'
 
-import { styled, useTheme } from "@mui/material"
-import { ButtonError, SmallButtonPrimary } from "components/Buttons/Button"
-import Column from "components/Column"
-import Row, { AutoRow, RowBetween, RowFixed } from "components/Row"
-import { BodySmall, HeadlineSmall, SubHeaderSmall } from "components/Text"
-import { ReactNode } from "react"
-import { AlertTriangle } from "react-feather"
-import { InterfaceTrade, TradeType } from "state/routing/types"
-import { Label } from "./SwapModalHeaderAmount"
-import { MouseoverTooltip } from "components/Tooltip"
-import { Plural } from "@lingui/macro"
-import { SwapCallbackError, SwapShowAcceptChanges } from "./styleds"
+import { styled, useTheme } from "@mui/material";
+import { ButtonError, SmallButtonPrimary } from "components/Buttons/Button";
+import Column from "components/Column";
+import Row, { AutoRow, RowBetween, RowFixed } from "components/Row";
+import { BodySmall, HeadlineSmall, SubHeaderSmall } from "components/Text";
+import { ReactNode } from "react";
+import { AlertTriangle } from "react-feather";
+import { InterfaceTrade, TradeType } from "state/routing/types";
+import { Label } from "./SwapModalHeaderAmount";
+import { MouseoverTooltip } from "components/Tooltip";
+import { Plural } from "@lingui/macro";
+import { SwapCallbackError, SwapShowAcceptChanges } from "./styleds";
 
 // import { ButtonError, SmallButtonPrimary } from '../Button'
 // import Row, { AutoRow, RowBetween, RowFixed } from '../Row'
@@ -42,22 +42,22 @@ import { SwapCallbackError, SwapShowAcceptChanges } from "./styleds"
 
 const DetailsContainer = styled(Column)`
   padding: 0 8px;
-`
+`;
 
 const StyledAlertTriangle = styled(AlertTriangle)`
   margin-right: 8px;
   min-width: 24px;
-`
+`;
 
 const ConfirmButton = styled(ButtonError)`
   height: 56px;
   margin-top: 10px;
-`
+`;
 
 const DetailRowValue = styled(BodySmall)`
   text-align: right;
   overflow-wrap: break-word;
-`
+`;
 
 export default function SwapModalFooter({
   trade,
@@ -72,52 +72,57 @@ export default function SwapModalFooter({
   showAcceptChanges,
   onAcceptChanges,
 }: {
-  trade: InterfaceTrade
-  swapResult?: any//SwapResult
-  allowedSlippage: any//Percent
-  onConfirm: () => void
-  swapErrorMessage?: ReactNode
-  disabledConfirm: boolean
-  swapQuoteReceivedDate?: Date
-  fiatValueInput: { data?: number; isLoading: boolean }
-  fiatValueOutput: { data?: number; isLoading: boolean }
-  showAcceptChanges: boolean
-  onAcceptChanges: () => void
+  trade: InterfaceTrade;
+  swapResult?: any; //SwapResult
+  allowedSlippage: any; //Percent
+  onConfirm: () => void;
+  swapErrorMessage?: ReactNode;
+  disabledConfirm: boolean;
+  swapQuoteReceivedDate?: Date;
+  fiatValueInput: { data?: number; isLoading: boolean };
+  fiatValueOutput: { data?: number; isLoading: boolean };
+  showAcceptChanges: boolean;
+  onAcceptChanges: () => void;
 }) {
   // const transactionDeadlineSecondsSinceEpoch = useTransactionDeadline()?.toNumber() // in seconds since epoch
   // const isAutoSlippage = useUserSlippageTolerance()[0] === 'auto'
   // const [routerPreference] = useRouterPreference()
   // const routes = isClassicTrade(trade) ? getRoutingDiagramEntries(trade) : undefined
-  const theme = useTheme()
+  const theme = useTheme();
   // const { chainId } = useWeb3React()
   // const nativeCurrency = useNativeCurrency(chainId)
 
-  const label = `${trade.inputAmount.currency.symbol}`
-  const labelInverted = `${trade.outputAmount.currency.symbol}`
-  const formattedPrice = 0//formatTransactionAmount(priceToPreciseFloat(trade.executionPrice))
-  const txCount = 0//getTransactionCount(trade)
+  const label = trade.inputAmount ? trade.inputAmount.currency.symbol : "";
+  const labelInverted = trade.outputAmount
+    ? trade.outputAmount.currency.symbol
+    : "";
+  const formattedPrice = 0; //formatTransactionAmount(priceToPreciseFloat(trade.executionPrice))
+  const txCount = 0; //getTransactionCount(trade)
 
   return (
     <>
       <DetailsContainer gap="md">
         <BodySmall>
           <Row align="flex-start" justify="space-between" gap="sm">
-            <Label>
-              Exchange rate
-            </Label>
-            <DetailRowValue>{`1 ${labelInverted} = ${formattedPrice ?? '-'} ${label}`}</DetailRowValue>
+            <Label>Exchange rate</Label>
+            <DetailRowValue>{`1 ${labelInverted} = ${
+              formattedPrice ?? "-"
+            } ${label}`}</DetailRowValue>
           </Row>
         </BodySmall>
         <BodySmall>
           <Row align="flex-start" justify="space-between" gap="sm">
             <MouseoverTooltip
-              title={"The fee paid to miners who process your transaction. This must be paid in ${nativeCurrency.symbol}."}
+              title={
+                "The fee paid to miners who process your transaction. This must be paid in ${nativeCurrency.symbol}."
+              }
             >
-              <Label cursor="help">
-                Network fees
-              </Label>
+              <Label cursor="help">Network fees</Label>
             </MouseoverTooltip>
-            <MouseoverTooltip placement="right" title={"<GasBreakdownTooltip trade={trade} />"}>
+            <MouseoverTooltip
+              placement="right"
+              title={"<GasBreakdownTooltip trade={trade} />"}
+            >
               <DetailRowValue>gas fees</DetailRowValue>
             </MouseoverTooltip>
           </Row>
@@ -126,13 +131,9 @@ export default function SwapModalFooter({
           <BodySmall>
             <Row align="flex-start" justify="space-between" gap="sm">
               <MouseoverTooltip title="The impact your trade has on the market price of this pool.">
-                <Label cursor="help">
-                  Price impact
-                </Label>
+                <Label cursor="help">Price impact</Label>
               </MouseoverTooltip>
-              <DetailRowValue>
-                {'-'}
-              </DetailRowValue>
+              <DetailRowValue>{"-"}</DetailRowValue>
             </Row>
           </BodySmall>
         )}
@@ -142,13 +143,13 @@ export default function SwapModalFooter({
               title={
                 trade.tradeType === TradeType.EXACT_INPUT ? (
                   <>
-                    The minimum amount you are guaranteed to receive. If the price slips any further, your transaction
-                    will revert.
+                    The minimum amount you are guaranteed to receive. If the
+                    price slips any further, your transaction will revert.
                   </>
                 ) : (
                   <>
-                    The maximum amount you are guaranteed to spend. If the price slips any further, your transaction
-                    will revert.
+                    The maximum amount you are guaranteed to spend. If the price
+                    slips any further, your transaction will revert.
                   </>
                 )
               }
@@ -163,8 +164,12 @@ export default function SwapModalFooter({
             </MouseoverTooltip>
             <DetailRowValue>
               {trade.tradeType === TradeType.EXACT_INPUT
-                ? `XX ${trade.outputAmount.currency.symbol}`
-                : `XX ${trade.inputAmount.currency.symbol}`}
+                ? trade.outputAmount
+                  ? `XX ${trade.outputAmount.currency.symbol}`
+                  : ""
+                : trade.inputAmount
+                ? `XX ${trade.inputAmount.currency.symbol}`
+                : ""}
             </DetailRowValue>
           </Row>
         </BodySmall>
@@ -174,7 +179,9 @@ export default function SwapModalFooter({
           <RowBetween>
             <RowFixed>
               <StyledAlertTriangle size={20} />
-              <SubHeaderSmall color={theme.palette.customBackground.accentAction}>
+              <SubHeaderSmall
+                color={theme.palette.customBackground.accentAction}
+              >
                 Price updated
               </SubHeaderSmall>
             </RowFixed>
@@ -196,9 +203,11 @@ export default function SwapModalFooter({
               Confirm swap
             </HeadlineSmall>
           </ConfirmButton>
-          {swapErrorMessage ? <SwapCallbackError error={swapErrorMessage} /> : null}
+          {swapErrorMessage ? (
+            <SwapCallbackError error={swapErrorMessage} />
+          ) : null}
         </AutoRow>
       )}
     </>
-  )
+  );
 }

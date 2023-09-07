@@ -45,15 +45,15 @@ export default function SwapModalHeader({
         <SwapModalHeaderAmount
           field={Field.INPUT}
           label={"You sell"}
-          amount={trade.inputAmount.value}
+          amount={trade.outputAmount ? String(trade.outputAmount.value) : '0'}
           currency={inputCurrency}
           usdAmount={fiatValueInput}
         />
         <SwapModalHeaderAmount
           field={Field.OUTPUT}
           label="You receive"
-          amount={trade.outputAmount.value}
-          currency={trade.outputAmount.currency}
+          amount={trade.outputAmount ? trade.outputAmount.value : ""}
+          currency={trade.outputAmount ? trade.outputAmount.currency as TokenType : undefined}
           usdAmount={fiatValueOutput}
           tooltipText={
             trade.tradeType === TradeType.EXACT_INPUT ? (
