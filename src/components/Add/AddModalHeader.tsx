@@ -36,11 +36,7 @@ const CustomRow = styled(Row)`
   border: 1px solid var(--fora-do-brading-desativado, #4E4E4E);
   padding: 15px;
   `
-type TokensType = [string, string];
 
-function print(...args: any) {
-    console.log("src/components/Add/AddModalHeader.tsx:", ...args)
-}
 export default function AddModalHeader({
     currencies,
     formattedAmounts,
