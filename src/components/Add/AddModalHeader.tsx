@@ -3,14 +3,11 @@ import Column from "components/Column"
 import CurrencyLogo from "components/Logo/CurrencyLogo"
 import Row from "components/Row"
 import { BodySecondary, BodySmall, ResponsiveMediumText } from "components/Text"
-import { MouseoverTooltip } from "components/Tooltip"
-import { useRouter } from "next/router"
 import { TokenType } from "interfaces";
-import { useToken } from "hooks"
 import { useEffect, useMemo, useState } from "react"
 import { Field } from "state/mint/actions"
-import { getLpTokensAmount, getTotalShares } from "functions/LiquidityPools"
-import { SorobanContext, SorobanContextType } from "@soroban-react/core"
+import { getLpTokensAmount } from "functions/LiquidityPools"
+import { SorobanContextType } from "@soroban-react/core"
 import { reservesBNWithTokens } from "hooks/useReserves"
 import BigNumber from "bignumber.js"
 
@@ -62,16 +59,8 @@ export default function AddModalHeader({
     const currencyB = useMemo(() => {
         return currencies.CURRENCY_B;
     }, [currencies])
-    // console.log("src/components/Add/AddModalHeader.tsx:", "formattedAmounts:", formattedAmounts)
 
     const [amountOfLpTokensToReceive, setAmountOfLpTokensToReceive] = useState<string>("")
-
-    // const amountOfLpTokensToReceive = useMemo(() => {
-    //     if (!pairAddress) return
-    //     const totalShares = getTotalShares(pairAddress, sorobanContext)
-    //     // print("totalShares", totalShares)
-    //     return "2.3456"
-    // }, [pairAddress, sorobanContext])
 
     // Get the LP token amount to receive
     useEffect(() => {
