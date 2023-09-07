@@ -7,10 +7,12 @@ import { MouseoverTooltip } from "components/Tooltip"
 import { useRouter } from "next/router"
 import { TokenType } from "interfaces";
 import { useToken } from "hooks"
-import { useEffect, useMemo } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { Field } from "state/mint/actions"
-import { getTotalShares } from "functions/LiquidityPools"
+import { getLpTokensAmount, getTotalShares } from "functions/LiquidityPools"
 import { SorobanContext, SorobanContextType } from "@soroban-react/core"
+import { reservesBNWithTokens } from "hooks/useReserves"
+import BigNumber from "bignumber.js"
 
 export const Label = styled(BodySmall) <{ cursor?: string }>`
 cursor: ${({ cursor }) => cursor};
@@ -62,19 +64,48 @@ export default function AddModalHeader({
     }, [currencies])
     // console.log("src/components/Add/AddModalHeader.tsx:", "formattedAmounts:", formattedAmounts)
 
-    const amountOfLpTokensToReceive = useMemo(() => {
-        if (!pairAddress) return
-        const totalShares = getTotalShares(pairAddress, sorobanContext)
-        // print("totalShares", totalShares)
-        return "2.3456"
-    }, [pairAddress, sorobanContext])
+    const [amountOfLpTokensToReceive, setAmountOfLpTokensToReceive] = useState<string>("")
 
+    // const amountOfLpTokensToReceive = useMemo(() => {
+    //     if (!pairAddress) return
+    //     const totalShares = getTotalShares(pairAddress, sorobanContext)
+    //     // print("totalShares", totalShares)
+    //     return "2.3456"
+    // }, [pairAddress, sorobanContext])
+
+    // Get the LP token amount to receive
     useEffect(() => {
-        if (!pairAddress) return
-        getTotalShares(pairAddress, sorobanContext).then((totalShares) => {
-            print("totalShares:", totalShares)
+        if (!pairAddress || !currencyA || !currencyB) return
+        // LP tokens
+        // We need to get which one is amount0 
+        reservesBNWithTokens(pairAddress, sorobanContext).then((reserves) => {
+            if (!reserves.reserve0 || !reserves.reserve1 || !formattedAmounts.CURRENCY_A || !formattedAmounts.CURRENCY_B) return
+
+            let amount0, amount1
+            // Check if currencyA corresponds to token0 or token1
+            if (currencyA.address === reserves.token0) {
+                amount0 = new BigNumber(formattedAmounts.CURRENCY_A)
+                amount1 = new BigNumber(formattedAmounts.CURRENCY_B)
+            } else if (currencyA.address === reserves.token1) {
+                amount0 = new BigNumber(formattedAmounts.CURRENCY_B)
+                amount1 = new BigNumber(formattedAmounts.CURRENCY_A)
+            } else {
+                console.log("currencyA does not correspond to either token0 or token1");
+                return
+            }
+            getLpTokensAmount(
+                amount0,
+                reserves.reserve0,
+                amount1,
+                reserves.reserve1,
+                pairAddress,
+                sorobanContext
+            ).then((lpTokens) => {
+                setAmountOfLpTokensToReceive(lpTokens.toString())
+
+            })
         })
-    }, [pairAddress, sorobanContext])
+    }, [currencyA, currencyB, formattedAmounts, pairAddress, sorobanContext])
 
     return (
         <CustomRow align="end" justify="space-between">
