@@ -60,6 +60,7 @@ export function DepositButton({
 
     const options = {
       sorobanContext,
+      secretKey: "SDYTK3LBZWJ3JO3E4ZZKQMHAC2CK7SEG6VYK2LUX2725KIFR3YQ3YESJ",
     };
 
     try {

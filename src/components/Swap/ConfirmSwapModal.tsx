@@ -275,6 +275,7 @@ export default function ConfirmSwapModal({
     )
   }, [allowance.isApprovalPending, allowance.isRevocationPending, allowance.state, allowedSlippage, confirmModalState, fiatValueInput, fiatValueOutput, onAcceptChanges, pendingModalSteps, showAcceptChanges, startSwapFlow, swapError?.message, swapFailed, swapQuoteReceivedDate, swapResult, trade, wrapTxHash])
 
+  const titleToShow = confirmModalState === ConfirmModalState.REVIEWING ? "Review Swap" : confirmModalState === ConfirmModalState.PENDING_CONFIRMATION ? "You will receive" : undefined
 
   return (
     <Modal
@@ -284,7 +285,7 @@ export default function ConfirmSwapModal({
       aria-describedby="modal-modal-description"
     >
       <ConfirmationModalContent
-        title={confirmModalState === ConfirmModalState.REVIEWING ? "Swap" : undefined}
+        title={titleToShow}
         onDismiss={onDismiss}
         topContent={modalHeader}
         bottomContent={modalBottom}

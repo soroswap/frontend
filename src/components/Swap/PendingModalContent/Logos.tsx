@@ -122,7 +122,7 @@ export function PaperIcon() {
   )
 }
 
-const LoadingIndicator = styled(LoaderV3)`
+const LoadingIndicator = styled(LoaderV3)<{ color: string }>`
   stroke: ${({ theme }) => theme.palette.custom.textTertiary};
   fill: ${({ theme }) => theme.palette.custom.textTertiary};
   width: calc(100% + 8px);
@@ -135,7 +135,7 @@ const LoadingIndicator = styled(LoaderV3)`
 export function LoadingIndicatorOverlay() {
   return (
     <FadePresence>
-      <LoadingIndicator />
+      <LoadingIndicator color='#F88F6D' />
     </FadePresence>
   )
 }

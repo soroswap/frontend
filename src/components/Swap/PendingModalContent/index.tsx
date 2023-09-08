@@ -38,7 +38,7 @@ import Row from 'components/Row'
 import { Caption, LabelSmall, SubHeaderLarge } from 'components/Text'
 
 export const PendingModalContainer = styled(ColumnCenter)`
-  margin: 48px 0 8px;
+  margin: 48px 0 20px;
 `
 
 const HeaderContainer = styled(ColumnCenter)<{ $disabled?: boolean }>`
@@ -203,7 +203,7 @@ function getContent(args: ContentArgs): PendingModalStep {
       }
 
       return {
-        title: swapPending ? `Swap submitted` : swapConfirmed ? `Success` : `Confirm Swap`,
+        title: swapPending ? `Swap submitted` : swapConfirmed ? `Success` : `Waiting for confirmation`,
         subtitle: trade ? <TradeSummary trade={trade} /> : null,
         label: href ? (
           <ExternalLink href={href} color="textSecondary">
@@ -252,6 +252,7 @@ export function PendingModalContent({
     swapResult,
     trade,
   })
+  console.log("🚀 « label:", label)
   const theme = useTheme()
 
   // const order = useOrder(swapResult?.type === TradeFillType.UniswapX ? swapResult.response.orderHash : '')
@@ -317,15 +318,15 @@ export function PendingModalContent({
                   <SubHeaderLarge textAlign="center" data-testid="pending-modal-content-title">
                     {title}
                   </SubHeaderLarge>
-                  <LabelSmall textAlign="center">{subtitle}</LabelSmall>
+                  <LabelSmall style={{width: "100%"}} textAlign="center">{subtitle}</LabelSmall>
                 </StepTitleAnimationContainer>
               )
             )
           })}
         </AnimationWrapper>
-        <Row justify="center" marginTop="32px" minHeight="24px">
+        <div>
           <Caption color={theme.palette.custom.accentTextLightPrimary}>{label}</Caption>
-        </Row>
+        </div>
       </HeaderContainer>
       {button && <Row justify="center">{button}</Row>}
       {!hideStepIndicators && !showSuccess && (

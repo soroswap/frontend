@@ -1,23 +1,56 @@
-import { useTheme } from '@mui/material'
+import { styled, useTheme } from '@mui/material'
 import CurrencyLogo from 'components/Logo/CurrencyLogo'
 import Row from 'components/Row'
-import { LabelSmall } from 'components/Text'
-import { ArrowRight } from 'react-feather'
+import { BodySmall, LabelSmall } from 'components/Text'
+import { formatTokenAmount } from 'helpers/format'
+import { ArrowDown, ArrowRight } from 'react-feather'
 import { InterfaceTrade } from 'state/routing/types'
+import { SwapModalHeaderAmount } from '../SwapModalHeaderAmount'
+import { Field } from 'state/swap/actions'
+import Column from 'components/Column'
+import { ArrowWrapper } from '../styleds'
+import { ArrowContainer } from '../../../../pages/swap'
+
+const CustomRowTop = styled(Row)`
+  border-radius: var(--arrendodamento, 16px);
+  border: 1px solid var(--fora-do-brading-desativado, #4E4E4E);
+  padding: 15px;
+  margin-bottom: -4px;
+`
+const CustomRowBottom = styled(Row)`
+  border-radius: var(--arrendodamento, 16px);
+  border: 1px solid var(--fora-do-brading-desativado, #4E4E4E);
+  padding: 15px;
+  margin-top: -4px;
+`
 
 export function TradeSummary({ trade }: { trade: Pick<InterfaceTrade, 'inputAmount' | 'outputAmount'> }) {
   const theme = useTheme()
   return (
-    <Row gap="sm" justify="center" align="center">
-      <CurrencyLogo currency={trade.inputAmount.currency} size="16px" />
-      <LabelSmall color="textPrimary">
-        {`${trade.inputAmount.value} ${trade.inputAmount.currency.symbol}`}{/* {formatCurrencyAmount(trade.inputAmount, NumberType.SwapTradeAmount)} {trade.inputAmount.currency.symbol} */}
-      </LabelSmall>
-      <ArrowRight color={theme.palette.custom.textTertiary} size="12px" />
-      <CurrencyLogo currency={trade.outputAmount.currency} size="16px" />
-      <LabelSmall color="textPrimary">
-       {`${trade.outputAmount.value} ${trade.outputAmount.currency.symbol}`} {/* {formatCurrencyAmount(trade.outputAmount, NumberType.SwapTradeAmount)} {trade.outputAmount.currency.symbol} */}
-      </LabelSmall>
-    </Row>
+    <Column>
+      <CustomRowTop>
+        <CurrencyLogo currency={trade.inputAmount.currency} size="16px" />
+        <LabelSmall color="textPrimary">
+          {`${formatTokenAmount(trade.inputAmount.value)} ${trade.inputAmount.currency.symbol}`}{/* {formatCurrencyAmount(trade.inputAmount, NumberType.SwapTradeAmount)} {trade.inputAmount.currency.symbol} */}
+        </LabelSmall>
+      </CustomRowTop>
+      <ArrowWrapper clickable={false}>
+        <ArrowContainer
+          data-testid="swap-currency-button"
+        >
+          <ArrowDown
+            size="16"
+            color={"#000000"}
+          />
+        </ArrowContainer>
+      </ArrowWrapper>
+      <CustomRowBottom>  
+        <CurrencyLogo currency={trade.outputAmount.currency} size="16px" />
+        <LabelSmall color="textPrimary">
+        {`${formatTokenAmount(trade.outputAmount.value)} ${trade.outputAmount.currency.symbol}`} {/* {formatCurrencyAmount(trade.outputAmount, NumberType.SwapTradeAmount)} {trade.outputAmount.currency.symbol} */}
+        </LabelSmall>
+      </CustomRowBottom>
+      <BodySmall style={{margin: "4px 0px"}} color={theme.palette.custom.accentTextLightSecondary}>Proceed in your wallet</BodySmall>
+    </Column>
   )
 }

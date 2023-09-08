@@ -36,8 +36,8 @@ export default function SwapModalHeader({
   allowedSlippage: any
 }) {
   console.log("🚀 « trade:", trade)
-  const fiatValueInput = 0//useUSDPrice(trade.inputAmount) TODO: Get USD Value
-  const fiatValueOutput = 0//useUSDPrice(trade.outputAmount)
+  const fiatValueInput = "-$0"//useUSDPrice(trade.inputAmount) TODO: Get USD Value
+  const fiatValueOutput = "-$0"//useUSDPrice(trade.outputAmount)
 
   return (
     <HeaderContainer gap="8px">
