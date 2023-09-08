@@ -50,7 +50,6 @@ export function TradeSummary({ trade }: { trade: Pick<InterfaceTrade, 'inputAmou
         {`${formatTokenAmount(trade.outputAmount.value)} ${trade.outputAmount.currency.symbol}`} {/* {formatCurrencyAmount(trade.outputAmount, NumberType.SwapTradeAmount)} {trade.outputAmount.currency.symbol} */}
         </LabelSmall>
       </CustomRowBottom>
-      <BodySmall style={{margin: "4px 0px"}} color={theme.palette.custom.accentTextLightSecondary}>Proceed in your wallet</BodySmall>
     </Column>
   )
 }

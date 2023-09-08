@@ -36,14 +36,15 @@ import { TokenType } from 'interfaces'
 import { ExternalLink, Paperclip } from 'react-feather'
 import Row from 'components/Row'
 import { Caption, LabelSmall, SubHeaderLarge } from 'components/Text'
+import Link from 'next/link'
 
 export const PendingModalContainer = styled(ColumnCenter)`
-  margin: 48px 0 20px;
+  margin: 48px 0 8px;
 `
 
 const HeaderContainer = styled(ColumnCenter)<{ $disabled?: boolean }>`
   ${({ $disabled }) => $disabled && `opacity: 0.5;`}
-  padding: 0 32px;
+  gap: 10px;
   overflow: visible;
 `
 
@@ -79,8 +80,15 @@ const AnimationWrapper = styled('div')`
   flex-grow: 1;
 `
 
+const CustomLink = styled(Link)`
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+`
+
 const StepTitleAnimationContainer = styled(Column)<{ disableEntranceAnimation?: boolean }>`
-  position: absolute;
+  position: relative;
   width: 100%;
   align-items: center;
   transition: display 250ms ease-in-out;
@@ -150,15 +158,17 @@ function getContent(args: ContentArgs): PendingModalStep {
     trade,
     swapResult,
   } = args
-
+  
+  console.log("🚀 « step:", step)
+  
   switch (step) {
     case ConfirmModalState.WRAPPING:
       return {
         title: `Wrap ETH`,
         subtitle: (
-          <ExternalLink href="https://support.uniswap.org/hc/en-us/articles/16015852009997">
+          <CustomLink href="https://support.uniswap.org/hc/en-us/articles/16015852009997">
             Why is this required?
-          </ExternalLink>
+          </CustomLink>
         ),
         label: wrapPending ? `Pending...` : `Proceed in your wallet`,
       }
@@ -172,9 +182,9 @@ function getContent(args: ContentArgs): PendingModalStep {
       return {
         title: `Enable spending ${approvalCurrency?.symbol ?? 'this token'} on Uniswap`,
         subtitle: (
-          <ExternalLink href="https://support.uniswap.org/hc/en-us/articles/8120520483085">
+          <CustomLink href="https://support.uniswap.org/hc/en-us/articles/8120520483085">
             Why is this required?
-          </ExternalLink>
+          </CustomLink>
         ),
         label: tokenApprovalPending ? `Pending...` : `Proceed in your wallet`,
       }
@@ -182,9 +192,9 @@ function getContent(args: ContentArgs): PendingModalStep {
       return {
         title: `Allow ${approvalCurrency?.symbol ?? 'this token'} to be used for swapping`,
         subtitle: (
-          <ExternalLink href="https://support.uniswap.org/hc/en-us/articles/8120520483085">
+          <CustomLink href="https://support.uniswap.org/hc/en-us/articles/8120520483085" target='_blank'>
             Why is this required?
-          </ExternalLink>
+          </CustomLink>
         ),
         label: `Proceed in your wallet`,
       }
@@ -194,21 +204,18 @@ function getContent(args: ContentArgs): PendingModalStep {
 
       if (swapConfirmed && swapResult) {
         labelText = `View on Explorer`
-        href = "https://google.com"//getExplorerLink(chainId, swapResult.response.hash, ExplorerDataType.TRANSACTION)
-      } else if (swapPending) {
-        labelText = `Learn more about swapping with UniswapX`
-        href = 'https://support.uniswap.org/hc/en-us/articles/17515415311501'
+        href = "https://google.com"//TODO: getExplorerLink(chainId, swapResult.response.hash, ExplorerDataType.TRANSACTION)
       } else if (swapPending) {
         labelText = `Proceed in your wallet`
       }
-
+      
       return {
         title: swapPending ? `Swap submitted` : swapConfirmed ? `Success` : `Waiting for confirmation`,
         subtitle: trade ? <TradeSummary trade={trade} /> : null,
         label: href ? (
-          <ExternalLink href={href} color="textSecondary">
+          <CustomLink href={href} target='_blank'>
             {labelText}
-          </ExternalLink>
+          </CustomLink>
         ) : (
           labelText
         ),
@@ -236,9 +243,9 @@ export function PendingModalContent({
   // // TODO(UniswapX): Support UniswapX status here too
   // const uniswapXSwapConfirmed = Boolean(swapResult)
 
-  const swapConfirmed = false
+  const swapConfirmed = swapResult ? true : false
 
-  const swapPending = swapResult !== undefined && !swapConfirmed
+  const swapPending = !swapResult ? true : false
   const wrapPending = false//wrapTxHash != undefined && !wrapConfirmed
 
   const { label, button } = getContent({
@@ -270,7 +277,7 @@ export function PendingModalContent({
   // }
 
   // // On mainnet, we show the success icon once the tx is sent, since it takes longer to confirm than on L2s.
-  const showSuccess = swapConfirmed || (swapPending)
+  const showSuccess = swapConfirmed || (!swapPending)
 
   return (
     <PendingModalContainer gap="24px">
@@ -289,8 +296,7 @@ export function PendingModalContent({
           revocationPending) && <LoadingIndicatorOverlay />}
       </LogoContainer>
       <HeaderContainer
-        gap="12px"
-        $disabled={revocationPending || tokenApprovalPending || wrapPending || (swapPending && !showSuccess)}
+        $disabled={revocationPending || tokenApprovalPending || wrapPending || (!swapPending && !showSuccess)}
       >
         <AnimationWrapper>
           {steps?.map((step) => {
@@ -324,8 +330,12 @@ export function PendingModalContent({
             )
           })}
         </AnimationWrapper>
-        <div>
-          <Caption color={theme.palette.custom.accentTextLightPrimary}>{label}</Caption>
+        <div style={{
+          fontSize: 14,
+          fontFamily: "Inter",
+          color: theme.palette.custom.accentTextLightSecondary
+        }} color={theme.palette.custom.accentTextLightPrimary}>
+          {label}
         </div>
       </HeaderContainer>
       {button && <Row justify="center">{button}</Row>}
