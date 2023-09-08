@@ -154,7 +154,6 @@ export function SwapComponent({
     inputError: swapInputError,
   } = swapInfo
   // console.log("🚀 « inputError:", swapInputError)
-  console.log("🚀 « swap.tsx: trade:", trade)
 
   const parsedAmounts = useMemo(
     () => ({
@@ -163,8 +162,6 @@ export function SwapComponent({
     }),
     [independentField, parsedAmount, trade]
   )
-  console.log("🚀 ~ file: swap.tsx:161 ~ parsedAmounts:", parsedAmounts)
-
 
   const decimals = useMemo(
     () => ({
@@ -173,7 +170,6 @@ export function SwapComponent({
     }),
     [independentField, trade]
   )
-  console.log("🚀 ~ file: swap.tsx:172 ~ decimals:", decimals)
 
   const userHasSpecifiedInputOutput = Boolean(
     currencies[Field.INPUT] && currencies[Field.OUTPUT] && parsedAmounts[independentField]?.value > 0
@@ -277,7 +273,6 @@ export function SwapComponent({
   )
 
   const handleSwap = useCallback(() => {
-    console.log("HANDLELING SWAP")
     if (!swapCallback) {
       return
     }
