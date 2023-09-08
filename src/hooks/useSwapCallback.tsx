@@ -16,8 +16,8 @@ export function useSwapCallback(
   // permitSignature: PermitSignature | undefined
 ) {
   const sorobanContext = useSorobanReact()
-  const {activeChain, address} = sorobanContext
-  
+  const { activeChain, address } = sorobanContext
+
   return useCallback(async () => {
     console.log("Trying out the TRADE")
     if (!trade) throw new Error('missing trade')
@@ -30,7 +30,7 @@ export function useSwapCallback(
     // console.log("🚀 « trade.outputAmount:", trade.outputAmount.value)
 
     let result = await contractInvoke({
-      contractAddress : pairAddress as string,
+      contractAddress: pairAddress as string,
       method: "swap",
       args: [
         new SorobanClient.Address(address!).toScVal(),

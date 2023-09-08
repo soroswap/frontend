@@ -118,10 +118,10 @@ export function bigNumberToI128(value: BigNumber): SorobanClient.xdr.ScVal {
   }
 
   const hi = new xdr.Int64(
-    bigNumberFromBytes(false, ...padded.slice(4, 8)).toNumber()
+    [bigNumberFromBytes(false, ...padded.slice(4, 8)).toNumber(), bigNumberFromBytes(false, ...padded.slice(0, 4)).toNumber()]
   );
   const lo = new xdr.Uint64(
-    bigNumberFromBytes(false, ...padded.slice(12, 16)).toNumber()
+    [bigNumberFromBytes(false, ...padded.slice(12, 16)).toNumber(), bigNumberFromBytes(false, ...padded.slice(8, 12)).toNumber(),]
   );
 
   return xdr.ScVal.scvI128(new xdr.Int128Parts({ lo, hi }));
