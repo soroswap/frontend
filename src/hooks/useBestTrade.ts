@@ -1,6 +1,5 @@
 import { TokenType, CurrencyAmount } from "interfaces";
-import tryParseCurrencyAmount from "lib/utils/tryParseCurrencyAmount";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import {
   InterfaceTrade,
   QuoteState,
@@ -8,11 +7,6 @@ import {
   TradeType,
 } from "state/routing/types";
 import { useSorobanReact } from "@soroban-react/core";
-import { contractInvoke } from "@soroban-react/contracts";
-import { useFactory } from "./useFactory";
-import { addressToScVal, scValStrToJs } from "helpers/convert";
-import { reservesBigNumber } from "./useReserves";
-import fromExactInputGetExpectedOutput from "functions/fromExactInputGetExpectedOutput";
 import BigNumber from "bignumber.js";
 import { getPairAddress } from "functions/getPairAddress";
 import { getExpectedAmount } from "functions/getExpectedAmount";
@@ -82,8 +76,8 @@ export function useBestTrade(
   // Now both expectedAmount and amountSpecified are strings in stroop format
   // Lets convert all of this to two CurrencyAmount objects: inputAmount & outputAmount
 
-  let inputAmount: CurrencyAmount = undefined;
-  let outputAmount: CurrencyAmount = undefined;
+  let inputAmount: CurrencyAmount | undefined;
+  let outputAmount: CurrencyAmount | undefined;
 
   // TODO: Not sure if we need to check for all of this:
   if (amountSpecified && currencyIn && expectedAmount && currencyOut) {
@@ -121,26 +115,25 @@ export function useBestTrade(
 
   //TODO: Set the trade specs, getQuote
 
-  /*
-  export type InterfaceTrade = {
-  inputAmount: CurrencyAmount;
-  outputAmount: CurrencyAmount;
-  tradeType: TradeType;
-  swaps: {
-    inputAmount: CurrencyAmount;
-    outputAmount: CurrencyAmount;
-    route: {
-      input: TokenType;
-      output: TokenType;
-      pairs: {
-        pairAddress: string;
-      }[];
-    };
-  }[];
-};
-  
-  
-  */
+  //   /*
+  //   export type InterfaceTrade = {
+  //   inputAmount: CurrencyAmount;
+  //   outputAmount: CurrencyAmount;
+  //   tradeType: TradeType;
+  //   swaps: {
+  //     inputAmount: CurrencyAmount;
+  //     outputAmount: CurrencyAmount;
+  //     route: {
+  //       input: TokenType;
+  //       output: TokenType;
+  //       pairs: {
+  //         pairAddress: string;
+  //       }[];
+  //     };
+  //   }[];
+  // };
+
+  //   */
   const trade: InterfaceTrade = useMemo(() => {
     return {
       inputAmount: inputAmount,

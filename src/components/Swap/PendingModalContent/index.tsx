@@ -1,23 +1,3 @@
-// import { t, Trans } from '@lingui/macro'
-// import { ChainId, Currency } from '@uniswap/sdk-core'
-// import { useWeb3React } from '@web3-react/core'
-// import { OrderContent } from 'components/AccountDrawer/MiniPortfolio/Activity/OffchainActivityModal'
-// import { ColumnCenter } from 'components/Column'
-// import Column from 'components/Column'
-// import Row from 'components/Row'
-// import { SwapResult } from 'hooks/useSwapCallback'
-// import { useUnmountingAnimation } from 'hooks/useUnmountingAnimation'
-// import { UniswapXOrderStatus } from 'lib/hooks/orders/types'
-// import { ReactNode, useRef } from 'react'
-// import { InterfaceTrade, TradeFillType } from 'state/routing/types'
-// import { useOrder } from 'state/signatures/hooks'
-// import { UniswapXOrderDetails } from 'state/signatures/types'
-// import { useIsTransactionConfirmed } from 'state/transactions/hooks'
-// import { ExternalLink } from 'theme'
-// import { ThemedText } from 'theme/components/text'
-// import { getExplorerLink } from 'utils/getExplorerLink'
-// import { ExplorerDataType } from 'utils/getExplorerLink'
-
 import { css, keyframes, styled, useTheme } from '@mui/material'
 import { ConfirmModalState } from '../ConfirmSwapModal'
 import {
@@ -26,16 +6,14 @@ import {
   CurrencyLoader,
   LoadingIndicatorOverlay,
   LogoContainer,
-  PaperIcon,
 } from './Logos'
 import { TradeSummary } from './TradeSummary'
 import Column, { ColumnCenter } from 'components/Column'
 import { ReactNode, useRef } from 'react'
 import { InterfaceTrade } from 'state/routing/types'
 import { TokenType } from 'interfaces'
-import { ExternalLink, Paperclip } from 'react-feather'
 import Row from 'components/Row'
-import { Caption, LabelSmall, SubHeaderLarge } from 'components/Text'
+import { LabelSmall, SubHeaderLarge } from 'components/Text'
 import Link from 'next/link'
 
 export const PendingModalContainer = styled(ColumnCenter)`
@@ -123,7 +101,7 @@ interface PendingModalStep {
 
 interface PendingModalContentProps {
   steps?: PendingConfirmModalState[]
-  currentStep?: PendingConfirmModalState
+  currentStep?: any // The type of currentStep is inferred based on the values passed to it when the function is called.
   trade?: InterfaceTrade
   swapResult?: any//SwapResult
   wrapTxHash?: string
@@ -131,6 +109,7 @@ interface PendingModalContentProps {
   tokenApprovalPending?: boolean
   revocationPending?: boolean
 }
+
 
 interface ContentArgs {
   step: PendingConfirmModalState
@@ -250,7 +229,7 @@ export function PendingModalContent({
 
   const { label, button } = getContent({
     step: currentStep,
-    approvalCurrency: trade?.inputAmount.currency,
+    approvalCurrency : trade?.inputAmount?.currency,
     swapConfirmed,
     swapPending,
     wrapPending,
@@ -283,9 +262,9 @@ export function PendingModalContent({
     <PendingModalContainer gap="24px">
       <LogoContainer>
         {currentStep === ConfirmModalState.APPROVING_TOKEN && <>dd</>}
-        {currentStep !== ConfirmModalState.PENDING_CONFIRMATION && (
+        {currentStep !== ConfirmModalState.PENDING_CONFIRMATION && trade && trade.inputAmount && (
           <CurrencyLoader
-            currency={trade?.inputAmount.currency}
+            currency={trade.inputAmount.currency}
             asBadge={currentStep === ConfirmModalState.APPROVING_TOKEN}
           />
         )}
@@ -298,45 +277,48 @@ export function PendingModalContent({
       <HeaderContainer
         $disabled={revocationPending || tokenApprovalPending || wrapPending || (!swapPending && !showSuccess)}
       >
+        {trade && trade.inputAmount && 
+        
         <AnimationWrapper>
-          {steps?.map((step) => {
-            const { title, subtitle } = getContent({
-              step,
-              approvalCurrency: trade?.inputAmount.currency,
-              swapConfirmed,
-              swapPending,
-              wrapPending,
-              revocationPending,
-              tokenApprovalPending,
-              swapResult,
-              trade,
-            })
-            // We only render one step at a time, but looping through the array allows us to keep
-            // the exiting step in the DOM during its animation.
-            return (
-              Boolean(step === currentStep) && (
-                <StepTitleAnimationContainer
-                  disableEntranceAnimation={steps[0] === currentStep}
-                  gap="12px"
-                  key={step}
-                  ref={step === currentStep ? currentStepContainerRef : undefined}
-                >
-                  <SubHeaderLarge textAlign="center" data-testid="pending-modal-content-title">
-                    {title}
-                  </SubHeaderLarge>
-                  <LabelSmall style={{width: "100%"}} textAlign="center">{subtitle}</LabelSmall>
-                </StepTitleAnimationContainer>
-              )
+        {steps?.map((step) => {
+          const { title, subtitle } = getContent({
+            step,
+            approvalCurrency: trade?.inputAmount?.currency,
+            swapConfirmed,
+            swapPending,
+            wrapPending,
+            revocationPending,
+            tokenApprovalPending,
+            swapResult,
+            trade,
+          });
+          // We only render one step at a time, but looping through the array allows us to keep
+          // the exiting step in the DOM during its animation.
+          return (
+            Boolean(step === currentStep) && (
+              <StepTitleAnimationContainer
+                disableEntranceAnimation={steps[0] === currentStep}
+                gap="12px"
+                key={step}
+                ref={step === currentStep ? currentStepContainerRef : undefined}
+              >
+                <SubHeaderLarge textAlign="center" data-testid="pending-modal-content-title">
+                  {title}
+                </SubHeaderLarge>
+                <LabelSmall textAlign="center">{subtitle}</LabelSmall>
+              </StepTitleAnimationContainer>
             )
-          })}
-        </AnimationWrapper>
-        <div style={{
-          fontSize: 14,
-          fontFamily: "Inter",
-          color: theme.palette.custom.accentTextLightSecondary
-        }} color={theme.palette.custom.accentTextLightPrimary}>
-          {label}
-        </div>
+          );
+        })}
+      </AnimationWrapper>
+      }
+      <div style={{
+        fontSize: 14,
+        fontFamily: "Inter",
+        color: theme.palette.custom.accentTextLightSecondary
+      }}>
+        {label}
+      </div>
       </HeaderContainer>
       {button && <Row justify="center">{button}</Row>}
       {!hideStepIndicators && !showSuccess && (

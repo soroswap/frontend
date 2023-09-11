@@ -1,12 +1,10 @@
 import { styled, useTheme } from '@mui/material'
 import CurrencyLogo from 'components/Logo/CurrencyLogo'
 import Row from 'components/Row'
-import { BodySmall, LabelSmall } from 'components/Text'
+import { LabelSmall } from 'components/Text'
 import { formatTokenAmount } from 'helpers/format'
-import { ArrowDown, ArrowRight } from 'react-feather'
+import { ArrowDown } from 'react-feather'
 import { InterfaceTrade } from 'state/routing/types'
-import { SwapModalHeaderAmount } from '../SwapModalHeaderAmount'
-import { Field } from 'state/swap/actions'
 import Column from 'components/Column'
 import { ArrowWrapper } from '../styleds'
 import { ArrowContainer } from '../../../../pages/swap'
@@ -29,9 +27,9 @@ export function TradeSummary({ trade }: { trade: Pick<InterfaceTrade, 'inputAmou
   return (
     <Column>
       <CustomRowTop>
-        <CurrencyLogo currency={trade.inputAmount.currency} size="16px" />
+        <CurrencyLogo currency={trade?.inputAmount?.currency} size="16px" />
         <LabelSmall color="textPrimary">
-          {`${formatTokenAmount(trade.inputAmount.value)} ${trade.inputAmount.currency.symbol}`}{/* {formatCurrencyAmount(trade.inputAmount, NumberType.SwapTradeAmount)} {trade.inputAmount.currency.symbol} */}
+          {`${formatTokenAmount(trade?.inputAmount?.value ?? "0")} ${trade?.inputAmount?.currency.symbol}`}{/* {formatCurrencyAmount(trade.inputAmount, NumberType.SwapTradeAmount)} {trade.inputAmount.currency.symbol} */}
         </LabelSmall>
       </CustomRowTop>
       <ArrowWrapper clickable={false}>
@@ -45,9 +43,9 @@ export function TradeSummary({ trade }: { trade: Pick<InterfaceTrade, 'inputAmou
         </ArrowContainer>
       </ArrowWrapper>
       <CustomRowBottom>  
-        <CurrencyLogo currency={trade.outputAmount.currency} size="16px" />
+        <CurrencyLogo currency={trade?.outputAmount?.currency} size="16px" />
         <LabelSmall color="textPrimary">
-        {`${formatTokenAmount(trade.outputAmount.value)} ${trade.outputAmount.currency.symbol}`} {/* {formatCurrencyAmount(trade.outputAmount, NumberType.SwapTradeAmount)} {trade.outputAmount.currency.symbol} */}
+        {`${formatTokenAmount(trade?.outputAmount?.value ?? "0")} ${trade?.outputAmount?.currency.symbol}`} {/* {formatCurrencyAmount(trade.outputAmount, NumberType.SwapTradeAmount)} {trade.outputAmount.currency.symbol} */}
         </LabelSmall>
       </CustomRowBottom>
     </Column>

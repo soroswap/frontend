@@ -20,21 +20,21 @@ export function useSwapCallback(
 ) {
   const { SnackbarContext } = useContext(AppContext)
   const sorobanContext = useSorobanReact()
-  const {activeChain, address} = sorobanContext
-  
+  const { activeChain, address } = sorobanContext
+
   return useCallback(async () => {
     console.log("Trying out the TRADE")
     if (!trade) throw new Error('missing trade')
     if (!address || !activeChain) throw new Error('wallet must be connected to swap')
 
     const pairAddress = trade.swaps[0].route.pairs[0].pairAddress
-    const amountInScVal = bigNumberToI128(BigNumber(trade.inputAmount.value))
+    const amountInScVal = bigNumberToI128(BigNumber(trade.inputAmount?.value || 0));
     // console.log("🚀 « trade.inputAmount:", trade.inputAmount.value)
-    const amountOutScVal = bigNumberToI128(BigNumber(trade.outputAmount.value))
+    const amountOutScVal = bigNumberToI128(BigNumber(trade.outputAmount?.value || 0));
     // console.log("🚀 « trade.outputAmount:", trade.outputAmount.value)
 
     let result = await contractInvoke({
-      contractAddress: pairAddress,
+      contractAddress: pairAddress as string,
       method: "swap",
       args: [
         new SorobanClient.Address(address!).toScVal(),
@@ -49,7 +49,7 @@ export function useSwapCallback(
     if (result) {
       console.log("🚀 « result:", result)
       //TODO: Investigate result xdr to get swapped amount and hash, there is a warmHash, is it this one?
-      const notificationMessage = `${formatTokenAmount(trade.inputAmount.value)} ${trade.inputAmount.currency.symbol} for ${formatTokenAmount(trade.outputAmount.value)} ${trade.outputAmount.currency.symbol}`
+      const notificationMessage = `${formatTokenAmount(trade?.inputAmount?.value ?? "0")} ${trade?.inputAmount?.currency.symbol} for ${formatTokenAmount(trade?.outputAmount?.value ?? "0")} ${trade?.outputAmount?.currency.symbol}`
       sendNotification(notificationMessage,'Swapped', SnackbarIconType.SWAP, SnackbarContext)
     }
 

@@ -11,7 +11,7 @@ export function useAllowance(
   sorobanContext: SorobanContextType,
 ): BigNumber | undefined {
   let allowance;
-  let args: xdr.ScVal[] = [];
+  let params: xdr.ScVal[] = [];
   try {
     params = [accountToScVal(from), accountToScVal(spender)];
   } catch (error) {}

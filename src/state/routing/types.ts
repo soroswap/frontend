@@ -232,17 +232,17 @@ export enum TradeType {
   EXACT_OUTPUT = 1,
 }
 export type InterfaceTrade = {
-  inputAmount: CurrencyAmount;
-  outputAmount: CurrencyAmount;
-  tradeType: TradeType;
+  inputAmount: CurrencyAmount | undefined;
+  outputAmount: CurrencyAmount | undefined;
+  tradeType: TradeType | undefined;
   swaps: {
-    inputAmount: CurrencyAmount;
-    outputAmount: CurrencyAmount;
+    inputAmount: CurrencyAmount  | undefined;
+    outputAmount: CurrencyAmount | undefined;
     route: {
-      input: TokenType;
-      output: TokenType;
+      input: TokenType | undefined;
+      output: TokenType | undefined;
       pairs: {
-        pairAddress: string;
+        pairAddress: string | undefined;
       }[];
     };
   }[];

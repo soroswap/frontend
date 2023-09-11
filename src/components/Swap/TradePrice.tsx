@@ -35,9 +35,9 @@ export default function TradePrice({ trade }: TradePriceProps) {
   const [showInverted, setShowInverted] = useState<boolean>(false)
   const [expectedAmountOfOne, setExpectedAmountOfOne] = useState<string | number>()
 
-  const label = showInverted ? `${trade.outputAmount.currency.symbol}` : `${trade.inputAmount.currency.symbol} `
-  const mainCurrency = showInverted ? trade.inputAmount.currency : trade.outputAmount.currency
-  const otherCurrency = !showInverted ? trade.inputAmount.currency : trade.outputAmount.currency
+  const label = showInverted ? `${trade?.outputAmount?.currency.symbol}` : `${trade?.inputAmount?.currency.symbol} `
+  const mainCurrency = showInverted ? trade?.inputAmount?.currency : trade?.outputAmount?.currency
+  const otherCurrency = !showInverted ? trade?.inputAmount?.currency : trade?.outputAmount?.currency
   const flipPrice = useCallback(() => setShowInverted(!showInverted), [setShowInverted, showInverted])
 
   const formattedPrice = useMemo(() => {
@@ -47,11 +47,11 @@ export default function TradePrice({ trade }: TradePriceProps) {
       })
       return expectedAmountOfOne
     } catch {
-      return '0'
+      return '0';
     }
   }, [expectedAmountOfOne, mainCurrency, otherCurrency, sorobanContext])
 
-  const text = `${'1 ' + mainCurrency.symbol + ' = ' + formattedPrice ?? '-'} ${label}`
+  const text = `${'1 ' + mainCurrency?.symbol + ' = ' + formattedPrice ?? '-'} ${label}`
 
   return (
     <StyledPriceContainer
