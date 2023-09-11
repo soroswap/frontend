@@ -35,9 +35,10 @@ const CurrencyWrapper = styled('div')`
 `
 
 const CustomRow = styled(Row)`
-  border-radius: var(--arrendodamento, 16px);
-  border: 1px solid var(--fora-do-brading-desativado, #4E4E4E);
+  border-radius: 16px;
+  border: 1px solid #4E4E4E;
   padding: 15px;
+  overflow: auto;
 `
 
 interface AmountProps {

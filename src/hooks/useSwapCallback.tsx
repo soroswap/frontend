@@ -1,11 +1,14 @@
 import { contractInvoke } from "@soroban-react/contracts";
 import { useSorobanReact } from "@soroban-react/core";
-import { useCallback } from "react";
+import { useCallback, useContext } from "react";
 import { xdr } from "soroban-client";
 import { InterfaceTrade } from "state/routing/types";
 import * as SorobanClient from "soroban-client";
 import BigNumber from "bignumber.js";
 import { bigNumberToI128 } from "helpers/utils";
+import { sendNotification } from "functions/sendNotification";
+import { AppContext, SnackbarIconType } from "contexts";
+import { formatTokenAmount } from "helpers/format";
 
 // Returns a function that will execute a swap, if the parameters are all valid
 // and the user has approved the slippage adjusted input amount for the trade
@@ -15,6 +18,7 @@ export function useSwapCallback(
   // allowedSlippage: Percent, // in bips
   // permitSignature: PermitSignature | undefined
 ) {
+  const { SnackbarContext } = useContext(AppContext)
   const sorobanContext = useSorobanReact()
   const {activeChain, address} = sorobanContext
   
@@ -40,10 +44,17 @@ export function useSwapCallback(
       ],
       sorobanContext,
       signAndSend: true,
-      secretKey: "SDYTK3LBZWJ3JO3E4ZZKQMHAC2CK7SEG6VYK2LUX2725KIFR3YQ3YESJ",
     })
-    console.log("🚀 « result:", result)
 
+    if (result) {
+      console.log("🚀 « result:", result)
+      //TODO: Investigate result xdr to get swapped amount and hash, there is a warmHash, is it this one?
+      const notificationMessage = `${formatTokenAmount(trade.inputAmount.value)} ${trade.inputAmount.currency.symbol} for ${formatTokenAmount(trade.outputAmount.value)} ${trade.outputAmount.currency.symbol}`
+      sendNotification(notificationMessage,'Swapped', SnackbarIconType.SWAP, SnackbarContext)
+    }
+
+    //This will connect again the wallet to fetch its data
+    sorobanContext.connect();
     return result
-  }, [activeChain, address, sorobanContext, trade])
+  }, [SnackbarContext, activeChain, address, sorobanContext, trade])
 }

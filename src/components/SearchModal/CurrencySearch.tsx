@@ -17,6 +17,7 @@ import useDebounce from 'hooks/useDebounce'
 import { isAddress } from 'helpers/address'
 import { getTokenFilter } from 'lib/hooks/useTokenList/filtering'
 import { useSortTokensByQuery } from 'lib/hooks/useTokenList/sorting'
+import { BodySmall, SubHeader } from 'components/Text'
 
 const ContentWrapper = styled(Column)<{ modalheight?: number }>`
   overflow: hidden;
@@ -25,7 +26,8 @@ const ContentWrapper = styled(Column)<{ modalheight?: number }>`
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 420px;
+  width: calc(100% - 40px);
+  max-width: 420px;
   height: ${({ modalheight }) => modalheight+'vh' ?? '90px'};
   min-height: 90px;
   background: ${({ theme }) => `linear-gradient(${theme.palette.customBackground.module}, ${theme.palette.customBackground.module}) padding-box,
@@ -148,9 +150,9 @@ export function CurrencySearch({
     <ContentWrapper modalheight={modalHeight}>
       <PaddedColumn gap="16px">
         <RowBetween>
-          <Typography fontWeight={500} fontSize={24}>
+          <SubHeader fontWeight={500}>
             Select a token
-          </Typography>
+          </SubHeader>
           <CloseButton onClick={onDismiss} />
         </RowBetween>
         <Row>

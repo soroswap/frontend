@@ -7,6 +7,7 @@ import Header from "./Header";
 import background1 from '../../assets/images/bg1.png'
 import ConnectWalletModal from "components/Modals/ConnectWalletModal";
 import MobileDrawer from "./MobileDrawer";
+import SnackbarNotification from "components/Notifications/SnackbarNotification";
 
 const MainBackground = styled("main")<{ isMobile: boolean }>`
   background-image: url(${background1.src});
@@ -46,6 +47,7 @@ export default function MainLayout({
       </AppBar>
 
       <ConnectWalletModal />
+      <SnackbarNotification />
 
       <MobileDrawer isDrawerOpen={isDrawerOpen} setDrawerOpen={setDrawerOpen} />
 

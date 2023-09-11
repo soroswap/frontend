@@ -6,4 +6,8 @@ export const CloseButton = styled(X)<{ onClick: () => void }>`
   width: 32px;
   height: 32px;
   cursor: pointer;
+  @media (max-width: ${({theme}) => theme.breakpoints.values.sm}px) {
+    width: 24px;
+    height: 24px;
+  }
 `

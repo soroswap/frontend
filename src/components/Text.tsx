@@ -19,6 +19,9 @@ export const SubHeader = styled(Typography)<{ color?: string; fontWeight?: numbe
   fontSize: fontSize ?? 24,
   color: color ?? theme.typography.subtitle1.color,
   lineHeight: "24px",
+  [theme.breakpoints.down("sm")]: {
+    fontSize: 14,
+  }
 }));
 
 export const SubHeaderSmall = styled(Typography)<{color?: string; fontWeight?: number}>(({ theme, color, fontWeight }) => ({
