@@ -180,9 +180,9 @@ export default function AddLiquidityPage() {
   // Get share of Pool
   useEffect(() => {
     if (!pairAddress || !amountOfLpTokensToReceiveBN) return
-    getTotalShares(pairAddress, sorobanContext).then((totalShares) => {
-      console.log("Add/index:", totalShares)
-      const share = amountOfLpTokensToReceiveBN.multipliedBy(100).dividedBy(amountOfLpTokensToReceiveBN.plus(totalShares))
+    getTotalShares(pairAddress, sorobanContext).then((totalSharesResult) => {
+      const totalSharesBN = new BigNumber(totalSharesResult)
+      const share = amountOfLpTokensToReceiveBN.multipliedBy(100).dividedBy(amountOfLpTokensToReceiveBN.plus(totalSharesBN.shiftedBy(-7)))
       setTotalShares(share.toString())
     })
   }, [amountOfLpTokensToReceiveBN, pairAddress, sorobanContext])

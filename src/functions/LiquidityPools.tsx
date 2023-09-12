@@ -11,7 +11,6 @@ export async function getLpTokensAmount(
     pairAddress: string,
     sorobanContext: SorobanContextType,
 ) {
-    // eslint-disable-next-line react-hooks/rules-of-hooks
     const totalShares = await getTotalShares(pairAddress, sorobanContext)
     if (!totalShares || reserve1.isEqualTo(0) || reserve0.isEqualTo(0)) {
         return amount0.multipliedBy(amount1).squareRoot()
@@ -21,9 +20,19 @@ export async function getLpTokensAmount(
     return BigNumber.min(LP0, LP1)
 }
 
+/**
+ * Fetches the total shares for a given pair address within the Soroban context.
+ *
+ * @param {string} pairAddress - The contract address of the asset pair.
+ * @param {SorobanContextType} sorobanContext - The context within which Soroban operates.
+ *
+ * @returns {Promise<number | undefined>} - The total shares in stroop, or undefined if unable to fetch.
+ */
 export async function getTotalShares(
     pairAddress: string,
     sorobanContext: SorobanContextType) {
+    // Invoke the "total_shares" method on the contract at the given pair address.
+    // The result will be in Soroban contract value (scval) format.
     const totalShares_scval = await contractInvoke({
         contractAddress: pairAddress,
         method: "total_shares",
