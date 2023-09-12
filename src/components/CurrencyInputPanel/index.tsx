@@ -245,7 +245,7 @@ export default function CurrencyInputPanel({
         <FixedContainer>
           <AutoColumn gap="sm" justify="center">
             <Lock />
-            <SubHeader fontSize="12px" textAlign="center" padding="0 12px">
+            <SubHeader fontSize={12} textAlign="center" padding="0 12px">
               The market price is outside your specified price range. Single-asset deposit only.
             </SubHeader>
           </AutoColumn>

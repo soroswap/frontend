@@ -78,7 +78,7 @@ export function AdvancedSwapDetails({ trade, allowedSlippage, syncing = false }:
 
   const [priceImpact, setPriceImpact] = useState<number>(0)
 
-  getPriceImpactNew(trade?.inputAmount.currency, trade?.outputAmount.currency, BigNumber(trade?.inputAmount.value), sorobanContext).then((resp) => {
+  getPriceImpactNew(trade?.inputAmount?.currency, trade?.outputAmount?.currency, BigNumber(trade?.inputAmount?.value ?? "0"), sorobanContext).then((resp) => {
     setPriceImpact(twoDecimalsPercentage(resp.toString())) 
   })
 
@@ -140,7 +140,7 @@ export function AdvancedSwapDetails({ trade, allowedSlippage, syncing = false }:
         </RowFixed>
         <TextWithLoadingPlaceholder syncing={syncing} width={65}>
           <BodySmall>
-            {formatTokenAmount(trade?.outputAmount.value ?? "0")}
+            {formatTokenAmount(trade?.outputAmount?.value ?? "0")}
             {/* {`${formatCurrencyAmount(trade.outputAmount, NumberType.SwapTradeAmount)} ${
               trade.outputAmount.currency.symbol
             }`} */}
