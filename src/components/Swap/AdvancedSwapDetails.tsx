@@ -6,11 +6,8 @@ import { RowBetween, RowFixed } from "components/Row"
 import { Separator } from "components/SearchModal/styleds"
 import { BodySmall } from "components/Text"
 import { MouseoverTooltip } from "components/Tooltip"
-import { getPriceImpact } from "functions/fromExactInputGetExpectedOutput"
-import { getPairAddress } from "functions/getPairAddress"
 import { getPriceImpactNew } from "functions/getPriceImpact"
 import { formatTokenAmount, twoDecimalsPercentage } from "helpers/format"
-import { reservesBNWithTokens } from "hooks/useReserves"
 import { useState } from "react"
 import { InterfaceTrade } from "state/routing/types"
 
@@ -134,6 +131,7 @@ export function AdvancedSwapDetails({ trade, allowedSlippage, syncing = false }:
             }
           >
             <BodySmall color="textSecondary">
+              {/* TODO: Get slippage and do (outputAmount * (1-slippage%)) */}
               Expected output
             </BodySmall>
           </MouseoverTooltip>

@@ -10,8 +10,7 @@ import { ArrowDown } from "react-feather";
 import { AutoColumn } from "components/Column";
 import { useSorobanReact } from "@soroban-react/core";
 import { ButtonError, ButtonLight, ButtonPrimary } from "components/Buttons/Button";
-import { GrayCard } from "components/Card";
-import { ButtonText, ButtonTextSecondary } from "components/Text";
+import { ButtonText } from "components/Text";
 import { relevantTokensType, useDerivedSwapInfo, useSwapActionHandlers } from "state/swap/hooks";
 import swapReducer, { initialState as initialSwapState, SwapState } from 'state/swap/reducer'
 import { Field } from "state/swap/actions";
@@ -421,11 +420,13 @@ export function SwapComponent({
                 Connect Wallet
               </ButtonLight>
             ) : routeNotFound ? (
-              <GrayCard style={{ textAlign: 'center' }}>
-                <ButtonTextSecondary mb="4px">
-                  Insufficient liquidity for this trade.
-                </ButtonTextSecondary>
-              </GrayCard>
+              <ButtonError
+                disabled={true}
+              >
+                <ButtonText>
+                  Route not found
+                </ButtonText>
+              </ButtonError>
             ) : (
               <ButtonError
                 onClick={() => showPriceImpactWarning ? setShowPriceImpactModal(true) : handleContinueToReview()}

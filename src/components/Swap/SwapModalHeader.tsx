@@ -37,7 +37,7 @@ export default function SwapModalHeader({
         <SwapModalHeaderAmount
           field={Field.INPUT}
           label={"You sell"}
-          amount={trade.outputAmount ? String(trade.outputAmount.value) : '0'}
+          amount={trade.inputAmount ? String(trade.inputAmount.value) : '0'}
           currency={inputCurrency}
           usdAmount={fiatValueInput}
         />

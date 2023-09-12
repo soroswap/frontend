@@ -275,7 +275,7 @@ export default function ConfirmSwapModal({
     )
   }, [allowance.isApprovalPending, allowance.isRevocationPending, allowance.state, allowedSlippage, confirmModalState, fiatValueInput, fiatValueOutput, onAcceptChanges, pendingModalSteps, showAcceptChanges, startSwapFlow, swapError?.message, swapFailed, swapQuoteReceivedDate, swapResult, trade, wrapTxHash])
 
-  const titleToShow = confirmModalState === ConfirmModalState.REVIEWING ? "Review Swap" : confirmModalState === ConfirmModalState.PENDING_CONFIRMATION ? "You will receive" : undefined
+  const titleToShow = confirmModalState === ConfirmModalState.REVIEWING ? "Confirm Swap" : confirmModalState === ConfirmModalState.PENDING_CONFIRMATION ? "You will receive" : undefined
 
   return (
     <Modal

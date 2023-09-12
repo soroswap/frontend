@@ -21,19 +21,25 @@ export async function getExpectedAmount(
   sorobanContext: SorobanContextType,
   customReserves?: customReservesType
 ) {
-  if(!currencyIn || !currencyOut) return BigNumber("0")
-
-  const pairAddress = await getPairAddress(currencyIn.address, currencyOut.address, sorobanContext)
-  const reserves = customReserves ?? await reservesBNWithTokens(pairAddress, sorobanContext)
-
-  const isToken0 = currencyIn.address === reserves.token0
-
-  let expectedOutput
-  if (isToken0) {
-    expectedOutput = fromExactInputGetExpectedOutput(amountIn, reserves.reserve0, reserves.reserve1)
-  } else {
-    expectedOutput = fromExactOutputGetExpectedInput(amountIn, reserves.reserve0, reserves.reserve1)
+  if (!currencyIn || !currencyOut) return BigNumber("0")
+  
+  try {
+    const pairAddress = await getPairAddress(currencyIn.address, currencyOut.address, sorobanContext)
+    const reserves = customReserves ?? await reservesBNWithTokens(pairAddress, sorobanContext)
+  
+    const isToken0 = currencyIn.address === reserves.token0
+  
+    let expectedOutput
+    if (isToken0) {
+      expectedOutput = fromExactInputGetExpectedOutput(amountIn, reserves.reserve0, reserves.reserve1)
+    } else {
+      expectedOutput = fromExactOutputGetExpectedInput(amountIn, reserves.reserve0, reserves.reserve1)
+    }
+  
+    return expectedOutput
+  } catch (error) {
+    console.log("🚀 « error:", error)
+    return BigNumber(0)
   }
 
-  return expectedOutput
 }
