@@ -33,10 +33,10 @@ export default function AddLiquidityPage() {
 
   const router = useRouter();
   const { tokens } = router.query as { tokens: TokensType };
-  console.log("pages/add tokens:", tokens)
+  // console.log("pages/add tokens:", tokens)
 
   const [currencyIdA, currencyIdB] = Array.isArray(tokens) ? tokens : ['', ''];
-  console.log("typeof tokens:", typeof tokens)
+  // console.log("typeof tokens:", typeof tokens)
   // const {
   //   dependentField,
   //   currencies,
@@ -62,7 +62,7 @@ export default function AddLiquidityPage() {
 
   const navigate = useCallback((destination: any) => { router.push(destination) }, [router]
   )
-  console.log("pages/add, currencyA, currencyB", currencyA, currencyB)
+  // console.log("pages/add, currencyA, currencyB", currencyA, currencyB)
 
   const derivedMintInfo = useDerivedMintInfo(
     currencyA ? currencyA : undefined,
@@ -77,7 +77,7 @@ export default function AddLiquidityPage() {
 
   const { independentField, typedValue, otherTypedValue } = useMintState()
 
-  console.log("src/components/Add/index.tsx: independentField:", independentField)
+  // console.log("src/components/Add/index.tsx: independentField:", independentField)
   const formattedAmounts = useMemo(() => {
     return {
       [independentField]: typedValue,
@@ -87,10 +87,10 @@ export default function AddLiquidityPage() {
     }
   }, [dependentField, independentField, noLiquidity, otherTypedValue, parsedAmounts, typedValue])
 
-  console.log("src/components/Add/index.tsx: formattedAmounts:", formattedAmounts)
-  console.log("src/components/Add/index.tsx: formatTokenAmount(formattedAmounts[dependentField]):", formatTokenAmount(formattedAmounts[dependentField]))
-  console.log("src/components/Add/index.tsx: parsedAmounts:", parsedAmounts)
-  console.log("src/components/Add/index.tsx: noLiquidity:", noLiquidity)
+  // console.log("src/components/Add/index.tsx: formattedAmounts:", formattedAmounts)
+  // console.log("src/components/Add/index.tsx: formatTokenAmount(formattedAmounts[dependentField]):", formatTokenAmount(formattedAmounts[dependentField]))
+  // console.log("src/components/Add/index.tsx: parsedAmounts:", parsedAmounts)
+  // console.log("src/components/Add/index.tsx: noLiquidity:", noLiquidity)
 
   // Modal and loading
   const [showConfirm, setShowConfirm] = useState<boolean>(false)
