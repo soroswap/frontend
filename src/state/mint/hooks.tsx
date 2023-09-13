@@ -151,25 +151,27 @@ export function useDerivedMintInfo(
     }),
     [currencyA, currencyB]
   )
-  console.log("state/mint/hooks: currencies:", currencies)
+  // console.log("state/mint/hooks: currencies:", currencies)
 
-  console.log("state/mint/hooks: currencyA:", currencyA)
-  console.log("state/mint/hooks: currencyB:", currencyB)
+  // console.log("state/mint/hooks: currencyA:", currencyA)
+  // console.log("state/mint/hooks: currencyB:", currencyB)
   // const pairAddress = usePairContractAddress(
   //   !currencyA ? null : currencyA.address,
   //   !currencyB ? null : currencyB.address,
   //   sorobanContext)
 
   useEffect(() => {
+    if (!sorobanContext.address) return
     getFactoryData(sorobanContext).then(response => {
 
-      console.log("state/mint/hooks: factoryAddress response:", response)
+      // console.log("state/mint/hooks: factoryAddress response:", response)
       setFactoryAddress(response)
     })
 
   }, [sorobanContext])
 
   useEffect(() => {
+    if (!currencyA || !currencyB) return
     if (factoryAddress.factory_address !== "" && currencyA && currencyB) {
       getPairContractAddressFromFactory(factoryAddress.factory_address, sorobanContext, currencyA, currencyB)
         .then((response) => {
@@ -179,25 +181,25 @@ export function useDerivedMintInfo(
   }, [currencyA, currencyB, factoryAddress.factory_address, sorobanContext])
 
 
-  console.log("state/mint/hooks: pairAddress:", pairAddress)
+  // console.log("state/mint/hooks: pairAddress:", pairAddress)
   const reservesBN = useReservesBigNumber(pairAddress ?? "", sorobanContext)
-  console.log("state/mint/hooks: reservesBN:", reservesBN, reservesBN.reserve0.toString(), reservesBN.reserve1.toString())
+  // console.log("state/mint/hooks: reservesBN:", reservesBN, reservesBN.reserve0.toString(), reservesBN.reserve1.toString())
 
   useEffect(() => {
-    if (!pairAddress) return
+    if (!pairAddress || !sorobanContext.address) return
     reservesBNWithTokens(pairAddress, sorobanContext).then((response) => {
       setReservesBNToken(response)
-      console.log("reservesBNWithTokens response:", response)
+      // console.log("reservesBNWithTokens response:", response)
     })
   }, [pairAddress, sorobanContext])
 
-  console.log("state/mint/hooks: reservesBNToken:", reservesBNToken)
+  // console.log("state/mint/hooks: reservesBNToken:", reservesBNToken)
 
   const noLiquidity: boolean = useMemo(() => {
     return pairAddress === undefined ||
       (reservesBN.reserve0.isZero() && reservesBN.reserve1.isZero())
   }, [pairAddress, reservesBN])
-  console.log("state/mint/hooks: noLiquidity:", noLiquidity)
+  // console.log("state/mint/hooks: noLiquidity:", noLiquidity)
 
   // // balances
   // const balances = useCurrencyBalances(
@@ -210,11 +212,16 @@ export function useDerivedMintInfo(
   // }
 
   // // amounts
-  const independentAmount: CurrencyAmount | undefined = tryParseCurrencyAmount(
-    typedValue,
-    currencies[independentField]
-  )
+  const independentAmount: CurrencyAmount | undefined = useMemo(() => {
+    return tryParseCurrencyAmount(
+      typedValue,
+      currencies[independentField]
+    )
+
+  }, [currencies, independentField, typedValue])
+
   const dependentAmount: CurrencyAmount | undefined = useMemo(() => {
+    if (!reservesBNToken) return undefined
     if (noLiquidity) {
       if (otherTypedValue && currencies[dependentField]) {
         return tryParseCurrencyAmount(otherTypedValue, currencies[dependentField])
@@ -222,7 +229,7 @@ export function useDerivedMintInfo(
       return undefined
     } else if (independentAmount) {
       // We need the reserves. which are in reservesBN but how to know which corresponds to.
-      console.log("state/mint/hooks: here", independentAmount)
+      // console.log("state/mint/hooks: here", independentAmount)
       // this is supposing that pair exists
       let reserve0, reserve1;
 
@@ -233,15 +240,15 @@ export function useDerivedMintInfo(
         reserve0 = reservesBNToken.reserve1
         reserve1 = reservesBNToken.reserve0
       }
-      console.log("state/mint/hooks: reserve0: ", reserve0.toString())
-      console.log("state/mint/hooks: reserve1: ", reserve1.toString())
+      // console.log("state/mint/hooks: reserve0: ", reserve0.toString())
+      // console.log("state/mint/hooks: reserve1: ", reserve1.toString())
 
       const calculatedPoolTokenOptimalAmount = calculatePoolTokenOptimalAmount(
         BigNumber(independentAmount.value),
         reserve0, // it should be reserve0 if idependentAmount.currency.address == 
         reserve1,
       )
-      console.log("state/mint/hooks: calculatedPoolTokenOptimalAmount:", calculatedPoolTokenOptimalAmount.toString())
+      // console.log("state/mint/hooks: calculatedPoolTokenOptimalAmount:", calculatedPoolTokenOptimalAmount.toString())
       const parsedCurrencyAmount = tryParseCurrencyAmount(formatTokenAmount(calculatedPoolTokenOptimalAmount.toString()), currencies[dependentField])
       return parsedCurrencyAmount
       //   // we wrap the currencies just to get the price in terms of the other token
@@ -260,8 +267,8 @@ export function useDerivedMintInfo(
       return undefined
     }
   }, [noLiquidity, independentAmount, otherTypedValue, currencies, dependentField, reservesBNToken])
-  console.log("state/mint/hooks: independentAmount:", independentAmount)
-  console.log("state/mint/hooks: dependentAmount:", dependentAmount)
+  // console.log("state/mint/hooks: independentAmount:", independentAmount)
+  // console.log("state/mint/hooks: dependentAmount:", dependentAmount)
 
   // const dependentAmount: CurrencyAmount<Currency> | undefined = useMemo(() => {
   //   if (noLiquidity) {
