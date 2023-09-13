@@ -28,10 +28,19 @@ export function useSwapCallback(
     if (!address || !activeChain) throw new Error('wallet must be connected to swap')
 
     const pairAddress = trade.swaps[0].route.pairs[0].pairAddress
-    const amountInScVal = bigNumberToI128(BigNumber(trade.inputAmount?.value || 0));
+    // TODO, this is just temporal, when implementing the Router we'll calculate this better
+    const amountInBigNumber= BigNumber(trade.inputAmount?.value|| 0).plus(BigNumber("10000000"))
+    console.log("🚀 ~ file: useSwapCallback.tsx:32 ~ returnuseCallback ~ amountInBigNumber.toString():", amountInBigNumber.toString())
+    const amountInScVal = bigNumberToI128(amountInBigNumber);
     // console.log("🚀 « trade.inputAmount:", trade.inputAmount.value)
-    const amountOutScVal = bigNumberToI128(BigNumber(trade.outputAmount?.value || 0));
+    const amountOutBigNumber=BigNumber(trade.outputAmount?.value || 0)
+    console.log("🚀 ~ file: useSwapCallback.tsx:36 ~ returnuseCallback ~ amountOutBigNumber.toString():", amountOutBigNumber.toString())
+    
+    const amountOutScVal = bigNumberToI128(amountOutBigNumber);
     // console.log("🚀 « trade.outputAmount:", trade.outputAmount.value)
+
+
+    //fn swap(e: Env, to: Address, buy_a: bool, amount_out: i128, amount_in_max: i128);
 
     let result = await contractInvoke({
       contractAddress: pairAddress as string,
