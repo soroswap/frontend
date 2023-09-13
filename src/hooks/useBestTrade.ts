@@ -1,6 +1,5 @@
 import { TokenType, CurrencyAmount } from "interfaces";
-import tryParseCurrencyAmount from "lib/utils/tryParseCurrencyAmount";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import {
   InterfaceTrade,
   QuoteState,
@@ -8,12 +7,9 @@ import {
   TradeType,
 } from "state/routing/types";
 import { useSorobanReact } from "@soroban-react/core";
-import { contractInvoke } from "@soroban-react/contracts";
-import { useFactory } from "./useFactory";
-import { addressToScVal, scValStrToJs } from "helpers/convert";
-import { reservesBigNumber } from "./useReserves";
-import fromExactInputGetExpectedOutput from "functions/fromExactInputGetExpectedOutput";
 import BigNumber from "bignumber.js";
+import { getPairAddress } from "functions/getPairAddress";
+import { getExpectedAmount } from "functions/getExpectedAmount";
 
 const TRADE_NOT_FOUND = {
   state: TradeState.NO_ROUTE_FOUND,
@@ -24,7 +20,7 @@ const TRADE_LOADING = { state: TradeState.LOADING, trade: undefined } as const;
 /**
  * Returns the best v2+v3 trade for a desired swap.
  * @param tradeType whether the swap is an exact in/out
- * @param amountSpecified the exact amount to swap in/out 
+ * @param amountSpecified the exact amount to swap in/out
  * @param otherCurrency the desired output/payment currency
  */
 export function useBestTrade(
@@ -39,74 +35,49 @@ export function useBestTrade(
   const sorobanContext = useSorobanReact();
   const [pairAddress, setPairAddress] = useState<string | undefined>(undefined);
 
-  const factory = useFactory(sorobanContext);
-
-  const [currencyIn, currencyOut]: [TokenType | undefined, TokenType | undefined] = useMemo(
+  const [currencyIn, currencyOut]: [
+    TokenType | undefined,
+    TokenType | undefined,
+  ] = useMemo(
     () =>
       tradeType === TradeType.EXACT_INPUT
         ? [amountSpecified?.currency, otherCurrency]
         : [otherCurrency, amountSpecified?.currency],
-    [amountSpecified, otherCurrency, tradeType]
-  )
-  console.log("🚀 ~ file: useBestTrade.ts -------- --------------- ")
-  
+    [amountSpecified, otherCurrency, tradeType],
+  );
+
   /* This is because the user can set some input amount and input token, before setting the output token */
-  if (
-    amountSpecified?.currency?.address &&
-    otherCurrency?.address
-  ) {
-    contractInvoke({
-      contractAddress: factory.factory_address,
-      method: "get_pair",
-      args: [
-        addressToScVal(amountSpecified?.currency?.address),
-        addressToScVal(otherCurrency?.address),
-      ],
+  if (amountSpecified?.currency?.address && otherCurrency?.address) {
+    getPairAddress(
+      amountSpecified?.currency?.address,
+      otherCurrency?.address,
       sorobanContext,
-    }).then((response) => {
+    ).then((response) => {
       if (response) {
-        const foundPairAddress = scValStrToJs(response.xdr) as string;
-        setPairAddress(foundPairAddress);
+        setPairAddress(response);
       } else {
         setPairAddress(undefined);
       }
     });
   }
 
-  const [reserves, setReserves] = useState<any>();
-
-  useEffect(() => {
-      let isCancelled = false; // to keep track if the component is still mounted
-      const fetchReserves = async () => {
-          const reservesResponse = await reservesBigNumber(pairAddress ?? "", sorobanContext);          
-          if (!isCancelled && reservesResponse != undefined) {
-              setReserves(reservesResponse);
-          }
-      };
-      fetchReserves();
-  
-      // Cleanup
-      return () => {
-          isCancelled = true; // marks that the component has unmounted
-      };
-  }, [pairAddress, sorobanContext]);
-
   // EXPECTED AMOUNTS. TODO: THIS WILL CHANGE AFTER USING THE ROUTER CONTRACT
-  let expectedAmount: string = '0'
-  if (reserves && amountSpecified?.value){
-    //TODO: Should get expected from input or output, currently only doing one way around
-    
-    expectedAmount = fromExactInputGetExpectedOutput(
-                      BigNumber(amountSpecified.value),
-                      reserves?.reserve0, 
-                      reserves?.reserve1)
-                    .toString() 
+  const [expectedAmount, setExpectedAmount] = useState<string>("0");
+  if (amountSpecified?.value) {
+    getExpectedAmount(
+      currencyIn,
+      currencyOut,
+      BigNumber(amountSpecified.value),
+      sorobanContext,
+    ).then((resp) => {
+      setExpectedAmount(resp?.toString());
+    });
   }
   // Now both expectedAmount and amountSpecified are strings in stroop format
   // Lets convert all of this to two CurrencyAmount objects: inputAmount & outputAmount
-  
+
   let inputAmount: CurrencyAmount | undefined;
-  let outputAmount: CurrencyAmount  | undefined;
+  let outputAmount: CurrencyAmount | undefined;
 
   // TODO: Not sure if we need to check for all of this:
   if (amountSpecified && currencyIn && expectedAmount && currencyOut) {
@@ -114,31 +85,28 @@ export function useBestTrade(
     if (currencyIn?.address == amountSpecified?.currency.address) {
       inputAmount = {
         value: amountSpecified.value,
-        currency: currencyIn
-      }
-    }
-    else {
+        currency: currencyIn,
+      };
+    } else {
       inputAmount = {
         value: expectedAmount,
-        currency: currencyIn
-      }
+        currency: currencyIn,
+      };
     }
 
     // Set outputAmount
-    if(currencyOut?.address == otherCurrency?.address){
-      outputAmount={
+    if (currencyOut?.address == otherCurrency?.address) {
+      outputAmount = {
         value: expectedAmount,
-        currency: currencyOut
-      }
-    }
-    else {
-      outputAmount={
+        currency: currencyOut,
+      };
+    } else {
+      outputAmount = {
         value: amountSpecified?.value,
-        currency: currencyOut
-      }
+        currency: currencyOut,
+      };
     }
   }
-
 
   // const inputAmount = (currencyIn?.address == amountSpecified?.currency.address) ? tryParseCurrencyAmount(amountSpecified?.value, currencyIn) : tryParseCurrencyAmount(expectedAmount, currencyIn)
   // console.log("🚀 ~ file: useBestTrade.ts: 🚀 « inputAmount:", inputAmount?.value)
@@ -147,28 +115,26 @@ export function useBestTrade(
 
   //TODO: Set the trade specs, getQuote
 
-//   /*
-//   export type InterfaceTrade = {
-//   inputAmount: CurrencyAmount;
-//   outputAmount: CurrencyAmount;
-//   tradeType: TradeType;
-//   swaps: {
-//     inputAmount: CurrencyAmount;
-//     outputAmount: CurrencyAmount;
-//     route: {
-//       input: TokenType;
-//       output: TokenType;
-//       pairs: {
-//         pairAddress: string;
-//       }[];
-//     };
-//   }[];
-// };
-  
-  
-//   */
-  const trade: InterfaceTrade  = useMemo(() => {
+  //   /*
+  //   export type InterfaceTrade = {
+  //   inputAmount: CurrencyAmount;
+  //   outputAmount: CurrencyAmount;
+  //   tradeType: TradeType;
+  //   swaps: {
+  //     inputAmount: CurrencyAmount;
+  //     outputAmount: CurrencyAmount;
+  //     route: {
+  //       input: TokenType;
+  //       output: TokenType;
+  //       pairs: {
+  //         pairAddress: string;
+  //       }[];
+  //     };
+  //   }[];
+  // };
 
+  //   */
+  const trade: InterfaceTrade = useMemo(() => {
     return {
       inputAmount: inputAmount,
       outputAmount: outputAmount,
@@ -190,8 +156,16 @@ export function useBestTrade(
         },
       ],
     };
-  }, [currencyIn, currencyOut, expectedAmount, inputAmount, outputAmount, pairAddress, tradeType]);
-  
+  }, [
+    currencyIn,
+    currencyOut,
+    expectedAmount,
+    inputAmount,
+    outputAmount,
+    pairAddress,
+    tradeType,
+  ]);
+
   /*
   If the pairAddress or the trades chenges, we upgrade the tradeResult
   trade can change by changing the amounts, as well as the independent value
@@ -199,8 +173,8 @@ export function useBestTrade(
   const tradeResult = useMemo(() => {
     // Trade is correctly updated depending on the user change (input token / amount, etc...)
     const state = pairAddress ? QuoteState.SUCCESS : QuoteState.NOT_FOUND;
-    
-    const myTradeResult = { state: state, trade: trade }
+
+    const myTradeResult = { state: state, trade: trade };
     return myTradeResult;
   }, [pairAddress, trade]); //should get the pair address and quotes
 
@@ -213,18 +187,18 @@ export function useBestTrade(
     } else if (!amountSpecified || (amountSpecified && !otherCurrency)) {
       return {
         state: TradeState.INVALID,
-        trade: undefined
+        trade: undefined,
       };
     } else if (tradeResult?.state === QuoteState.NOT_FOUND) {
       return {
         state: TradeState.NO_ROUTE_FOUND,
-        trade: undefined
+        trade: undefined,
       };
     } else if (!tradeResult?.trade) {
       // TODO(WEB-1985): use `isLoading` returned by rtk-query hook instead of checking for `trade` status
       return {
         state: TradeState.LOADING,
-        trade: undefined
+        trade: undefined,
       };
     } else {
       return {

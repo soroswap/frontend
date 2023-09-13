@@ -1,11 +1,3 @@
-// import { Trans } from '@lingui/macro'
-// import { Currency, Percent, TradeType } from '@uniswap/sdk-core'
-// import Column, { AutoColumn } from 'components/Column'
-// import { useUSDPrice } from 'hooks/useUSDPrice'
-// import { InterfaceTrade } from 'state/routing/types'
-// import { Field } from 'state/swap/actions'
-// import { Divider, ThemedText } from 'theme'
-
 import { Divider, styled } from "@mui/material"
 import Column, { AutoColumn } from "components/Column"
 import { TokenType } from "interfaces"
@@ -36,8 +28,8 @@ export default function SwapModalHeader({
   allowedSlippage: any
 }) {
   console.log("🚀 « trade:", trade)
-  const fiatValueInput = 0//useUSDPrice(trade.inputAmount) TODO: Get USD Value
-  const fiatValueOutput = 0//useUSDPrice(trade.outputAmount)
+  const fiatValueInput = "-$0"//useUSDPrice(trade.inputAmount) TODO: Get USD Value
+  const fiatValueOutput = "-$0"//useUSDPrice(trade.outputAmount)
 
   return (
     <HeaderContainer gap="8px">
@@ -45,7 +37,7 @@ export default function SwapModalHeader({
         <SwapModalHeaderAmount
           field={Field.INPUT}
           label={"You sell"}
-          amount={trade.outputAmount ? String(trade.outputAmount.value) : '0'}
+          amount={trade.inputAmount ? String(trade.inputAmount.value) : '0'}
           currency={inputCurrency}
           usdAmount={fiatValueInput}
         />

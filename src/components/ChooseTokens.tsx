@@ -164,11 +164,9 @@ function ChooseTokensWallet({
     }
     if (!isLiquidity) {
       let output = fromExactOutputGetExpectedInput(
-        pairAddress??"", 
         BigNumber(event.target.valueAsNumber).shiftedBy(7), 
         token0?.address === inputToken?.address?reserves.reserve0:reserves.reserve1,
         token1?.address === outputToken?.address?reserves.reserve1:reserves.reserve0,
-        sorobanContext
         )
       setInputTokenAmount(BigNumber(output).decimalPlaces(0).shiftedBy(-7).toNumber())
     }

@@ -5,12 +5,18 @@ import "../styles/globals.css";
 import type { AppProps } from "next/app";
 import { theme } from "../src/themes";
 import { CssBaseline, ThemeProvider } from "@mui/material";
-import { ColorModeContext, AppContext } from "../src/contexts";
+import { ColorModeContext, AppContext, SnackbarIconType } from "../src/contexts";
 import { Provider } from 'react-redux'
 import store from '../src/state'
 
 export default function App({ Component, pageProps }: AppProps) {
   const [isConnectWalletModal, setConnectWalletModal] = useState<boolean>(false)
+
+  const [openSnackbar, setOpenSnackbar] = useState<boolean>(false);
+  const [snackbarMessage, setSnackbarMessage] = useState<string>("");
+  const [snackbarTitle, setSnackbarTitle] = useState<string>("Swapped");
+  const [snackbarType, setSnackbarType] = useState<SnackbarIconType>(SnackbarIconType.SWAP)
+
   const [mode, setMode] = useState<"light" | "dark">("dark");
   const colorMode = useMemo(
     () => ({
@@ -25,7 +31,17 @@ export default function App({ Component, pageProps }: AppProps) {
     ConnectWalletModal: {
       isConnectWalletModalOpen: isConnectWalletModal,
       setConnectWalletModalOpen: setConnectWalletModal
-    }
+    },
+    SnackbarContext: {
+      openSnackbar,
+      snackbarMessage,
+      snackbarTitle,
+      snackbarType,
+      setOpenSnackbar,
+      setSnackbarMessage,
+      setSnackbarTitle,
+      setSnackbarType
+    },
   }
 
   return (

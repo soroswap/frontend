@@ -1,7 +1,7 @@
 import TuneRoundedIcon from '@mui/icons-material/TuneRounded';
 import Row from 'components/Row'
 import { useUserSlippageTolerance } from 'state/user/hooks'
-import { Typography, styled, useTheme } from "@mui/material"
+import { Typography, styled, useMediaQuery, useTheme } from "@mui/material"
 import { Settings } from 'react-feather';
 import settingsIcon from '../../../assets/svg/settingsIcon.svg';
 import Image from 'next/image';
@@ -41,18 +41,20 @@ const IconContainerWithSlippage = styled(IconContainer)`
 
 const ButtonContent = () => {
   const [userSlippageTolerance] = useUserSlippageTolerance()
+  const theme = useTheme()
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
   if (userSlippageTolerance === 0.5) {
     return (
       <IconContainer>
-        <Image width={32} height={32} src={settingsIcon.src} alt="Settings"/>
+        <Image width={isMobile ? 24 : 32} height={isMobile ? 24 : 32} src={settingsIcon.src} alt="Settings"/>
       </IconContainer>
     )
   }
 
   return (
     <IconContainerWithSlippage data-testid="settings-icon-with-slippage" gap="sm" >
-      <Image width={32} height={32} src={settingsIcon.src} alt="Settings"/>
+      <Image width={isMobile ? 24 : 32} height={isMobile ? 24 : 32} src={settingsIcon.src} alt="Settings"/>
     </IconContainerWithSlippage>
   )
 }

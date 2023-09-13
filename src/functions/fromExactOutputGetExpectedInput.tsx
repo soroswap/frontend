@@ -7,12 +7,11 @@ import BigNumber from "bignumber.js";
 import { useReservesBigNumber } from "../hooks/useReserves";
 
 export default function fromExactOutputGetExpectedInput(
-  pairAddress: string,
-  amountIn: BigNumber,
-  reserve0: BigNumber,
-  reserve1: BigNumber,
-  sorobanContext: SorobanContextType
+  amountIn: BigNumber | undefined,
+  reserve0: BigNumber | undefined,
+  reserve1: BigNumber | undefined,
 ): BigNumber {
+  if (!amountIn || !reserve0 || !reserve1) return BigNumber(0)
 
   return getExpectedAmountFromReserves(amountIn, reserve0, reserve1);
 }

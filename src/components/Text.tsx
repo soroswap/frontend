@@ -14,11 +14,14 @@ export const BodySecondary = styled(Typography)<{color?: string; fontWeight?: nu
   lineHeight: "24px",
 }));
 
-export const SubHeader = styled(Typography)<{color?: string; fontWeight?: number}>(({ theme, color, fontWeight }) => ({
+export const SubHeader = styled(Typography)<{ color?: string; fontWeight?: number;  fontSize?: number}>(({ theme, color, fontWeight, fontSize }) => ({
   fontWeight: fontWeight ?? 500,
-  fontSize: 24,
+  fontSize: fontSize ?? 24,
   color: color ?? theme.typography.subtitle1.color,
   lineHeight: "24px",
+  [theme.breakpoints.down("sm")]: {
+    fontSize: 14,
+  }
 }));
 
 export const SubHeaderSmall = styled(Typography)<{color?: string; fontWeight?: number}>(({ theme, color, fontWeight }) => ({
@@ -46,6 +49,9 @@ export const BodySmall = styled(Typography)<{color?: string; fontWeight?: number
   fontSize: 14,
   color: color ?? theme.typography.subtitle1.color,
   lineHeight: "24px",
+  [theme.breakpoints.down("md")]: {
+    fontSize: 12,
+  }
 }));
 
 export const BodyPrimary = styled(Typography)<{color?: string; fontWeight?: number}>(({ theme, color, fontWeight }) => ({

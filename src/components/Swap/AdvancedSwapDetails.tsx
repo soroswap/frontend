@@ -1,9 +1,14 @@
+import { useSorobanReact } from "@soroban-react/core"
+import BigNumber from "bignumber.js"
 import Column from "components/Column"
 import { LoadingRows } from "components/Loader/styled"
 import { RowBetween, RowFixed } from "components/Row"
 import { Separator } from "components/SearchModal/styleds"
 import { BodySmall } from "components/Text"
 import { MouseoverTooltip } from "components/Tooltip"
+import { getPriceImpactNew } from "functions/getPriceImpact"
+import { formatTokenAmount, twoDecimalsPercentage } from "helpers/format"
+import { useState } from "react"
 import { InterfaceTrade } from "state/routing/types"
 
 interface AdvancedSwapDetailsProps {
@@ -34,8 +39,47 @@ export function AdvancedSwapDetails({ trade, allowedSlippage, syncing = false }:
   // const { chainId } = useWeb3React()
   // const nativeCurrency = useNativeCurrency(chainId)
   // const txCount = getTransactionCount(trade)
+  const sorobanContext = useSorobanReact()
 
-  const supportsGasEstimate = false//chainId && SUPPORTED_GAS_ESTIMATE_CHAIN_IDS.includes(chainId)
+  const supportsGasEstimate = true//chainId && SUPPORTED_GAS_ESTIMATE_CHAIN_IDS.includes(chainId)
+
+  // {twoDecimalsPercentage().toString())
+  // }%
+
+  // const priceImpact = async () => {
+  //   const pairAddress = await getPairAddress(trade?.inputAmount.currency.address, trade?.outputAmount.currency.address, sorobanContext)
+  //   const reserves = await reservesBNWithTokens(pairAddress, sorobanContext)
+  //   const { token0, token1 } = reserves
+  //   console.log("🚀 « pairAddress:", pairAddress)
+
+  //   if (trade?.inputAmount.currency && trade.outputAmount.currency) {
+  //     const priceImpactTemp = getPriceImpact(
+  //       pairAddress, 
+  //       BigNumber(trade?.inputAmount.value).shiftedBy(7), 
+  //       token0 === trade.inputAmount.currency.address ? reserves.reserve0 : reserves.reserve1,
+  //       token1 === trade.outputAmount.currency.address ? reserves.reserve1 : reserves.reserve0,
+  //       sorobanContext
+  //     )
+  //     console.log("🚀 « priceImpactTemp:", priceImpactTemp)
+
+  //     return twoDecimalsPercentage(priceImpactTemp).toString()
+
+  //   } else {
+  //     return "0"
+  //   }
+      
+  // }
+  // priceImpact().then((Resp) => {
+  //   console.log("resp", Resp)
+  // })
+
+  const [priceImpact, setPriceImpact] = useState<number>(0)
+
+  getPriceImpactNew(trade?.inputAmount?.currency, trade?.outputAmount?.currency, BigNumber(trade?.inputAmount?.value ?? "0"), sorobanContext).then((resp) => {
+    setPriceImpact(twoDecimalsPercentage(resp.toString())) 
+  })
+
+  // twoDecimalsPercentage()}%
 
   return (
     <Column gap="md">
@@ -55,7 +99,7 @@ export function AdvancedSwapDetails({ trade, allowedSlippage, syncing = false }:
           >
             <TextWithLoadingPlaceholder syncing={syncing} width={50}>
               <BodySmall>
-                ASD
+                ~$?
                 {/* {`${trade.totalGasUseEstimateUSD ? '~' : ''}${formatNumber(
                   trade.totalGasUseEstimateUSD,
                   NumberType.FiatGasPrice
@@ -65,7 +109,7 @@ export function AdvancedSwapDetails({ trade, allowedSlippage, syncing = false }:
           </MouseoverTooltip>
         </RowBetween>
       )}
-      {false && (
+      {true && (
         <RowBetween>
           <MouseoverTooltip title={"The impact your trade has on the market price of this pool."}>
             <BodySmall color="textSecondary">
@@ -73,32 +117,10 @@ export function AdvancedSwapDetails({ trade, allowedSlippage, syncing = false }:
             </BodySmall>
           </MouseoverTooltip>
           <TextWithLoadingPlaceholder syncing={syncing} width={50}>
-            <BodySmall>ss</BodySmall>
+            <BodySmall>{priceImpact}%</BodySmall>
           </TextWithLoadingPlaceholder>
         </RowBetween>
       )}
-      <RowBetween>
-        <RowFixed>
-          <MouseoverTooltip
-            title={"The minimum amount you are guaranteed to receive. If the price slips any further, your transaction will revert."}
-          >
-            <BodySmall color="textSecondary">
-              gg
-              {/* {trade.tradeType === TradeType.EXACT_INPUT ? "Minimum output" : "Maximum input"} */}
-            </BodySmall>
-          </MouseoverTooltip>
-        </RowFixed>
-        <TextWithLoadingPlaceholder syncing={syncing} width={70}>
-          <BodySmall>
-            ASD
-            {/* {trade.tradeType === TradeType.EXACT_INPUT
-              ? `${formatCurrencyAmount(trade.minimumAmountOut(allowedSlippage), NumberType.SwapTradeAmount)} ${
-                  trade.outputAmount.currency.symbol
-                }`
-              : `${trade.maximumAmountIn(allowedSlippage).toSignificant(6)} ${trade.inputAmount.currency.symbol}`} */}
-          </BodySmall>
-        </TextWithLoadingPlaceholder>
-      </RowBetween>
       <RowBetween>
         <RowFixed>
           <MouseoverTooltip
@@ -109,38 +131,19 @@ export function AdvancedSwapDetails({ trade, allowedSlippage, syncing = false }:
             }
           >
             <BodySmall color="textSecondary">
+              {/* TODO: Get slippage and do (outputAmount * (1-slippage%)) */}
               Expected output
             </BodySmall>
           </MouseoverTooltip>
         </RowFixed>
         <TextWithLoadingPlaceholder syncing={syncing} width={65}>
           <BodySmall>
-            SS
+            {formatTokenAmount(trade?.outputAmount?.value ?? "0")}
             {/* {`${formatCurrencyAmount(trade.outputAmount, NumberType.SwapTradeAmount)} ${
               trade.outputAmount.currency.symbol
             }`} */}
           </BodySmall>
         </TextWithLoadingPlaceholder>
-      </RowBetween>
-      <Separator />
-      <RowBetween>
-        <BodySmall color="textSecondary">
-          Order routing
-        </BodySmall>
-        {false ? (
-          <MouseoverTooltip
-            title={"GG"}//<SwapRoute data-testid="swap-route-info" trade={trade} syncing={syncing} />}
-          >
-            <BodySmall>FF</BodySmall>{/* <RouterLabel trade={trade} /> */}
-          </MouseoverTooltip>
-        ) : (
-          <MouseoverTooltip
-            title={"DD"}//<GasBreakdownTooltip trade={trade} hideFees />}
-            placement="right"
-          >
-            <BodySmall>FG</BodySmall>{/* <RouterLabel trade={trade} /> */}
-          </MouseoverTooltip>
-        )}
       </RowBetween>
     </Column>
   )

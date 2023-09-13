@@ -2,11 +2,12 @@ import { SorobanContextType } from "@soroban-react/core";
 import BigNumber from "bignumber.js";
 
 export default function fromExactInputGetExpectedOutput(
-  amountIn: BigNumber,
-  reserve0: BigNumber,
-  reserve1: BigNumber,
+  amountIn: BigNumber | undefined,
+  reserve0: BigNumber | undefined,
+  reserve1: BigNumber | undefined,
 ): BigNumber {
-
+  if (!amountIn || !reserve0 || !reserve1) return BigNumber(0)
+  
   return getExpectedAmountFromReserves(amountIn, reserve0, reserve1).dp(7); //TODO: dp is like toFixed(2) to force it to give 2 decimals, should it be the decimals of the token?
 }
 

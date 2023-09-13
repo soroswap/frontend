@@ -1,9 +1,10 @@
 // import { Trans } from '@lingui/macro' //This is for localization and translation on all languages
-import { styled } from '@mui/material/styles';
+import { styled, useTheme } from '@mui/material/styles';
 import { RowBetween, RowFixed } from '../Row'
 import { SubHeader } from '../Text';
 import TuneRoundedIcon from '@mui/icons-material/TuneRounded';
 import SettingsTab from '../Settings/index';
+import { useMediaQuery } from '@mui/material';
 const StyledSwapHeader = styled(RowBetween)(({ theme }) => ({
   marginBottom: 10,
   color: theme.palette.secondary.main,
@@ -23,16 +24,18 @@ export default function SwapHeader({
   chainId?: number
   trade?: boolean
 }) {
+  const theme = useTheme()
   const fiatOnRampButtonEnabled = true
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
   return (
     <StyledSwapHeader>
       <HeaderButtonContainer>
-        <SubHeader>
+        <SubHeader fontSize={isMobile ? 14 : undefined}>
           Swap
           {/* <Trans>Swap</Trans> */}
         </SubHeader>
-        {fiatOnRampButtonEnabled && <SubHeader color={"#7780A0"}>
+        {fiatOnRampButtonEnabled && <SubHeader fontSize={isMobile ? 14 : undefined} color={"#7780A0"}>
           Buy
         </SubHeader>}
       </HeaderButtonContainer>

@@ -10,8 +10,7 @@ import { ArrowDown } from "react-feather";
 import { AutoColumn } from "components/Column";
 import { useSorobanReact } from "@soroban-react/core";
 import { ButtonError, ButtonLight, ButtonPrimary } from "components/Buttons/Button";
-import { GrayCard } from "components/Card";
-import { ButtonText, ButtonTextSecondary } from "components/Text";
+import { ButtonText } from "components/Text";
 import { relevantTokensType, useDerivedSwapInfo, useSwapActionHandlers } from "state/swap/hooks";
 import swapReducer, { initialState as initialSwapState, SwapState } from 'state/swap/reducer'
 import { Field } from "state/swap/actions";
@@ -154,7 +153,6 @@ export function SwapComponent({
     inputError: swapInputError,
   } = swapInfo
   // console.log("🚀 « inputError:", swapInputError)
-  console.log("🚀 « swap.tsx: trade:", trade)
 
   const parsedAmounts = useMemo(
     () => ({
@@ -163,8 +161,6 @@ export function SwapComponent({
     }),
     [independentField, parsedAmount, trade]
   )
-  console.log("🚀 ~ file: swap.tsx:161 ~ parsedAmounts:", parsedAmounts)
-
 
   const decimals = useMemo(
     () => ({
@@ -173,14 +169,13 @@ export function SwapComponent({
     }),
     [independentField, trade]
   )
-  console.log("🚀 ~ file: swap.tsx:172 ~ decimals:", decimals)
 
   const userHasSpecifiedInputOutput = Boolean(
     currencies[Field.INPUT] && currencies[Field.OUTPUT] && parsedAmounts[independentField]?.value > 0
   )
 
-  const fiatValueInput = {data: 0, isLoading: false}//useUSDPrice(parsedAmounts[Field.INPUT])
-  const fiatValueOutput = {data: 0, isLoading: false}//useUSDPrice(parsedAmounts[Field.OUTPUT])
+  const fiatValueInput = {data: 0, isLoading: true}//useUSDPrice(parsedAmounts[Field.INPUT]) //TODO: create USDPrice function when available method to get this, for now it will be shown as loading
+  const fiatValueOutput = {data: 0, isLoading: true}//useUSDPrice(parsedAmounts[Field.OUTPUT])
   const showFiatValueInput = Boolean(parsedAmounts[Field.INPUT])
   const showFiatValueOutput = Boolean(parsedAmounts[Field.OUTPUT])
 
@@ -277,7 +272,6 @@ export function SwapComponent({
   )
 
   const handleSwap = useCallback(() => {
-    console.log("HANDLELING SWAP")
     if (!swapCallback) {
       return
     }
@@ -364,7 +358,7 @@ export function SwapComponent({
               // id={InterfaceSectionName.CURRENCY_INPUT_PANEL}
               loading={independentField === Field.OUTPUT && routeIsSyncing}
               currency={currencies[Field.INPUT] ?? null}
-              id={""} />
+              id={"swap-input"} />
           </SwapSection>
           <ArrowWrapper clickable={true}>
             <ArrowContainer
@@ -384,7 +378,7 @@ export function SwapComponent({
           <div>
             <OutputSwapSection>
               <SwapCurrencyInputPanel
-                id={""}
+                id={"swap-output"}
                 value={formattedAmounts[Field.OUTPUT]}
                 //disabled={disableTokenInputs}
                 onUserInput={handleTypeOutput}
@@ -426,11 +420,13 @@ export function SwapComponent({
                 Connect Wallet
               </ButtonLight>
             ) : routeNotFound ? (
-              <GrayCard style={{ textAlign: 'center' }}>
-                <ButtonTextSecondary mb="4px">
-                  Insufficient liquidity for this trade.
-                </ButtonTextSecondary>
-              </GrayCard>
+              <ButtonError
+                disabled={true}
+              >
+                <ButtonText>
+                  Route not found
+                </ButtonText>
+              </ButtonError>
             ) : (
               <ButtonError
                 onClick={() => showPriceImpactWarning ? setShowPriceImpactModal(true) : handleContinueToReview()}

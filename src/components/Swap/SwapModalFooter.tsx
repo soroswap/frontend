@@ -1,44 +1,20 @@
-// import { Plural, Trans } from '@lingui/macro'
-// import { TraceEvent } from '@uniswap/analytics'
-// import { BrowserEvent, InterfaceElementName, SwapEventName } from '@uniswap/analytics-events'
-// import { formatNumber, formatPriceImpact, NumberType } from '@uniswap/conedison/format'
-// import { Percent, TradeType } from '@uniswap/sdk-core'
-// import { useWeb3React } from '@web3-react/core'
-// import Column from 'components/Column'
-// import { MouseoverTooltip, TooltipSize } from 'components/Tooltip'
-// import { SwapResult } from 'hooks/useSwapCallback'
-// import useTransactionDeadline from 'hooks/useTransactionDeadline'
-// import useNativeCurrency from 'lib/hooks/useNativeCurrency'
-// import { ReactNode } from 'react'
-// import { AlertTriangle } from 'react-feather'
-// import { RouterPreference } from 'state/routing/slice'
-// import { InterfaceTrade } from 'state/routing/types'
-// import { getTransactionCount, isClassicTrade } from 'state/routing/utils'
-// import { useRouterPreference, useUserSlippageTolerance } from 'state/user/hooks'
-// import { ThemedText } from 'theme'
-// import { formatTransactionAmount, priceToPreciseFloat } from 'utils/formatNumbers'
-// import getRoutingDiagramEntries from 'utils/getRoutingDiagramEntries'
-// import { formatSwapButtonClickEventProperties } from 'utils/loggingFormatters'
-// import { getPriceImpactWarning } from 'utils/prices'
-
-import { styled, useTheme } from "@mui/material";
-import { ButtonError, SmallButtonPrimary } from "components/Buttons/Button";
-import Column from "components/Column";
-import Row, { AutoRow, RowBetween, RowFixed } from "components/Row";
-import { BodySmall, HeadlineSmall, SubHeaderSmall } from "components/Text";
-import { ReactNode } from "react";
-import { AlertTriangle } from "react-feather";
-import { InterfaceTrade, TradeType } from "state/routing/types";
-import { Label } from "./SwapModalHeaderAmount";
-import { MouseoverTooltip } from "components/Tooltip";
-import { Plural } from "@lingui/macro";
-import { SwapCallbackError, SwapShowAcceptChanges } from "./styleds";
-
-// import { ButtonError, SmallButtonPrimary } from '../Button'
-// import Row, { AutoRow, RowBetween, RowFixed } from '../Row'
-// import { GasBreakdownTooltip } from './GasBreakdownTooltip'
-// import { SwapCallbackError, SwapShowAcceptChanges } from './styleds'
-// import { Label } from './SwapModalHeaderAmount'
+import { styled, useTheme } from "@mui/material"
+import { ButtonError, SmallButtonPrimary } from "components/Buttons/Button"
+import Column from "components/Column"
+import Row, { AutoRow, RowBetween, RowFixed } from "components/Row"
+import { BodySmall, HeadlineSmall, SubHeaderSmall } from "components/Text"
+import { ReactNode, useMemo, useState } from "react"
+import { AlertTriangle } from "react-feather"
+import { InterfaceTrade, TradeType } from "state/routing/types"
+import { Label } from "./SwapModalHeaderAmount"
+import { MouseoverTooltip } from "components/Tooltip"
+import { Plural } from "@lingui/macro"
+import { SwapCallbackError, SwapShowAcceptChanges } from "./styleds"
+import { getExpectedAmount } from "functions/getExpectedAmount"
+import { useSorobanReact } from "@soroban-react/core"
+import BigNumber from "bignumber.js"
+import { formatTokenAmount, twoDecimalsPercentage } from "helpers/format"
+import { getPriceImpactNew } from "functions/getPriceImpact"
 
 const DetailsContainer = styled(Column)`
   padding: 0 8px;
@@ -84,30 +60,46 @@ export default function SwapModalFooter({
   showAcceptChanges: boolean;
   onAcceptChanges: () => void;
 }) {
+  const sorobanContext = useSorobanReact()
+  const theme = useTheme()
   // const transactionDeadlineSecondsSinceEpoch = useTransactionDeadline()?.toNumber() // in seconds since epoch
   // const isAutoSlippage = useUserSlippageTolerance()[0] === 'auto'
   // const [routerPreference] = useRouterPreference()
   // const routes = isClassicTrade(trade) ? getRoutingDiagramEntries(trade) : undefined
-  const theme = useTheme();
   // const { chainId } = useWeb3React()
   // const nativeCurrency = useNativeCurrency(chainId)
 
-  const label = trade.inputAmount ? trade.inputAmount.currency.symbol : "";
-  const labelInverted = trade.outputAmount
-    ? trade.outputAmount.currency.symbol
-    : "";
-  const formattedPrice = 0; //formatTransactionAmount(priceToPreciseFloat(trade.executionPrice))
-  const txCount = 0; //getTransactionCount(trade)
+  const label = `${trade?.inputAmount?.currency.symbol}`
+  const labelInverted = `${trade?.outputAmount?.currency.symbol}`
+
+  const [expectedAmountOfOne, setExpectedAmountOfOne] = useState<string | number>()
+
+  const formattedPrice = useMemo(() => {
+    try {
+      getExpectedAmount(trade?.inputAmount?.currency, trade?.outputAmount?.currency, BigNumber(1).shiftedBy(7), sorobanContext).then((resp) => {
+        setExpectedAmountOfOne(formatTokenAmount(resp))
+      })
+      return expectedAmountOfOne
+    } catch {
+      return '0'
+    }
+  }, [expectedAmountOfOne, sorobanContext, trade?.inputAmount?.currency, trade?.outputAmount?.currency])
+  
+  const [priceImpact, setPriceImpact] = useState<number>(0)
+
+  getPriceImpactNew(trade?.inputAmount?.currency, trade?.outputAmount?.currency, BigNumber(trade?.inputAmount?.value ?? "0"), sorobanContext).then((resp) => {
+    setPriceImpact(twoDecimalsPercentage(resp.toString())) 
+  })
 
   return (
     <>
       <DetailsContainer gap="md">
         <BodySmall>
           <Row align="flex-start" justify="space-between" gap="sm">
-            <Label>Exchange rate</Label>
-            <DetailRowValue>{`1 ${labelInverted} = ${
-              formattedPrice ?? "-"
-            } ${label}`}</DetailRowValue>
+            <Label>
+              Exchange rate
+            </Label>
+            <DetailRowValue>{`1 ${label} = ${formattedPrice ?? '-'} ${labelInverted}`}</DetailRowValue>
           </Row>
         </BodySmall>
         <BodySmall>
@@ -119,11 +111,8 @@ export default function SwapModalFooter({
             >
               <Label cursor="help">Network fees</Label>
             </MouseoverTooltip>
-            <MouseoverTooltip
-              placement="right"
-              title={"<GasBreakdownTooltip trade={trade} />"}
-            >
-              <DetailRowValue>gas fees</DetailRowValue>
+            <MouseoverTooltip placement="right" title={"<GasBreakdownTooltip trade={trade} />"}>
+              <DetailRowValue>-$0</DetailRowValue>
             </MouseoverTooltip>
           </Row>
         </BodySmall>
@@ -133,7 +122,9 @@ export default function SwapModalFooter({
               <MouseoverTooltip title="The impact your trade has on the market price of this pool.">
                 <Label cursor="help">Price impact</Label>
               </MouseoverTooltip>
-              <DetailRowValue>{"-"}</DetailRowValue>
+              <DetailRowValue>
+                {priceImpact}%
+              </DetailRowValue>
             </Row>
           </BodySmall>
         )}
@@ -163,13 +154,7 @@ export default function SwapModalFooter({
               </Label>
             </MouseoverTooltip>
             <DetailRowValue>
-              {trade.tradeType === TradeType.EXACT_INPUT
-                ? trade.outputAmount
-                  ? `XX ${trade.outputAmount.currency.symbol}`
-                  : ""
-                : trade.inputAmount
-                ? `XX ${trade.inputAmount.currency.symbol}`
-                : ""}
+              {formatTokenAmount(trade?.outputAmount?.value ?? "0")} {trade?.outputAmount?.currency.symbol}
             </DetailRowValue>
           </Row>
         </BodySmall>
