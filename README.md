@@ -6,7 +6,7 @@ Welcome to Soroswap, a decentralized exchange (DEX) that draws inspiration from 
 Before you begin, ensure you have met the following requirements:
 
 - docker >= v24.0.2
-- **Freighter Wallet v5.2.3** Please use this version. You can have an intependent environment following the instructios in [this post](https://discord.com/channels/897514728459468821/1135655444157833256/1135655444157833256)
+- **Freighter Wallet v5.2.4** Please use this version. You can have an intependent environment following the instructios in [this post](https://discord.com/channels/897514728459468821/1135655444157833256/1135655444157833256)
 
 
 ## 🛠 Setting Up Soroswap 🛠
