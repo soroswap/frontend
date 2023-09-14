@@ -12,6 +12,8 @@ import { TradeType } from 'state/routing/types'
 import tryParseCurrencyAmount from 'lib/utils/tryParseCurrencyAmount'
 import { useUserSlippageToleranceWithDefault } from 'state/user/hooks'
 import BigNumber from 'bignumber.js'
+import { Any } from 'react-spring'
+import { reservesBNWithTokens } from 'hooks/useReserves'
 
 export type relevantTokensType = {
   balance: string,
@@ -107,7 +109,6 @@ export function useDerivedSwapInfo(state: SwapState): any {
   useEffect(() => {
     if (account) {
       tokenBalances(account, tokensArray, sorobanContext).then(balances => {
-        console.log("🚀 ~ file: hooks.tsx:110 ~ tokenBalances ~ balances:", balances)
         if (balances != undefined) {
           setRelevantTokenBalances(balances.balances);
         }
@@ -129,7 +130,6 @@ export function useDerivedSwapInfo(state: SwapState): any {
     (isExactIn ? outputCurrency : inputCurrency) ?? undefined,
     account
   )
-  console.log("🚀 « trade:", trade)
 
   const currencyBalances = useMemo(
     () => ({
@@ -182,18 +182,22 @@ export function useDerivedSwapInfo(state: SwapState): any {
       inputError = inputError ?? "Enter a recipient"
     }
 
-    // compare input balance to max input based on version
-    //TODO: Fix this, not working well
-    const [balanceIn, maxAmountIn] = [currencyBalances[Field.INPUT], (trade.trade?.inputAmount.value ?? 0)]
-    console.log("🚀 ~ file: hooks.tsx:187 ~ inputError ~ balanceIn:", balanceIn)
-    console.log("🚀 ~ file: hooks.tsx:187 ~ inputError ~ maxAmountIn:", maxAmountIn)
-
-    if (balanceIn && maxAmountIn && balanceIn.balance < (maxAmountIn)) {
-      inputError = `Insufficient ${balanceIn.symbol} balance`
+    //if amountin is more than reserves | expectedoutput is infinity
+    if (trade.trade?.outputAmount?.value.includes("Infinity") || trade.trade?.outputAmount?.value.includes("-")) {
+      inputError = "Insufficient liquidity for this trade."
     }
 
+    const [balanceIn, maxAmountIn]: [string | relevantTokensType, string | number] = [
+      currencyBalances[Field.INPUT],
+      (trade.trade?.inputAmount?.value ?? 0)
+    ];
+    
+    if (typeof balanceIn !== 'string' && BigNumber(balanceIn.balance).isLessThanOrEqualTo(BigNumber(maxAmountIn))) {
+      inputError = `Insufficient ${balanceIn.symbol} balance`;
+    }
+    
     return inputError
-  }, [account, currencies, currencyBalances, parsedAmount, to, trade])//, currencyBalances, trade.trade, allowedSlippage])
+  }, [account, currencies, currencyBalances, parsedAmount, to, trade])
 
   return useMemo(
     () => ({
@@ -205,7 +209,7 @@ export function useDerivedSwapInfo(state: SwapState): any {
       // autoSlippage,
       allowedSlippage,
     }),
-    [currencies, currencyBalances, parsedAmount, inputError, trade, allowedSlippage]//allowedSlippage, autoSlippage, currencies, currencyBalances, inputError, parsedAmount, trade]
+    [currencies, currencyBalances, parsedAmount, inputError, trade, allowedSlippage]
   )
 }
 

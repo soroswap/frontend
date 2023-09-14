@@ -10,7 +10,7 @@ export default async function getContractValue({
 }: {
   contractAddress: string;
   method: string;
-  args: xdr.ScVal[];
+  params: xdr.ScVal[];
   sorobanContext: SorobanContextType;
 }) {
   const contract = new SorobanClient.Contract(contractAddress);

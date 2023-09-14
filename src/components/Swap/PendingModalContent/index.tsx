@@ -1,23 +1,3 @@
-// import { t, Trans } from '@lingui/macro'
-// import { ChainId, Currency } from '@uniswap/sdk-core'
-// import { useWeb3React } from '@web3-react/core'
-// import { OrderContent } from 'components/AccountDrawer/MiniPortfolio/Activity/OffchainActivityModal'
-// import { ColumnCenter } from 'components/Column'
-// import Column from 'components/Column'
-// import Row from 'components/Row'
-// import { SwapResult } from 'hooks/useSwapCallback'
-// import { useUnmountingAnimation } from 'hooks/useUnmountingAnimation'
-// import { UniswapXOrderStatus } from 'lib/hooks/orders/types'
-// import { ReactNode, useRef } from 'react'
-// import { InterfaceTrade, TradeFillType } from 'state/routing/types'
-// import { useOrder } from 'state/signatures/hooks'
-// import { UniswapXOrderDetails } from 'state/signatures/types'
-// import { useIsTransactionConfirmed } from 'state/transactions/hooks'
-// import { ExternalLink } from 'theme'
-// import { ThemedText } from 'theme/components/text'
-// import { getExplorerLink } from 'utils/getExplorerLink'
-// import { ExplorerDataType } from 'utils/getExplorerLink'
-
 import { css, keyframes, styled, useTheme } from '@mui/material'
 import { ConfirmModalState } from '../ConfirmSwapModal'
 import {
@@ -26,16 +6,15 @@ import {
   CurrencyLoader,
   LoadingIndicatorOverlay,
   LogoContainer,
-  PaperIcon,
 } from './Logos'
 import { TradeSummary } from './TradeSummary'
 import Column, { ColumnCenter } from 'components/Column'
 import { ReactNode, useRef } from 'react'
 import { InterfaceTrade } from 'state/routing/types'
 import { TokenType } from 'interfaces'
-import { ExternalLink, Paperclip } from 'react-feather'
 import Row from 'components/Row'
-import { Caption, LabelSmall, SubHeaderLarge } from 'components/Text'
+import { LabelSmall, SubHeaderLarge } from 'components/Text'
+import Link from 'next/link'
 
 export const PendingModalContainer = styled(ColumnCenter)`
   margin: 48px 0 8px;
@@ -43,7 +22,7 @@ export const PendingModalContainer = styled(ColumnCenter)`
 
 const HeaderContainer = styled(ColumnCenter)<{ $disabled?: boolean }>`
   ${({ $disabled }) => $disabled && `opacity: 0.5;`}
-  padding: 0 32px;
+  gap: 10px;
   overflow: visible;
 `
 
@@ -79,8 +58,15 @@ const AnimationWrapper = styled('div')`
   flex-grow: 1;
 `
 
+const CustomLink = styled(Link)`
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+`
+
 const StepTitleAnimationContainer = styled(Column)<{ disableEntranceAnimation?: boolean }>`
-  position: absolute;
+  position: relative;
   width: 100%;
   align-items: center;
   transition: display 250ms ease-in-out;
@@ -115,7 +101,7 @@ interface PendingModalStep {
 
 interface PendingModalContentProps {
   steps?: PendingConfirmModalState[]
-  currentStep?: PendingConfirmModalState
+  currentStep?: any // The type of currentStep is inferred based on the values passed to it when the function is called.
   trade?: InterfaceTrade
   swapResult?: any//SwapResult
   wrapTxHash?: string
@@ -123,6 +109,7 @@ interface PendingModalContentProps {
   tokenApprovalPending?: boolean
   revocationPending?: boolean
 }
+
 
 interface ContentArgs {
   step: PendingConfirmModalState
@@ -150,15 +137,17 @@ function getContent(args: ContentArgs): PendingModalStep {
     trade,
     swapResult,
   } = args
-
+  
+  console.log("🚀 « step:", step)
+  
   switch (step) {
     case ConfirmModalState.WRAPPING:
       return {
         title: `Wrap ETH`,
         subtitle: (
-          <ExternalLink href="https://support.uniswap.org/hc/en-us/articles/16015852009997">
+          <CustomLink href="https://support.uniswap.org/hc/en-us/articles/16015852009997">
             Why is this required?
-          </ExternalLink>
+          </CustomLink>
         ),
         label: wrapPending ? `Pending...` : `Proceed in your wallet`,
       }
@@ -172,9 +161,9 @@ function getContent(args: ContentArgs): PendingModalStep {
       return {
         title: `Enable spending ${approvalCurrency?.symbol ?? 'this token'} on Uniswap`,
         subtitle: (
-          <ExternalLink href="https://support.uniswap.org/hc/en-us/articles/8120520483085">
+          <CustomLink href="https://support.uniswap.org/hc/en-us/articles/8120520483085">
             Why is this required?
-          </ExternalLink>
+          </CustomLink>
         ),
         label: tokenApprovalPending ? `Pending...` : `Proceed in your wallet`,
       }
@@ -182,9 +171,9 @@ function getContent(args: ContentArgs): PendingModalStep {
       return {
         title: `Allow ${approvalCurrency?.symbol ?? 'this token'} to be used for swapping`,
         subtitle: (
-          <ExternalLink href="https://support.uniswap.org/hc/en-us/articles/8120520483085">
+          <CustomLink href="https://support.uniswap.org/hc/en-us/articles/8120520483085" target='_blank'>
             Why is this required?
-          </ExternalLink>
+          </CustomLink>
         ),
         label: `Proceed in your wallet`,
       }
@@ -194,21 +183,18 @@ function getContent(args: ContentArgs): PendingModalStep {
 
       if (swapConfirmed && swapResult) {
         labelText = `View on Explorer`
-        href = "https://google.com"//getExplorerLink(chainId, swapResult.response.hash, ExplorerDataType.TRANSACTION)
-      } else if (swapPending) {
-        labelText = `Learn more about swapping with UniswapX`
-        href = 'https://support.uniswap.org/hc/en-us/articles/17515415311501'
+        href = "https://google.com"//TODO: getExplorerLink(chainId, swapResult.response.hash, ExplorerDataType.TRANSACTION)
       } else if (swapPending) {
         labelText = `Proceed in your wallet`
       }
-
+      
       return {
-        title: swapPending ? `Swap submitted` : swapConfirmed ? `Success` : `Confirm Swap`,
+        title: swapPending ? `Swap submitted` : swapConfirmed ? `Success` : `Waiting for confirmation`,
         subtitle: trade ? <TradeSummary trade={trade} /> : null,
         label: href ? (
-          <ExternalLink href={href} color="textSecondary">
+          <CustomLink href={href} target='_blank'>
             {labelText}
-          </ExternalLink>
+          </CustomLink>
         ) : (
           labelText
         ),
@@ -236,14 +222,14 @@ export function PendingModalContent({
   // // TODO(UniswapX): Support UniswapX status here too
   // const uniswapXSwapConfirmed = Boolean(swapResult)
 
-  const swapConfirmed = false
+  const swapConfirmed = swapResult ? true : false
 
-  const swapPending = swapResult !== undefined && !swapConfirmed
+  const swapPending = !swapResult ? true : false
   const wrapPending = false//wrapTxHash != undefined && !wrapConfirmed
 
   const { label, button } = getContent({
     step: currentStep,
-    approvalCurrency: trade?.inputAmount.currency,
+    approvalCurrency : trade?.inputAmount?.currency,
     swapConfirmed,
     swapPending,
     wrapPending,
@@ -252,6 +238,7 @@ export function PendingModalContent({
     swapResult,
     trade,
   })
+  console.log("🚀 « label:", label)
   const theme = useTheme()
 
   // const order = useOrder(swapResult?.type === TradeFillType.UniswapX ? swapResult.response.orderHash : '')
@@ -269,15 +256,15 @@ export function PendingModalContent({
   // }
 
   // // On mainnet, we show the success icon once the tx is sent, since it takes longer to confirm than on L2s.
-  const showSuccess = swapConfirmed || (swapPending)
+  const showSuccess = swapConfirmed || (!swapPending)
 
   return (
     <PendingModalContainer gap="24px">
       <LogoContainer>
         {currentStep === ConfirmModalState.APPROVING_TOKEN && <>dd</>}
-        {currentStep !== ConfirmModalState.PENDING_CONFIRMATION && (
+        {currentStep !== ConfirmModalState.PENDING_CONFIRMATION && trade && trade.inputAmount && (
           <CurrencyLoader
-            currency={trade?.inputAmount.currency}
+            currency={trade.inputAmount.currency}
             asBadge={currentStep === ConfirmModalState.APPROVING_TOKEN}
           />
         )}
@@ -288,44 +275,50 @@ export function PendingModalContent({
           revocationPending) && <LoadingIndicatorOverlay />}
       </LogoContainer>
       <HeaderContainer
-        gap="12px"
-        $disabled={revocationPending || tokenApprovalPending || wrapPending || (swapPending && !showSuccess)}
+        $disabled={revocationPending || tokenApprovalPending || wrapPending || (!swapPending && !showSuccess)}
       >
+        {trade && trade.inputAmount && 
+        
         <AnimationWrapper>
-          {steps?.map((step) => {
-            const { title, subtitle } = getContent({
-              step,
-              approvalCurrency: trade?.inputAmount.currency,
-              swapConfirmed,
-              swapPending,
-              wrapPending,
-              revocationPending,
-              tokenApprovalPending,
-              swapResult,
-              trade,
-            })
-            // We only render one step at a time, but looping through the array allows us to keep
-            // the exiting step in the DOM during its animation.
-            return (
-              Boolean(step === currentStep) && (
-                <StepTitleAnimationContainer
-                  disableEntranceAnimation={steps[0] === currentStep}
-                  gap="12px"
-                  key={step}
-                  ref={step === currentStep ? currentStepContainerRef : undefined}
-                >
-                  <SubHeaderLarge textAlign="center" data-testid="pending-modal-content-title">
-                    {title}
-                  </SubHeaderLarge>
-                  <LabelSmall textAlign="center">{subtitle}</LabelSmall>
-                </StepTitleAnimationContainer>
-              )
+        {steps?.map((step) => {
+          const { title, subtitle } = getContent({
+            step,
+            approvalCurrency: trade?.inputAmount?.currency,
+            swapConfirmed,
+            swapPending,
+            wrapPending,
+            revocationPending,
+            tokenApprovalPending,
+            swapResult,
+            trade,
+          });
+          // We only render one step at a time, but looping through the array allows us to keep
+          // the exiting step in the DOM during its animation.
+          return (
+            Boolean(step === currentStep) && (
+              <StepTitleAnimationContainer
+                disableEntranceAnimation={steps[0] === currentStep}
+                gap="12px"
+                key={step}
+                ref={step === currentStep ? currentStepContainerRef : undefined}
+              >
+                <SubHeaderLarge textAlign="center" data-testid="pending-modal-content-title">
+                  {title}
+                </SubHeaderLarge>
+                <LabelSmall textAlign="center">{subtitle}</LabelSmall>
+              </StepTitleAnimationContainer>
             )
-          })}
-        </AnimationWrapper>
-        <Row justify="center" marginTop="32px" minHeight="24px">
-          <Caption color={theme.palette.custom.accentTextLightPrimary}>{label}</Caption>
-        </Row>
+          );
+        })}
+      </AnimationWrapper>
+      }
+      <div style={{
+        fontSize: 14,
+        fontFamily: "Inter",
+        color: theme.palette.custom.accentTextLightSecondary
+      }}>
+        {label}
+      </div>
       </HeaderContainer>
       {button && <Row justify="center">{button}</Row>}
       {!hideStepIndicators && !showSuccess && (

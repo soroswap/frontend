@@ -38,7 +38,8 @@ const Wrapper = styled('div')`
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 420px;  
+  width: calc(100% - 40px);
+  max-width: 420px;  
   padding: 32px;
   background: ${({ theme }) => `linear-gradient(${theme.palette.customBackground.bg1}, ${theme.palette.customBackground.bg1}) padding-box,
               linear-gradient(150deg, rgba(136,102,221,1) 0%, rgba(${theme.palette.mode == 'dark' ? "33,29,50,1" : "255,255,255,1"}) 35%, rgba(${theme.palette.mode == 'dark' ? "33,29,50,1" : "255,255,255,1"}) 65%, rgba(136,102,221,1) 100%) border-box`};

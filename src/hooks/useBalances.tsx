@@ -133,13 +133,11 @@ export async function tokenDecimals(tokenAddress: string, userAddress: string, s
 
 
 export async function tokenBalances(userAddress: string, tokens: TokenType[] | TokenMapType | undefined, sorobanContext: SorobanContextType) {
-  console.log("🚀 ~ file: useBalances.tsx:140 ~ tokenBalances ~ tokens:", tokens)
   if (!tokens || !sorobanContext) return;
 
   const balances = await Promise.all(
     Object.values(tokens).map(async (token) => {
       const balanceResponse = await tokenBalance(token.address, userAddress, sorobanContext);
-      console.log("🚀 ~ file: useBalances.tsx:145 ~ Object.values ~ balanceResponse:", balanceResponse)
       const decimalsResponse = await tokenDecimals(token.address, userAddress, sorobanContext);
 
       const formattedBalance = formatFixedAmount(

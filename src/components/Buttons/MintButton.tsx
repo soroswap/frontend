@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { SorobanContextType } from "@soroban-react/core";
 import Button from "@mui/material/Button";
 
@@ -10,18 +10,22 @@ import {
 import { useKeys } from "../../hooks";
 import { bigNumberToI128 } from "../../helpers/utils";
 import { contractInvoke } from "@soroban-react/contracts";
+import { AppContext, SnackbarIconType } from "contexts";
+import { TokenType } from "interfaces";
+import { sendNotification } from "functions/sendNotification";
 
 interface MintButtonProps {
   sorobanContext: SorobanContextType;
-  tokenId: string;
+  token: TokenType;
   amountToMint: BigNumber;
 }
 
 export function MintButton({
   sorobanContext,
-  tokenId,
+  token,
   amountToMint,
 }: MintButtonProps) {
+  const {SnackbarContext} = useContext(AppContext)
   const [isSubmitting, setSubmitting] = useState(false);
   const networkPassphrase = sorobanContext.activeChain?.networkPassphrase ?? "";
   const server = sorobanContext.server;
@@ -60,7 +64,7 @@ export function MintButton({
     }
     console.log("🚀 ~ file: MintButton.tsx:70 ~ mintTokens ~ networkPassphrase:", networkPassphrase)
     console.log("🚀 ~ file: MintButton.tsx:68 ~ mintTokens ~ adminSource:", adminSource)
-    console.log("🚀 ~ file: MintButton.tsx:72 ~ mintTokens ~ tokenId:", tokenId)
+    console.log("🚀 ~ file: MintButton.tsx:72 ~ mintTokens ~ token.address:", token.address)
     console.log("🚀 ~ file: MintButton.tsx:75 ~ mintTokens ~ account:", account)
 
 
@@ -77,7 +81,7 @@ export function MintButton({
       // let result = await sendTransaction(tx, options);
 
       let result = await contractInvoke({
-        contractAddress: tokenId,
+        contractAddress: token.address,
         method: "mint",
         args: [new SorobanClient.Address(account).toScVal(), amountScVal],
         sorobanContext,
@@ -87,7 +91,7 @@ export function MintButton({
 
 
       if (result) {
-        alert("Success!");
+        sendNotification(`Minted ${amountToMint} ${token.symbol}`, "Minted", SnackbarIconType.MINT, SnackbarContext)
       }
 
 

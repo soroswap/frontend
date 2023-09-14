@@ -20,6 +20,10 @@ export const SwapWrapper = styled('main')`
   &:hover: {
     border: 1px solid ${({ theme }) => opacify(24, theme.palette.secondary.main,)},
   }
+
+  @media (max-width: ${({theme}) => theme.breakpoints.values.md}px) {
+    padding: 16px;
+  }
 `
 
 export const ArrowWrapper = styled('div')<{clickable: boolean }>`

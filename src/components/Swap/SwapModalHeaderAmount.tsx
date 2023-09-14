@@ -4,6 +4,7 @@ import CurrencyLogo from "components/Logo/CurrencyLogo"
 import Row from "components/Row"
 import { BodySecondary, BodySmall, HeadlineLarge, HeadlineMedium, ResponsiveMediumText, SubHeader } from "components/Text"
 import { MouseoverTooltip } from "components/Tooltip"
+import { formatTokenAmount } from "helpers/format"
 import { useWindowSize } from "hooks/useWindowSize"
 import { TokenType } from "interfaces"
 import { PropsWithChildren, ReactNode } from "react"
@@ -21,9 +22,9 @@ const CurrencyWrapper = styled('div')`
   display: flex;
   flex-direction: row;
   gap: 8px;
-  background: #2A2E44;
+  background: ${({ theme }) => theme.palette.customBackground.interactive};
   border-radius: 79px;
-  padding: 8px;
+  padding: 4px 8px 4px 4px;
   align-items: center;
   justify-content: center;
   text-align: center;
@@ -34,9 +35,10 @@ const CurrencyWrapper = styled('div')`
 `
 
 const CustomRow = styled(Row)`
-  border-radius: var(--arrendodamento, 16px);
-  border: 1px solid var(--fora-do-brading-desativado, #4E4E4E);
+  border-radius: 16px;
+  border: 1px solid #4E4E4E;
   padding: 15px;
+  overflow: auto;
 `
 
 interface AmountProps {
@@ -44,12 +46,12 @@ interface AmountProps {
   tooltipText?: ReactNode
   label: ReactNode
   amount: string
-  usdAmount?: number
+  usdAmount?: string
   currency: TokenType | undefined
 }
 export function SwapModalHeaderAmount({ tooltipText, label, amount, usdAmount, field, currency }: AmountProps) {
   const theme = useTheme()
-  let formattedAmount = Number(amount)//formatCurrencyAmount(amount, NumberType.TokenTx)
+  let formattedAmount = formatTokenAmount(amount)//formatCurrencyAmount(amount, NumberType.TokenTx)
   console.log("🚀 « formattedAmount:", formattedAmount)
   // if (formattedAmount.length > MAX_AMOUNT_STR_LENGTH) {
   //   formattedAmount = ""//formatCurrencyAmount(amount, NumberType.SwapTradeAmount)

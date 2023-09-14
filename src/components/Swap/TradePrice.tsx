@@ -1,5 +1,11 @@
 import { styled } from "@mui/material"
+import { useSorobanReact } from "@soroban-react/core"
+import BigNumber from "bignumber.js"
 import { BodySmall } from "components/Text"
+import fromExactInputGetExpectedOutput from "functions/fromExactInputGetExpectedOutput"
+import { getExpectedAmount } from "functions/getExpectedAmount"
+import { formatTokenAmount } from "helpers/format"
+import { useStellarUSD } from "hooks/useUSDPrice"
 import React, { useCallback, useMemo, useState } from "react"
 import { AlertCircle } from "react-feather"
 import { InterfaceTrade } from "state/routing/types"
@@ -25,21 +31,27 @@ const StyledPriceContainer = styled('button')`
 `
 
 export default function TradePrice({ trade }: TradePriceProps) {
+  const sorobanContext = useSorobanReact()
   const [showInverted, setShowInverted] = useState<boolean>(false)
+  const [expectedAmountOfOne, setExpectedAmountOfOne] = useState<string | number>()
+
+  const label = showInverted ? `${trade?.outputAmount?.currency.symbol}` : `${trade?.inputAmount?.currency.symbol} `
+  const mainCurrency = showInverted ? trade?.inputAmount?.currency : trade?.outputAmount?.currency
+  const otherCurrency = !showInverted ? trade?.inputAmount?.currency : trade?.outputAmount?.currency
+  const flipPrice = useCallback(() => setShowInverted(!showInverted), [setShowInverted, showInverted])
 
   const formattedPrice = useMemo(() => {
     try {
-      return trade.inputAmount.value //TODO: This should be the price of 1 of the labelInverted currency compared with the other one
+      getExpectedAmount(mainCurrency, otherCurrency, BigNumber(1).shiftedBy(7), sorobanContext).then((resp) => {
+        setExpectedAmountOfOne(formatTokenAmount(resp))
+      })
+      return expectedAmountOfOne
     } catch {
-      return '0'
+      return '0';
     }
-  }, [trade])
+  }, [expectedAmountOfOne, mainCurrency, otherCurrency, sorobanContext])
 
-  const label = showInverted ? `${trade.outputAmount.currency.symbol}` : `${trade.inputAmount.currency.symbol} `
-  const labelInverted = showInverted ? `${trade.inputAmount.currency.symbol} ` : `${trade.outputAmount.currency.symbol}`
-  const flipPrice = useCallback(() => setShowInverted(!showInverted), [setShowInverted, showInverted])
-
-  const text = `${'1 ' + labelInverted + ' = ' + formattedPrice ?? '-'} ${label}`
+  const text = `${'1 ' + mainCurrency?.symbol + ' = ' + formattedPrice ?? '-'} ${label}`
 
   return (
     <StyledPriceContainer

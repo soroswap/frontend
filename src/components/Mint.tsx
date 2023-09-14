@@ -127,7 +127,7 @@ export function MintTokens({
       <CardActions>
         <MintButton
           sorobanContext={sorobanContext}
-          tokenId={inputToken.address}
+          token={inputToken}
           amountToMint={amountToMint}
         />
       </CardActions>
