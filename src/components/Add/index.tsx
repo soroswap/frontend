@@ -9,7 +9,7 @@ import { BlueCard } from "components/Card";
 import { SubHeader } from "components/Text";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useDerivedMintInfo, useMintActionHandlers, useMintState } from "state/mint/hooks";
-import { useTokens, useToken } from "hooks";
+import { getToken } from "hooks";
 import { useSorobanReact } from '@soroban-react/core'
 import { Field } from "state/mint/actions";
 import { ButtonError, ButtonLight } from "components/Buttons/Button";
@@ -36,6 +36,8 @@ export default function AddLiquidityPage() {
   // console.log("pages/add tokens:", tokens)
 
   const [currencyIdA, currencyIdB] = Array.isArray(tokens) ? tokens : ['', ''];
+  console.log("src/components/Add/index: [currencyIdA, currencyIdB]:", [currencyIdA, currencyIdB])
+
   // console.log("typeof tokens:", typeof tokens)
   // const {
   //   dependentField,
@@ -53,8 +55,8 @@ export default function AddLiquidityPage() {
 
   const sorobanContext = useSorobanReact()
 
-  const currencyA = useToken(currencyIdA)
-  const currencyB = useToken(currencyIdB)
+  const [currencyA, setCurrencyA] = useState<TokenType | undefined>()
+  const [currencyB, setCurrencyB] = useState<TokenType | undefined>()
 
   const [amountOfLpTokensToReceive, setAmountOfLpTokensToReceive] = useState<string>("")
   const [amountOfLpTokensToReceiveBN, setAmountOfLpTokensToReceiveBN] = useState<BigNumber>()
@@ -142,6 +144,23 @@ export default function AddLiquidityPage() {
     },
     [currencyIdA, navigate, currencyIdB]
   )
+
+  // update currencies
+  useEffect(() => {
+    if (currencyIdA || currencyIdA !== '') {
+      getToken(sorobanContext, currencyIdA).then((token) => {
+        // console.log("src/components/Add/index: get Token A called: ", token)
+        setCurrencyA(token)
+      })
+    }
+    if (currencyIdB || currencyIdB !== '') {
+      getToken(sorobanContext, currencyIdB).then((token) => {
+        // console.log("src/components/Add/index: get Token B called: ", token)
+        setCurrencyB(token)
+      })
+    }
+
+  }, [currencyIdA, currencyIdB, sorobanContext])
 
   // Get the LP token amount to receive
   useEffect(() => {
