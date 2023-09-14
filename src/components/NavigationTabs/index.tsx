@@ -12,6 +12,7 @@
 
 import { Box, styled, useTheme } from "@mui/material"
 import Row, { RowBetween, RowFixed } from "components/Row"
+import SettingsTab from "components/Settings"
 import { SubHeader } from "components/Text"
 // import { SubHeader } from "components/Text"
 import Link from "next/link"
@@ -29,7 +30,7 @@ const Tabs = styled('div')`
   justify-content: space-evenly;
 `
 
-const StyledHistoryLink = styled(Link)<{ flex?: string }>`
+const StyledHistoryLink = styled(Link) <{ flex?: string }>`
   flex: ${({ flex }) => flex ?? 'none'};
 `
 
@@ -111,8 +112,8 @@ export function AddRemoveTabs({
           )}
         </SubHeader>
         <Box style={{ marginRight: '.5rem' }}>{children}</Box>
-        <RowFixed style={{padding: "6px 12px"}}>
-          <Settings />
+        <RowFixed style={{ padding: "6px 12px" }}>
+          <SettingsTab autoSlippage={0.5} />
         </RowFixed>
       </RowBetween>
     </Tabs>

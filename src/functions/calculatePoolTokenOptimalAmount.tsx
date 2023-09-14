@@ -1,6 +1,6 @@
-import BigNumber from "bignumber.js";
+import BigNumbecalculatePoolTokenOptimalAmountr, { BigNumber } from "bignumber.js";
 
-export default function calculatePoolTokenOptimalAmount(
+export default function (
   amount0: BigNumber,
   reserve0: BigNumber,
   reserve1: BigNumber,

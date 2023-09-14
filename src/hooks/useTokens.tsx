@@ -13,7 +13,7 @@ export const useTokens = (sorobanContext: SorobanContextType) => {
     fetcher,
   );
   let tokens: TokenType[] = [];
-  
+
   //TODO: Hardcode one activeChain for default tokens
   const filtered = data?.filter(
     (item: tokensResponse) =>
@@ -65,6 +65,46 @@ export function useDefaultActiveTokens(): TokenMapType {
 export function useToken(tokenAddress?: string | null) {
   const tokens = useDefaultActiveTokens()
   return useTokenFromMapOrNetwork(tokens, tokenAddress)
+}
+
+export async function getToken(sorobanContext: SorobanContextType, tokenAddress?: string | undefined): Promise<TokenType | undefined> {
+  if (!tokenAddress || tokenAddress === '' || !sorobanContext.activeChain) return undefined
+
+  const backendURL = `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/tokens`;
+
+  // fetch token list from url 
+  try {
+    const response = await fetch(backendURL);
+    if (!response.ok) {
+      console.error('Network response was not ok:', response);
+      return undefined;
+    }
+
+    const tokenData = await response.json();
+
+    // Find the object that matches the activeChain
+    const activeChainTokens = tokenData.find(
+      (chain: { network: string }) => chain.network.toLowerCase() === sorobanContext.activeChain?.name?.toLowerCase()
+    );
+    if (!activeChainTokens) return undefined;
+
+    // Find the token that matches the tokenAddress
+    const token = activeChainTokens.tokens.find(
+      (tkn: TokenType) => tkn.address.toLowerCase() === tokenAddress.toLowerCase()
+    );
+    if (!token) return undefined;
+
+    // Set decimals to 7 if not present
+    if (token.decimals === undefined) {
+      token.decimals = 7;
+    }
+
+    return token;
+  } catch (error) {
+    console.error('Error fetching token data:', error);
+    return undefined;
+  }
+
 }
 
 export function useTokenFromMapOrNetwork(tokens: TokenMapType, tokenAddress?: string | null): TokenType | null | undefined {

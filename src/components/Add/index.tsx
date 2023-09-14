@@ -7,27 +7,38 @@ import { AddRemoveTabs } from "components/NavigationTabs";
 import { Wrapper } from "components/Pool/styleds";
 import { BlueCard } from "components/Card";
 import { SubHeader } from "components/Text";
-import { useCallback, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useDerivedMintInfo, useMintActionHandlers, useMintState } from "state/mint/hooks";
-import { useTokens, useToken } from "hooks";
+import { getToken } from "hooks";
 import { useSorobanReact } from '@soroban-react/core'
 import { Field } from "state/mint/actions";
 import { ButtonError, ButtonLight } from "components/Buttons/Button";
 import depositOnContract from "functions/depositOnContract";
-import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { TokenType } from "interfaces";
 import { useRouter } from 'next/router';
+import { formatTokenAmount } from "helpers/format";
+import TransactionConfirmationModal, { ConfirmationModalContent } from "components/TransactionConfirmationModal";
+import AddModalHeader from "./AddModalHeader";
+import AddModalFooter from "./AddModalFooter";
+import { reservesBNWithTokens } from "hooks/useReserves";
+import BigNumber from "bignumber.js";
+import { getLpTokensAmount, getTotalShares } from "functions/LiquidityPools";
 
 
 type TokensType = [string, string];
 
 export default function AddLiquidityPage() {
+
+  const theme = useTheme()
+
   const router = useRouter();
   const { tokens } = router.query as { tokens: TokensType };
-  console.log("pages/add tokens:", tokens)
+  // console.log("pages/add tokens:", tokens)
 
   const [currencyIdA, currencyIdB] = Array.isArray(tokens) ? tokens : ['', ''];
-  console.log("typeof tokens:", typeof tokens)
+  console.log("src/components/Add/index: [currencyIdA, currencyIdB]:", [currencyIdA, currencyIdB])
+
+  // console.log("typeof tokens:", typeof tokens)
   // const {
   //   dependentField,
   //   currencies,
@@ -44,51 +55,76 @@ export default function AddLiquidityPage() {
 
   const sorobanContext = useSorobanReact()
 
-  const currencyA = useToken(currencyIdA)
-  const currencyB = useToken(currencyIdB)
+  const [currencyA, setCurrencyA] = useState<TokenType | undefined>()
+  const [currencyB, setCurrencyB] = useState<TokenType | undefined>()
+
+  const [amountOfLpTokensToReceive, setAmountOfLpTokensToReceive] = useState<string>("")
+  const [amountOfLpTokensToReceiveBN, setAmountOfLpTokensToReceiveBN] = useState<BigNumber>()
+  const [totalShares, setTotalShares] = useState<string>("")
 
   const navigate = useCallback((destination: any) => { router.push(destination) }, [router]
   )
-  console.log("pages/add, currencyA, currencyB", currencyA, currencyB)
+  // console.log("pages/add, currencyA, currencyB", currencyA, currencyB)
 
   const derivedMintInfo = useDerivedMintInfo(
     currencyA ? currencyA : undefined,
     currencyB ? currencyB : undefined)
   // const derivedMintInfo = useDerivedMintInfo(tokens[0], tokens[1])
-  const { dependentField, currencies } = derivedMintInfo
+  const { dependentField, currencies, parsedAmounts, noLiquidity, pairAddress } = derivedMintInfo
   console.log("pages/add derivedMintInfo:", derivedMintInfo)
-  const noLiquidity = true
+  // const noLiquidity = true
   const isCreate = false
 
   const { onFieldAInput, onFieldBInput } = useMintActionHandlers(noLiquidity)
 
   const { independentField, typedValue, otherTypedValue } = useMintState()
 
+  // console.log("src/components/Add/index.tsx: independentField:", independentField)
   const formattedAmounts = useMemo(() => {
     return {
       [independentField]: typedValue,
-      // [dependentField]: noLiquidity ? otherTypedValue : parsedAmounts[dependentField]?.toSignificant(6) ?? '',
-      [dependentField]: otherTypedValue
+      // [dependentField]: noLiquidity ? otherTypedValue : parsedAmounts[dependentField]?.value ?? '',
+      [dependentField]: noLiquidity ? otherTypedValue : formatTokenAmount(parsedAmounts[dependentField]?.value ?? ''),
+      // [dependentField]: otherTypedValue
     }
-  }, [dependentField, independentField, otherTypedValue, typedValue])
+  }, [dependentField, independentField, noLiquidity, otherTypedValue, parsedAmounts, typedValue])
 
+  // console.log("src/components/Add/index.tsx: formattedAmounts:", formattedAmounts)
+  // console.log("src/components/Add/index.tsx: formatTokenAmount(formattedAmounts[dependentField]):", formatTokenAmount(formattedAmounts[dependentField]))
+  // console.log("src/components/Add/index.tsx: parsedAmounts:", parsedAmounts)
+  // console.log("src/components/Add/index.tsx: noLiquidity:", noLiquidity)
+
+  // Modal and loading
+  const [showConfirm, setShowConfirm] = useState<boolean>(false)
+  const [attemptingTxn, setAttemptingTxn] = useState<boolean>(false) // clicked confirm
+
+  const handleDismissConfirmation = useCallback(() => {
+    setShowConfirm(false)
+    // if there was a tx hash, we want to clear the input
+    // if (txHash) {
+    //   onFieldAInput('')
+    // }
+    // setTxHash('')
+  }, [])
 
   const provideLiquidity = useCallback(() => {
+
+    // TODO: check that amount0 corresponds to token0?
     depositOnContract({
       sorobanContext,
-      pairAddress: derivedMintInfo.pairAddress,
+      pairAddress: pairAddress,
       amount0: formattedAmounts[independentField],
       amount1: formattedAmounts[dependentField],
     })
-  }, [dependentField, derivedMintInfo.pairAddress, formattedAmounts, independentField, sorobanContext])
+  }, [dependentField, pairAddress, formattedAmounts, independentField, sorobanContext])
 
   const handleCurrencyASelect = useCallback(
     (currencyA: TokenType) => {
       const newCurrencyIdA = currencyA.address
       if (newCurrencyIdA === currencyIdB) {
-        navigate(`/add/${currencyIdB}/${currencyIdA}`)
+        navigate(`/liquidity/add/${currencyIdB}/${currencyIdA}`)
       } else {
-        navigate(`/add/${newCurrencyIdA}/${currencyIdB}`)
+        navigate(`/liquidity/add/${newCurrencyIdA}/${currencyIdB}`)
       }
     },
     [currencyIdB, navigate, currencyIdA]
@@ -98,38 +134,96 @@ export default function AddLiquidityPage() {
       const newCurrencyIdB = currencyB.address
       if (currencyIdA === newCurrencyIdB) {
         if (currencyIdB) {
-          navigate(`/add/${currencyIdB}/${newCurrencyIdB}`)
+          navigate(`/liquidity/add/${currencyIdB}/${newCurrencyIdB}`)
         } else {
-          navigate(`/add/${newCurrencyIdB}`)
+          navigate(`/liquidity/add/${newCurrencyIdB}`)
         }
       } else {
-        navigate(`/add/${currencyIdA ? currencyIdA : 'ETH'}/${newCurrencyIdB}`)
+        navigate(`/liquidity/add/${currencyIdA ? currencyIdA : 'ETH'}/${newCurrencyIdB}`)
       }
     },
     [currencyIdA, navigate, currencyIdB]
   )
-  const theme = useTheme()
+
+  // update currencies
+  useEffect(() => {
+    if (currencyIdA || currencyIdA !== '') {
+      getToken(sorobanContext, currencyIdA).then((token) => {
+        // console.log("src/components/Add/index: get Token A called: ", token)
+        setCurrencyA(token)
+      })
+    }
+    if (currencyIdB || currencyIdB !== '') {
+      getToken(sorobanContext, currencyIdB).then((token) => {
+        // console.log("src/components/Add/index: get Token B called: ", token)
+        setCurrencyB(token)
+      })
+    }
+
+  }, [currencyIdA, currencyIdB, sorobanContext])
+
+  // Get the LP token amount to receive
+  useEffect(() => {
+    if (!pairAddress || !currencyA || !currencyB) return
+    // LP tokens
+    // We need to get which one is amount0 
+    reservesBNWithTokens(pairAddress, sorobanContext).then((reserves) => {
+      if (!reserves.reserve0 || !reserves.reserve1 || !formattedAmounts.CURRENCY_A || !formattedAmounts.CURRENCY_B) return
+
+      let amount0, amount1
+      // Check if currencyA corresponds to token0 or token1
+      if (currencyA.address === reserves.token0) {
+        amount0 = new BigNumber(formattedAmounts.CURRENCY_A)
+        amount1 = new BigNumber(formattedAmounts.CURRENCY_B)
+      } else if (currencyA.address === reserves.token1) {
+        amount0 = new BigNumber(formattedAmounts.CURRENCY_B)
+        amount1 = new BigNumber(formattedAmounts.CURRENCY_A)
+      } else {
+        console.log("currencyA does not correspond to either token0 or token1");
+        return
+      }
+      getLpTokensAmount(
+        amount0,
+        reserves.reserve0,
+        amount1,
+        reserves.reserve1,
+        pairAddress,
+        sorobanContext
+      ).then((lpTokens) => {
+        setAmountOfLpTokensToReceive(lpTokens.toString())
+        setAmountOfLpTokensToReceiveBN(lpTokens)
+      })
+    })
+  }, [currencyA, currencyB, formattedAmounts, pairAddress, sorobanContext])
+
+  // Get share of Pool
+  useEffect(() => {
+    if (!pairAddress || !amountOfLpTokensToReceiveBN) return
+    getTotalShares(pairAddress, sorobanContext).then((totalSharesResult) => {
+      const totalSharesBN = new BigNumber(totalSharesResult)
+      const share = amountOfLpTokensToReceiveBN.multipliedBy(100).dividedBy(amountOfLpTokensToReceiveBN.plus(totalSharesBN.shiftedBy(-7)))
+      setTotalShares(share.toString())
+    })
+  }, [amountOfLpTokensToReceiveBN, pairAddress, sorobanContext])
   return (
     <>
       <AppBody>
         <AddRemoveTabs creating={false} adding={true} autoSlippage={"DEFAULT_ADD_V2_SLIPPAGE_TOLERANCE"} />
         <Wrapper>
-          {/* <TransactionConfirmationModal
+          <TransactionConfirmationModal
             isOpen={showConfirm}
             onDismiss={handleDismissConfirmation}
             attemptingTxn={attemptingTxn}
-            hash={txHash}
-            // reviewContent={() => (
-            //   <ConfirmationModalContent
-            //     title={noLiquidity ? <>You are creating a pool</> : <>You will receive</>}
-            //     onDismiss={handleDismissConfirmation}
-            //     topContent={modalHeader}
-            //     bottomContent={modalBottom}
-            //   />
-            // )}
-            pendingText={pendingText}
-            currencyToAdd={pair?.liquidityToken}
-          /> */}
+            reviewContent={() => (
+              <ConfirmationModalContent
+                title={noLiquidity ? <>You are creating a pool</> : <>You will receive</>}
+                onDismiss={handleDismissConfirmation}
+                topContent={() => AddModalHeader({ currencies, amountOfLpTokensToReceive })}
+                bottomContent={() => AddModalFooter({ currencies, formattedAmounts, totalShares, onConfirm: provideLiquidity })}
+              />
+            )}
+
+          />
           <AutoColumn gap="20px">
             {noLiquidity ||
               (isCreate ? (
@@ -300,8 +394,8 @@ export default function AddLiquidityPage() {
               <AutoColumn gap="md">
                 <ButtonError
                   onClick={() => {
-                    // setShowConfirm(true)
-                    provideLiquidity()
+                    setShowConfirm(true)
+                    // provideLiquidity()
                     console.log("pages/add: ButtonError onClick")
                   }}
                   disabled={false}
