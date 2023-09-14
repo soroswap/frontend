@@ -1,158 +1,183 @@
-import { AutoColumn, ColumnCenter } from "components/Column";
+import { AutoColumn } from "components/Column";
 import SEO from "../../src/components/SEO";
-import CurrencyInputPanel from "components/CurrencyInputPanel";
-import { ExternalLink, Plus } from "react-feather";
-import { Typography, styled, useTheme } from "@mui/material";
-import AppBody from "components/AppBody";
-import { AddRemoveTabs } from "components/NavigationTabs";
-import { Dots, Wrapper } from "components/Pool/styleds";
-import Card, { BlueCard } from "components/Card";
-import { BodySmall, HideSmall, SubHeader } from "components/Text";
-import { CardBGImage, CardNoise, CardSection, DataCard } from "components/Earn/styled";
-import { RowBetween, RowFixed } from "components/Row";
-import { ButtonPrimary, ButtonSecondary } from "components/Buttons/Button";
+import { styled, useMediaQuery, useTheme } from "@mui/material";
+import { Dots } from "components/Pool/styleds";
+import { BodySmall, SubHeader } from "components/Text";
+import { AutoRow } from "components/Row";
+import { ButtonPrimary } from "components/Buttons/Button";
 import { useSorobanReact } from "@soroban-react/core";
-import Link from "next/link";
+import SettingsTab from "components/Settings";
+import { useRouter } from "next/router";
+import { LogoContainer } from "components/Swap/PendingModalContent/Logos";
+import CurrencyLogo from "components/Logo/CurrencyLogo";
+import { TokenType } from "interfaces";
 
 const PageWrapper = styled(AutoColumn)`
-  max-width: 640px;
+  position: relative;
+  background: ${({ theme }) => `linear-gradient(${theme.palette.customBackground.bg2}, ${theme.palette.customBackground.bg2}) padding-box,
+              linear-gradient(150deg, rgba(136,102,221,1) 0%, rgba(${theme.palette.mode == 'dark' ? "33,29,50,1" : "255,255,255,1"}) 35%, rgba(${theme.palette.mode == 'dark' ? "33,29,50,1" : "255,255,255,1"}) 65%, rgba(136,102,221,1) 100%) border-box`};
+  border: 1px solid transparent;
+  border-radius: 16px;
+  padding: 32px;
+  transition: transform 250ms ease;
+  max-width: 875px;
   width: 100%;
-`
-
-const VoteCard = styled(DataCard)`
-  background: radial-gradient(76.02% 75.41% at 1.84% 0%, #27ae60 0%, #000000 100%);
-  overflow: hidden;
-`
-
-const TitleRow = styled(RowBetween)`
-  flex-wrap: wrap;
-  gap: 12px;
-  width: 100%;
-  flex-direction: column-reverse;
-`
-
-const ButtonRow = styled(RowFixed)`
-  gap: 8px;
-  width: 100%;
-  flex-direction: row-reverse;
-  justify-content: space-between;
-`
-
-const ResponsiveButtonPrimary = styled(ButtonPrimary)`
-  height: 40px;
-  width: fit-content;
-  border-radius: 12px;
-  width: 48%;
-`
-
-const ResponsiveButtonSecondary = styled(ButtonSecondary)`
-  height: 40px;
-  width: fit-content;
-  width: 48%;
-`
-
-const EmptyProposals = styled('div')`
-  border: 1px solid ${({ theme }) => theme.palette.custom.deprecated_primary4};
-  padding: 16px 12px;
-  border-radius: 12px;
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
+  gap: 24px;
 `
 
-const Layer2Prompt = styled(EmptyProposals)`
-  margin-top: 16px;
+const LPTokensContainer = styled('div')`
+  width: calc(100% + 64px);
+  background-color: ${({ theme }) => theme.palette.customBackground.surface};
+  min-height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  padding: 32px;
+  gap: 24px;
+`
+
+const LPPercentage = styled('div')`
+  border: 1px solid #8866DD;
+  border-radius: 16px;
+  color: #8866DD;
+  font-size: 14px;
+  padding: 4px 8px;
+`
+
+const LPCard = styled('div')`
+  background-color: ${({theme}) => theme.palette.customBackground.bg1};
+  border-radius: 16px;
+  width: 100%;
+  min-height: 86px;
+  padding: 16px 32px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+`
+
+const StatusWrapper = styled('div')`
+  background-color: ${({ theme }) => theme.palette.customBackground.accentAction};
+  font-size: 20px;
+  font-weight: 600;
+  padding: 16px;
+  color: ${({ theme }) => theme.palette.custom.accentTextLightPrimary};
+  width: 100%;
+  max-width: 110px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 16px;
 `
 
 export default function LiquidityPage() {
   const sorobanContext = useSorobanReact()
   const { address } = sorobanContext
+  const router = useRouter()
+  const theme = useTheme()
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   
   const v2IsLoading = false
   const noLiquidity = false
   const isCreate = false
 
-  const theme = useTheme()
+  const lpTokens: any | undefined = [
+    {
+
+      token_0: {
+        address: "",
+        symbol: "STELLR",
+        name: "STELLAR",
+        decimals: 7,
+      },
+      token_1: {
+        address: "",
+        symbol: "COSMLAUGH",
+        name: "COSMOLAUGH",
+        decimals: 7,
+      },
+      lpPercentage: 0.02,
+      status: "Active"
+    },
+    {
+      token_0: {
+        address: "",
+        symbol: "AAAA",
+        name: "AAAA",
+        decimals: 7,
+      },
+      token_1: {
+        address: "",
+        symbol: "BBBB",
+        name: "BBBB",
+        decimals: 7,
+      },
+      lpPercentage: 0.50,
+      status: "Active"
+    }
+  ]
+  
+
   return (
     <>
       <SEO title="Liquidity - Soroswap" description="Soroswap Liquidity Pool" />
       <PageWrapper>
-        <VoteCard>
-          <CardBGImage />
-          <CardNoise />
-          <CardSection>
-            <AutoColumn gap="md">
-              <RowBetween>
-                <Typography fontWeight={600}>
-                  <>Liquidity provider rewards</>
-                </Typography>
-              </RowBetween>
-              <RowBetween>
-                <Typography fontSize={14}>
-                  <>
-                    Liquidity providers earn a 0.3% fee on all trades proportional to their share of the pool. Fees
-                    are added to the pool, accrue in real time and can be claimed by withdrawing your liquidity.
-                  </>
-                </Typography>
-              </RowBetween>
-              <ExternalLink
-                style={{ color: '#FFFFFF', textDecoration: 'underline' }}
-                target="_blank"
-                href="https://docs.uniswap.org/protocol/V2/concepts/core-concepts/pools"
-              >
-                <Typography fontSize={14}>
-                  <>Read more about providing liquidity</>
-                </Typography>
-              </ExternalLink>
-            </AutoColumn>
-          </CardSection>
-          <CardBGImage />
-          <CardNoise />
-        </VoteCard>
-
-        <AutoColumn gap="lg" justify="center">
-          <AutoColumn gap="md" style={{ width: '100%' }}>
-            <TitleRow style={{ marginTop: '1rem' }} padding="0">
-              <HideSmall>
-                <BodySmall style={{ marginTop: '0.5rem', justifySelf: 'flex-start' }}>
-                  <>Your V2 liquidity</>
-                </BodySmall>
-              </HideSmall>
-              <ButtonRow>
-                <ResponsiveButtonPrimary padding="6px 8px">
-                  <Link href="/liquidity/add">
-                    Create a pair
-                  </Link>
-                </ResponsiveButtonPrimary>
-              </ButtonRow>
-            </TitleRow>
-
-            {!address ? (
-              <Card padding="40px">
-                <BodySmall color={theme.palette.custom.textTertiary} textAlign="center">
-                  <>Connect to a wallet to view your liquidity.</>
-                </BodySmall>
-              </Card>
-            ) : v2IsLoading ? (
-              <EmptyProposals>
-                <BodySmall color={theme.palette.custom.textTertiary} textAlign="center">
-                  <Dots>
-                    <>Loading</>
-                  </Dots>
-                </BodySmall>
-              </EmptyProposals>
-            ) : (
-              <EmptyProposals>
-                <BodySmall color={theme.palette.custom.textTertiary} textAlign="center">
-                  <>No liquidity found.</>
-                </BodySmall>
-              </EmptyProposals>
-            )}
-          </AutoColumn>
-        </AutoColumn>
+        <div style={{width: "100%"}}>
+          <AutoRow style={{justifyContent: "space-between"}}>
+            <SubHeader>
+              Your liquidity
+            </SubHeader>
+            <SettingsTab autoSlippage={0.5} />
+          </AutoRow>
+          <div>
+            <BodySmall>List of your liquidity positions</BodySmall>
+          </div>
+        </div>
+        {!address ? (
+          <LPTokensContainer>
+            <BodySmall color={theme.palette.custom.accentTextLightSecondary} textAlign="center">
+              <>Connect to a wallet to view your liquidity.</>
+            </BodySmall>
+          </LPTokensContainer>
+        ) : v2IsLoading ? (
+          <LPTokensContainer>
+            <BodySmall color={theme.palette.custom.accentTextLightSecondary} textAlign="center">
+              <Dots>
+                <>Loading</>
+              </Dots>
+            </BodySmall>
+          </LPTokensContainer>
+        ) : lpTokens ? (
+          <LPTokensContainer>
+          {lpTokens.map((obj: any, index: number) => (
+            <LPCard key={index}>
+              <AutoRow gap={'4px'}>
+                <CurrencyLogo currency={obj.token_0} size={isMobile ? "16px" : "24px"} />
+                <CurrencyLogo currency={obj.token_1} size={isMobile ? "16px" : "24px"} />
+                <SubHeader>{obj.token_0.symbol} - {obj.token_1.symbol}</SubHeader>
+                <LPPercentage>{obj.lpPercentage}%</LPPercentage>
+              </AutoRow>
+              <StatusWrapper>
+                {obj.status}
+              </StatusWrapper>
+            </LPCard>
+          ))} 
+          </LPTokensContainer>
+        ) : (
+          <LPTokensContainer>
+            <BodySmall color={theme.palette.custom.accentTextLightSecondary} textAlign="center">
+              <>No liquidity found.</>
+            </BodySmall>
+          </LPTokensContainer>
+        )}
+        <ButtonPrimary onClick={() => router.push('/liquidity/add')}>
+          + Add Liquidity
+        </ButtonPrimary>
       </PageWrapper>
-      {/* <SwitchLocaleLink /> */}
     </>
   );
 }

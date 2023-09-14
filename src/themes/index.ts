@@ -9,6 +9,7 @@ declare module "@mui/material/styles/createPalette" {
       outputBackground: string;
       module: string;
       bg1: string;
+      bg2: string;
       bg3: string;
       bg4: string;
       bg5: string;
@@ -55,6 +56,7 @@ declare module "@mui/material/styles/createPalette" {
       module: string;
       outputBackground: string;
       bg1: string;
+      bg2: string;
       bg3: string;
       bg4: string;
       bg5: string;
@@ -123,6 +125,7 @@ export const theme = (mode: PaletteMode) => {
         module: isDark ? "#13141E" : "#F8F8F8",
         outputBackground: isDark ? "#181A25" : "#F8F8F8",
         bg1: isDark ? "#181A25" : "#FFFFFF",
+        bg2: isDark ? "#13141E" : "#FFFFFF",
         bg3: isDark ? "#404A67" : "#B8C0DC",
         bg4: isDark ? "#5D6785" : "#98A1C0",
         bg5: isDark ? "#7780A0" : "#7780A0",
