@@ -11,6 +11,10 @@ import { useRouter } from "next/router";
 import { LogoContainer } from "components/Swap/PendingModalContent/Logos";
 import CurrencyLogo from "components/Logo/CurrencyLogo";
 import { TokenType } from "interfaces";
+import { LpTokensObj, getLpTokens } from "functions/getLpTokens";
+import { useEffect, useState } from "react";
+import LiquidityPoolInfoModal from "components/Liquidity/LiquidityPoolInfoModal";
+import { LPPercentage } from "components/Liquidity/styleds";
 
 const PageWrapper = styled(AutoColumn)`
   position: relative;
@@ -38,14 +42,6 @@ const LPTokensContainer = styled('div')`
   flex-direction: column;
   padding: 32px;
   gap: 24px;
-`
-
-const LPPercentage = styled('div')`
-  border: 1px solid #8866DD;
-  border-radius: 16px;
-  color: #8866DD;
-  font-size: 14px;
-  padding: 4px 8px;
 `
 
 const LPCard = styled('div')`
@@ -85,42 +81,21 @@ export default function LiquidityPage() {
   const noLiquidity = false
   const isCreate = false
 
-  const lpTokens: any | undefined = [
-    {
+  const [lpTokens, setLpTokens] = useState<LpTokensObj[]>()
+  console.log("🚀 « lpTokens:", lpTokens)
+  const [isModalOpen, setModalOpen] = useState<boolean>(false)
+  const [selectedLP, setSelectedLP] = useState<LpTokensObj>()
 
-      token_0: {
-        address: "",
-        symbol: "STELLR",
-        name: "STELLAR",
-        decimals: 7,
-      },
-      token_1: {
-        address: "",
-        symbol: "COSMLAUGH",
-        name: "COSMOLAUGH",
-        decimals: 7,
-      },
-      lpPercentage: 0.02,
-      status: "Active"
-    },
-    {
-      token_0: {
-        address: "",
-        symbol: "AAAA",
-        name: "AAAA",
-        decimals: 7,
-      },
-      token_1: {
-        address: "",
-        symbol: "BBBB",
-        name: "BBBB",
-        decimals: 7,
-      },
-      lpPercentage: 0.50,
-      status: "Active"
-    }
-  ]
-  
+  useEffect(() => {
+    getLpTokens(sorobanContext).then((resp) => {
+      setLpTokens(resp)
+    })
+  }, [sorobanContext])
+
+  const handleLPClick = (obj: LpTokensObj) => {
+    setSelectedLP(obj)
+    setModalOpen(true)
+  }
 
   return (
     <>
@@ -151,11 +126,11 @@ export default function LiquidityPage() {
               </Dots>
             </BodySmall>
           </LPTokensContainer>
-        ) : lpTokens ? (
+        ) : (lpTokens && lpTokens?.length > 0) ? (
           <LPTokensContainer>
           {lpTokens.map((obj: any, index: number) => (
-            <LPCard key={index}>
-              <AutoRow gap={'4px'}>
+            <LPCard onClick={() => handleLPClick(obj)} key={index}>
+              <AutoRow gap={'2px'}>
                 <CurrencyLogo currency={obj.token_0} size={isMobile ? "16px" : "24px"} />
                 <CurrencyLogo currency={obj.token_1} size={isMobile ? "16px" : "24px"} />
                 <SubHeader>{obj.token_0.symbol} - {obj.token_1.symbol}</SubHeader>
@@ -178,6 +153,11 @@ export default function LiquidityPage() {
           + Add Liquidity
         </ButtonPrimary>
       </PageWrapper>
+      <LiquidityPoolInfoModal
+        selectedLP={selectedLP}
+        isOpen={isModalOpen}
+        onDismiss={() => setModalOpen(false)}
+      />
     </>
   );
 }

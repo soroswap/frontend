@@ -108,7 +108,7 @@ export async function tokenBalance(tokenAddress: string, userAddress: string, so
       sorobanContext,
     });
 
-    return scValStrToJs(tokenBalance?.xdr ?? "") as BigNumber.Value;
+    return scValStrToJs(tokenBalance?.xdr ?? "") as BigNumber;
   } catch(error) {
     console.error("Error fetching token balance:", error);
     return 0; // or throw error;

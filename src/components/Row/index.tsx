@@ -27,13 +27,12 @@ export const RowFlat = styled('div')`
   align-items: flex-end;
 `
 
-export const AutoRow = styled(Row)<{ gap?: string; justify?: string }>`
-  flex-wrap: wrap;
-  margin: ${({ gap }) => gap && `-${gap}`};
+export const AutoRow = styled(Row) <{ gap?: string; justify?: string; nowrap?: boolean }>`
+  flex-wrap: ${({ nowrap }) => nowrap ? `nowrap` : `wrap`};
   justify-content: ${({ justify }) => justify && justify};
 
   & > * {
-    margin: ${({ gap }) => gap} !important;
+    margin: ${({ gap }) => gap};
   }
 `
 

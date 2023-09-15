@@ -25,6 +25,10 @@ const ContentWrapper = styled(Box)`
 
   border-radius: 16px;
   box-shadow: 0px 4px 10px 0px rgba(136, 102, 221, 0.10);
+
+  @media (max-width: ${({theme}) => theme.breakpoints.values.sm}px) {
+    padding: 24px;
+  }
 `
 
 export default function ModalBox({
