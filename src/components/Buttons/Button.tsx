@@ -150,14 +150,15 @@ export const ButtonSecondary = styled(BaseButton)`
 `
 
 export const ButtonOutlined = styled(BaseButton)`
-  border: 1px solid ${({ theme }) => theme.palette.customBackground.outline};
   background-color: transparent;
+  border: 1px solid ${({ theme }) => theme.palette.customBackground.accentAction};
   color: ${({ theme }) => theme.palette.primary.main};
-  &:focus {
-    box-shadow: 0 0 0 1px ${({ theme }) => theme.palette.customBackground.bg4};
-  }
+  font-size: 20px;
+  font-weight: 600;
+  padding: 16px;
+  
   &:hover {
-    box-shadow: 0 0 0 1px ${({ theme }) => theme.palette.custom.textTertiary};
+    box-shadow: 0 0 0 1px ${({ theme }) => darken(0.05, theme.palette.customBackground.accentAction)};
   }
   &:active {
     box-shadow: 0 0 0 1px ${({ theme }) => theme.palette.customBackground.bg4};

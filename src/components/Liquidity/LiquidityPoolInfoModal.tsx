@@ -6,7 +6,7 @@ import { LPPercentage } from './styleds';
 import { LpTokensObj } from 'functions/getLpTokens';
 import Row, { AutoRow } from 'components/Row';
 import { CloseButton } from 'components/Buttons/CloseButton';
-import { ButtonPrimary } from 'components/Buttons/Button';
+import { ButtonOutlined, ButtonPrimary, ButtonSecondary } from 'components/Buttons/Button';
 import { useRouter } from 'next/router';
 import Column from 'components/Column';
 import { formatTokenAmount } from 'helpers/format';
@@ -62,9 +62,9 @@ export default function LiquidityPoolInfoModal({
           <ButtonPrimary onClick={() => router.push('/liquidity/add')}>
             Add
           </ButtonPrimary>
-          <ButtonPrimary onClick={() => router.push('/liquidity/add')}>
+          <ButtonOutlined onClick={() => router.push('/liquidity/add')}>
             Remove
-          </ButtonPrimary>
+          </ButtonOutlined>
         </ContentWrapper>
       </ModalBox>
     </Modal>
