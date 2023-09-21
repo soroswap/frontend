@@ -11,12 +11,12 @@ import { useRouter } from 'next/router';
 import Column from 'components/Column';
 import { formatTokenAmount } from 'helpers/format';
 
-const ContentWrapper = styled('div')<{ isMobile: boolean }>`
+const ContentWrapper = styled('div') <{ isMobile: boolean }>`
   display: flex;
   flex-direction: column;
   gap: 24px;
   font-family: Inter;
-  text-align: ${({isMobile}) => isMobile ? "center" : "left"};
+  text-align: ${({ isMobile }) => isMobile ? "center" : "left"};
 `
 
 export default function LiquidityPoolInfoModal({
@@ -27,12 +27,12 @@ export default function LiquidityPoolInfoModal({
   selectedLP: LpTokensObj | undefined
   isOpen: boolean
   onDismiss: () => void
-  }) {
+}) {
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const router = useRouter()
-  
-  if(!selectedLP) return
+
+  if (!selectedLP) return null
 
   return (
     <Modal
@@ -44,8 +44,8 @@ export default function LiquidityPoolInfoModal({
           <Row justify="space-between" gap="40px">
             <AutoRow gap={'2px'} nowrap>
               <CurrencyLogo currency={selectedLP.token_0} size={isMobile ? "16px" : "24px"} />
-              <CurrencyLogo style={{marginLeft: "-14px"}} currency={selectedLP.token_1} size={isMobile ? "16px" : "24px"} />
-              <SubHeader style={{whiteSpace: "nowrap"}}>{selectedLP?.token_0?.symbol} - {selectedLP?.token_1?.symbol}</SubHeader>
+              <CurrencyLogo style={{ marginLeft: "-14px" }} currency={selectedLP.token_1} size={isMobile ? "16px" : "24px"} />
+              <SubHeader style={{ whiteSpace: "nowrap" }}>{selectedLP?.token_0?.symbol} - {selectedLP?.token_1?.symbol}</SubHeader>
             </AutoRow>
             <CloseButton onClick={onDismiss} data-testid="confirmation-close-icon" />
           </Row>

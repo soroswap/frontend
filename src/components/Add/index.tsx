@@ -190,8 +190,11 @@ export default function AddLiquidityPage() {
         pairAddress,
         sorobanContext
       ).then((lpTokens) => {
-        setAmountOfLpTokensToReceive(lpTokens.toString())
-        setAmountOfLpTokensToReceiveBN(lpTokens)
+        if (lpTokens === undefined) console.log("src/components/Add/index.tsx: lpTokens are undefined")
+        else {
+          setAmountOfLpTokensToReceive(lpTokens.toString())
+          setAmountOfLpTokensToReceiveBN(lpTokens)
+        }
       })
     })
   }, [currencyA, currencyB, formattedAmounts, pairAddress, sorobanContext])
@@ -200,9 +203,13 @@ export default function AddLiquidityPage() {
   useEffect(() => {
     if (!pairAddress || !amountOfLpTokensToReceiveBN) return
     getTotalShares(pairAddress, sorobanContext).then((totalSharesResult) => {
-      const totalSharesBN = new BigNumber(totalSharesResult)
-      const share = amountOfLpTokensToReceiveBN.multipliedBy(100).dividedBy(amountOfLpTokensToReceiveBN.plus(totalSharesBN.shiftedBy(-7)))
-      setTotalShares(share.toString())
+      if (typeof totalSharesResult === 'number' || typeof totalSharesResult === 'string') {
+        const totalSharesBN = new BigNumber(totalSharesResult)
+        const share = amountOfLpTokensToReceiveBN.multipliedBy(100).dividedBy(amountOfLpTokensToReceiveBN.plus(totalSharesBN.shiftedBy(-7)))
+        setTotalShares(share.toString())
+      } else {
+        console.error("Invalid type for totalSharesResult", totalSharesResult);
+      }
     })
   }, [amountOfLpTokensToReceiveBN, pairAddress, sorobanContext])
   return (

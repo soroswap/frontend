@@ -15,9 +15,13 @@ export async function getLpTokensAmount(
     if (!totalShares || reserve1.isEqualTo(0) || reserve0.isEqualTo(0)) {
         return amount0.multipliedBy(amount1).squareRoot()
     }
-    let LP0 = amount0.multipliedBy(totalShares).dividedBy(reserve0).decimalPlaces(0);
-    let LP1 = amount1.multipliedBy(totalShares).dividedBy(reserve1).decimalPlaces(0);
-    return BigNumber.min(LP0, LP1)
+    if (typeof totalShares === 'number' || typeof totalShares === 'string') {
+        let LP0 = amount0.multipliedBy(totalShares).dividedBy(reserve0).decimalPlaces(0);
+        let LP1 = amount1.multipliedBy(totalShares).dividedBy(reserve1).decimalPlaces(0);
+        return BigNumber.min(LP0, LP1)
+    } else {
+        console.error("Invalid type for totalShares", totalShares);
+    }
 }
 
 /**
