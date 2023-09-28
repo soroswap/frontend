@@ -1,18 +1,15 @@
-import { isAddress } from "helpers/address";
-import { TokenType } from "interfaces";
+import { isAddress } from 'helpers/address';
+import { TokenType } from 'interfaces';
 
 const alwaysTrue = () => true;
 
 /** Creates a filter function that filters tokens that do not match the query. */
-export function getTokenFilter<T extends TokenType>(
-  query: string,
-): (token: T) => boolean {
+export function getTokenFilter<T extends TokenType>(query: string): (token: T) => boolean {
   const searchingAddress = isAddress(query);
 
   if (searchingAddress) {
     const address = searchingAddress.toLowerCase();
-    return (t: T) =>
-      "address" in t && address === t.address.toLowerCase();
+    return (t: T) => 'address' in t && address === t.address.toLowerCase();
   }
 
   const queryParts = query
@@ -29,15 +26,10 @@ export function getTokenFilter<T extends TokenType>(
       .filter((s) => s.length > 0);
 
     return queryParts.every(
-      (p) =>
-        p.length === 0 ||
-        parts.some((sp) => sp.startsWith(p) || sp.endsWith(p)),
+      (p) => p.length === 0 || parts.some((sp) => sp.startsWith(p) || sp.endsWith(p)),
     );
   };
 
   return ({ name, symbol }: T): boolean =>
-    Boolean(
-      (symbol && match(symbol)) ||
-        (name && match(name)),
-    );
+    Boolean((symbol && match(symbol)) || (name && match(name)));
 }

@@ -1,47 +1,47 @@
-import * as SorobanClient from "soroban-client";
-import BigNumber from "bignumber.js";
-import { NetworkDetails } from "./network";
-import { stroopToXlm } from "./format";
-import { I128 } from "./xdr";
-import { ERRORS } from "./error";
+import * as SorobanClient from 'soroban-client';
+import BigNumber from 'bignumber.js';
+import { NetworkDetails } from './network';
+import { stroopToXlm } from './format';
+import { I128 } from './xdr';
+import { ERRORS } from './error';
 
 // TODO: once soroban supports estimated fees, we can fetch this
-export const BASE_FEE = "100";
+export const BASE_FEE = '100';
 export const baseFeeXlm = stroopToXlm(BASE_FEE).toString();
 
 export const SendTxStatus: {
   [index: string]: SorobanClient.SorobanRpc.SendTransactionStatus;
 } = {
-  Pending: "PENDING",
-  Duplicate: "DUPLICATE",
-  Retry: "TRY_AGAIN_LATER",
-  Error: "ERROR",
+  Pending: 'PENDING',
+  Duplicate: 'DUPLICATE',
+  Retry: 'TRY_AGAIN_LATER',
+  Error: 'ERROR',
 };
 
 export const GetTxStatus: {
   [index: string]: SorobanClient.SorobanRpc.GetTransactionStatus;
 } = {
-  Success: "SUCCESS",
-  NotFound: "NOT_FOUND",
-  Failed: "FAILED",
+  Success: 'SUCCESS',
+  NotFound: 'NOT_FOUND',
+  Failed: 'FAILED',
 };
 
 export const XLM_DECIMALS = 7;
 
 export const RPC_URLS: { [key: string]: string } = {
-  FUTURENET: "https://rpc-futurenet.stellar.org/",
+  FUTURENET: 'https://rpc-futurenet.stellar.org/',
 };
 
 // The following 3 decoders can be used to turn an XDR string to a native type
 // XDR -> String
 export const decodeBytesN = (xdr: string) => {
-  const val = SorobanClient.xdr.ScVal.fromXDR(xdr, "base64");
+  const val = SorobanClient.xdr.ScVal.fromXDR(xdr, 'base64');
   return val.bytes().toString();
 };
 
 // XDR -> String
 export const decodei128 = (xdr: string) => {
-  const value = SorobanClient.xdr.ScVal.fromXDR(xdr, "base64");
+  const value = SorobanClient.xdr.ScVal.fromXDR(xdr, 'base64');
   try {
     return new I128([
       BigInt(value.i128().lo().low),
@@ -57,7 +57,7 @@ export const decodei128 = (xdr: string) => {
 
 // XDR -> Number
 export const decodeu32 = (xdr: string) => {
-  const val = SorobanClient.xdr.ScVal.fromXDR(xdr, "base64");
+  const val = SorobanClient.xdr.ScVal.fromXDR(xdr, 'base64');
   return val.u32();
 };
 
@@ -69,7 +69,7 @@ export const decoders = {
 
 // Helper used in SCVal conversion
 const bigintToBuf = (bn: bigint): Buffer => {
-  let hex = BigInt(bn).toString(16).replace(/^-/, "");
+  let hex = BigInt(bn).toString(16).replace(/^-/, '');
   if (hex.length % 2) {
     hex = `0${hex}`;
   }
@@ -94,10 +94,7 @@ const bigintToBuf = (bn: bigint): Buffer => {
 };
 
 // Helper used in SCVal conversion
-const bigNumberFromBytes = (
-  signed: boolean,
-  ...bytes: (string | number | bigint)[]
-): BigNumber => {
+const bigNumberFromBytes = (signed: boolean, ...bytes: (string | number | bigint)[]): BigNumber => {
   let sign = 1;
   if (signed && bytes[0] === 0x80) {
     // top bit is set, negative number.
@@ -113,8 +110,7 @@ const bigNumberFromBytes = (
 };
 
 // Can be used whenever you need an Address argument for a contract method
-export const accountToScVal = (account: string) =>
-  new SorobanClient.Address(account).toScVal();
+export const accountToScVal = (account: string) => new SorobanClient.Address(account).toScVal();
 
 // Can be used whenever you need an i128 argument for a contract method
 // export const numberToI128 = (value: number): SorobanClient.xdr.ScVal => {
@@ -156,30 +152,30 @@ export const accountToScVal = (account: string) =>
 
 // Given a display value for a token and a number of decimals, return the correspding BigNumber
 export const parseTokenAmount = (value: string, decimals: number) => {
-  const comps = value.split(".");
+  const comps = value.split('.');
 
   let whole = comps[0];
   let fraction = comps[1];
   if (!whole) {
-    whole = "0";
+    whole = '0';
   }
   if (!fraction) {
-    fraction = "0";
+    fraction = '0';
   }
 
   // Trim trailing zeros
-  while (fraction[fraction.length - 1] === "0") {
+  while (fraction[fraction.length - 1] === '0') {
     fraction = fraction.substring(0, fraction.length - 1);
   }
 
   // If decimals is 0, we have an empty string for fraction
-  if (fraction === "") {
-    fraction = "0";
+  if (fraction === '') {
+    fraction = '0';
   }
 
   // Fully pad the string with zeros to get to value
   while (fraction.length < decimals) {
-    fraction += "0";
+    fraction += '0';
   }
 
   const wholeValue = new BigNumber(whole);
@@ -220,7 +216,7 @@ export const simulateTx = async <ArgType>(
 ) => {
   const { results } = await server.simulateTransaction(tx);
   if (!results || results.length !== 1) {
-    throw new Error("Invalid response from simulateTransaction");
+    throw new Error('Invalid response from simulateTransaction');
   }
   const result = results[0];
   return decoder(result.xdr);
@@ -233,10 +229,7 @@ export const submitTx = async (
   networkPassphrase: string,
   server: SorobanClient.Server,
 ) => {
-  const tx = SorobanClient.TransactionBuilder.fromXDR(
-    signedXDR,
-    networkPassphrase,
-  );
+  const tx = SorobanClient.TransactionBuilder.fromXDR(signedXDR, networkPassphrase);
 
   const sendResponse = await server.sendTransaction(tx);
 
@@ -260,9 +253,7 @@ export const submitTx = async (
     return txResponse.resultXdr!;
     // eslint-disable-next-line no-else-return
   } else {
-    throw new Error(
-      `Unabled to submit transaction, status: ${sendResponse.status}`,
-    );
+    throw new Error(`Unabled to submit transaction, status: ${sendResponse.status}`);
   }
 };
 
@@ -274,7 +265,7 @@ export const getTokenSymbol = async (
 ) => {
   const contract = new SorobanClient.Contract(tokenId);
   const tx = txBuilder
-    .addOperation(contract.call("symbol"))
+    .addOperation(contract.call('symbol'))
     .setTimeout(SorobanClient.TimeoutInfinite)
     .build();
 
@@ -290,7 +281,7 @@ export const getTokenName = async (
 ) => {
   const contract = new SorobanClient.Contract(tokenId);
   const tx = txBuilder
-    .addOperation(contract.call("name"))
+    .addOperation(contract.call('name'))
     .setTimeout(SorobanClient.TimeoutInfinite)
     .build();
 
@@ -306,7 +297,7 @@ export const getTokenDecimals = async (
 ) => {
   const contract = new SorobanClient.Contract(tokenId);
   const tx = txBuilder
-    .addOperation(contract.call("decimals"))
+    .addOperation(contract.call('decimals'))
     .setTimeout(SorobanClient.TimeoutInfinite)
     .build();
 
@@ -324,7 +315,7 @@ export const getTokenBalance = async (
   const params = [accountToScVal(address)];
   const contract = new SorobanClient.Contract(tokenId);
   const tx = txBuilder
-    .addOperation(contract.call("balance", ...params))
+    .addOperation(contract.call('balance', ...params))
     .setTimeout(SorobanClient.TimeoutInfinite)
     .build();
 
@@ -348,7 +339,7 @@ export const makePayment = async (
   const tx = txBuilder
     .addOperation(
       contract.call(
-        "transfer",
+        'transfer',
         ...[
           accountToScVal(pubKey), // from
           accountToScVal(to), // to
@@ -362,10 +353,7 @@ export const makePayment = async (
     tx.addMemo(SorobanClient.Memo.text(memo));
   }
 
-  const preparedTransaction = await server.prepareTransaction(
-    tx.build(),
-    networkPassphrase,
-  );
+  const preparedTransaction = await server.prepareTransaction(tx.build(), networkPassphrase);
 
   return preparedTransaction.toXDR();
 };
@@ -383,7 +371,7 @@ export const getEstimatedFee = async (
   const tx = txBuilder
     .addOperation(
       contract.call(
-        "transfer",
+        'transfer',
         ...[
           accountToScVal(pubKey), // from
           accountToScVal(to), // to
@@ -405,7 +393,7 @@ export const getEstimatedFee = async (
   }
 
   if (!simResponse.results || simResponse.results.length < 1) {
-    throw new Error("transaction simulation failed");
+    throw new Error('transaction simulation failed');
   }
 
   // 'classic' tx fees are measured as the product of tx.fee * 'number of operations', In soroban contract tx,

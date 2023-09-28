@@ -1,5 +1,5 @@
-import { css, keyframes } from "@emotion/react";
-import { styled } from "@mui/material";
+import { css, keyframes } from '@emotion/react';
+import { styled } from '@mui/material';
 
 export const flexColumnNoWrap = css`
   display: flex;
@@ -24,10 +24,10 @@ const transitions = {
     fast: `${TRANSITION_DURATIONS.fast}ms`,
   },
   timing: {
-    ease: "ease",
-    in: "ease-in",
-    out: "ease-out",
-    inOut: "ease-in-out",
+    ease: 'ease',
+    in: 'ease-in',
+    out: 'ease-out',
+    inOut: 'ease-in-out',
   },
 };
 
@@ -57,6 +57,6 @@ const SpinnerCss = css`
   animation: 2s ${rotate} linear infinite;
 `;
 
-export const SpinnerSVG = styled("svg")`
+export const SpinnerSVG = styled('svg')`
   ${SpinnerCss}
 `;

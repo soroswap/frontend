@@ -1,15 +1,15 @@
 // @ts-nocheck
 
-import { XdrReader } from "./serialization/xdr-reader";
-import { XdrWriter } from "./serialization/xdr-writer";
-import { XdrNotImplementedDefinitionError } from "./errors";
+import { XdrReader } from './serialization/xdr-reader';
+import { XdrWriter } from './serialization/xdr-writer';
+import { XdrNotImplementedDefinitionError } from './errors';
 
 /* eslint-disable */
 /* tslint:disable */
 class XdrType {
   write: any;
 
-  toXDR(format = "raw") {
+  toXDR(format = 'raw') {
     if (!this.write) return this.constructor.toXDR(this, format);
 
     const writer = new XdrWriter();
@@ -17,7 +17,7 @@ class XdrType {
     return encodeResult(writer.finalize(), format);
   }
 
-  fromXDR(input, format = "raw") {
+  fromXDR(input, format = 'raw') {
     if (!this.read) return this.constructor.fromXDR(input, format);
 
     const reader = new XdrReader(decodeInput(input, format));
@@ -32,7 +32,7 @@ class XdrType {
    * @param {XdrEncodingFormat} [format] - Encoding format (one of "raw", "hex", "base64")
    * @return {Boolean}
    */
-  validateXDR(input, format = "raw") {
+  validateXDR(input, format = 'raw') {
     try {
       this.fromXDR(input, format);
       return true;
@@ -47,7 +47,7 @@ class XdrType {
    * @param {XdrEncodingFormat} [format] - Encoding format (one of "raw", "hex", "base64")
    * @return {Buffer}
    */
-  static toXDR(value, format = "raw") {
+  static toXDR(value, format = 'raw') {
     const writer = new XdrWriter();
     this.write(value, writer);
     return encodeResult(writer.finalize(), format);
@@ -59,7 +59,7 @@ class XdrType {
    * @param {XdrEncodingFormat} [format] - Encoding format (one of "raw", "hex", "base64")
    * @return {this}
    */
-  static fromXDR(input, format = "raw") {
+  static fromXDR(input, format = 'raw') {
     const reader = new XdrReader(decodeInput(input, format));
     const result = this.read(reader);
     reader.ensureInputConsumed();
@@ -72,7 +72,7 @@ class XdrType {
    * @param {XdrEncodingFormat} [format] - Encoding format (one of "raw", "hex", "base64")
    * @return {Boolean}
    */
-  static validateXDR(input, format = "raw") {
+  static validateXDR(input, format = 'raw') {
     try {
       this.fromXDR(input, format);
       return true;
@@ -141,12 +141,12 @@ class InvalidXdrEncodingFormatError extends TypeError {
 
 function encodeResult(buffer, format) {
   switch (format) {
-    case "raw":
+    case 'raw':
       return buffer;
-    case "hex":
-      return buffer.toString("hex");
-    case "base64":
-      return buffer.toString("base64");
+    case 'hex':
+      return buffer.toString('hex');
+    case 'base64':
+      return buffer.toString('base64');
     default:
       throw new InvalidXdrEncodingFormatError(format);
   }
@@ -154,12 +154,12 @@ function encodeResult(buffer, format) {
 
 function decodeInput(input, format) {
   switch (format) {
-    case "raw":
+    case 'raw':
       return input;
-    case "hex":
-      return Buffer.from(input, "hex");
-    case "base64":
-      return Buffer.from(input, "base64");
+    case 'hex':
+      return Buffer.from(input, 'hex');
+    case 'base64':
+      return Buffer.from(input, 'base64');
     default:
       throw new InvalidXdrEncodingFormatError(format);
   }

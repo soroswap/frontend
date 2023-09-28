@@ -2,11 +2,7 @@
 // Can remove this and use them through stellar base once it is merged
 
 /* eslint-disable */
-export function encodeBigIntFromBits(
-  parts: any[],
-  size: number,
-  unsigned: boolean,
-) {
+export function encodeBigIntFromBits(parts: any[], size: number, unsigned: boolean) {
   let result = BigInt(0);
   // check arguments length
   if (parts.length && parts[0] instanceof Array) {
@@ -25,7 +21,7 @@ export function encodeBigIntFromBits(
   } else {
     const sliceSize = size / total;
     if (sliceSize !== 32 && sliceSize !== 64 && sliceSize !== 128)
-      throw new TypeError("Invalid number of arguments");
+      throw new TypeError('Invalid number of arguments');
     // combine parts
     for (let i = 0; i < total; i++) {
       let part = BigInt.asUintN(sliceSize, BigInt(parts[i].valueOf()));
@@ -41,7 +37,7 @@ export function encodeBigIntFromBits(
     }
   }
   // check type
-  if (typeof result === "bigint") {
+  if (typeof result === 'bigint') {
     // check boundaries
     const [min, max] = calculateBigIntBoundaries(size, unsigned);
     if (result >= min && result <= max) return result;
@@ -51,15 +47,11 @@ export function encodeBigIntFromBits(
 }
 
 export function sliceBigInt(value: BigInt, size: number, sliceSize: number) {
-  if (typeof value !== "bigint") throw new TypeError("Invalid BigInt value");
+  if (typeof value !== 'bigint') throw new TypeError('Invalid BigInt value');
   const total = size / sliceSize;
   if (total === 1) return [value];
-  if (
-    sliceSize < 32 ||
-    sliceSize > 128 ||
-    (total !== 2 && total !== 4 && total !== 8)
-  )
-    throw new TypeError("Invalid slice size");
+  if (sliceSize < 32 || sliceSize > 128 || (total !== 2 && total !== 4 && total !== 8))
+    throw new TypeError('Invalid slice size');
   // prepare shift and mask
   const shift = BigInt(sliceSize);
   const mask = (BigInt(1) << shift) - BigInt(1);
@@ -75,7 +67,7 @@ export function sliceBigInt(value: BigInt, size: number, sliceSize: number) {
 }
 
 export function formatIntName(precision: number, unsigned: boolean) {
-  return `${unsigned ? "u" : "i"}${precision}`;
+  return `${unsigned ? 'u' : 'i'}${precision}`;
 }
 
 export function calculateBigIntBoundaries(size: number, unsigned: boolean) {

@@ -1,5 +1,5 @@
-import { TokenBalancesMap, TokenType } from "interfaces";
-import { useMemo } from "react";
+import { TokenBalancesMap, TokenType } from 'interfaces';
+import { useMemo } from 'react';
 
 /** Sorts currency amounts (descending). */
 function balanceComparator(a?: number, b?: number) {
@@ -14,11 +14,7 @@ function balanceComparator(a?: number, b?: number) {
 }
 
 /** Sorts tokens by currency amount (descending), then safety, then symbol (ascending). */
-export function tokenComparator(
-  balances: TokenBalancesMap,
-  a: TokenType,
-  b: TokenType,
-) {
+export function tokenComparator(balances: TokenBalancesMap, a: TokenType, b: TokenType) {
   // Sorts by balances
   const balanceComparison = balanceComparator(
     Number(balances[a.address]?.balance),
@@ -35,10 +31,7 @@ export function tokenComparator(
 }
 
 /** Sorts tokens by query, giving precedence to exact matches and partial matches. */
-export function useSortTokensByQuery<T extends TokenType>(
-  query: string,
-  tokens?: T[],
-): T[] {
+export function useSortTokensByQuery<T extends TokenType>(query: string, tokens?: T[]): T[] {
   return useMemo(() => {
     if (!tokens) {
       return [];

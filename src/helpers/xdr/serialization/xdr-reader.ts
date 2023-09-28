@@ -1,4 +1,4 @@
-import { XdrReaderError } from "../errors";
+import { XdrReaderError } from '../errors';
 
 export class XdrReader {
   private _buffer: any;
@@ -11,7 +11,7 @@ export class XdrReader {
       if (_source instanceof Array) {
         _source = Buffer.from(source);
       } else {
-        throw new XdrReaderError("source not specified");
+        throw new XdrReaderError('source not specified');
       }
     }
 
@@ -30,9 +30,7 @@ export class XdrReader {
     this._index += size;
     // check buffer boundaries
     if (this._length < this._index)
-      throw new XdrReaderError(
-        "attempt to read outside the boundary of the buffer",
-      );
+      throw new XdrReaderError('attempt to read outside the boundary of the buffer');
     // check that padding is correct for Opaque and String
     const padding = 4 - (size % 4 || 4);
     if (padding > 0) {
@@ -40,7 +38,7 @@ export class XdrReader {
       for (let i = 0; i < padding; i++)
         if (this._buffer[this._index + i] !== 0)
           // all bytes in the padding should be zeros
-          throw new XdrReaderError("invalid padding");
+          throw new XdrReaderError('invalid padding');
       this._index += padding;
     }
     return from;

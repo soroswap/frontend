@@ -1,5 +1,5 @@
 export interface TokenType {
-  address: string; 
+  address: string;
   name: string;
   symbol: string;
   decimals: number;

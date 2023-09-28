@@ -1,4 +1,4 @@
-import { LargeInt } from "./large-int";
+import { LargeInt } from './large-int';
 
 export class I128 extends LargeInt {
   constructor(...args: any) {

@@ -6,7 +6,7 @@ export class XdrWriter {
 
   constructor(buffer: any) {
     let _buffer = buffer;
-    if (typeof _buffer === "number") {
+    if (typeof _buffer === 'number') {
       _buffer = Buffer.allocUnsafe(_buffer);
     } else if (!(buffer instanceof Buffer)) {
       _buffer = Buffer.allocUnsafe(BUFFER_CHUNK);
@@ -50,10 +50,10 @@ export class XdrWriter {
 
   write(value: any, size: number) {
     let _value = value;
-    if (typeof value === "string") {
+    if (typeof value === 'string') {
       // serialize string directly to the output buffer
       const offset = this.alloc(size);
-      this._buffer.write(_value, offset, "utf8");
+      this._buffer.write(_value, offset, 'utf8');
     } else {
       // copy data to the output buffer
       if (!(_value instanceof Buffer)) {

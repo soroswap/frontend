@@ -1,15 +1,10 @@
-import { TokenType, CurrencyAmount } from "interfaces";
-import { useMemo, useState } from "react";
-import {
-  InterfaceTrade,
-  QuoteState,
-  TradeState,
-  TradeType,
-} from "state/routing/types";
-import { useSorobanReact } from "@soroban-react/core";
-import BigNumber from "bignumber.js";
-import { getPairAddress } from "functions/getPairAddress";
-import { getExpectedAmount } from "functions/getExpectedAmount";
+import { TokenType, CurrencyAmount } from 'interfaces';
+import { useMemo, useState } from 'react';
+import { InterfaceTrade, QuoteState, TradeState, TradeType } from 'state/routing/types';
+import { useSorobanReact } from '@soroban-react/core';
+import BigNumber from 'bignumber.js';
+import { getPairAddress } from 'functions/getPairAddress';
+import { getExpectedAmount } from 'functions/getExpectedAmount';
 
 const TRADE_NOT_FOUND = {
   state: TradeState.NO_ROUTE_FOUND,
@@ -35,10 +30,7 @@ export function useBestTrade(
   const sorobanContext = useSorobanReact();
   const [pairAddress, setPairAddress] = useState<string | undefined>(undefined);
 
-  const [currencyIn, currencyOut]: [
-    TokenType | undefined,
-    TokenType | undefined,
-  ] = useMemo(
+  const [currencyIn, currencyOut]: [TokenType | undefined, TokenType | undefined] = useMemo(
     () =>
       tradeType === TradeType.EXACT_INPUT
         ? [amountSpecified?.currency, otherCurrency]
@@ -48,21 +40,19 @@ export function useBestTrade(
 
   /* This is because the user can set some input amount and input token, before setting the output token */
   if (amountSpecified?.currency?.address && otherCurrency?.address) {
-    getPairAddress(
-      amountSpecified?.currency?.address,
-      otherCurrency?.address,
-      sorobanContext,
-    ).then((response) => {
-      if (response) {
-        setPairAddress(response);
-      } else {
-        setPairAddress(undefined);
-      }
-    });
+    getPairAddress(amountSpecified?.currency?.address, otherCurrency?.address, sorobanContext).then(
+      (response) => {
+        if (response) {
+          setPairAddress(response);
+        } else {
+          setPairAddress(undefined);
+        }
+      },
+    );
   }
 
   // EXPECTED AMOUNTS. TODO: THIS WILL CHANGE AFTER USING THE ROUTER CONTRACT
-  const [expectedAmount, setExpectedAmount] = useState<string>("0");
+  const [expectedAmount, setExpectedAmount] = useState<string>('0');
   if (amountSpecified?.value) {
     getExpectedAmount(
       currencyIn,
@@ -156,15 +146,7 @@ export function useBestTrade(
         },
       ],
     };
-  }, [
-    currencyIn,
-    currencyOut,
-    expectedAmount,
-    inputAmount,
-    outputAmount,
-    pairAddress,
-    tradeType,
-  ]);
+  }, [currencyIn, currencyOut, expectedAmount, inputAmount, outputAmount, pairAddress, tradeType]);
 
   /*
   If the pairAddress or the trades chenges, we upgrade the tradeResult

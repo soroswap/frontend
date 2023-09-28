@@ -1,6 +1,6 @@
-import BigNumber from "bignumber.js";
-import { TokenType, CurrencyAmount } from "interfaces";
-import { parseUnits } from "helpers/format";
+import BigNumber from 'bignumber.js';
+import { TokenType, CurrencyAmount } from 'interfaces';
+import { parseUnits } from 'helpers/format';
 
 /**
  * Parses a CurrencyAmount from the passed string.
@@ -14,7 +14,7 @@ export default function tryParseCurrencyAmount(
     return undefined;
   }
   try {
-    if(value !== '0'){
+    if (value !== '0') {
       return {
         currency: currency,
         value: parseUnits(value, currency.decimals ?? 7).toString(),

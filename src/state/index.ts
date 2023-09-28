@@ -1,14 +1,14 @@
-import { configureStore } from '@reduxjs/toolkit'
-import { setupListeners } from '@reduxjs/toolkit/query/react'
+import { configureStore } from '@reduxjs/toolkit';
+import { setupListeners } from '@reduxjs/toolkit/query/react';
 
-import reducer from './reducer'
+import reducer from './reducer';
 
-const PERSISTED_KEYS: string[] = ['user', 'transactions', 'signatures', 'lists']
+const PERSISTED_KEYS: string[] = ['user', 'transactions', 'signatures', 'lists'];
 
 const store = configureStore({
-    reducer,
-})
+  reducer,
+});
 
-setupListeners(store.dispatch)
+setupListeners(store.dispatch);
 
-export default store
+export default store;

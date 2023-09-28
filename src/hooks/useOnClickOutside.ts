@@ -1,35 +1,35 @@
-import { RefObject, useEffect, useRef } from 'react'
+import { RefObject, useEffect, useRef } from 'react';
 
 export function useOnClickOutside<T extends HTMLElement>(
   node: RefObject<T | undefined>,
   handler: undefined | (() => void),
-  ignoredNodes: Array<RefObject<T | undefined>> = []
+  ignoredNodes: Array<RefObject<T | undefined>> = [],
 ) {
-  const handlerRef = useRef<undefined | (() => void)>(handler)
+  const handlerRef = useRef<undefined | (() => void)>(handler);
 
   useEffect(() => {
-    handlerRef.current = handler
-  }, [handler])
+    handlerRef.current = handler;
+  }, [handler]);
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
-      const nodeClicked = node.current?.contains(e.target as Node)
+      const nodeClicked = node.current?.contains(e.target as Node);
       const ignoredNodeClicked = ignoredNodes.reduce(
         (reducer, val) => reducer || !!val.current?.contains(e.target as Node),
-        false
-      )
+        false,
+      );
 
       if ((nodeClicked || ignoredNodeClicked) ?? false) {
-        return
+        return;
       }
 
-      if (handlerRef.current) handlerRef.current()
-    }
+      if (handlerRef.current) handlerRef.current();
+    };
 
-    document.addEventListener('mousedown', handleClickOutside)
+    document.addEventListener('mousedown', handleClickOutside);
 
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside)
-    }
-  }, [node, ignoredNodes])
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [node, ignoredNodes]);
 }

@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 
 type ConnectWalletModalType = {
   isConnectWalletModalOpen: boolean;
@@ -39,8 +39,8 @@ export const AppContext = React.createContext<AppContextType>({
   },
   SnackbarContext: {
     openSnackbar: false,
-    snackbarMessage: "",
-    snackbarTitle: "",
+    snackbarMessage: '',
+    snackbarTitle: '',
     snackbarType: SnackbarIconType.SWAP,
     setOpenSnackbar: () => {},
     setSnackbarMessage: () => {},

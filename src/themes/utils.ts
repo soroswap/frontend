@@ -4,7 +4,7 @@
  * @param hexColor
  */
 export function opacify(amount: number, hexColor: string): string {
-  if (!hexColor.startsWith("#")) {
+  if (!hexColor.startsWith('#')) {
     return hexColor;
   }
 
@@ -15,7 +15,7 @@ export function opacify(amount: number, hexColor: string): string {
   }
 
   if (amount < 0 || amount > 100) {
-    throw new Error("opacify: provided amount should be between 0 and 100");
+    throw new Error('opacify: provided amount should be between 0 and 100');
   }
 
   const opacityHex = Math.round((amount / 100) * 255).toString(16);
