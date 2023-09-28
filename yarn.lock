@@ -1059,7 +1059,7 @@ bigint-conversion@^2.4.1:
   dependencies:
     "@juanelas/base64" "^1.1.2"
 
-bignumber.js@^9.1.0, bignumber.js@^9.1.1:
+bignumber.js@^9.1.0, bignumber.js@^9.1.1, bignumber.js@^9.1.2:
   version "9.1.2"
   resolved "https://registry.yarnpkg.com/bignumber.js/-/bignumber.js-9.1.2.tgz#b7c4242259c008903b13707983b5f4bbd31eda0c"
   integrity sha512-2/mKyZH9K85bzOEfhXDBFZTGd1CTs+5IHpeFQo9luiBG7hghdC851Pj2WAhb6E3R6b9tZj/XKhbg4fum+Kepug==
@@ -2925,6 +2925,17 @@ soroban-client@0.10.0:
     toml "^3.0.0"
     urijs "^1.19.1"
 
+soroban-client@1.0.0-beta.2:
+  version "1.0.0-beta.2"
+  resolved "https://registry.yarnpkg.com/soroban-client/-/soroban-client-1.0.0-beta.2.tgz#a59f9bd88436d6f06f38213efc4547676bee70d1"
+  integrity sha512-v5h3yvef7HkUD3H26w33NUEgRXcPiOSDWEsVzMloaxsprs3N002tXJHvFF+Uw1eYt50Uk6bvqBgvkLwX10VENw==
+  dependencies:
+    axios "^1.4.0"
+    bignumber.js "^9.1.1"
+    buffer "^6.0.3"
+    stellar-base v10.0.0-beta.1
+    urijs "^1.19.1"
+
 source-map-js@^1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/source-map-js/-/source-map-js-1.0.2.tgz#adbc361d9c62df380125e7f161f71c826f1e490c"
@@ -2942,6 +2953,20 @@ stellar-base@10.0.0-soroban.5:
   dependencies:
     base32.js "^0.1.0"
     bignumber.js "^9.1.1"
+    buffer "^6.0.3"
+    js-xdr "^3.0.0"
+    sha.js "^2.3.6"
+    tweetnacl "^1.0.3"
+  optionalDependencies:
+    sodium-native "^4.0.1"
+
+stellar-base@v10.0.0-beta.1:
+  version "10.0.0-beta.1"
+  resolved "https://registry.yarnpkg.com/stellar-base/-/stellar-base-10.0.0-beta.1.tgz#5b4209fbc44b8af82dd3ee8b7f6f4397126d8c3b"
+  integrity sha512-zXC5AsbUsLi57JruyeIMv23s3iUxq/P2ZFrSJ+FerLIZjSAjY8EDs4zwY4LCuu7swUu46Lm8GK6sqxUZCPekHw==
+  dependencies:
+    base32.js "^0.1.0"
+    bignumber.js "^9.1.2"
     buffer "^6.0.3"
     js-xdr "^3.0.0"
     sha.js "^2.3.6"
