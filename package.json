@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "format": "prettier --write \"src/**/*.ts\" \"pages/**/*.ts\""
   },
   "dependencies": {
     "@emotion/react": "^11.10.5",
