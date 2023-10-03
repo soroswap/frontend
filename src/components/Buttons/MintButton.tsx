@@ -1,6 +1,6 @@
 import Button from "@mui/material/Button";
-import { SorobanContextType } from "@soroban-react/core";
 import { useContext, useState } from "react";
+import { SorobanContextType } from "utils/packages/core/src";
 
 import BigNumber from "bignumber.js";
 import { AppContext, SnackbarIconType } from "contexts";

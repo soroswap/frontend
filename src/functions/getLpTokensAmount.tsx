@@ -1,5 +1,5 @@
-import { SorobanContextType } from "@soroban-react/core/dist/SorobanContext";
 import BigNumber from "bignumber.js";
+import { SorobanContextType } from "utils/packages/core/src/dist/SorobanContext";
 import { useTotalShares } from "../hooks/useTotalShares";
 
 export default function getLpTokensAmount(

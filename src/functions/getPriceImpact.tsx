@@ -1,9 +1,9 @@
-import { SorobanContextType } from "@soroban-react/core"
 import BigNumber from "bignumber.js"
-import { TokenType } from "interfaces"
-import { getPairAddress } from "./getPairAddress"
 import { reservesBNWithTokens } from "hooks/useReserves"
+import { TokenType } from "interfaces"
+import { SorobanContextType } from "utils/packages/core/src"
 import { getExpectedAmount } from "./getExpectedAmount"
+import { getPairAddress } from "./getPairAddress"
 
 export async function getPriceImpactNew(
   currencyIn: TokenType | undefined,

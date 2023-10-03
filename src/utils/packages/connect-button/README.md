@@ -1,7 +1,8 @@
 # @soroban-react/connect-button
 
 See the official gitbook: https://soroban-react.gitbook.io/index/
-___
+
+---
 
 Simple button, without style
 
@@ -10,10 +11,10 @@ Library created based on https://github.com/stellar/soroban-example-dapp/tree/ma
 The @soroban-react/connect-button library sets a button inside your dApp to connect to an specific connector.
 In order to use it you'll need to give it a context of type `SorobanContextType`
 
-# Usage 
+# Usage
 
 ```
-import { useSorobanReact } from '@soroban-react/core'
+import { useSorobanReact } from 'utils/packages/core/src'
 import { ConnectButton } from '@soroban-react/connect-button'
 
 ```
@@ -23,4 +24,3 @@ import { ConnectButton } from '@soroban-react/connect-button'
 ```
 
 Its important to give the button the sorobanContext that will carry the connector's `connect()` method that the button will trigger.
-

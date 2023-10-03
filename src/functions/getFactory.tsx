@@ -1,5 +1,5 @@
-import { SorobanContextType } from "@soroban-react/core";
 import { FactoryResponseType, FactoryType } from "interfaces/factory";
+import { SorobanContextType } from "utils/packages/core/src";
 
 export const getFactory = async (sorobanContext: SorobanContextType) => {
   const fetchResponse = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/factory`)

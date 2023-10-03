@@ -1,9 +1,8 @@
-import * as SorobanClient from 'soroban-client';
 import BigNumber from 'bignumber.js';
-import { NetworkDetails } from './network';
+import * as SorobanClient from 'soroban-client';
+import { ERRORS } from './error';
 import { stroopToXlm } from './format';
 import { I128 } from './xdr';
-import { ERRORS } from './error';
 
 // TODO: once soroban supports estimated fees, we can fetch this
 export const BASE_FEE = '100';

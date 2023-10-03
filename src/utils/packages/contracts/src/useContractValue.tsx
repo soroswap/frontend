@@ -1,10 +1,10 @@
-import { SorobanContextType } from '@soroban-react/core'
+import { SorobanContextType } from '@soroban-react/core';
 import { SorobanRpc } from "soroban-client";
 
-import React from 'react'
-import { contractTransaction } from './contractTransaction'
-import * as SorobanClient from 'soroban-client'
-import { defaultAddress } from './defaultAddress'
+import React from 'react';
+import * as SorobanClient from 'soroban-client';
+import { contractTransaction } from './contractTransaction';
+import { defaultAddress } from './defaultAddress';
 
 let xdr = SorobanClient.xdr 
 

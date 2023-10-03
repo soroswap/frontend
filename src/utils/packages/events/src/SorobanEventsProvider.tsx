@@ -1,4 +1,4 @@
-// import { useSorobanReact, SorobanContextType } from '@soroban-react/core'
+// import { useSorobanReact, SorobanContextType } from 'utils/packages/core/src'
 // import React, { useEffect, useRef } from 'react'
 
 // import * as SorobanClient from 'soroban-client'

@@ -21,7 +21,7 @@
     "/dist"
   ],
   "dependencies": {
-    "@soroban-react/core": "^7.0.0"
+    "utils/packages/core/src": "^7.0.0"
   },
   "peerDependencies": {
     "react": ">=16.8"

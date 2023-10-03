@@ -1,7 +1,6 @@
-import BigNumber from "bignumber.js";
-import * as SorobanClient from "soroban-client";
-import { SorobanContextType } from "@soroban-react/core";
 import { useContractValue } from "@soroban-react/contracts";
+import * as SorobanClient from "soroban-client";
+import { SorobanContextType } from "utils/packages/core/src";
 
 export function useTokensFromPair(
   pairAddress: string,

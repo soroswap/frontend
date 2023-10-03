@@ -1,9 +1,9 @@
-import { SorobanContextType } from "@soroban-react/core"
 import BigNumber from "bignumber.js"
-import { getPairs } from "./getPairs"
 import { getToken, tokenBalance } from "hooks"
-import { getTotalLpShares } from "./getTotalLpShares"
 import { TokenType } from "interfaces"
+import { SorobanContextType } from "utils/packages/core/src"
+import { getPairs } from "./getPairs"
+import { getTotalLpShares } from "./getTotalLpShares"
 
 export type LpTokensObj = {
   token_0: TokenType | undefined;

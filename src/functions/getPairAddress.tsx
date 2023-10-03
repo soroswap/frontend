@@ -1,7 +1,7 @@
 import { contractInvoke } from "@soroban-react/contracts";
-import { SorobanContextType } from "@soroban-react/core";
-import { getFactory } from "./getFactory";
 import { addressToScVal, scValStrToJs } from "helpers/convert";
+import { SorobanContextType } from "utils/packages/core/src";
+import { getFactory } from "./getFactory";
 
 export async function getPairAddress(
   address_0: string | undefined,

@@ -3,8 +3,8 @@
  * @requires react
  * @requires soroban-react/core
  */
-import { SorobanContextType } from '@soroban-react/core'
 import React from 'react'
+import { SorobanContextType } from 'utils/packages/core/src'
 
 /**
  * Props for the ConnectButton component.

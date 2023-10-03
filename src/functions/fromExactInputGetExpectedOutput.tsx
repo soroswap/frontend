@@ -1,5 +1,5 @@
-import { SorobanContextType } from "@soroban-react/core";
 import BigNumber from "bignumber.js";
+import { SorobanContextType } from "utils/packages/core/src";
 
 export default function fromExactInputGetExpectedOutput(
   amountIn: BigNumber | undefined,

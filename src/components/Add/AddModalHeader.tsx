@@ -1,15 +1,11 @@
-import { styled, useTheme } from "@mui/material"
+import { styled } from "@mui/material"
 import Column from "components/Column"
 import CurrencyLogo from "components/Logo/CurrencyLogo"
 import Row from "components/Row"
-import { BodySecondary, BodySmall, ResponsiveMediumText } from "components/Text"
-import { TokenType } from "interfaces";
-import { useEffect, useMemo, useState } from "react"
+import { BodySecondary, BodySmall } from "components/Text"
+import { TokenType } from "interfaces"
+import { useMemo } from "react"
 import { Field } from "state/mint/actions"
-import { getLpTokensAmount } from "functions/LiquidityPools"
-import { SorobanContextType } from "@soroban-react/core"
-import { reservesBNWithTokens } from "hooks/useReserves"
-import BigNumber from "bignumber.js"
 
 export const Label = styled(BodySmall) <{ cursor?: string }>`
 cursor: ${({ cursor }) => cursor};

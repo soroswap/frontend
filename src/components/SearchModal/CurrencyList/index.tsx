@@ -1,15 +1,15 @@
-import { FixedSizeList } from 'react-window'
 import { Typography, styled } from "@mui/material"
-import { TokenBalancesMap, TokenType } from "../../../interfaces"
-import { Check } from "react-feather"
-import { useSorobanReact } from "@soroban-react/core"
 import Column, { AutoColumn } from "components/Column"
+import Loader from 'components/Icons/LoadingSpinner'
 import CurrencyLogo from "components/Logo/CurrencyLogo"
 import Row, { RowFixed } from "components/Row"
-import { CSSProperties, MutableRefObject, useCallback, useMemo } from "react"
-import { LoadingRows, MenuItem } from "../styleds"
-import Loader from 'components/Icons/LoadingSpinner'
 import { useTokenBalance } from 'hooks'
+import { CSSProperties, MutableRefObject, useCallback, useMemo } from "react"
+import { Check } from "react-feather"
+import { FixedSizeList } from 'react-window'
+import { useSorobanReact } from "utils/packages/core/src"
+import { TokenType } from "../../../interfaces"
+import { LoadingRows, MenuItem } from "../styleds"
 
 function currencyKey(currency: TokenType): string {
   return currency.address ? currency.address : 'ETHER'

@@ -8,8 +8,8 @@ import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import OutlinedInput from "@mui/material/OutlinedInput";
 import TextField from "@mui/material/TextField";
-import { SorobanContextType, useSorobanReact } from "@soroban-react/core";
 import React, { useEffect, useState } from "react";
+import { SorobanContextType, useSorobanReact } from "utils/packages/core/src";
 
 import BigNumber from "bignumber.js";
 import { MintButton } from "../components/Buttons/MintButton";

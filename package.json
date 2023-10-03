@@ -18,7 +18,7 @@
     "@reduxjs/toolkit": "^1.9.5",
     "@soroban-react/chains": "7.0.0",
     "@soroban-react/contracts": "7.0.0",
-    "@soroban-react/core": "7.0.0",
+    "utils/packages/core/src": "7.0.0",
     "@soroban-react/freighter": "7.0.0",
     "@soroban-react/types": "7.0.0",
     "@soroban-react/utils": "7.0.0",

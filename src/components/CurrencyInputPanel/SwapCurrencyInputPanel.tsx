@@ -1,21 +1,19 @@
 // import { Trans } from '@lingui/macro'
 import { ButtonBase, styled, useMediaQuery, useTheme } from "@mui/material"
-import { flexColumnNoWrap, flexRowNoWrap } from "../../themes/styles"
-import React, { ReactNode, useCallback, useState } from "react"
-import { useSorobanReact } from "@soroban-react/core"
-import { Input as NumericalInput } from '../NumericalInput'
-import { LoadingOpacityContainer, loadingOpacityMixin } from "../Loader/styled"
-import { RowBetween, RowFixed } from "../Row"
-import { TokenType } from "../../interfaces"
-import CurrencyLogo from "../Logo/CurrencyLogo"
-import { ChevronDown } from "react-feather"
-import { opacify } from '../../themes/utils'
 import { darken } from "polished"
-import { BodySmall } from "../Text"
+import { ReactNode, useCallback, useState } from "react"
+import { ChevronDown } from "react-feather"
+import { useSorobanReact } from "utils/packages/core/src"
+import { TokenType } from "../../interfaces"
+import { flexColumnNoWrap, flexRowNoWrap } from "../../themes/styles"
+import { opacify } from '../../themes/utils'
+import { LoadingOpacityContainer } from "../Loader/styled"
+import CurrencyLogo from "../Logo/CurrencyLogo"
+import { Input as NumericalInput } from '../NumericalInput'
+import { RowBetween, RowFixed } from "../Row"
 import CurrencySearchModal from "../SearchModal/CurrencySearchModal"
-import { FiatValue } from "./FiatValue"
-import { useFormattedTokenBalance, useTokenBalance } from "hooks"
 import CurrencyBalance from "./CurrencyBalance"
+import { FiatValue } from "./FiatValue"
 
 const InputPanel = styled('div')<{ hideInput?: boolean }>`
   ${flexColumnNoWrap};

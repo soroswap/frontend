@@ -1,10 +1,8 @@
-// import { useSorobanReact } from "@soroban-react/core";
+// import { useSorobanReact } from "utils/packages/core/src";
 // import { useContractValue } from "@soroban-react/contracts";
 // import { accountToScVal } from "../utils";
 
-import { SorobanContextType } from "@soroban-react/core";
 import BigNumber from "bignumber.js";
-import { useReservesBigNumber } from "../hooks/useReserves";
 
 export default function fromExactOutputGetExpectedInput(
   amountIn: BigNumber | undefined,

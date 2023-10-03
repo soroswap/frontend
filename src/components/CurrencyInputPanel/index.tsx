@@ -13,23 +13,23 @@
 // import { flexColumnNoWrap, flexRowNoWrap } from 'theme/styles'
 // import { formatCurrencyAmount } from 'utils/formatCurrencyAmount'
 
+import { ArrowDownward } from "@mui/icons-material";
 import { styled, useTheme } from "@mui/material";
 import { ButtonGray } from "components/Buttons/Button";
-import { flexColumnNoWrap, flexRowNoWrap } from "themes/styles";
-import { darken } from 'polished'
-import { ArrowDownward } from "@mui/icons-material";
-import NumericalInput from "components/NumericalInput";
-import { LoadingOpacityContainer, loadingOpacityMixin } from "components/Loader/styled";
-import { ReactNode, useCallback, useState } from "react";
-import { TokenType } from "interfaces";
-import { useSorobanReact } from "@soroban-react/core";
 import { AutoColumn } from "components/Column";
-import { Lock } from "react-feather";
-import { BodyPrimary, SubHeader } from "components/Text";
-import { RowBetween, RowFixed } from "components/Row";
+import { LoadingOpacityContainer, loadingOpacityMixin } from "components/Loader/styled";
 import CurrencyLogo from "components/Logo/CurrencyLogo";
-import { FiatValue } from "./FiatValue";
+import NumericalInput from "components/NumericalInput";
+import { RowBetween, RowFixed } from "components/Row";
 import CurrencySearchModal from "components/SearchModal/CurrencySearchModal";
+import { BodyPrimary, SubHeader } from "components/Text";
+import { TokenType } from "interfaces";
+import { darken } from 'polished';
+import { ReactNode, useCallback, useState } from "react";
+import { Lock } from "react-feather";
+import { flexColumnNoWrap, flexRowNoWrap } from "themes/styles";
+import { useSorobanReact } from "utils/packages/core/src";
+import { FiatValue } from "./FiatValue";
 
 // import { ReactComponent as DropDown } from '../../assets/images/dropdown.svg'
 // import { useCurrencyBalance } from '../../state/connection/hooks'

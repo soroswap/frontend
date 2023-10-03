@@ -1,28 +1,28 @@
+import { Typography, useTheme } from "@mui/material";
+import BigNumber from "bignumber.js";
+import AppBody from "components/AppBody";
+import { ButtonError, ButtonLight } from "components/Buttons/Button";
+import { BlueCard } from "components/Card";
 import { AutoColumn, ColumnCenter } from "components/Column";
 import CurrencyInputPanel from "components/CurrencyInputPanel";
-import { Plus } from "react-feather";
-import { Typography, useTheme } from "@mui/material";
-import AppBody from "components/AppBody";
 import { AddRemoveTabs } from "components/NavigationTabs";
 import { Wrapper } from "components/Pool/styleds";
-import { BlueCard } from "components/Card";
 import { SubHeader } from "components/Text";
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { useDerivedMintInfo, useMintActionHandlers, useMintState } from "state/mint/hooks";
-import { getToken } from "hooks";
-import { useSorobanReact } from '@soroban-react/core'
-import { Field } from "state/mint/actions";
-import { ButtonError, ButtonLight } from "components/Buttons/Button";
+import TransactionConfirmationModal, { ConfirmationModalContent } from "components/TransactionConfirmationModal";
+import { getLpTokensAmount, getTotalShares } from "functions/LiquidityPools";
 import depositOnContract from "functions/depositOnContract";
+import { formatTokenAmount } from "helpers/format";
+import { getToken } from "hooks";
+import { reservesBNWithTokens } from "hooks/useReserves";
 import { TokenType } from "interfaces";
 import { useRouter } from 'next/router';
-import { formatTokenAmount } from "helpers/format";
-import TransactionConfirmationModal, { ConfirmationModalContent } from "components/TransactionConfirmationModal";
-import AddModalHeader from "./AddModalHeader";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { Plus } from "react-feather";
+import { Field } from "state/mint/actions";
+import { useDerivedMintInfo, useMintActionHandlers, useMintState } from "state/mint/hooks";
+import { useSorobanReact } from 'utils/packages/core/src';
 import AddModalFooter from "./AddModalFooter";
-import { reservesBNWithTokens } from "hooks/useReserves";
-import BigNumber from "bignumber.js";
-import { getLpTokensAmount, getTotalShares } from "functions/LiquidityPools";
+import AddModalHeader from "./AddModalHeader";
 
 
 type TokensType = [string, string];

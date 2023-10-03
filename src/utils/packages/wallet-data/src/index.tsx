@@ -1,6 +1,6 @@
 import { ConnectButton } from '@soroban-react/connect-button'
-import { SorobanContextType } from '@soroban-react/core'
 import React from 'react'
+import { SorobanContextType } from 'utils/packages/core/src'
 
 import { useNetwork } from './useNetwork'
 

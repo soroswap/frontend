@@ -3,11 +3,11 @@ const { render, unmountComponentAtNode } = require('react-dom')
 const { act } = require('react-dom/test-utils')
 const { SorobanEventsProvider } = require('../dist/SorobanEventsProvider')
 const SorobanClient = require('soroban-client')
-const { useSorobanReact } = require('@soroban-react/core')
+const { useSorobanReact } = require('utils/packages/core/src')
 const SorobanContextPackage = require('../dist/SorobanEventsContext.js')
 
 jest.mock('soroban-client')
-jest.mock('@soroban-react/core', () => ({
+jest.mock('utils/packages/core/src', () => ({
   useSorobanReact: jest.fn(),
 }))
 

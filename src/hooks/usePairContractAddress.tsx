@@ -1,10 +1,9 @@
-import { SorobanContextType } from "@soroban-react/core";
-import { useContractValue } from "@soroban-react/contracts"
+import { useContractValue } from "@soroban-react/contracts";
+import { useMemo } from "react";
+import * as SorobanClient from "soroban-client";
+import { SorobanContextType } from "utils/packages/core/src";
 import { accountToScVal } from "../helpers/utils";
 import { useFactory } from "./useFactory";
-import { xdr } from "soroban-client";
-import * as SorobanClient from "soroban-client";
-import { useMemo } from "react";
 
 export function usePairContractAddress(
   address_0: string | null,

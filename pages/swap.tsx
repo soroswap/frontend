@@ -1,5 +1,4 @@
 import { styled, useTheme } from "@mui/material";
-import { useSorobanReact } from "@soroban-react/core";
 import { ButtonError, ButtonLight, ButtonPrimary } from "components/Buttons/Button";
 import { AutoColumn } from "components/Column";
 import ConfirmSwapModal from "components/Swap/ConfirmSwapModal";
@@ -14,6 +13,7 @@ import { InterfaceTrade, TradeState } from "state/routing/types";
 import { Field } from "state/swap/actions";
 import { relevantTokensType, useDerivedSwapInfo, useSwapActionHandlers } from "state/swap/hooks";
 import swapReducer, { SwapState, initialState as initialSwapState } from 'state/swap/reducer';
+import { useSorobanReact } from "utils/packages/core/src";
 import SwapCurrencyInputPanel from "../src/components/CurrencyInputPanel/SwapCurrencyInputPanel";
 import SEO from "../src/components/SEO";
 import SwapHeader from "../src/components/Swap/SwapHeader";

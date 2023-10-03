@@ -1,4 +1,4 @@
-import { SorobanContextType } from '@soroban-react/core'
+import { SorobanContextType } from 'utils/packages/core/src'
 
 import * as SorobanClient from 'soroban-client'
 

@@ -1,14 +1,13 @@
-import { SorobanContextType } from "@soroban-react/core";
+import { Button } from "@mui/material";
 import {
-  contractTransaction,
-  useContractValue,
-  useSendTransaction,
+    contractTransaction,
+    useSendTransaction
 } from "@soroban-react/contracts";
-import { accountToScVal, bigNumberToI128 } from "../../helpers/utils";
 import BigNumber from "bignumber.js";
 import { useState } from "react";
 import * as SorobanClient from "soroban-client";
-import { Button } from "@mui/material";
+import { SorobanContextType } from "utils/packages/core/src";
+import { bigNumberToI128 } from "../../helpers/utils";
 
 interface DepositButtonProps {
   pairAddress: string;

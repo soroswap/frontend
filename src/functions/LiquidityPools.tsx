@@ -1,7 +1,7 @@
-import { SorobanContextType } from "@soroban-react/core/dist/SorobanContext";
-import BigNumber from "bignumber.js";
 import { contractInvoke } from "@soroban-react/contracts";
+import BigNumber from "bignumber.js";
 import { scValStrToJs } from "helpers/convert";
+import { SorobanContextType } from "utils/packages/core/src/dist/SorobanContext";
 
 export async function getLpTokensAmount(
     amount0: BigNumber,

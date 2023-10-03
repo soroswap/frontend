@@ -59,7 +59,6 @@ export async function contractInvoke({
     });
     
 
-  
     const simulated: SorobanRpc.SimulateTransactionResponse = await server?.simulateTransaction(txn);
 
     if (SorobanRpc.isSimulationError(simulated)) {

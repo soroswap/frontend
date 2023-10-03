@@ -1,6 +1,5 @@
-import { SorobanContextType } from '@soroban-react/core'
 import { WalletChain } from '@soroban-react/types'
-import React from 'react'
+import { SorobanContextType } from 'utils/packages/core/src'
 
 import * as SorobanClient from 'soroban-client'
 

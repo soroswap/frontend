@@ -1,8 +1,8 @@
-import { SorobanContextType } from "@soroban-react/core/dist/SorobanContext";
 import { usePairContractAddress } from "hooks/usePairContractAddress";
-import { useAllPairsFromTokens, usePairExist } from "hooks/usePairExist";
+import { usePairExist } from "hooks/usePairExist";
 import { TokenType } from "interfaces/tokens";
 import { useEffect } from "react";
+import { SorobanContextType } from "utils/packages/core/src/dist/SorobanContext";
 
 export function AllPairs({
     selectedToken,
