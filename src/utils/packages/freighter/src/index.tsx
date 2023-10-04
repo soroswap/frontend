@@ -1,5 +1,5 @@
 /* eslint-disable sort-keys-fix/sort-keys-fix */
-import { NetworkDetails, Connector } from '@soroban-react/types'
+import { Connector, NetworkDetails } from '@soroban-react/types'
 
 import freighterApi from '@stellar/freighter-api'
 

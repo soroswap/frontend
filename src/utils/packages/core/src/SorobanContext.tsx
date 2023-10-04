@@ -1,5 +1,5 @@
-import { Connector, WalletChain } from '@soroban-react/types'
-import React, { createContext } from 'react'
+import { createContext } from 'react'
+import { Connector, WalletChain } from '../../types/src'
 
 import * as SorobanClient from 'soroban-client'
 

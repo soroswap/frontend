@@ -32,10 +32,7 @@ export async function contractInvoke({
     sorobanContext,
   }: InvokeArgs) {
     const { server, address, activeChain } = sorobanContext;
-    console.log("🚀 « activeChain:", activeChain)
-    console.log("🚀 « address:", address)
-    console.log("🚀 « server:", server)
-    
+
     if(!activeChain){throw new Error('No active Chain')}
     if(!server){throw new Error('No connected to a Server')}
     if(signAndSend && !secretKey && !sorobanContext.activeConnector){
@@ -68,7 +65,6 @@ export async function contractInvoke({
     }
 
     if (!signAndSend && simulated) {
-
       return simulated.result;
     }
     else {

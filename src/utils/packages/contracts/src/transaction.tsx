@@ -49,7 +49,6 @@ export async function signAndSendTransaction({
           //   // }
           // }
           
-          
   let signed = ''
   if (secretKey) {
     // User as set a secretKey, txn will be signed using the secretKey
@@ -73,6 +72,7 @@ export async function signAndSendTransaction({
   let secondsToWait = 10;
 
   const raw = await sendTx({tx,secondsToWait, server});
+  console.log("🚀 « raw:", raw)
   // if `sendTx` awaited the inclusion of the tx in the ledger, it used
   // `getTransaction`, which has a `resultXdr` field
   if ("resultXdr" in raw) {
@@ -98,10 +98,11 @@ export async function signAndSendTransaction({
 
 
 export async function sendTx(
-                              {tx, secondsToWait, server}:
-                              {tx: Tx,
-                              secondsToWait: number, 
-                              server: SorobanClient.Server}): Promise<TxResponse> {
+  {tx, secondsToWait, server}:
+  {tx: Tx,
+  secondsToWait: number, 
+    server: SorobanClient.Server
+  }): Promise<TxResponse> {
   const sendTransactionResponse = await server.sendTransaction(tx);
   let getTransactionResponse = await server.getTransaction(sendTransactionResponse.hash);
 

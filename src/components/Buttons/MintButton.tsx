@@ -45,12 +45,6 @@ export function MintButton({
       return;
     }
 
-    const options = {
-      secretKey: admin_secret,
-      sorobanContext,
-
-    };
-
     if (!account) {
       console.log("Error on account:", account)
       return
@@ -59,11 +53,6 @@ export function MintButton({
       console.log("Error on adminSource:", adminSource)
       return
     }
-    console.log("🚀 ~ file: MintButton.tsx:70 ~ mintTokens ~ networkPassphrase:", networkPassphrase)
-    console.log("🚀 ~ file: MintButton.tsx:68 ~ mintTokens ~ adminSource:", adminSource)
-    console.log("🚀 ~ file: MintButton.tsx:72 ~ mintTokens ~ token.address:", token.address)
-    console.log("🚀 ~ file: MintButton.tsx:75 ~ mintTokens ~ account:", account)
-
 
     try {
 
@@ -85,6 +74,7 @@ export function MintButton({
         signAndSend: true,
         secretKey: admin_secret
       })
+      console.log("🚀 « result:", result)
 
 
       if (result) {
