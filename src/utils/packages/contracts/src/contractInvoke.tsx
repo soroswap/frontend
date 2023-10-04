@@ -1,6 +1,6 @@
-import { SorobanContextType } from '@soroban-react/core';
 import * as SorobanClient from 'soroban-client';
 import { SorobanRpc } from "soroban-client";
+import { SorobanContextType } from '../../core/src';
 import { contractTransaction } from './contractTransaction';
 import { signAndSendTransaction } from './transaction';
 let xdr = SorobanClient.xdr 
@@ -31,6 +31,7 @@ export async function contractInvoke({
     secretKey,
     sorobanContext,
   }: InvokeArgs) {
+    console.log("🚀 « method:", method)
     const { server, address, activeChain } = sorobanContext;
 
     if(!activeChain){throw new Error('No active Chain')}

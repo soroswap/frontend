@@ -2,13 +2,20 @@ import { Typography } from "@mui/material";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import { useSorobanReact } from "utils/packages/core/src";
-import { useTokenBalances } from "../hooks/useBalances";
+import { tokenBalances, useTokenBalances } from "../hooks/useBalances";
 import { useTokens } from "../hooks/useTokens";
 import { TokenType } from "../interfaces";
 
 export function Balances() {
   const sorobanContext = useSorobanReact();
   const tokens = useTokens(sorobanContext);
+
+  if (sorobanContext.activeChain) {
+    tokenBalances(sorobanContext?.address ?? "", tokens, sorobanContext).then((resp) => {
+      console.log("tokenBalances",resp)
+    })
+  }
+
   return (
     <Card sx={{ maxWidth: 345 }}>
       <CardContent>

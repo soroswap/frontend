@@ -1,6 +1,6 @@
 import * as SorobanClient from 'soroban-client';
 import { SorobanRpc } from "soroban-client";
-import { SorobanContextType } from 'utils/packages/core/src';
+import { SorobanContextType } from '../../core/src';
 import type { Transaction, Tx, TxResponse } from './types';
 
 export type SignAndSendArgs = {

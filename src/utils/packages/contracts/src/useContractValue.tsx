@@ -1,5 +1,5 @@
-import { SorobanContextType } from '@soroban-react/core';
 import { SorobanRpc } from "soroban-client";
+import { SorobanContextType } from '../../core/src';
 
 import React from 'react';
 import * as SorobanClient from 'soroban-client';
