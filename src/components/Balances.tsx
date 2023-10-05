@@ -2,7 +2,7 @@ import { Typography } from "@mui/material";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import { useSorobanReact } from "@soroban-react/core";
-import { tokenBalances } from "hooks";
+import { tokenBalances, tokenBalancesType } from "hooks";
 import { useEffect, useState } from "react";
 import { useTokens } from "../hooks/useTokens";
 
@@ -11,7 +11,7 @@ export function Balances() {
   const tokens = useTokens(sorobanContext);
 
   // State to hold token balances
-  const [tokenBalancesResponse, setTokenBalancesResponse] = useState<any[]>([]);
+  const [tokenBalancesResponse, setTokenBalancesResponse] = useState<tokenBalancesType | undefined>();
 
   // Effect to fetch token balances
   useEffect(() => {
@@ -30,9 +30,9 @@ export function Balances() {
         </Typography>
         {sorobanContext.address && tokens.length > 0 ? (
           <>
-            {tokenBalancesResponse.balances?.map((useTokenBalance) => (
-              <p key={useTokenBalance.address}>
-                {useTokenBalance.symbol} : {useTokenBalance.balance}
+            {tokenBalancesResponse?.balances?.map((tokenBalance) => (
+              <p key={tokenBalance.address}>
+                {tokenBalance.symbol} : {tokenBalance.balance}
               </p>
             ))}
           </>

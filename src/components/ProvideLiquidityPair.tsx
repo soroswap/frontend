@@ -6,7 +6,7 @@ import { DepositButton } from "../components/Buttons/DepositButton";
 import getLpTokensAmount from "../functions/getLpTokensAmount";
 import { formatTokenAmount } from "../helpers/format";
 import { scvalToBigNumber } from "../helpers/utils";
-import { useTokenDecimals, useTokenScVal, useTokens } from "../hooks";
+import { tokenBalance, useTokens } from "../hooks";
 import { useReservesBigNumber } from "../hooks/useReserves";
 import { useTokensFromPair } from "../hooks/useTokensFromPair";
 import { useTotalShares } from "../hooks/useTotalShares";
@@ -44,8 +44,8 @@ export function ProvideLiquidityPair({
       setToken1(tokens.find(token => token.address === tokensFromPair?.token1)??null);
     }, [setToken0, setToken1, tokensFromPair, tokens])
     const reserves = useReservesBigNumber(pairAddress, sorobanContext);
-    const pairBalance = useTokenScVal(pairAddress, sorobanContext.address!).result;
-    const tokenDecimals = useTokenDecimals(pairAddress);
+    let pairBalance
+    tokenBalance(pairAddress, sorobanContext.address!, sorobanContext).then((resp) => pairBalance=resp);
     const totalShares = useTotalShares(pairAddress, sorobanContext)
     let expectedLpTokens = getLpTokensAmount(
       BigNumber(inputTokenAmount).shiftedBy(7),
@@ -64,7 +64,7 @@ export function ProvideLiquidityPair({
         <p>- token0: {token0?.name}</p>
         <p>- token1: {token1?.name}</p>
         <p>- Your LP tokens balance: {pairBalance !== undefined
-        ? formatTokenAmount(scvalToBigNumber(pairBalance), tokenDecimals)
+        ? formatTokenAmount(pairBalance)
         : "0"} LP</p>
         <p>- Your pool share {totalShares?scvalToBigNumber(pairBalance).dividedBy(totalShares).multipliedBy(100).decimalPlaces(7).toString():0}%</p>
         <p>- token0 reserves {formatTokenAmount(reserves.reserve0)}</p>

@@ -5,7 +5,7 @@ import { useMemo } from "react";
 import { SwapButton } from "../components/Buttons/SwapButton";
 import { getPriceImpact } from "../functions/fromExactInputGetExpectedOutput";
 import { formatTokenAmount } from "../helpers/format";
-import { useTokenBalances, useTokens } from "../hooks";
+import { useTokens } from "../hooks";
 import { useReservesBigNumber } from "../hooks/useReserves";
 import { useTokensFromPair } from "../hooks/useTokensFromPair";
 import { TokenType } from "../interfaces";
@@ -37,7 +37,6 @@ export function ProvideSwapPair({
 }) {
   const tokens = useTokens(sorobanContext);
   const tokensFromPair = useTokensFromPair(pairAddress, sorobanContext);
-  const tokenBalancesResponse = useTokenBalances(sorobanContext.address??"", tokens);
 
   const reserves = useReservesBigNumber(pairAddress, sorobanContext);
   useMemo(() => {
