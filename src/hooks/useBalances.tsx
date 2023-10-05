@@ -1,10 +1,10 @@
 import { useContractValue } from "@soroban-react/contracts";
 
+import { contractInvoke } from "@soroban-react/contracts";
+import { SorobanContextType, useSorobanReact } from "@soroban-react/core";
 import BigNumber from "bignumber.js";
-import { scValStrToJs } from "helpers/convert";
-import { contractInvoke } from "utils/packages/contracts/src";
-import { SorobanContextType, useSorobanReact } from "utils/packages/core/src";
-import { formatFixedAmount, formatTokenAmount } from "../helpers/format";
+import { scValToJs } from "helpers/convert";
+import { formatTokenAmount } from "../helpers/format";
 import {
   accountToScVal,
   scvalToBigNumber,
@@ -110,7 +110,7 @@ export async function tokenBalance(tokenAddress: string, userAddress: string, so
       sorobanContext,
     });
 
-    return scValStrToJs(tokenBalance?.xdr ?? "") as BigNumber;
+    return scValToJs(tokenBalance ?? "") as BigNumber;
   } catch(error) {
     console.error("Error fetching token balance:", error);
     return 0; // or throw error;
@@ -124,7 +124,7 @@ export async function tokenDecimals(tokenAddress: string, userAddress: string, s
       method: "decimals",
       sorobanContext,
     });
-    const tokenDecimals = scValStrToJs(decimals?.xdr ?? "") as number ?? 7;
+    const tokenDecimals = scValToJs(decimals ?? "") as number ?? 7;
 
     return tokenDecimals;
   } catch(error) {
@@ -142,7 +142,7 @@ export async function tokenBalances(userAddress: string, tokens: TokenType[] | T
       const balanceResponse = await tokenBalance(token.address, userAddress, sorobanContext);
       const decimalsResponse = await tokenDecimals(token.address, userAddress, sorobanContext);
 
-      const formattedBalance = formatFixedAmount(
+      const formattedBalance = formatTokenAmount(
         BigNumber(balanceResponse),
         decimalsResponse,
       );

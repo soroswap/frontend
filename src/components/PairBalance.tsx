@@ -1,4 +1,4 @@
-import { SorobanContextType } from "utils/packages/core/src";
+import { SorobanContextType } from "@soroban-react/core";
 import { formatTokenAmount } from "../helpers/format";
 import { scvalToBigNumber } from "../helpers/utils";
 import { useTokenDecimals, useTokenScVal } from "../hooks";

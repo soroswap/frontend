@@ -1,20 +1,26 @@
 import { Typography } from "@mui/material";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
-import { useSorobanReact } from "utils/packages/core/src";
-import { tokenBalances, useTokenBalances } from "../hooks/useBalances";
+import { useSorobanReact } from "@soroban-react/core";
+import { tokenBalances } from "hooks";
+import { useEffect, useState } from "react";
 import { useTokens } from "../hooks/useTokens";
-import { TokenType } from "../interfaces";
 
 export function Balances() {
   const sorobanContext = useSorobanReact();
   const tokens = useTokens(sorobanContext);
 
-  if (sorobanContext.activeChain) {
-    tokenBalances(sorobanContext?.address ?? "", tokens, sorobanContext).then((resp) => {
-      console.log("tokenBalances",resp)
-    })
-  }
+  // State to hold token balances
+  const [tokenBalancesResponse, setTokenBalancesResponse] = useState<any[]>([]);
+
+  // Effect to fetch token balances
+  useEffect(() => {
+    if (sorobanContext.activeChain && sorobanContext.address && tokens.length > 0) {
+      tokenBalances(sorobanContext.address, tokens, sorobanContext).then((resp) => {
+        setTokenBalancesResponse(resp);
+      });
+    }
+  }, [sorobanContext, tokens]);
 
   return (
     <Card sx={{ maxWidth: 345 }}>
@@ -23,7 +29,13 @@ export function Balances() {
           Balances
         </Typography>
         {sorobanContext.address && tokens.length > 0 ? (
-          <WalletBalances address={sorobanContext.address} tokens={tokens} />
+          <>
+            {tokenBalancesResponse.balances?.map((useTokenBalance) => (
+              <p key={useTokenBalance.address}>
+                {useTokenBalance.symbol} : {useTokenBalance.balance}
+              </p>
+            ))}
+          </>
         ) : (
           <div>Connect your Wallet</div>
         )}
@@ -31,23 +43,3 @@ export function Balances() {
     </Card>
   );
 }
-
-interface WalletBalancesProps {
-  address: string;
-  tokens: TokenType[];
-}
-
-const WalletBalances = ({ address, tokens }: WalletBalancesProps) => {
-  let tokenBalancesResponse;
-  tokenBalancesResponse = useTokenBalances(address, tokens);
-
-  return (
-    <>
-      {tokenBalancesResponse.balances?.map((useTokenBalance) => (
-        <p key={useTokenBalance.address}>
-          {useTokenBalance.symbol} : {useTokenBalance.balance}
-        </p>
-      ))}
-    </>
-  );
-};

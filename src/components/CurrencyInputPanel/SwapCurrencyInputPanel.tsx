@@ -1,9 +1,9 @@
 // import { Trans } from '@lingui/macro'
 import { ButtonBase, styled, useMediaQuery, useTheme } from "@mui/material"
+import { useSorobanReact } from "@soroban-react/core"
 import { darken } from "polished"
 import { ReactNode, useCallback, useState } from "react"
 import { ChevronDown } from "react-feather"
-import { useSorobanReact } from "utils/packages/core/src"
 import { TokenType } from "../../interfaces"
 import { flexColumnNoWrap, flexRowNoWrap } from "../../themes/styles"
 import { opacify } from '../../themes/utils'

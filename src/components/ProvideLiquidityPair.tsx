@@ -1,7 +1,7 @@
 import CardActions from "@mui/material/CardActions";
+import { SorobanContextType } from "@soroban-react/core";
 import BigNumber from "bignumber.js";
 import { useMemo } from "react";
-import { SorobanContextType } from "utils/packages/core/src";
 import { DepositButton } from "../components/Buttons/DepositButton";
 import getLpTokensAmount from "../functions/getLpTokensAmount";
 import { formatTokenAmount } from "../helpers/format";

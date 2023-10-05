@@ -1,4 +1,5 @@
 import { styled, useTheme } from "@mui/material"
+import { useSorobanReact } from "@soroban-react/core"
 import BigNumber from "bignumber.js"
 import { ButtonError, SmallButtonPrimary } from "components/Buttons/Button"
 import Column from "components/Column"
@@ -11,7 +12,6 @@ import { formatTokenAmount, twoDecimalsPercentage } from "helpers/format"
 import { ReactNode, useMemo, useState } from "react"
 import { AlertTriangle } from "react-feather"
 import { InterfaceTrade, TradeType } from "state/routing/types"
-import { useSorobanReact } from "utils/packages/core/src"
 import { Label } from "./SwapModalHeaderAmount"
 import { SwapCallbackError, SwapShowAcceptChanges } from "./styleds"
 

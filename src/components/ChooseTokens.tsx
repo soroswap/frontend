@@ -10,8 +10,8 @@ import * as React from "react";
 import { useReservesBigNumber } from "../hooks/useReserves";
 import { useTokens } from "../hooks/useTokens";
 
+import { SorobanContextType, useSorobanReact } from "@soroban-react/core";
 import BigNumber from "bignumber.js";
-import { SorobanContextType, useSorobanReact } from "utils/packages/core/src";
 import { CreatePairButton } from "../components/Buttons/CreatePairButton";
 import calculatePoolTokenOptimalAmount from "../functions/calculatePoolTokenOptimalAmount";
 import fromExactInputGetExpectedOutput from "../functions/fromExactInputGetExpectedOutput";

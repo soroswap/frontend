@@ -1,3 +1,4 @@
+import { useSorobanReact } from '@soroban-react/core'
 import BigNumber from 'bignumber.js'
 import { isAddress } from 'helpers/address'
 import { tokenBalances, useToken } from 'hooks'
@@ -9,7 +10,6 @@ import { ReactNode, useCallback, useEffect, useMemo, useState } from 'react'
 import { AnyAction } from 'redux'
 import { TradeType } from 'state/routing/types'
 import { useUserSlippageToleranceWithDefault } from 'state/user/hooks'
-import { useSorobanReact } from 'utils/packages/core/src'
 import { Field, selectCurrency, setRecipient, switchCurrencies, typeInput } from './actions'
 import { SwapState } from './reducer'
 

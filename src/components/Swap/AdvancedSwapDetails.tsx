@@ -1,3 +1,4 @@
+import { useSorobanReact } from "@soroban-react/core"
 import BigNumber from "bignumber.js"
 import Column from "components/Column"
 import { LoadingRows } from "components/Loader/styled"
@@ -9,7 +10,6 @@ import { getPriceImpactNew } from "functions/getPriceImpact"
 import { formatTokenAmount, twoDecimalsPercentage } from "helpers/format"
 import { useState } from "react"
 import { InterfaceTrade } from "state/routing/types"
-import { useSorobanReact } from "utils/packages/core/src"
 
 interface AdvancedSwapDetailsProps {
   trade: InterfaceTrade | undefined

@@ -1,7 +1,7 @@
+import { SorobanContextType } from "@soroban-react/core"
 import BigNumber from "bignumber.js"
 import { getToken, tokenBalance } from "hooks"
 import { TokenType } from "interfaces"
-import { SorobanContextType } from "utils/packages/core/src"
 import { getPairs } from "./getPairs"
 import { getTotalLpShares } from "./getTotalLpShares"
 

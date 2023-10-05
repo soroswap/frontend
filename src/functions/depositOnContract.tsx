@@ -1,8 +1,8 @@
 import { contractInvoke } from "@soroban-react/contracts";
+import { SorobanContextType } from "@soroban-react/core";
 import BigNumber from "bignumber.js";
 import { bigNumberToI128 } from "helpers/utils";
 import * as SorobanClient from "soroban-client";
-import { SorobanContextType } from "utils/packages/core/src";
 
 interface DepositOnContractProps {
     sorobanContext: SorobanContextType;

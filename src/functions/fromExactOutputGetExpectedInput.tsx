@@ -1,4 +1,4 @@
-// import { useSorobanReact } from "utils/packages/core/src";
+// import { useSorobanReact } from "@soroban-react/core";
 // import { useContractValue } from "@soroban-react/contracts";
 // import { accountToScVal } from "../utils";
 

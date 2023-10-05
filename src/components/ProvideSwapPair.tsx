@@ -1,7 +1,7 @@
 import CardActions from "@mui/material/CardActions";
+import { SorobanContextType } from "@soroban-react/core";
 import BigNumber from "bignumber.js";
 import { useMemo } from "react";
-import { SorobanContextType } from "utils/packages/core/src";
 import { SwapButton } from "../components/Buttons/SwapButton";
 import { getPriceImpact } from "../functions/fromExactInputGetExpectedOutput";
 import { formatTokenAmount } from "../helpers/format";

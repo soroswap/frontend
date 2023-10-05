@@ -1,8 +1,8 @@
 import { futurenet, sandbox, standalone, testnet } from "@soroban-react/chains";
+import { SorobanReactProvider } from "@soroban-react/core";
 import { freighter } from "@soroban-react/freighter";
 import { ChainMetadata, Connector } from "@soroban-react/types";
 import React from "react";
-import { SorobanReactProvider } from "utils/packages/core/src";
 
 const chains: ChainMetadata[] = [testnet, sandbox, standalone, futurenet];
 const connectors: Connector[] = [freighter()];
