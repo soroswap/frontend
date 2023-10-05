@@ -72,6 +72,7 @@ export function SorobanReactProvider({
         let address = await mySorobanContext.activeConnector?.getPublicKey()
         let server =
           networkDetails &&
+          // TODO: The next line is a hack that should be remove after freighter-api upgrade
           new SorobanClient.Server(networkDetails.networkUrl == "https://horizon-futurenet.stellar.org" ? "https://rpc-futurenet.stellar.org" : networkDetails.networkUrl, {
             allowHttp: networkDetails.networkUrl.startsWith('http://'),
           })
