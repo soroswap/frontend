@@ -12,13 +12,13 @@
 // import { ExplorerDataType, getExplorerLink } from 'utils/getExplorerLink'
 
 import { Modal, styled } from "@mui/material"
+import { useSorobanReact } from "@soroban-react/core"
 import { CloseButton } from "components/Buttons/CloseButton"
 import { AutoColumn, ColumnCenter } from "components/Column"
 import Row, { RowBetween } from "components/Row"
 import { SubHeader, SubHeaderLarge, SubHeaderSmall } from "components/Text"
 import { TokenType } from "interfaces"
 import { ReactNode } from "react"
-import { useSorobanReact } from "utils/packages/core/src"
 
 // import Circle from '../../assets/images/blue-loader.svg'
 // import { ExternalLink, ThemedText } from '../../theme'

@@ -1,4 +1,5 @@
 import { Typography, useTheme } from "@mui/material";
+import { useSorobanReact } from '@soroban-react/core';
 import BigNumber from "bignumber.js";
 import AppBody from "components/AppBody";
 import { ButtonError, ButtonLight } from "components/Buttons/Button";
@@ -20,7 +21,6 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { Plus } from "react-feather";
 import { Field } from "state/mint/actions";
 import { useDerivedMintInfo, useMintActionHandlers, useMintState } from "state/mint/hooks";
-import { useSorobanReact } from 'utils/packages/core/src';
 import AddModalFooter from "./AddModalFooter";
 import AddModalHeader from "./AddModalHeader";
 

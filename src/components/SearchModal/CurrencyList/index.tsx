@@ -1,13 +1,14 @@
 import { Typography, styled } from "@mui/material"
+import { useSorobanReact } from "@soroban-react/core"
 import Column, { AutoColumn } from "components/Column"
 import Loader from 'components/Icons/LoadingSpinner'
 import CurrencyLogo from "components/Logo/CurrencyLogo"
 import Row, { RowFixed } from "components/Row"
-import { useTokenBalance } from 'hooks'
-import { CSSProperties, MutableRefObject, useCallback, useMemo } from "react"
+import { formatTokenAmount } from "helpers/format"
+import { tokenBalance } from 'hooks'
+import { CSSProperties, MutableRefObject, useCallback, useEffect, useMemo, useState } from "react"
 import { Check } from "react-feather"
 import { FixedSizeList } from 'react-window'
-import { useSorobanReact } from "utils/packages/core/src"
 import { TokenType } from "../../../interfaces"
 import { LoadingRows, MenuItem } from "../styleds"
 
@@ -40,8 +41,8 @@ const ListWrapper = styled('div')`
   padding-right: 0.25rem;
 `
 
-function Balance({ balance }: { balance: number }) {
-  const balanceToShow = balance == 0 ? 0 : balance.toFixed(4)
+function Balance({ balance }: { balance: string }) {
+  const balanceToShow = balance //== 0 ? 0 : balance.toFixed(4)
 
   return <StyledBalanceText title={String(balance)}>{balanceToShow}</StyledBalanceText>
 }
@@ -63,9 +64,17 @@ export function CurrencyRow({
   showCurrencyAmount?: boolean
   eventProperties: Record<string, unknown>
 }) {
-  const { address } = useSorobanReact()
-  const key = currencyKey(currency)
-  const { balance, loading } = useTokenBalance(address!, currency)
+  const sorobanContext = useSorobanReact()
+
+  const [balance, setBalance] = useState<string>();
+
+  useEffect(() => {
+    if (sorobanContext.activeChain && sorobanContext.address) {
+      tokenBalance(currency.address, sorobanContext.address, sorobanContext).then((resp) => {
+        setBalance(formatTokenAmount(resp));
+      });
+    }
+  }, [currency.address, sorobanContext]);
   
   const warning = false
   const isBlockedToken = false
@@ -99,7 +108,7 @@ export function CurrencyRow({
     </AutoColumn>
     {showCurrencyAmount ? (
       <RowFixed style={{ justifySelf: 'flex-end' }}>
-        {address ? balance ? <Balance balance={Number(balance.balance)} /> : <Loader /> : null}
+        {sorobanContext.address ? balance ? <Balance balance={balance} /> : <Loader /> : null}
         {isSelected && <CheckIcon />}
       </RowFixed>
     ) : (

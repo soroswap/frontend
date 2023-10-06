@@ -15,6 +15,7 @@
 
 import { ArrowDownward } from "@mui/icons-material";
 import { styled, useTheme } from "@mui/material";
+import { useSorobanReact } from "@soroban-react/core";
 import { ButtonGray } from "components/Buttons/Button";
 import { AutoColumn } from "components/Column";
 import { LoadingOpacityContainer, loadingOpacityMixin } from "components/Loader/styled";
@@ -28,7 +29,6 @@ import { darken } from 'polished';
 import { ReactNode, useCallback, useState } from "react";
 import { Lock } from "react-feather";
 import { flexColumnNoWrap, flexRowNoWrap } from "themes/styles";
-import { useSorobanReact } from "utils/packages/core/src";
 import { FiatValue } from "./FiatValue";
 
 // import { ReactComponent as DropDown } from '../../assets/images/dropdown.svg'

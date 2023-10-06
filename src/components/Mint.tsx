@@ -8,12 +8,13 @@ import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import OutlinedInput from "@mui/material/OutlinedInput";
 import TextField from "@mui/material/TextField";
+import { SorobanContextType, useSorobanReact } from "@soroban-react/core";
 import React, { useEffect, useState } from "react";
-import { SorobanContextType, useSorobanReact } from "utils/packages/core/src";
 
 import BigNumber from "bignumber.js";
+import { formatTokenAmount } from "helpers/format";
+import { tokenBalance } from "hooks";
 import { MintButton } from "../components/Buttons/MintButton";
-import { useFormattedTokenBalance } from "../hooks";
 import { useTokens } from "../hooks/useTokens";
 import { TokenType } from "../interfaces";
 
@@ -111,18 +112,22 @@ export function MintTokens({
   address: string;
   inputToken: TokenType;
   amountToMint: BigNumber;
-}) {
-  let formattedTokenBalance;
-  formattedTokenBalance = useFormattedTokenBalance(
-    inputToken.address,
-    address,
-  );
-  
+}) {  
+  const [balance, setBalance] = useState<string>();
+
+  useEffect(() => {
+    if (sorobanContext.activeChain && sorobanContext.address) {
+      tokenBalance(inputToken.address, sorobanContext.address, sorobanContext).then((resp) => {
+        setBalance(formatTokenAmount(resp));
+      });
+    }
+  }, [inputToken.address, sorobanContext]);
+
 
   return (
     <div>
       <p>
-        Your current balance: {formattedTokenBalance} {inputToken.symbol}
+        Your current balance: {balance} {inputToken.symbol}
       </p>
       <CardActions>
         <MintButton

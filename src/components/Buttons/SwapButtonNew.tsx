@@ -3,6 +3,7 @@ import {
     contractTransaction,
     useSendTransaction,
 } from "@soroban-react/contracts";
+import { SorobanContextType } from "@soroban-react/core";
 import BigNumber from "bignumber.js";
 import { BodyPrimary } from "components/Text";
 import { useTokensFromPair } from "hooks/useTokensFromPair";
@@ -10,7 +11,6 @@ import { TokenType } from "interfaces/tokens";
 import { darken } from "polished";
 import { useMemo, useState } from "react";
 import * as SorobanClient from "soroban-client";
-import { SorobanContextType } from "utils/packages/core/src";
 import { bigNumberToI128 } from "../../helpers/utils";
 
 interface SwapButtonProps {

@@ -1,4 +1,5 @@
 import { styled, useMediaQuery, useTheme } from "@mui/material";
+import { useSorobanReact } from "@soroban-react/core";
 import { ButtonPrimary } from "components/Buttons/Button";
 import { AutoColumn } from "components/Column";
 import LiquidityPoolInfoModal from "components/Liquidity/LiquidityPoolInfoModal";
@@ -11,7 +12,6 @@ import { BodySmall, SubHeader } from "components/Text";
 import { LpTokensObj, getLpTokens } from "functions/getLpTokens";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import { useSorobanReact } from "utils/packages/core/src";
 import SEO from "../../src/components/SEO";
 
 const PageWrapper = styled(AutoColumn)`

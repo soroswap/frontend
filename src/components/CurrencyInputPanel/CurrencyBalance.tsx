@@ -1,8 +1,11 @@
 import { styled, useTheme } from "@mui/material"
+import { useSorobanReact } from "@soroban-react/core"
 import { RowFixed } from "components/Row"
 import { BodySmall } from "components/Text"
-import { useFormattedTokenBalance } from "hooks"
+import { formatTokenAmount } from "helpers/format"
+import { tokenBalance } from "hooks"
 import { TokenType } from "interfaces/tokens"
+import { useEffect, useState } from "react"
 
 const StyledBalanceMax = styled('button')<{ disabled?: boolean }>`
   background-color: transparent;
@@ -33,31 +36,39 @@ interface CurrencyBalanceProps {
   }
 
 export default function CurrencyBalance({
-    currency,
-    address,
-    onMax,
-    hideBalance,
-    showMaxButton,
+  currency,
+  address,
+  onMax,
+  hideBalance,
+  showMaxButton,
+}: CurrencyBalanceProps) {
+  const sorobanContext = useSorobanReact();  
+  const [balance, setBalance] = useState<string>();
 
-  }: CurrencyBalanceProps) {
-    const selectedCurrencyBalance = useFormattedTokenBalance(currency.address, address)
-    const theme = useTheme()
-    
-    return (
-        <RowFixed style={{ height: '17px' }}>
-          <BodySmall
-            color={theme.palette.secondary.main}
-          >
-            {!hideBalance && currency && selectedCurrencyBalance ? (
-              `Balance: ${selectedCurrencyBalance}`
-            ) : null}
-          </BodySmall>
-          {showMaxButton && Number(selectedCurrencyBalance) > 0 ? (
-            <StyledBalanceMax onClick={() => onMax(parseInt(selectedCurrencyBalance))}>
-              Max
-            </StyledBalanceMax>
+  useEffect(() => {
+    if (sorobanContext.activeChain && sorobanContext.address) {
+      tokenBalance(currency.address, address, sorobanContext).then((resp) => {
+        setBalance(formatTokenAmount(resp));
+      });
+    }
+  }, [address, currency.address, sorobanContext]);
+
+  const theme = useTheme()
+  
+  return (
+      <RowFixed style={{ height: '17px' }}>
+        <BodySmall
+          color={theme.palette.secondary.main}
+        >
+          {!hideBalance && currency && balance ? (
+            `Balance: ${balance}`
           ) : null}
-        </RowFixed>
+        </BodySmall>
+        {showMaxButton && Number(balance) > 0 ? (
+          <StyledBalanceMax onClick={() => onMax(parseInt(balance ?? ""))}>
+            Max
+          </StyledBalanceMax>
+        ) : null}
+      </RowFixed>
     )
-
   }

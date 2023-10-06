@@ -1,4 +1,5 @@
 import { styled } from "@mui/material"
+import { useSorobanReact } from "@soroban-react/core"
 import BigNumber from "bignumber.js"
 import { BodySmall } from "components/Text"
 import { getExpectedAmount } from "functions/getExpectedAmount"
@@ -6,7 +7,6 @@ import { formatTokenAmount } from "helpers/format"
 import { useCallback, useMemo, useState } from "react"
 import { AlertCircle } from "react-feather"
 import { InterfaceTrade } from "state/routing/types"
-import { useSorobanReact } from "utils/packages/core/src"
 
 interface TradePriceProps {
   trade: InterfaceTrade

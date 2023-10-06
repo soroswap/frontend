@@ -1,7 +1,7 @@
 import { contractInvoke } from "@soroban-react/contracts";
+import { SorobanContextType } from "@soroban-react/core";
 import BigNumber from "bignumber.js";
 import { scValStrToJs } from "helpers/convert";
-import { SorobanContextType } from "utils/packages/core/src";
 
 export async function getTotalLpShares(
   pairAddress: string,

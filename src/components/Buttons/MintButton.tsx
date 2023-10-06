@@ -1,13 +1,13 @@
 import Button from "@mui/material/Button";
+import { SorobanContextType } from "@soroban-react/core";
 import { useContext, useState } from "react";
-import { SorobanContextType } from "utils/packages/core/src";
 
+import { contractInvoke } from "@soroban-react/contracts";
 import BigNumber from "bignumber.js";
 import { AppContext, SnackbarIconType } from "contexts";
 import { sendNotification } from "functions/sendNotification";
 import { TokenType } from "interfaces";
 import * as SorobanClient from "soroban-client";
-import { contractInvoke } from "utils/packages/contracts/src";
 import { bigNumberToI128 } from "../../helpers/utils";
 import { useKeys } from "../../hooks";
 

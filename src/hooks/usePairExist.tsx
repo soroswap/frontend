@@ -1,7 +1,7 @@
 import { useContractValue } from "@soroban-react/contracts";
+import { SorobanContextType, useSorobanReact } from "@soroban-react/core";
 import { useEffect, useState } from "react";
 import { xdr } from "soroban-client";
-import { SorobanContextType, useSorobanReact } from "utils/packages/core/src";
 import { accountToScVal } from "../helpers/utils";
 import { TokenType } from "../interfaces";
 import { useFactory } from "./useFactory";

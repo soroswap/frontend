@@ -3,9 +3,9 @@ import {
     contractTransaction,
     useSendTransaction,
 } from "@soroban-react/contracts";
+import { SorobanContextType } from "@soroban-react/core";
 import { useState } from "react";
 import * as SorobanClient from "soroban-client";
-import { SorobanContextType } from "utils/packages/core/src";
 import { accountToScVal } from "../../helpers/utils";
 import { useFactory } from "../../hooks";
 import { TokenType } from "../../interfaces";

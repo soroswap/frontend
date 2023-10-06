@@ -1,8 +1,8 @@
 import { Chip } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
+import { SorobanContextType, useSorobanReact } from "@soroban-react/core";
 import { AppContext } from "contexts";
 import { useContext, useRef } from "react";
-import { SorobanContextType, useSorobanReact } from "utils/packages/core/src";
 import { shortenAddress } from "../../helpers/address";
 
 export default function ProfileSection() {

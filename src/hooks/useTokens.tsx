@@ -1,7 +1,7 @@
+import { SorobanContextType, useSorobanReact } from "@soroban-react/core";
 import { isAddress } from "helpers/address";
 import { useMemo } from "react";
 import useSWR from "swr";
-import { SorobanContextType, useSorobanReact } from "utils/packages/core/src";
 import { TokenMapType, TokenType, tokensResponse } from "../interfaces";
 // TODO: verify type of fetcher args
 const fetcher = (...args: [any, any]) => fetch(...args).then((resp) => resp.json());

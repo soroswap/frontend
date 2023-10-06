@@ -1,7 +1,7 @@
+import { SorobanContextType } from "@soroban-react/core"
 import BigNumber from "bignumber.js"
 import { reservesBNWithTokens } from "hooks/useReserves"
 import { TokenType } from "interfaces"
-import { SorobanContextType } from "utils/packages/core/src"
 import { getExpectedAmount } from "./getExpectedAmount"
 import { getPairAddress } from "./getPairAddress"
 

@@ -1,8 +1,8 @@
 import { contractInvoke, useContractValue } from "@soroban-react/contracts";
+import { SorobanContextType } from "@soroban-react/core";
 import BigNumber from "bignumber.js";
 import { scValStrToJs } from "helpers/convert";
 import * as SorobanClient from "soroban-client";
-import { SorobanContextType } from "utils/packages/core/src";
 import { bigNumberToI128, scvalToBigNumber } from "../helpers/utils";
 
 export function useReservesScVal(
