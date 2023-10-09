@@ -1,7 +1,7 @@
 import { contractInvoke, useContractValue } from "@soroban-react/contracts";
 import { SorobanContextType } from "@soroban-react/core";
 import BigNumber from "bignumber.js";
-import { scValStrToJs } from "helpers/convert";
+import { scValToJs } from "helpers/convert";
 import * as SorobanClient from "soroban-client";
 import { bigNumberToI128, scvalToBigNumber } from "../helpers/utils";
 
@@ -57,7 +57,7 @@ export async function reservesBigNumber(
     sorobanContext,
   });
 
-  const reserves: string = scValStrToJs(reserves_scval?.xdr ?? "")
+  const reserves: string = scValToJs(reserves_scval)
 
   return {
     reserve0: BigNumber(reserves[0]),
@@ -79,7 +79,7 @@ export async function reservesBNWithTokens(
     args: [],
     sorobanContext,
   })
-  const token0: string = scValStrToJs(token0_scval?.xdr ?? "")
+  const token0: string = scValToJs(token0_scval)
 
   const token1_scval = await contractInvoke({
     contractAddress: pairAddress,
@@ -87,7 +87,7 @@ export async function reservesBNWithTokens(
     args: [],
     sorobanContext,
   })
-  const token1: string = scValStrToJs(token1_scval?.xdr ?? "")
+  const token1: string = scValToJs(token1_scval)
 
   return {
     token0: token0,

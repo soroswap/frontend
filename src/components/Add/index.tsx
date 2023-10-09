@@ -6,10 +6,20 @@ import { AutoColumn, ColumnCenter } from "components/Column";
 import CurrencyInputPanel from "components/CurrencyInputPanel";
 import { AddRemoveTabs } from "components/NavigationTabs";
 import { BodySmall, ButtonText } from "components/Text";
-import TransactionConfirmationModal from "components/TransactionConfirmationModal";
-import { useCallback, useState } from "react";
+import TransactionConfirmationModal, { ConfirmationModalContent } from "components/TransactionConfirmationModal";
+import { AppContext } from "contexts";
+import depositOnContract from "functions/depositOnContract";
+import { formatTokenAmount } from "helpers/format";
+import { useToken } from "hooks";
+import { TokenType } from "interfaces";
+import { useRouter } from "next/router";
+import { useCallback, useContext, useMemo, useState } from "react";
 import { Plus } from "react-feather";
+import { Field } from "state/mint/actions";
+import { useDerivedMintInfo, useMintActionHandlers, useMintState } from "state/mint/hooks";
 import { opacify } from "themes/utils";
+import AddModalFooter from "./AddModalFooter";
+import AddModalHeader from "./AddModalHeader";
 
 export const PageWrapper = styled('main')`
   position: relative;
@@ -38,63 +48,56 @@ export default function AddLiquidityPage() {
 
   const theme = useTheme()
 
-  // const router = useRouter();
-  // const { tokens } = router.query as { tokens: TokensType };
-  // // console.log("pages/add tokens:", tokens)
+  const {ConnectWalletModal} = useContext(AppContext)
+  const { isConnectWalletModalOpen, setConnectWalletModalOpen } = ConnectWalletModal;
 
-  // const [currencyIdA, currencyIdB] = Array.isArray(tokens) ? tokens : ['', ''];
-  // console.log("src/components/Add/index: [currencyIdA, currencyIdB]:", [currencyIdA, currencyIdB])
+  const router = useRouter();
+  const { tokens } = router.query as { tokens: TokensType };
+  console.log("🚀 « tokens:", tokens)
 
-  // // console.log("typeof tokens:", typeof tokens)
-  // // const {
-  // //   dependentField,
-  // //   currencies,
-  // //   pair,
-  // //   pairState,
-  // //   currencyBalances,
-  // //   parsedAmounts,
-  // //   price,
-  // //   noLiquidity,
-  // //   liquidityMinted,
-  // //   poolTokenPercentage,
-  // //   error,
-  // // } = useDerivedMintInfo(currencyA ?? undefined, currencyB ?? undefined)
+  const [currencyIdA, currencyIdB] = Array.isArray(tokens) ? tokens : ['', ''];
+  console.log("🚀 « currencyIdB:", currencyIdB)
+  console.log("🚀 « currencyIdA:", currencyIdA)
 
   const sorobanContext = useSorobanReact()
 
   // const [currencyA, setCurrencyA] = useState<TokenType | undefined>()
   // const [currencyB, setCurrencyB] = useState<TokenType | undefined>()
 
-  // const [amountOfLpTokensToReceive, setAmountOfLpTokensToReceive] = useState<string>("")
+  const [amountOfLpTokensToReceive, setAmountOfLpTokensToReceive] = useState<string>("")
   // const [amountOfLpTokensToReceiveBN, setAmountOfLpTokensToReceiveBN] = useState<BigNumber>()
-  // const [totalShares, setTotalShares] = useState<string>("")
+  const [totalShares, setTotalShares] = useState<string>("")
 
   // const navigate = useCallback((destination: any) => { router.push(destination) }, [router]
   // )
   // // console.log("pages/add, currencyA, currencyB", currencyA, currencyB)
 
-  // const derivedMintInfo = useDerivedMintInfo(
-  //   currencyA ? currencyA : undefined,
-  //   currencyB ? currencyB : undefined)
-  // // const derivedMintInfo = useDerivedMintInfo(tokens[0], tokens[1])
-  // const { dependentField, currencies, parsedAmounts, noLiquidity, pairAddress } = derivedMintInfo
+  const baseCurrency = useToken(currencyIdA)
+  const currencyB = useToken(currencyIdB)
+
+  const derivedMintInfo = useDerivedMintInfo(
+    baseCurrency ?? undefined,
+    currencyB ?? undefined)
+  console.log("🚀 « derivedMintInfo:", derivedMintInfo)
+  const { dependentField, currencies, parsedAmounts, noLiquidity, pairAddress } = derivedMintInfo
+  console.log("🚀 « currencies:", currencies)
   // console.log("pages/add derivedMintInfo:", derivedMintInfo)
-  // // const noLiquidity = true
   // const isCreate = false
 
-  // const { onFieldAInput, onFieldBInput } = useMintActionHandlers(noLiquidity)
+  const { onFieldAInput, onFieldBInput } = useMintActionHandlers(noLiquidity)
 
-  // const { independentField, typedValue, otherTypedValue } = useMintState()
+  const { independentField, typedValue, otherTypedValue } = useMintState()
 
   // // console.log("src/components/Add/index.tsx: independentField:", independentField)
-  // const formattedAmounts = useMemo(() => {
-  //   return {
-  //     [independentField]: typedValue,
-  //     // [dependentField]: noLiquidity ? otherTypedValue : parsedAmounts[dependentField]?.value ?? '',
-  //     [dependentField]: noLiquidity ? otherTypedValue : formatTokenAmount(parsedAmounts[dependentField]?.value ?? ''),
-  //     // [dependentField]: otherTypedValue
-  //   }
-  // }, [dependentField, independentField, noLiquidity, otherTypedValue, parsedAmounts, typedValue])
+  const formattedAmounts = useMemo(() => {
+    return {
+      [independentField]: typedValue,
+      // [dependentField]: noLiquidity ? otherTypedValue : parsedAmounts[dependentField]?.value ?? '',
+      [dependentField]: noLiquidity ? otherTypedValue : formatTokenAmount(parsedAmounts[dependentField]?.value ?? ''),
+      // [dependentField]: otherTypedValue
+    }
+  }, [dependentField, independentField, noLiquidity, otherTypedValue, parsedAmounts, typedValue])
+  console.log("🚀 « formattedAmounts:", formattedAmounts)
 
   // // console.log("src/components/Add/index.tsx: formattedAmounts:", formattedAmounts)
   // // console.log("src/components/Add/index.tsx: formatTokenAmount(formattedAmounts[dependentField]):", formatTokenAmount(formattedAmounts[dependentField]))
@@ -114,42 +117,51 @@ export default function AddLiquidityPage() {
     // setTxHash('')
   }, [])
 
-  // const provideLiquidity = useCallback(() => {
+  const provideLiquidity = useCallback(() => {
 
-  //   // TODO: check that amount0 corresponds to token0?
-  //   depositOnContract({
-  //     sorobanContext,
-  //     pairAddress: pairAddress,
-  //     amount0: formattedAmounts[independentField],
-  //     amount1: formattedAmounts[dependentField],
-  //   })
-  // }, [dependentField, pairAddress, formattedAmounts, independentField, sorobanContext])
+    // TODO: check that amount0 corresponds to token0?
+    depositOnContract({
+      sorobanContext,
+      pairAddress: pairAddress,
+      amount0: formattedAmounts[independentField],
+      amount1: formattedAmounts[dependentField],
+    })
+  }, [dependentField, pairAddress, formattedAmounts, independentField, sorobanContext])
 
-  // const handleCurrencyASelect = useCallback(
-  //   (currencyA: TokenType) => {
-  //     const newCurrencyIdA = currencyA.address
-  //     if (newCurrencyIdA === currencyIdB) {
-  //       navigate(`/liquidity/add/${currencyIdB}/${currencyIdA}`)
-  //     } else {
-  //       navigate(`/liquidity/add/${newCurrencyIdA}/${currencyIdB}`)
-  //     }
-  //   },
-  //   [currencyIdB, navigate, currencyIdA]
-  // )
+  const handleCurrencyASelect = useCallback(
+    (currencyA: TokenType) => {
+      const newCurrencyIdA = currencyA.address
+      if (currencyIdB === undefined) {
+        router.push(`/liquidity/add/${newCurrencyIdA}`)
+      } else {
+        router.push(`/liquidity/add/${newCurrencyIdA}/${currencyIdB}`)
+      }
+    },
+    [currencyIdB, router]
+  )
+
+  const handleCurrencyBSelect = useCallback(
+    (currencyB: TokenType) => {
+      const newCurrencyIdB = currencyB.address
+      if (currencyIdA === undefined) {
+        router.push(`/liquidity/add/${newCurrencyIdB}`)
+      } else {
+        router.push(`/liquidity/add/${currencyIdA}/${newCurrencyIdB}`)
+      }
+    },
+    [currencyIdA, router]
+  )
+
   // const handleCurrencyBSelect = useCallback(
-  //   (currencyB: TokenType) => {
-  //     const newCurrencyIdB = currencyB.address
-  //     if (currencyIdA === newCurrencyIdB) {
-  //       if (currencyIdB) {
-  //         navigate(`/liquidity/add/${currencyIdB}/${newCurrencyIdB}`)
-  //       } else {
-  //         navigate(`/liquidity/add/${newCurrencyIdB}`)
-  //       }
+  //   (currencyBNew: Currency) => {
+  //     const [idB, idA] = handleCurrencySelect(currencyBNew, currencyIdA)
+  //     if (idA === undefined) {
+  //       navigate(`/add/${idB}`)
   //     } else {
-  //       navigate(`/liquidity/add/${currencyIdA ? currencyIdA : 'ETH'}/${newCurrencyIdB}`)
+  //       navigate(`/add/${idA}/${idB}`)
   //     }
   //   },
-  //   [currencyIdA, navigate, currencyIdB]
+  //   [handleCurrencySelect, currencyIdA, navigate]
   // )
 
   // // update currencies
@@ -224,17 +236,16 @@ export default function AddLiquidityPage() {
       <PageWrapper>
         <AddRemoveTabs creating={false} adding={true} autoSlippage={"DEFAULT_ADD_V2_SLIPPAGE_TOLERANCE"} />
         <TransactionConfirmationModal
-          isOpen={false}
+          isOpen={showConfirm}
           onDismiss={handleDismissConfirmation}
           attemptingTxn={attemptingTxn}
           reviewContent={() => (
-            <></>
-            // <ConfirmationModalContent
-            //   title={true ? <>You are creating a pool</> : <>You will receive</>}
-            //   onDismiss={handleDismissConfirmation}
-            //   topContent={() => AddModalHeader({ currencies, amountOfLpTokensToReceive })}
-            //   bottomContent={() => AddModalFooter({ currencies, formattedAmounts, totalShares, onConfirm: provideLiquidity })}
-            // />
+            <ConfirmationModalContent
+              title={true ? <>You are creating a pool</> : <>You will receive</>}
+              onDismiss={handleDismissConfirmation}
+              topContent={() => AddModalHeader({ currencies, amountOfLpTokensToReceive })}
+              bottomContent={() => AddModalFooter({ currencies, formattedAmounts, totalShares, onConfirm: provideLiquidity })}
+            />
           )}
         />
         <AutoColumn gap="20px">
@@ -244,39 +255,38 @@ export default function AddLiquidityPage() {
               <span style={{marginTop: 15}}>These tokens automatically earn fees proportional to your share of the pool.Can be redeemed at any time</span>
             </BodySmall>
           </DarkGrayCard>          
+          {/* //Input Token */}
           <CurrencyInputPanel
-            value={""}
-            onUserInput={() => { }}
-            // onMax={() => {
-            //   onFieldAInput(maxAmounts[Field.CURRENCY_A]?.toExact() ?? '')
-            // }}
-            onCurrencySelect={() => { }}
-            showMaxButton={false}
-            currency={null}
-            // currency={null}
             id="add-liquidity-input-tokena"
-          // showCommonBases
+            value={formattedAmounts[Field.CURRENCY_A]}
+            onUserInput={onFieldAInput}
+            onMax={() => { }}//TODO: Add max button functionality, currently disabled
+            onCurrencySelect={handleCurrencyASelect}
+            showMaxButton={false}
+            currency={currencies[Field.CURRENCY_A] ?? null}
+            transparent
+            // showCommonBases
           />
           <ColumnCenter>
             <Plus size="16" color={theme.palette.secondary.main} />
           </ColumnCenter>
+          {/* //Output Token */}
           <CurrencyInputPanel
-            value={""}
-            onUserInput={() => {}}
-            onCurrencySelect={() => {}}
+            id="add-liquidity-input-tokenb"
+            value={formattedAmounts[Field.CURRENCY_B]}
+            onUserInput={onFieldBInput}
+            onMax={() => { }}
+            onCurrencySelect={handleCurrencyBSelect}
             // onMax={() => {
             //   onFieldBInput(maxAmounts[Field.CURRENCY_B]?.toExact() ?? '')
             // }}
             showMaxButton={false}
-            currency={null}
-            // currency={currencies[Field.CURRENCY_A] ?? null}
-            // currency={null}
-            id="add-liquidity-input-tokenb"
-          // showCommonBases
+            currency={currencies[Field.CURRENCY_B] ?? null}
+            // showCommonBases
           />
           {!sorobanContext.address ? (
 
-            <ButtonLight onClick={() => { }}>
+            <ButtonLight onClick={() => setConnectWalletModalOpen(true)}>
               <>Connect Wallet</>
             </ButtonLight>
           ) : (

@@ -2,21 +2,19 @@
 import { TokenType } from 'interfaces';
 // import { Pair } from '@uniswap/v2-sdk'
 // import { useWeb3React } from '@web3-react/core'
-import { SorobanContextType, useSorobanReact } from '@soroban-react/core';
+import { useSorobanReact } from '@soroban-react/core';
 // import JSBI from 'jsbi'
 import { CurrencyAmount } from "interfaces";
 import tryParseCurrencyAmount from 'lib/utils/tryParseCurrencyAmount';
 import { ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
 import { useAppDispatch, useAppSelector } from 'state/hooks';
 
-import { contractInvoke } from '@soroban-react/contracts';
 import BigNumber from 'bignumber.js';
 import calculatePoolTokenOptimalAmount from 'functions/calculatePoolTokenOptimalAmount';
-import { scValStrToJs } from 'helpers/convert';
+import { getPairAddress } from 'functions/getPairAddress';
 import { formatTokenAmount } from 'helpers/format';
-import { accountToScVal } from 'helpers/utils';
-import { reservesBNWithTokens, useReservesBigNumber } from 'hooks/useReserves';
-import { FactoryResponseType, FactoryType } from 'interfaces/factory';
+import { useFactory } from 'hooks';
+import { reservesBNWithTokens, reservesBigNumber } from 'hooks/useReserves';
 import { AppState } from '../types';
 import { Field, typeInput } from './actions';
 
@@ -26,63 +24,6 @@ export function useMintState(): AppState['mint'] {
   return useAppSelector((state) => state.mint)
 }
 
-export const getFactoryData = async (sorobanContext: SorobanContextType) => {
-  try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/factory`);
-    const data = await response.json();
-
-    let factory: FactoryType = {
-      factory_address: "",
-      factory_id: "",
-    };
-
-    const filtered = data?.filter(
-      (item: FactoryResponseType) =>
-        item.network === sorobanContext?.activeChain?.name?.toLowerCase(),
-    );
-
-    if (filtered?.length > 0) {
-      factory = {
-        factory_address: filtered[0].factory_address,
-        factory_id: filtered[0].factory_id,
-      };
-    }
-
-    return factory;
-  } catch (error) {
-    // Handle error
-    console.error('Error fetching factory data:', error);
-    return {
-      factory_address: "",
-      factory_id: "",
-    };
-  }
-};
-
-export async function getPairContractAddressFromFactory(
-  factoryAddress: string,
-  sorobanContext: SorobanContextType,
-  currencyA: TokenType,
-  currencyB: TokenType
-) {
-  const args = [accountToScVal(currencyA.address), accountToScVal(currencyB.address)]
-
-  try {
-    // const factoryAddress = ""
-    const pairAddressScval = await contractInvoke({
-      contractAddress: factoryAddress,
-      method: "get_pair",
-      args,
-      sorobanContext,
-    });
-    const pairAddress = scValStrToJs(pairAddressScval?.xdr ?? "") as number ?? 7;
-
-    return pairAddress;
-  } catch (error) {
-    console.error("Error fetching token balance:", error);
-    return 7; // or throw error;
-  }
-}
 // export function useMintActionHandlers(noLiquidity: boolean | undefined): {
 export function useMintActionHandlers(noLiquidity: boolean | undefined): {
   onFieldAInput: (typedValue: string) => void
@@ -129,15 +70,13 @@ export function useDerivedMintInfo(
 } {
   const sorobanContext = useSorobanReact();
   const { address: account } = sorobanContext
-  const [factoryAddress, setFactoryAddress] = useState({
-    factory_address: "",
-    factory_id: "",
-  })
+  
+  const factoryAddress = useFactory(sorobanContext);
+  
   const [pairAddress, setPairAddress] = useState<any>(undefined)
   const [reservesBNToken, setReservesBNToken] = useState<any>(undefined)
 
   const { independentField, typedValue, otherTypedValue } = useMintState()
-  // console.log("state/mint/hooks: independentField, typedValue, otherTypedValue", independentField, typedValue, otherTypedValue)
 
   const dependentField = independentField === Field.CURRENCY_A ? Field.CURRENCY_B : Field.CURRENCY_A
 
@@ -149,38 +88,27 @@ export function useDerivedMintInfo(
     }),
     [currencyA, currencyB]
   )
-  // console.log("state/mint/hooks: currencies:", currencies)
-
-  // console.log("state/mint/hooks: currencyA:", currencyA)
-  // console.log("state/mint/hooks: currencyB:", currencyB)
-  // const pairAddress = usePairContractAddress(
-  //   !currencyA ? null : currencyA.address,
-  //   !currencyB ? null : currencyB.address,
-  //   sorobanContext)
-
-  useEffect(() => {
-    if (!sorobanContext.address) return
-    getFactoryData(sorobanContext).then(response => {
-
-      // console.log("state/mint/hooks: factoryAddress response:", response)
-      setFactoryAddress(response)
-    })
-
-  }, [sorobanContext])
 
   useEffect(() => {
     if (!currencyA || !currencyB) return
     if (factoryAddress.factory_address !== "" && currencyA && currencyB) {
-      getPairContractAddressFromFactory(factoryAddress.factory_address, sorobanContext, currencyA, currencyB)
+      getPairAddress(currencyA.address, currencyB.address, sorobanContext)
         .then((response) => {
           setPairAddress(response)
         })
     }
   }, [currencyA, currencyB, factoryAddress.factory_address, sorobanContext])
 
+  const [reservesBN, setReservesBN] = useState();
+  useEffect(() => {
+    if (sorobanContext.activeChain && sorobanContext.address) {
+      reservesBigNumber(pairAddress ?? "", sorobanContext).then((resp) => {
+        setReservesBN(resp);
+      });
+    }
+  }, [pairAddress, sorobanContext]);
+  console.log("🚀 « reservesBN:", reservesBN)
 
-  // console.log("state/mint/hooks: pairAddress:", pairAddress)
-  const reservesBN = useReservesBigNumber(pairAddress ?? "", sorobanContext)
   // console.log("state/mint/hooks: reservesBN:", reservesBN, reservesBN.reserve0.toString(), reservesBN.reserve1.toString())
 
   useEffect(() => {
@@ -195,7 +123,7 @@ export function useDerivedMintInfo(
 
   const noLiquidity: boolean = useMemo(() => {
     return pairAddress === undefined ||
-      (reservesBN.reserve0.isZero() && reservesBN.reserve1.isZero())
+      (reservesBN?.reserve0.isZero() && reservesBN?.reserve1.isZero())
   }, [pairAddress, reservesBN])
   // console.log("state/mint/hooks: noLiquidity:", noLiquidity)
 
