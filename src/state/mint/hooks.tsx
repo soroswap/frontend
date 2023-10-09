@@ -1,26 +1,24 @@
-import { Trans } from '@lingui/macro'
 // import { Currency, CurrencyAmount, Percent, Price, Token } from '@uniswap/sdk-core'
-import { TokenType } from 'interfaces'
+import { TokenType } from 'interfaces';
 // import { Pair } from '@uniswap/v2-sdk'
 // import { useWeb3React } from '@web3-react/core'
-import { SorobanContextType, useSorobanReact } from '@soroban-react/core'
+import { SorobanContextType, useSorobanReact } from '@soroban-react/core';
 // import JSBI from 'jsbi'
 import { CurrencyAmount } from "interfaces";
-import tryParseCurrencyAmount from 'lib/utils/tryParseCurrencyAmount'
-import { ReactNode, useCallback, useEffect, useMemo, useState } from 'react'
-import { useAppDispatch, useAppSelector } from 'state/hooks'
+import tryParseCurrencyAmount from 'lib/utils/tryParseCurrencyAmount';
+import { ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
+import { useAppDispatch, useAppSelector } from 'state/hooks';
 
-import { AppState } from '../types'
-import { Field, typeInput } from './actions'
-import { Token } from 'typescript'
-import { reservesBNWithTokens, useReservesBigNumber } from 'hooks/useReserves'
-import calculatePoolTokenOptimalAmount from 'functions/calculatePoolTokenOptimalAmount'
-import BigNumber from 'bignumber.js'
 import { contractInvoke } from '@soroban-react/contracts';
+import BigNumber from 'bignumber.js';
+import calculatePoolTokenOptimalAmount from 'functions/calculatePoolTokenOptimalAmount';
 import { scValStrToJs } from 'helpers/convert';
-import { FactoryResponseType, FactoryType } from 'interfaces/factory';
-import { accountToScVal } from 'helpers/utils';
 import { formatTokenAmount } from 'helpers/format';
+import { accountToScVal } from 'helpers/utils';
+import { reservesBNWithTokens, useReservesBigNumber } from 'hooks/useReserves';
+import { FactoryResponseType, FactoryType } from 'interfaces/factory';
+import { AppState } from '../types';
+import { Field, typeInput } from './actions';
 
 // const ZERO = JSBI.BigInt(0)
 

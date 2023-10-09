@@ -1,25 +1,25 @@
-import SEO from "../src/components/SEO";
-import { ArrowWrapper, SwapWrapper } from "../src/components/Swap/styleds";
-import SwapHeader from "../src/components/Swap/SwapHeader";
 import { styled, useTheme } from "@mui/material";
-import { opacify } from "../src/themes/utils";
-import SwapCurrencyInputPanel from "../src/components/CurrencyInputPanel/SwapCurrencyInputPanel";
-import { ReactNode, useCallback, useContext, useMemo, useReducer, useState } from "react";
-import { TokenType } from "../src/interfaces";
-import { ArrowDown } from "react-feather";
-import { AutoColumn } from "components/Column";
 import { useSorobanReact } from "@soroban-react/core";
 import { ButtonError, ButtonLight, ButtonPrimary } from "components/Buttons/Button";
-import { ButtonText } from "components/Text";
-import { relevantTokensType, useDerivedSwapInfo, useSwapActionHandlers } from "state/swap/hooks";
-import swapReducer, { initialState as initialSwapState, SwapState } from 'state/swap/reducer'
-import { Field } from "state/swap/actions";
-import { InterfaceTrade, TradeState } from "state/routing/types";
+import { AutoColumn } from "components/Column";
 import ConfirmSwapModal from "components/Swap/ConfirmSwapModal";
-import { useSwapCallback } from "hooks/useSwapCallback";
+import SwapDetailsDropdown from "components/Swap/SwapDetailsDropdown";
+import { ButtonText } from "components/Text";
 import { AppContext } from "contexts";
 import { formatTokenAmount } from "helpers/format";
-import SwapDetailsDropdown from "components/Swap/SwapDetailsDropdown";
+import { useSwapCallback } from "hooks/useSwapCallback";
+import { ReactNode, useCallback, useContext, useMemo, useReducer, useState } from "react";
+import { ArrowDown } from "react-feather";
+import { InterfaceTrade, TradeState } from "state/routing/types";
+import { Field } from "state/swap/actions";
+import { relevantTokensType, useDerivedSwapInfo, useSwapActionHandlers } from "state/swap/hooks";
+import swapReducer, { SwapState, initialState as initialSwapState } from 'state/swap/reducer';
+import SwapCurrencyInputPanel from "../src/components/CurrencyInputPanel/SwapCurrencyInputPanel";
+import SEO from "../src/components/SEO";
+import SwapHeader from "../src/components/Swap/SwapHeader";
+import { ArrowWrapper, SwapWrapper } from "../src/components/Swap/styleds";
+import { TokenType } from "../src/interfaces";
+import { opacify } from "../src/themes/utils";
 
 const SwapSection = styled('div')(({ theme }) => ({
   position: "relative",

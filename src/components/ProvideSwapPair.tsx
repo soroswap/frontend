@@ -1,20 +1,14 @@
-import * as React from "react";
 import CardActions from "@mui/material/CardActions";
-import { useReservesBigNumber } from "../hooks/useReserves";
 import { SorobanContextType } from "@soroban-react/core";
-import { Checkbox } from "@mui/material";
 import BigNumber from "bignumber.js";
-import { PairBalance } from "./PairBalance";
-import getExpectedAmount, { getPriceImpact } from "../functions/fromExactInputGetExpectedOutput";
-import { TokenType } from "../interfaces";
-import { useAllowance } from "../hooks/useAllowance";
-import { useSlipaggeFactor } from "../hooks/useSlippageFactor";
-import { useTokensFromPair } from "../hooks/useTokensFromPair";
-import { useTokenBalances, useTokens } from "../hooks";
-import { scvalToBigNumber } from "../helpers/utils";
-import { formatTokenAmount } from "../helpers/format";
 import { useMemo } from "react";
 import { SwapButton } from "../components/Buttons/SwapButton";
+import { getPriceImpact } from "../functions/fromExactInputGetExpectedOutput";
+import { formatTokenAmount } from "../helpers/format";
+import { useTokens } from "../hooks";
+import { useReservesBigNumber } from "../hooks/useReserves";
+import { useTokensFromPair } from "../hooks/useTokensFromPair";
+import { TokenType } from "../interfaces";
 
 
 
@@ -43,7 +37,6 @@ export function ProvideSwapPair({
 }) {
   const tokens = useTokens(sorobanContext);
   const tokensFromPair = useTokensFromPair(pairAddress, sorobanContext);
-  const tokenBalancesResponse = useTokenBalances(sorobanContext.address??"", tokens);
 
   const reserves = useReservesBigNumber(pairAddress, sorobanContext);
   useMemo(() => {

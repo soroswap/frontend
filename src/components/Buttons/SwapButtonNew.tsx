@@ -1,21 +1,17 @@
-import { SorobanContextType } from "@soroban-react/core";
+import { ButtonProps as ButtonPropsOriginal, Button as MuiButton, styled } from "@mui/material";
 import {
-  contractTransaction,
-  useSendTransaction,
+    contractTransaction,
+    useSendTransaction,
 } from "@soroban-react/contracts";
-import { bigNumberToI128 } from "../../helpers/utils";
+import { SorobanContextType } from "@soroban-react/core";
 import BigNumber from "bignumber.js";
+import { BodyPrimary } from "components/Text";
+import { useTokensFromPair } from "hooks/useTokensFromPair";
+import { TokenType } from "interfaces/tokens";
+import { darken } from "polished";
 import { useMemo, useState } from "react";
 import * as SorobanClient from "soroban-client";
-import { Button, styled } from "@mui/material";
-import { TokenType } from "interfaces/tokens";
-import { useTokens } from "hooks/useTokens";
-import { useTokensFromPair } from "hooks/useTokensFromPair";
-import { useReservesBigNumber } from "hooks/useReserves";
-import { useTokenBalances } from "hooks";
-import { Button as MuiButton, ButtonProps as ButtonPropsOriginal } from '@mui/material'
-import { darken } from "polished";
-import { BodyPrimary } from "components/Text";
+import { bigNumberToI128 } from "../../helpers/utils";
 
 interface SwapButtonProps {
   sorobanContext: SorobanContextType;

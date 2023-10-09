@@ -1,18 +1,15 @@
-import React, { useContext, useState } from "react";
-import { SorobanContextType } from "@soroban-react/core";
 import Button from "@mui/material/Button";
+import { SorobanContextType } from "@soroban-react/core";
+import { useContext, useState } from "react";
 
-import * as SorobanClient from "soroban-client";
-import BigNumber from "bignumber.js";
-import {
-  contractTransaction
-} from "@soroban-react/contracts";
-import { useKeys } from "../../hooks";
-import { bigNumberToI128 } from "../../helpers/utils";
 import { contractInvoke } from "@soroban-react/contracts";
+import BigNumber from "bignumber.js";
 import { AppContext, SnackbarIconType } from "contexts";
-import { TokenType } from "interfaces";
 import { sendNotification } from "functions/sendNotification";
+import { TokenType } from "interfaces";
+import * as SorobanClient from "soroban-client";
+import { bigNumberToI128 } from "../../helpers/utils";
+import { useKeys } from "../../hooks";
 
 interface MintButtonProps {
   sorobanContext: SorobanContextType;
@@ -48,12 +45,6 @@ export function MintButton({
       return;
     }
 
-    const options = {
-      secretKey: admin_secret,
-      sorobanContext,
-
-    };
-
     if (!account) {
       console.log("Error on account:", account)
       return
@@ -62,11 +53,6 @@ export function MintButton({
       console.log("Error on adminSource:", adminSource)
       return
     }
-    console.log("🚀 ~ file: MintButton.tsx:70 ~ mintTokens ~ networkPassphrase:", networkPassphrase)
-    console.log("🚀 ~ file: MintButton.tsx:68 ~ mintTokens ~ adminSource:", adminSource)
-    console.log("🚀 ~ file: MintButton.tsx:72 ~ mintTokens ~ token.address:", token.address)
-    console.log("🚀 ~ file: MintButton.tsx:75 ~ mintTokens ~ account:", account)
-
 
     try {
 
@@ -88,6 +74,7 @@ export function MintButton({
         signAndSend: true,
         secretKey: admin_secret
       })
+      console.log("🚀 « result:", result)
 
 
       if (result) {

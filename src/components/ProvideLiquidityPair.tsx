@@ -1,18 +1,16 @@
-import * as React from "react";
 import CardActions from "@mui/material/CardActions";
-import { useReservesBigNumber } from "../hooks/useReserves";
 import { SorobanContextType } from "@soroban-react/core";
 import BigNumber from "bignumber.js";
+import { useMemo } from "react";
 import { DepositButton } from "../components/Buttons/DepositButton";
 import getLpTokensAmount from "../functions/getLpTokensAmount";
-import { useTokenScVal, useTokenDecimals } from "../hooks";
-import { scvalToBigNumber } from "../helpers/utils";
 import { formatTokenAmount } from "../helpers/format";
-import { useTotalShares } from "../hooks/useTotalShares";
+import { scvalToBigNumber } from "../helpers/utils";
+import { tokenBalance, useTokens } from "../hooks";
+import { useReservesBigNumber } from "../hooks/useReserves";
 import { useTokensFromPair } from "../hooks/useTokensFromPair";
-import { useTokens } from "../hooks";
+import { useTotalShares } from "../hooks/useTotalShares";
 import { TokenType } from "../interfaces";
-import { useEffect, useMemo } from "react";
 
 
 export function ProvideLiquidityPair({
@@ -46,8 +44,8 @@ export function ProvideLiquidityPair({
       setToken1(tokens.find(token => token.address === tokensFromPair?.token1)??null);
     }, [setToken0, setToken1, tokensFromPair, tokens])
     const reserves = useReservesBigNumber(pairAddress, sorobanContext);
-    const pairBalance = useTokenScVal(pairAddress, sorobanContext.address!).result;
-    const tokenDecimals = useTokenDecimals(pairAddress);
+    let pairBalance
+    tokenBalance(pairAddress, sorobanContext.address!, sorobanContext).then((resp) => pairBalance=resp);
     const totalShares = useTotalShares(pairAddress, sorobanContext)
     let expectedLpTokens = getLpTokensAmount(
       BigNumber(inputTokenAmount).shiftedBy(7),
@@ -66,7 +64,7 @@ export function ProvideLiquidityPair({
         <p>- token0: {token0?.name}</p>
         <p>- token1: {token1?.name}</p>
         <p>- Your LP tokens balance: {pairBalance !== undefined
-        ? formatTokenAmount(scvalToBigNumber(pairBalance), tokenDecimals)
+        ? formatTokenAmount(pairBalance)
         : "0"} LP</p>
         <p>- Your pool share {totalShares?scvalToBigNumber(pairBalance).dividedBy(totalShares).multipliedBy(100).decimalPlaces(7).toString():0}%</p>
         <p>- token0 reserves {formatTokenAmount(reserves.reserve0)}</p>

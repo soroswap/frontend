@@ -1,11 +1,10 @@
 import { SorobanContextType } from "@soroban-react/core"
-import { TokenType } from "interfaces"
-import { getPairAddress } from "./getPairAddress"
-import { reservesBNWithTokens } from "hooks/useReserves"
 import BigNumber from "bignumber.js"
-import { formatTokenAmount } from "helpers/format"
+import { reservesBNWithTokens } from "hooks/useReserves"
+import { TokenType } from "interfaces"
 import fromExactInputGetExpectedOutput from "./fromExactInputGetExpectedOutput"
 import fromExactOutputGetExpectedInput from "./fromExactOutputGetExpectedInput"
+import { getPairAddress } from "./getPairAddress"
 
 interface customReservesType {
   token0: TokenType

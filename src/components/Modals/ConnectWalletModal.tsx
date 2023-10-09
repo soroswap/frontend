@@ -1,13 +1,13 @@
-import React, { useContext } from "react";
+import { useContext } from "react";
 
+import { Modal, useMediaQuery } from "@mui/material";
 import { styled, useTheme } from "@mui/material/styles";
-import { Box, Modal, useMediaQuery } from "@mui/material";
-import { AppContext } from "contexts";
-import ModalBox from "./ModalBox";
-import freighterLogoWhite from '../../assets/svg/FreighterWalletWhite.svg'
-import freighterLogoBlack from '../../assets/svg/FreighterWalletBlack.svg'
-import Image from "next/image";
 import { useSorobanReact } from "@soroban-react/core";
+import { AppContext } from "contexts";
+import Image from "next/image";
+import freighterLogoBlack from '../../assets/svg/FreighterWalletBlack.svg';
+import freighterLogoWhite from '../../assets/svg/FreighterWalletWhite.svg';
+import ModalBox from "./ModalBox";
 
 
 const Title = styled('div')`

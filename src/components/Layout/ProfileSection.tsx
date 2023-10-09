@@ -1,9 +1,9 @@
-import React, { useContext, useRef, useState } from "react";
-import { useTheme } from "@mui/material/styles";
 import { Chip } from "@mui/material";
+import { useTheme } from "@mui/material/styles";
 import { SorobanContextType, useSorobanReact } from "@soroban-react/core";
-import { shortenAddress } from "../../helpers/address";
 import { AppContext } from "contexts";
+import { useContext, useRef } from "react";
+import { shortenAddress } from "../../helpers/address";
 
 export default function ProfileSection() {
   const theme = useTheme();

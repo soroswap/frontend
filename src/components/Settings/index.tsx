@@ -1,11 +1,10 @@
 // import { Percent } from '@uniswap/sdk-core'
-import { useState } from 'react'
+import { styled } from "@mui/material"
 import { useSorobanReact } from '@soroban-react/core'
 import AnimatedDropdown from 'components/AnimatedDropdown'
 import { AutoColumn } from 'components/Column'
 import { useOnClickOutside } from 'hooks/useOnClickOutside'
-import { useRef } from 'react'
-import { styled } from "@mui/material"
+import { useRef, useState } from 'react'
 
 import MaxSlippageSettings from './MaxSlippageSettings'
 import MenuButton from './MenuButton'

@@ -11,12 +11,11 @@
 // import { isL2ChainId } from 'utils/chains'
 // import { ExplorerDataType, getExplorerLink } from 'utils/getExplorerLink'
 
-import { Modal, styled, useTheme } from "@mui/material"
+import { Modal, styled } from "@mui/material"
 import { useSorobanReact } from "@soroban-react/core"
-import Badge from "components/Badge"
 import { CloseButton } from "components/Buttons/CloseButton"
 import { AutoColumn, ColumnCenter } from "components/Column"
-import Row, { RowBetween, RowFixed } from "components/Row"
+import Row, { RowBetween } from "components/Row"
 import { SubHeader, SubHeaderLarge, SubHeaderSmall } from "components/Text"
 import { TokenType } from "interfaces"
 import { ReactNode } from "react"

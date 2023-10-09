@@ -1,13 +1,13 @@
-import React, { useMemo, useState } from "react";
-import MainLayout from "../src/components/Layout/MainLayout";
-import MySorobanReactProvider from "../src/soroban/MySorobanReactProvider";
-import "../styles/globals.css";
-import type { AppProps } from "next/app";
-import { theme } from "../src/themes";
 import { CssBaseline, ThemeProvider } from "@mui/material";
-import { ColorModeContext, AppContext, SnackbarIconType } from "../src/contexts";
-import { Provider } from 'react-redux'
-import store from '../src/state'
+import type { AppProps } from "next/app";
+import { useMemo, useState } from "react";
+import { Provider } from 'react-redux';
+import MainLayout from "../src/components/Layout/MainLayout";
+import { AppContext, ColorModeContext, SnackbarIconType } from "../src/contexts";
+import MySorobanReactProvider from "../src/soroban/MySorobanReactProvider";
+import store from '../src/state';
+import { theme } from "../src/themes";
+import "../styles/globals.css";
 
 export default function App({ Component, pageProps }: AppProps) {
   const [isConnectWalletModal, setConnectWalletModal] = useState<boolean>(false)

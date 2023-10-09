@@ -1,20 +1,18 @@
-import { AutoColumn } from "components/Column";
-import SEO from "../../src/components/SEO";
 import { styled, useMediaQuery, useTheme } from "@mui/material";
-import { Dots } from "components/Pool/styleds";
-import { BodySmall, SubHeader } from "components/Text";
-import { AutoRow } from "components/Row";
-import { ButtonPrimary } from "components/Buttons/Button";
 import { useSorobanReact } from "@soroban-react/core";
-import SettingsTab from "components/Settings";
-import { useRouter } from "next/router";
-import { LogoContainer } from "components/Swap/PendingModalContent/Logos";
-import CurrencyLogo from "components/Logo/CurrencyLogo";
-import { TokenType } from "interfaces";
-import { LpTokensObj, getLpTokens } from "functions/getLpTokens";
-import { useEffect, useState } from "react";
+import { ButtonPrimary } from "components/Buttons/Button";
+import { AutoColumn } from "components/Column";
 import LiquidityPoolInfoModal from "components/Liquidity/LiquidityPoolInfoModal";
 import { LPPercentage } from "components/Liquidity/styleds";
+import CurrencyLogo from "components/Logo/CurrencyLogo";
+import { Dots } from "components/Pool/styleds";
+import { AutoRow } from "components/Row";
+import SettingsTab from "components/Settings";
+import { BodySmall, SubHeader } from "components/Text";
+import { LpTokensObj, getLpTokens } from "functions/getLpTokens";
+import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
+import SEO from "../../src/components/SEO";
 
 const PageWrapper = styled(AutoColumn)`
   position: relative;

@@ -1,29 +1,28 @@
-import * as React from "react";
-import Card from "@mui/material/Card";
-import CardActions from "@mui/material/CardActions";
+import { Typography } from "@mui/material";
 import Box from "@mui/material/Box";
+import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
-import { Checkbox, Typography } from "@mui/material";
 import FormControl from "@mui/material/FormControl";
+import InputAdornment from "@mui/material/InputAdornment";
 import InputLabel from "@mui/material/InputLabel";
 import OutlinedInput from "@mui/material/OutlinedInput";
-import InputAdornment from "@mui/material/InputAdornment";
-import { useTokens } from "../hooks/useTokens";
+import * as React from "react";
 import { useReservesBigNumber } from "../hooks/useReserves";
+import { useTokens } from "../hooks/useTokens";
 
-import { useSorobanReact } from "@soroban-react/core";
-import TokensDropdown from "./TokensDropwndown";
-import { SorobanContextType } from "@soroban-react/core";
-import { TokenType } from "../interfaces/tokens";
+import { SorobanContextType, useSorobanReact } from "@soroban-react/core";
 import BigNumber from "bignumber.js";
-import { useAllPairsFromTokens } from "../hooks/usePairExist";
-import calculatePoolTokenOptimalAmount from "../functions/calculatePoolTokenOptimalAmount";
-import { ProvideLiquidityPair } from "./ProvideLiquidityPair";
-import {ProvideSwapPair} from "./ProvideSwapPair";
+import { tokenBalances, tokenBalancesType } from "hooks";
+import { useEffect, useState } from "react";
 import { CreatePairButton } from "../components/Buttons/CreatePairButton";
+import calculatePoolTokenOptimalAmount from "../functions/calculatePoolTokenOptimalAmount";
 import fromExactInputGetExpectedOutput from "../functions/fromExactInputGetExpectedOutput";
 import fromExactOutputGetExpectedInput from "../functions/fromExactOutputGetExpectedInput";
-import { useTokenBalances } from "../hooks";
+import { useAllPairsFromTokens } from "../hooks/usePairExist";
+import { TokenType } from "../interfaces/tokens";
+import { ProvideLiquidityPair } from "./ProvideLiquidityPair";
+import { ProvideSwapPair } from "./ProvideSwapPair";
+import TokensDropdown from "./TokensDropwndown";
 
 
 export function ChooseTokens({ isLiquidity }: { isLiquidity: boolean }) {
@@ -74,8 +73,18 @@ function ChooseTokensWallet({
   const [pairAddress, setPairAddress] = React.useState<string | undefined>(
     undefined,
   );
-  const tokenBalancesResponse = useTokenBalances(sorobanContext.address??"", tokens);
+  // State to hold token balances
+  const [tokenBalancesResponse, setTokenBalancesResponse] = useState<tokenBalancesType | undefined>();
 
+  // Effect to fetch token balances
+  useEffect(() => {
+    if (sorobanContext.activeChain && sorobanContext.address && tokens.length > 0) {
+      tokenBalances(sorobanContext.address, tokens, sorobanContext).then((resp) => {
+        setTokenBalancesResponse(resp);
+      });
+    }
+  }, [sorobanContext, tokens]);
+  
   function getPairExists(token0: any, token1: any, allPairs: any) {
 
     return allPairs.some((pair: any) => {
@@ -171,7 +180,7 @@ function ChooseTokensWallet({
       setInputTokenAmount(BigNumber(output).decimalPlaces(0).shiftedBy(-7).toNumber())
     }
   };
-  let inputTokenBalance = tokenBalancesResponse.balances.find((token) => token.address === inputToken?.address)?.balance 
+  let inputTokenBalance = tokenBalancesResponse?.balances.find((token) => token.address === inputToken?.address)?.balance 
   return (
     <div>
       <Box sx={{ display: "flex", flexDirection: "column" }}>
@@ -230,7 +239,7 @@ function ChooseTokensWallet({
               />
             </FormControl>
           ) : null}
-           <p>balance: {outputToken !== null ? tokenBalancesResponse.balances.find((token) => token.address === outputToken.address)?.balance : 0}</p>
+           <p>balance: {outputToken !== null ? tokenBalancesResponse?.balances.find((token) => token.address === outputToken.address)?.balance : 0}</p>
         </Box>
         {isLiquidity && pairExist && outputToken && inputToken && pairAddress && (
             <ProvideLiquidityPair
