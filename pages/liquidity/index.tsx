@@ -80,7 +80,6 @@ export default function LiquidityPage() {
   const isCreate = false
 
   const [lpTokens, setLpTokens] = useState<LpTokensObj[]>()
-  console.log("🚀 « lpTokens:", lpTokens)
   const [isModalOpen, setModalOpen] = useState<boolean>(false)
   const [selectedLP, setSelectedLP] = useState<LpTokensObj>()
 

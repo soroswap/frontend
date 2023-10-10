@@ -1,15 +1,15 @@
 import { Modal, styled, useMediaQuery, useTheme } from '@mui/material';
+import { ButtonOutlined, ButtonPrimary } from 'components/Buttons/Button';
+import { CloseButton } from 'components/Buttons/CloseButton';
+import Column from 'components/Column';
 import CurrencyLogo from 'components/Logo/CurrencyLogo';
 import ModalBox from 'components/Modals/ModalBox';
-import { BodyPrimary, BodySmall, SubHeader } from 'components/Text';
-import { LPPercentage } from './styleds';
-import { LpTokensObj } from 'functions/getLpTokens';
 import Row, { AutoRow } from 'components/Row';
-import { CloseButton } from 'components/Buttons/CloseButton';
-import { ButtonOutlined, ButtonPrimary, ButtonSecondary } from 'components/Buttons/Button';
-import { useRouter } from 'next/router';
-import Column from 'components/Column';
+import { BodyPrimary, SubHeader } from 'components/Text';
+import { LpTokensObj } from 'functions/getLpTokens';
 import { formatTokenAmount } from 'helpers/format';
+import { useRouter } from 'next/router';
+import { LPPercentage } from './styleds';
 
 const ContentWrapper = styled('div') <{ isMobile: boolean }>`
   display: flex;
@@ -33,6 +33,14 @@ export default function LiquidityPoolInfoModal({
   const router = useRouter()
 
   if (!selectedLP) return null
+
+  const handleAddClick = () => {
+    router.push(`/liquidity/add/${selectedLP.token_0?.address}/${selectedLP.token_1?.address}`)
+  }
+
+  const handleRemoveClick = () => {
+    router.push(`/liquidity/add/${selectedLP.token_0?.address}/${selectedLP.token_1?.address}`)
+  }
 
   return (
     <Modal
@@ -59,10 +67,10 @@ export default function LiquidityPoolInfoModal({
               <BodyPrimary>{formatTokenAmount(selectedLP.balance)}</BodyPrimary>
             </Row>
           </Column>
-          <ButtonPrimary onClick={() => router.push('/liquidity/add')}>
+          <ButtonPrimary onClick={handleAddClick}>
             Add
           </ButtonPrimary>
-          <ButtonOutlined onClick={() => router.push('/liquidity/add')}>
+          <ButtonOutlined onClick={handleRemoveClick}>
             Remove
           </ButtonOutlined>
         </ContentWrapper>

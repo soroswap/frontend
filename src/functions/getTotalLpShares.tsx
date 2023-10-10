@@ -1,7 +1,7 @@
 import { contractInvoke } from "@soroban-react/contracts";
 import { SorobanContextType } from "@soroban-react/core";
 import BigNumber from "bignumber.js";
-import { scValStrToJs } from "helpers/convert";
+import { scValToJs } from "helpers/convert";
 
 export async function getTotalLpShares(
   pairAddress: string,
@@ -15,7 +15,7 @@ export async function getTotalLpShares(
       sorobanContext,
     })
     
-    return scValStrToJs(response?.xdr ?? "") as BigNumber.Value;  
+    return scValToJs(response) as BigNumber.Value;  
   } catch (error) {
     console.log("error getting totalLpShares", error)
     return BigNumber("0");
