@@ -1,6 +1,5 @@
-import { PaletteMode, colors, createTheme } from '@mui/material';
+import { PaletteMode, createTheme } from '@mui/material';
 import { opacify } from './utils';
-import { rgba } from 'polished';
 
 declare module '@mui/material/styles/createPalette' {
   interface Palette {
@@ -13,6 +12,7 @@ declare module '@mui/material/styles/createPalette' {
       bg3: string;
       bg4: string;
       bg5: string;
+      bg6: string;
       interactive: string;
       accentAction: string;
       accentActionSoft: string;
@@ -28,6 +28,8 @@ declare module '@mui/material/styles/createPalette' {
       scrolledSurface: string;
     };
     custom: {
+      textPrimary: string;
+      textSecondary: string;
       textTertiary: string;
       textQuaternary: string;
       textLinks: string;
@@ -60,6 +62,7 @@ declare module '@mui/material/styles/createPalette' {
       bg3: string;
       bg4: string;
       bg5: string;
+      bg6: string;
       interactive: string;
       accentAction: string;
       accentActionSoft: string;
@@ -75,6 +78,8 @@ declare module '@mui/material/styles/createPalette' {
       scrolledSurface: string;
     };
     custom: {
+      textPrimary: string;
+      textSecondary: string;
       textTertiary: string;
       textQuaternary: string;
       textLinks: string;
@@ -115,7 +120,7 @@ export const theme = (mode: PaletteMode) => {
       },
       background: {
         default: isDark ? '#0F1016' : '#FFFFFF',
-        paper: isDark ? '#181A25' : rgba(136, 102, 221, 0.1),
+        paper: isDark ? '#181A25' : opacify(10, '#8866DD'),
       },
       error: {
         main: '#FD766B',
@@ -129,6 +134,7 @@ export const theme = (mode: PaletteMode) => {
         bg3: isDark ? '#404A67' : '#B8C0DC',
         bg4: isDark ? '#5D6785' : '#98A1C0',
         bg5: isDark ? '#7780A0' : '#7780A0',
+        bg6: isDark ? '#2A2E44' : opacify(10, '#8866DD'),
         interactive: isDark ? '#293249' : '#E8ECFB',
         accentAction: isDark ? '#8866DD' : '#8866DD',
         accentActionSoft: isDark ? opacify(24, '#8866DD') : opacify(24, '#8866DD'),
@@ -144,6 +150,8 @@ export const theme = (mode: PaletteMode) => {
         scrolledSurface: opacify(72, '#0D111C'),
       },
       custom: {
+        textPrimary: isDark ? '#FFFFFF' : '#8866DD',
+        textSecondary: isDark ? '#4E4E4E' : '#E0E0E0',
         textTertiary: isDark ? '#E0E0E0' : '#4E4E4E',
         textQuaternary: isDark ? '#B4EFAF' : '#F66B3C',
         textLinks: isDark ? '#8866DD' : '#F66B3C',

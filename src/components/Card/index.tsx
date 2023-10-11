@@ -18,7 +18,7 @@ export const GrayCard = styled(Card)`
 `
 
 export const DarkGrayCard = styled(Card)`
-  background-color: ${({ theme }) => theme.palette.customBackground.interactive};
+  background-color: ${({ theme }) => theme.palette.background.paper};
 `
 
 export const DarkCard = styled(Card)`

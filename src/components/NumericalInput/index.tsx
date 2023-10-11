@@ -1,5 +1,5 @@
 import { styled } from '@mui/material';
-import React from 'react'
+import React from 'react';
 import { escapeRegExp } from '../../utils/escapeRegExp';
 
 const StyledInput = styled('input')<{ error?: boolean; fontSize?: string; align?: string }>`

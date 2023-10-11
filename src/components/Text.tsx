@@ -1,4 +1,4 @@
-import { Typography, TypographyProps, styled } from "@mui/material";
+import { Typography, styled } from "@mui/material";
 
 export const SubHeaderLarge = styled(Typography)<{color?: string; fontWeight?: number}>(({ theme, color, fontWeight }) => ({
   fontWeight: fontWeight ?? 500,
@@ -51,6 +51,9 @@ export const BodySmall = styled(Typography)<{color?: string; fontWeight?: number
   lineHeight: "24px",
   [theme.breakpoints.down("md")]: {
     fontSize: 12,
+  },
+  "& > span": {
+    display: "block",
   }
 }));
 
