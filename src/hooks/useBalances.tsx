@@ -2,6 +2,7 @@ import { contractInvoke } from "@soroban-react/contracts";
 import { SorobanContextType } from "@soroban-react/core";
 import BigNumber from "bignumber.js";
 import { scValToJs } from "helpers/convert";
+import { xdr } from 'soroban-client';
 import { formatTokenAmount } from "../helpers/format";
 import {
   accountToScVal
@@ -31,7 +32,7 @@ export async function tokenBalance(tokenAddress: string, userAddress: string, so
       sorobanContext,
     });
 
-    return scValToJs(tokenBalance) as BigNumber;
+    return scValToJs(tokenBalance as xdr.ScVal) as BigNumber;
   } catch(error) {
     console.error("Error fetching token balance:", error);
     return 0; // or throw error;
@@ -45,7 +46,7 @@ export async function tokenDecimals(tokenAddress: string, sorobanContext: Soroba
       method: "decimals",
       sorobanContext,
     });
-    const tokenDecimals = scValToJs(decimals) as number ?? 7;
+    const tokenDecimals = scValToJs(decimals as xdr.ScVal) as number ?? 7;
 
     return tokenDecimals;
   } catch(error) {

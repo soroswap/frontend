@@ -1,6 +1,7 @@
 import { contractInvoke } from "@soroban-react/contracts";
 import { SorobanContextType } from "@soroban-react/core";
 import { addressToScVal, scValToJs } from "helpers/convert";
+import { xdr } from 'soroban-client';
 import { getFactory } from "./getFactory";
 
 export async function getPairAddress(
@@ -22,7 +23,7 @@ export async function getPairAddress(
   })
 
   if (response) {
-    const pairAddress = scValToJs(response) as string
+    const pairAddress = scValToJs(response as xdr.ScVal) as string
     return pairAddress
   } else {
     return ""

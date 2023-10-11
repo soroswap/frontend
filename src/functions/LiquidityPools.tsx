@@ -1,7 +1,8 @@
 import { contractInvoke } from "@soroban-react/contracts";
 import { SorobanContextType } from "@soroban-react/core/dist/SorobanContext";
 import BigNumber from "bignumber.js";
-import { scValStrToJs } from "helpers/convert";
+import { scValToJs } from "helpers/convert";
+import { xdr } from 'soroban-client';
 
 export async function getLpTokensAmount(
     amount0: BigNumber,
@@ -43,8 +44,8 @@ export async function getTotalShares(
         sorobanContext: sorobanContext,
     });
 
-    if (totalShares_scval?.xdr) {
-        const totalShares = scValStrToJs(totalShares_scval?.xdr)
+    if (totalShares_scval) {
+        const totalShares = scValToJs(totalShares_scval as xdr.ScVal)
         return totalShares
     } else return undefined
 }

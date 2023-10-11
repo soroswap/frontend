@@ -99,7 +99,7 @@ export function useDerivedMintInfo(
     }
   }, [currencyA, currencyB, factoryAddress.factory_address, sorobanContext])
 
-  const [reservesBN, setReservesBN] = useState();
+  const [reservesBN, setReservesBN] = useState<{ reserve0: BigNumber; reserve1: BigNumber; } | undefined>();
   useEffect(() => {
     if (sorobanContext.activeChain && sorobanContext.address) {
       reservesBigNumber(pairAddress ?? "", sorobanContext).then((resp) => {
@@ -121,7 +121,7 @@ export function useDerivedMintInfo(
 
   // console.log("state/mint/hooks: reservesBNToken:", reservesBNToken)
 
-  const noLiquidity: boolean = useMemo(() => {
+  const noLiquidity: boolean | undefined = useMemo(() => {
     return pairAddress === undefined ||
       (reservesBN?.reserve0.isZero() && reservesBN?.reserve1.isZero())
   }, [pairAddress, reservesBN])
