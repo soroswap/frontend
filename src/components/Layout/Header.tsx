@@ -1,16 +1,16 @@
-import React from "react";
-import { styled, useTheme } from "@mui/material/styles";
 import { Switch, SwitchProps, useMediaQuery } from "@mui/material";
-import ProfileSection from "./ProfileSection";
-import { ColorModeContext } from "../../contexts";
-import soroswapLogoPurpleWhite from '../../assets/svg/SoroswapPurpleWhite.svg'
-import soroswapLogoPurpleBlack from '../../assets/svg/SoroswapPurpleBlack.svg'
-import darkModeMoon from '../../assets/svg/darkModeMoon.svg'
-import lightModeSun from '../../assets/svg/lightModeSun.svg'
+import { styled, useTheme } from "@mui/material/styles";
 import Image from "next/image";
-import { useRouter } from "next/router";
 import Link from "next/link";
+import { useRouter } from "next/router";
+import React from "react";
 import { Menu } from "react-feather";
+import soroswapLogoPurpleBlack from '../../assets/svg/SoroswapPurpleBlack.svg';
+import soroswapLogoPurpleWhite from '../../assets/svg/SoroswapPurpleWhite.svg';
+import darkModeMoon from '../../assets/svg/darkModeMoon.svg';
+import lightModeSun from '../../assets/svg/lightModeSun.svg';
+import { ColorModeContext } from "../../contexts";
+import ProfileSection from "./ProfileSection";
 
 const MainBox = styled('div')<{ isMobile: boolean }>`
   display: flex;
@@ -167,7 +167,6 @@ export default function Header({isDrawerOpen, setDrawerOpen}: HeaderProps) {
               <NavItem href={"/swap"} active={pathname.includes("/swap")}>Swap</NavItem>
               <NavItem href={"/liquidity"} active={pathname.includes("/liquidity")}>Liquidity</NavItem>
               <NavItem href={"/mint"} active={pathname.includes("/mint")}>Mint</NavItem>
-              <NavItem href={"/all"} active={pathname.includes("/all")}>All</NavItem>
             </NavBar>
             <ButtonsBox>
               <ModeSwitch

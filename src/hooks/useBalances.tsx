@@ -9,13 +9,17 @@ import {
 } from "../helpers/utils";
 import { TokenMapType, TokenType } from "../interfaces";
 
+export type relevantTokensType = {
+  balance: number | string | BigNumber,
+  usdValue: number,
+  symbol: string,
+  address: string,
+  decimals: number,
+  formatted: boolean | undefined,
+};
+
 export interface tokenBalancesType {
-  balances: {
-    balance: string,
-    usdValue: number,
-    symbol: string,
-    address: string,
-  }[],
+  balances: relevantTokensType[],
   loading: boolean
 }
 
@@ -56,7 +60,7 @@ export async function tokenDecimals(tokenAddress: string, sorobanContext: Soroba
 }
 
 
-export async function tokenBalances(userAddress: string, tokens: TokenType[] | TokenMapType | undefined, sorobanContext: SorobanContextType): Promise<tokenBalancesType | undefined> {
+export async function tokenBalances(userAddress: string, tokens: TokenType[] | TokenMapType | undefined, sorobanContext: SorobanContextType, formatted?: boolean): Promise<tokenBalancesType | undefined> {
   if (!tokens || !sorobanContext) return;
 
   const balances = await Promise.all(
@@ -64,16 +68,23 @@ export async function tokenBalances(userAddress: string, tokens: TokenType[] | T
       const balanceResponse = await tokenBalance(token.address, userAddress, sorobanContext);
       const decimalsResponse = await tokenDecimals(token.address, sorobanContext);
 
-      const formattedBalance = formatTokenAmount(
-        BigNumber(balanceResponse),
-        decimalsResponse,
-      );
+      let balance: number | string | BigNumber
+      if (formatted) { 
+        balance = formatTokenAmount(
+          BigNumber(balanceResponse),
+          decimalsResponse,
+        );
+      } else {
+        balance =balanceResponse
+      }
       
       return {
-        balance: formattedBalance,
+        balance: balance,
         usdValue: 0, //TODO: should get usd value
         symbol: token.symbol,
         address: token.address,
+        decimals: decimalsResponse,
+        formatted: formatted
       };
     })
   );

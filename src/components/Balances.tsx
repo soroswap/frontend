@@ -16,7 +16,7 @@ export function Balances() {
   // Effect to fetch token balances
   useEffect(() => {
     if (sorobanContext.activeChain && sorobanContext.address && tokens.length > 0) {
-      tokenBalances(sorobanContext.address, tokens, sorobanContext).then((resp) => {
+      tokenBalances(sorobanContext.address, tokens, sorobanContext, true).then((resp) => {
         setTokenBalancesResponse(resp);
       });
     }
@@ -32,7 +32,7 @@ export function Balances() {
           <>
             {tokenBalancesResponse?.balances?.map((tokenBalance) => (
               <p key={tokenBalance.address}>
-                {tokenBalance.symbol} : {tokenBalance.balance}
+                {tokenBalance.symbol} : {tokenBalance.balance as string}
               </p>
             ))}
           </>

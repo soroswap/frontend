@@ -28,16 +28,14 @@ export function useSwapCallback(
     if (!address || !activeChain) throw new Error('wallet must be connected to swap')
 
     const pairAddress = trade.swaps[0].route.pairs[0].pairAddress
-    // TODO, this is just temporal, when implementing the Router we'll calculate this better
-    const amountInBigNumber= BigNumber(trade.inputAmount?.value|| 0).plus(BigNumber("10000000"))
-    console.log("🚀 ~ file: useSwapCallback.tsx:32 ~ returnuseCallback ~ amountInBigNumber.toString():", amountInBigNumber.toString())
+    // TODO, this is just temporal, when implementing the Router we'll calculate this better 
+    //(12-10-2023) Amounts that are too large will fail with a panic exit, this will depend on the amounts in the liquidity pool
+    //Thats why we are incrementing the inputAmount by 50% so it doesnt fail, this should be fixed when we implement the router
+    const amountInBigNumber= BigNumber(trade.inputAmount?.value|| 0).multipliedBy(1.5)
     const amountInScVal = bigNumberToI128(amountInBigNumber);
-    // console.log("🚀 « trade.inputAmount:", trade.inputAmount.value)
     const amountOutBigNumber=BigNumber(trade.outputAmount?.value || 0)
-    console.log("🚀 ~ file: useSwapCallback.tsx:36 ~ returnuseCallback ~ amountOutBigNumber.toString():", amountOutBigNumber.toString())
     
     const amountOutScVal = bigNumberToI128(amountOutBigNumber);
-    // console.log("🚀 « trade.outputAmount:", trade.outputAmount.value)
 
 
     //fn swap(e: Env, to: Address, buy_a: bool, amount_out: i128, amount_in_max: i128);
@@ -54,6 +52,7 @@ export function useSwapCallback(
       sorobanContext,
       signAndSend: true,
     })
+    console.log("🚀 « result:", result)
 
     if (result) {
       console.log("🚀 « result:", result)
