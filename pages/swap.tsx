@@ -7,12 +7,13 @@ import SwapDetailsDropdown from "components/Swap/SwapDetailsDropdown";
 import { ButtonText } from "components/Text";
 import { AppContext } from "contexts";
 import { formatTokenAmount } from "helpers/format";
+import { relevantTokensType } from "hooks";
 import { useSwapCallback } from "hooks/useSwapCallback";
 import { ReactNode, useCallback, useContext, useMemo, useReducer, useState } from "react";
 import { ArrowDown } from "react-feather";
 import { InterfaceTrade, TradeState } from "state/routing/types";
 import { Field } from "state/swap/actions";
-import { relevantTokensType, useDerivedSwapInfo, useSwapActionHandlers } from "state/swap/hooks";
+import { useDerivedSwapInfo, useSwapActionHandlers } from "state/swap/hooks";
 import swapReducer, { SwapState, initialState as initialSwapState } from 'state/swap/reducer';
 import SwapCurrencyInputPanel from "../src/components/CurrencyInputPanel/SwapCurrencyInputPanel";
 import SEO from "../src/components/SEO";
@@ -212,7 +213,7 @@ export function SwapComponent({
   )
 
   const handleMaxInput = useCallback(() => {
-    maxInputAmount && onUserInput(Field.INPUT, maxInputAmount?.balance)
+    maxInputAmount && onUserInput(Field.INPUT, String(maxInputAmount?.balance))
   }, [maxInputAmount, onUserInput])
 
   const handleTypeInput = useCallback(

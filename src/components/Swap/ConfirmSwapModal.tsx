@@ -1,20 +1,17 @@
 // import { Trans } from '@lingui/macro' //This is for localization and translation on all languages
-import { styled } from '@mui/material/styles';
-import { RowBetween, RowFixed } from '../Row'
-import { SubHeader } from '../Text';
-import TuneRoundedIcon from '@mui/icons-material/TuneRounded';
-import { InterfaceTrade } from 'state/routing/types';
-import { TokenType } from 'interfaces';
-import { Field } from 'state/swap/actions';
 import { Modal } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import { ConfirmationModalContent } from 'components/TransactionConfirmationModal';
-import { ReactNode, useCallback, useEffect, useState } from 'react';
-import SwapModalHeader from './SwapModalHeader';
-import { PendingConfirmModalState, PendingModalContent } from './PendingModalContent';
-import SwapModalFooter from './SwapModalFooter';
-import { didUserReject } from 'utils/swapErrorToUserReadableMessage';
-import { PendingModalError } from './PendingModalContent/ErrorModalContent';
 import { AllowanceState } from 'hooks/usePermit2Allowance';
+import { TokenType } from 'interfaces';
+import { useCallback, useState } from 'react';
+import { InterfaceTrade } from 'state/routing/types';
+import { Field } from 'state/swap/actions';
+import { RowBetween, RowFixed } from '../Row';
+import { PendingConfirmModalState, PendingModalContent } from './PendingModalContent';
+import { PendingModalError } from './PendingModalContent/ErrorModalContent';
+import SwapModalFooter from './SwapModalFooter';
+import SwapModalHeader from './SwapModalHeader';
 
 const StyledSwapHeader = styled(RowBetween)(({ theme }) => ({
   marginBottom: 10,
@@ -131,7 +128,6 @@ function useConfirmModalState({
 
   const startSwapFlow = useCallback(() => {
     const steps = generateRequiredSteps()
-    console.log("🚀 « steps:", steps)
     setPendingModalSteps(steps)
     performStep(steps[0])
   }, [generateRequiredSteps, performStep])

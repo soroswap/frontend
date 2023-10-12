@@ -1,4 +1,11 @@
 import { css, keyframes, styled, useTheme } from '@mui/material'
+import Column, { ColumnCenter } from 'components/Column'
+import Row from 'components/Row'
+import { LabelSmall, SubHeaderLarge } from 'components/Text'
+import { TokenType } from 'interfaces'
+import Link from 'next/link'
+import { ReactNode, useRef } from 'react'
+import { InterfaceTrade } from 'state/routing/types'
 import { ConfirmModalState } from '../ConfirmSwapModal'
 import {
   AnimatedEntranceConfirmationIcon,
@@ -8,13 +15,6 @@ import {
   LogoContainer,
 } from './Logos'
 import { TradeSummary } from './TradeSummary'
-import Column, { ColumnCenter } from 'components/Column'
-import { ReactNode, useRef } from 'react'
-import { InterfaceTrade } from 'state/routing/types'
-import { TokenType } from 'interfaces'
-import Row from 'components/Row'
-import { LabelSmall, SubHeaderLarge } from 'components/Text'
-import Link from 'next/link'
 
 export const PendingModalContainer = styled(ColumnCenter)`
   margin: 48px 0 8px;
@@ -138,8 +138,6 @@ function getContent(args: ContentArgs): PendingModalStep {
     swapResult,
   } = args
   
-  console.log("🚀 « step:", step)
-  
   switch (step) {
     case ConfirmModalState.WRAPPING:
       return {
@@ -238,7 +236,6 @@ export function PendingModalContent({
     swapResult,
     trade,
   })
-  console.log("🚀 « label:", label)
   const theme = useTheme()
 
   // const order = useOrder(swapResult?.type === TradeFillType.UniswapX ? swapResult.response.orderHash : '')

@@ -1,13 +1,12 @@
-import { TypographyProps, styled, useTheme } from "@mui/material"
+import { styled, useTheme } from "@mui/material"
 import Column from "components/Column"
 import CurrencyLogo from "components/Logo/CurrencyLogo"
 import Row from "components/Row"
-import { BodySecondary, BodySmall, HeadlineLarge, HeadlineMedium, ResponsiveMediumText, SubHeader } from "components/Text"
+import { BodySecondary, BodySmall, ResponsiveMediumText } from "components/Text"
 import { MouseoverTooltip } from "components/Tooltip"
 import { formatTokenAmount } from "helpers/format"
-import { useWindowSize } from "hooks/useWindowSize"
 import { TokenType } from "interfaces"
-import { PropsWithChildren, ReactNode } from "react"
+import { ReactNode } from "react"
 import { Field } from "state/swap/actions"
 
 const MAX_AMOUNT_STR_LENGTH = 9
@@ -52,7 +51,6 @@ interface AmountProps {
 export function SwapModalHeaderAmount({ tooltipText, label, amount, usdAmount, field, currency }: AmountProps) {
   const theme = useTheme()
   let formattedAmount = formatTokenAmount(amount)//formatCurrencyAmount(amount, NumberType.TokenTx)
-  console.log("🚀 « formattedAmount:", formattedAmount)
   // if (formattedAmount.length > MAX_AMOUNT_STR_LENGTH) {
   //   formattedAmount = ""//formatCurrencyAmount(amount, NumberType.SwapTradeAmount)
   // }
