@@ -217,7 +217,6 @@ export function PendingModalContent({
   //   swapResult?.type === TradeFillType.Classic ? swapResult.response.hash : undefined
   // )
   // const wrapConfirmed = useIsTransactionConfirmed(wrapTxHash)
-  // // TODO(UniswapX): Support UniswapX status here too
   // const uniswapXSwapConfirmed = Boolean(swapResult)
 
   const swapConfirmed = swapResult ? true : false

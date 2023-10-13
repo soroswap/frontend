@@ -399,7 +399,6 @@ export function SwapComponent({
               />
             </OutputSwapSection>
           </div>
-          {/* //TODO: Fix SwapDetailsDropdown, trade Object is missing */}
           {showDetailsDropdown && (
             <SwapDetailsDropdown
               trade={trade}
