@@ -6,10 +6,12 @@ export default function CurrencyLogo(
     currency?: TokenType | null
   }
 ) {
+  console.log("currency", props.currency)
   return (
     <AssetLogo
       address={props.currency?.address}
       symbol={props.currency?.symbol}
+      logoURI={props.currency?.logoURI}
       {...props}
     />
   )

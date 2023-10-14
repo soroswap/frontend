@@ -3,6 +3,7 @@ export interface TokenType {
   name: string;
   symbol: string;
   decimals: number;
+  logoURI: string;
 }
 
 export interface tokensResponse {

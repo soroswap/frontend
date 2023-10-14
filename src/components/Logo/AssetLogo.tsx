@@ -1,6 +1,5 @@
-import React from 'react'
-import ethLogo from '../../assets/images/eth.png'
 import { css, styled } from '@mui/material';
+import React from 'react';
 
 export const MissingImageLogo = styled('div')<{ size?: string }>`
   --size: ${({ size }) => size};
@@ -34,6 +33,7 @@ export type AssetLogoBaseProps = {
   size?: string
   style?: React.CSSProperties
   hideL2Icon?: boolean
+  logoURI?: string | null
 }
 type AssetLogoProps = AssetLogoBaseProps & { isNative?: boolean; address?: string | null; chainId?: number }
 
@@ -50,14 +50,14 @@ export default function AssetLogo({
   symbol,
   size = '24px',
   style,
+  logoURI,
 }: AssetLogoProps) {
   const imageProps = {
     alt: `${symbol ?? 'token'} logo`,
     size,
   }
 
-  //TODO: search for the src of the image by the address
-  const src = ethLogo.src
+  const src = logoURI
 
   return (
     <LogoContainer style={style}>
