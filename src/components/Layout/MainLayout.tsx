@@ -1,13 +1,13 @@
-import React, { useState } from "react";
+import { useMediaQuery } from "@mui/material";
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import { styled, useTheme } from "@mui/material/styles";
-import { useMediaQuery } from "@mui/material";
-import Header from "./Header";
-import background1 from '../../assets/images/bg1.png'
 import ConnectWalletModal from "components/Modals/ConnectWalletModal";
-import MobileDrawer from "./MobileDrawer";
 import SnackbarNotification from "components/Notifications/SnackbarNotification";
+import React, { useState } from "react";
+import background1 from '../../assets/images/bg1.png';
+import Header from "./Header";
+import MobileDrawer from "./MobileDrawer";
 
 const MainBackground = styled("main")<{ isMobile: boolean }>`
   background-image: url(${background1.src});
@@ -17,7 +17,7 @@ const MainBackground = styled("main")<{ isMobile: boolean }>`
   justify-content: center;
   align-items: flex-start;
   width: 100vw;
-  padding: 100px 20px 0 20px;
+  padding: ${({ isMobile }) => isMobile ? '50px 20px 0 20px' : '100px 20px 0 20px'};
   margin-top: ${({ isMobile }) => isMobile ? '78px' : '120px'};
 `
 

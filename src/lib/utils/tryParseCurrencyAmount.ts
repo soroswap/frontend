@@ -1,6 +1,5 @@
-import BigNumber from 'bignumber.js';
-import { TokenType, CurrencyAmount } from 'interfaces';
 import { parseUnits } from 'helpers/format';
+import { CurrencyAmount, TokenType } from 'interfaces';
 
 /**
  * Parses a CurrencyAmount from the passed string.
