@@ -4,7 +4,7 @@ import SEO from "components/SEO";
 export default function MintPage() {
   return (
     <>
-      <SEO title="Add - Soroswap" description="Soroswap Add" />
+      <SEO title="Soroswap - Remove" description="Soroswap Remove Liquidity" />
       <RemoveLiquidityComponent />
     </>
   );

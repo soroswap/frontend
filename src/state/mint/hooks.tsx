@@ -15,7 +15,7 @@ import { getPairAddress } from 'functions/getPairAddress';
 import { formatTokenAmount } from 'helpers/format';
 import { useFactory } from 'hooks';
 import { reservesBNWithTokens, reservesBigNumber } from 'hooks/useReserves';
-import { AppState } from '../types';
+import { AppState } from 'state/reducer';
 import { Field, typeInput } from './actions';
 
 // const ZERO = JSBI.BigInt(0)
@@ -107,7 +107,6 @@ export function useDerivedMintInfo(
       });
     }
   }, [pairAddress, sorobanContext]);
-  console.log("🚀 « reservesBN:", reservesBN)
 
   // console.log("state/mint/hooks: reservesBN:", reservesBN, reservesBN.reserve0.toString(), reservesBN.reserve1.toString())
 

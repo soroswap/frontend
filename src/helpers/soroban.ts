@@ -1,10 +1,14 @@
 // TODO: None of these functions are being used
-export {};
 // import BigNumber from 'bignumber.js';
 // import * as SorobanClient from 'soroban-client';
 // import { ERRORS } from './error';
 // import { stroopToXlm } from './format';
 // import { I128 } from './xdr';
+
+import { contractInvoke } from '@soroban-react/contracts';
+import { SorobanContextType } from '@soroban-react/core';
+import { xdr } from 'soroban-client';
+import { scValToJs } from './convert';
 
 // // TODO: once soroban supports estimated fees, we can fetch this
 // export const BASE_FEE = '100';
@@ -258,54 +262,62 @@ export {};
 //   }
 // };
 
-// // Get the tokens symbol, decoded as a string
-// export const getTokenSymbol = async (
-//   tokenId: string,
-//   txBuilder: SorobanClient.TransactionBuilder,
-//   server: SorobanClient.Server,
-// ) => {
-//   const contract = new SorobanClient.Contract(tokenId);
-//   const tx = txBuilder
-//     .addOperation(contract.call('symbol'))
-//     .setTimeout(SorobanClient.TimeoutInfinite)
-//     .build();
+// Get the tokens symbol, decoded as a string
+export const getTokenSymbol = async (
+  tokenId: string,
+  sorobanContext: SorobanContextType,
+): Promise<string> => {
+  try {
+    let result = await contractInvoke({
+      contractAddress: tokenId as string,
+      method: 'symbol',
+      args: [],
+      sorobanContext,
+    });
 
-//   const result = await simulateTx<string>(tx, decoders.bytesN, server);
-//   return result;
-// };
+    return scValToJs(result as xdr.ScVal);
+  } catch (error) {
+    return '';
+  }
+};
 
-// // Get the tokens name, decoded as a string
-// export const getTokenName = async (
-//   tokenId: string,
-//   txBuilder: SorobanClient.TransactionBuilder,
-//   server: SorobanClient.Server,
-// ) => {
-//   const contract = new SorobanClient.Contract(tokenId);
-//   const tx = txBuilder
-//     .addOperation(contract.call('name'))
-//     .setTimeout(SorobanClient.TimeoutInfinite)
-//     .build();
+// Get the tokens name, decoded as a string
+export const getTokenName = async (
+  tokenId: string,
+  sorobanContext: SorobanContextType,
+): Promise<string> => {
+  try {
+    let result = await contractInvoke({
+      contractAddress: tokenId as string,
+      method: 'name',
+      args: [],
+      sorobanContext,
+    });
 
-//   const result = await simulateTx<string>(tx, decoders.bytesN, server);
-//   return result;
-// };
+    return scValToJs(result as xdr.ScVal);
+  } catch (error) {
+    return '';
+  }
+};
 
-// // Get the tokens decimals, decoded as a number
-// export const getTokenDecimals = async (
-//   tokenId: string,
-//   txBuilder: SorobanClient.TransactionBuilder,
-//   server: SorobanClient.Server,
-// ) => {
-//   const contract = new SorobanClient.Contract(tokenId);
-//   const tx = txBuilder
-//     .addOperation(contract.call('decimals'))
-//     .setTimeout(SorobanClient.TimeoutInfinite)
-//     .build();
+// Get the tokens decimals, decoded as a number
+export const getTokenDecimals = async (
+  tokenId: string,
+  sorobanContext: SorobanContextType,
+): Promise<number> => {
+  try {
+    let result = await contractInvoke({
+      contractAddress: tokenId as string,
+      method: 'decimals',
+      args: [],
+      sorobanContext,
+    });
 
-//   const result = await simulateTx<number>(tx, decoders.u32, server);
-//   return result;
-// };
-
+    return scValToJs(result as xdr.ScVal);
+  } catch (error) {
+    return 7;
+  }
+};
 // // Get the tokens balance, decoded as a string
 // export const getTokenBalance = async (
 //   address: string,
