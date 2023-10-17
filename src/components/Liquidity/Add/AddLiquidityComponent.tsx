@@ -4,7 +4,6 @@ import { ButtonError, ButtonLight } from "components/Buttons/Button";
 import { DarkGrayCard } from "components/Card";
 import { AutoColumn, ColumnCenter } from "components/Column";
 import CurrencyInputPanel from "components/CurrencyInputPanel";
-import { AddRemoveTabs } from "components/NavigationTabs";
 import { BodySmall, ButtonText } from "components/Text";
 import TransactionConfirmationModal, { ConfirmationModalContent } from "components/TransactionConfirmationModal";
 import { AppContext } from "contexts";
@@ -18,6 +17,7 @@ import { Plus } from "react-feather";
 import { Field } from "state/mint/actions";
 import { useDerivedMintInfo, useMintActionHandlers, useMintState } from "state/mint/hooks";
 import { opacify } from "themes/utils";
+import { AddRemoveTabs } from "../AddRemoveHeader";
 import AddModalFooter from "./AddModalFooter";
 import AddModalHeader from "./AddModalHeader";
 
@@ -44,7 +44,7 @@ export const PageWrapper = styled('main')`
 
 type TokensType = [string, string];
 
-export default function AddLiquidityPage() {
+export default function AddLiquidityComponent() {
 
   const theme = useTheme()
 
