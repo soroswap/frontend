@@ -1,12 +1,3 @@
-// import { Trans } from '@lingui/macro'
-// import { Currency, CurrencyAmount, Percent, Token } from '@uniswap/sdk-core'
-// import { Pair } from '@uniswap/v2-sdk'
-// import { useWeb3React } from '@web3-react/core'
-// import JSBI from 'jsbi'
-// import tryParseCurrencyAmount from 'lib/utils/tryParseCurrencyAmount'
-// import { ReactNode, useCallback } from 'react'
-// import { useAppDispatch, useAppSelector } from 'state/hooks'
-
 import { useSorobanReact } from "@soroban-react/core";
 import BigNumber from "bignumber.js";
 import { getPairInfo } from "functions/getPairs";
@@ -18,11 +9,6 @@ import { ReactNode, useCallback, useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "state/hooks";
 import { AppState } from "state/reducer";
 import { Field, typeInput } from "./actions";
-
-// import { useTotalSupply } from '../../hooks/useTotalSupply'
-// import { useV2Pair } from '../../hooks/useV2Pairs'
-// import { useTokenBalances } from '../connection/hooks'
-// import { Field, typeInput } from './actions'
 
 export function useBurnState(): AppState['burn'] {
   return useAppSelector((state) => state.burn)
