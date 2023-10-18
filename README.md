@@ -77,26 +77,30 @@ This will start the Soroswap development instance.
 
 6. Configure your Freigher Wallet 
 
-For a local Futurenet node:
+For Standalone network
    |   |   |
    |---|---|
-   | Name | Futurenet Local RPC|
-   | URL | http://localhost:8000/soroban/rpc |
+   | Name | Local Standalone |
+   | HORIZON RPC URL | http://localhost:8000/ |
+   | SOROBAN RPC URL | http://localhost:8000/soroban/rpc |
+   | Passphrase | Standalone Network ; February 2017 |
+   | Allow HTTP connection | Enabled |
+   | Switch to this network | Enabled |
+   
+For Futurenet network
+   |   |   |
+   |---|---|
+   | Name | Local Futurenet|
+   | HORIZON RPC URL | http://localhost:8000/ |
+   | SOROBAN RPC URL | http://localhost:8000/soroban/rpc |
    | Passphrase | Test SDF Future Network ; October 2022 |
    | Allow HTTP connection | Enabled |
    | Switch to this network | Enabled |
 
-For a local Standalone node:
-
-   |   |   |
-   |---|---|
-   | Name | Standalone |
-   | URL | http://localhost:8000/soroban/rpc |
-   | Passphrase | Standalone Network ; February 2017 |
-   | Allow HTTP connection | Enabled |
-   | Switch to this network | Enabled |
+** Important:** You should also do: Preferences> Allow experimental mode
 
 7. Last, but not least, add some lumens to your Freighter wallet!
+
 
    For Standalone: `http://localhost:8000/friendbot?addr=<your address>`
    For Futurenet, visit: https://laboratory.stellar.org/#create-account
