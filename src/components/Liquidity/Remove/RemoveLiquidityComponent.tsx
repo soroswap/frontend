@@ -120,15 +120,16 @@ export default function RemoveLiquidityComponent() {
   // // Modal and loading
   const [showConfirm, setShowConfirm] = useState<boolean>(false)
   const [attemptingTxn, setAttemptingTxn] = useState<boolean>(false) // clicked confirm
+  const [txHash, setTxHash] = useState<string | undefined>(undefined) // clicked confirm
 
   const handleDismissConfirmation = useCallback(() => {
     setShowConfirm(false)
     // if there was a tx hash, we want to clear the input
-    // if (txHash) {
-    //   onFieldAInput('')
-    // }
-    // setTxHash('')
-  }, [])
+    if (txHash) {
+      onUserInput(Field.LIQUIDITY_PERCENT, '')
+    }
+    setTxHash(undefined)
+  }, [onUserInput, txHash])
 
   const handleButtonClick = (newValue: number) => {
     liquidityPercentChange("", newValue);
@@ -146,16 +147,29 @@ export default function RemoveLiquidityComponent() {
     })
   }, [currencyA, currencyB, sorobanContext])
 
+  const pendingText = (
+      <BodySmall>Removing {formatTokenAmount(parsedAmounts[Field.CURRENCY_A]?.value ?? "")} {currencyA?.symbol} and
+      {' '}{formatTokenAmount(parsedAmounts[Field.CURRENCY_B]?.value ?? "")} {currencyB?.symbol}</BodySmall>
+  )
+
   const allowedSlippage = useUserSlippageToleranceWithDefault(0.5)
 
   const removeLiquidity = useCallback(() => {
     if (pair) {
+      setAttemptingTxn(true)
       withdrawOnContract({
         sorobanContext,
         pairAddress: pair.liquidityToken.token?.address,
         shareAmount: parsedAmounts.LIQUIDITY,
         minA: parsedAmounts.CURRENCY_A?.value,
         minB: parsedAmounts.CURRENCY_B?.value,
+      }).then((resp) => {
+        console.log("withdraw Response", resp)
+        setAttemptingTxn(false)
+        setTxHash(resp as string)
+      }).catch((error) => {
+        console.log(error)
+        setAttemptingTxn(false)
       })
     }
   }, [pair, parsedAmounts.CURRENCY_A?.value, parsedAmounts.CURRENCY_B?.value, parsedAmounts.LIQUIDITY, sorobanContext])
@@ -253,7 +267,8 @@ export default function RemoveLiquidityComponent() {
               bottomContent={modalBottom}
             />
           )}
-          pendingText={<>ss</>}
+          pendingText={pendingText}
+          hash={txHash}
         />
         <AutoColumn gap="20px">
           <Container transparent>

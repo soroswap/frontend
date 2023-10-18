@@ -52,18 +52,15 @@ export default async function withdrawOnContract({
       signAndSend: true,
     })
 
-    console.log("🚀 « result:", result)
-
     if (result) {
-        alert("Success!");
+      //This will connect again the wallet to fetch its data
+      sorobanContext.connect();
+      return result
     }
-
-
-    //This will connect again the wallet to fetch its data
-    sorobanContext.connect();
+    
   } catch (error) {
-    console.log("🚀 « result:", result)
-    console.log("🚀 « error:", error)
+    // console.log("🚀 « withdrawOnContract error:", error) //usually when user rejects the transaction
+    throw error
   }
 
 }
