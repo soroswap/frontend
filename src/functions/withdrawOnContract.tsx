@@ -31,10 +31,8 @@ export default async function withdrawOnContract({
   // const desiredBScVal = bigNumberToI128(minBBN.shiftedBy(7));
 
   // TODO: should be using use slippage, here we are adding 5% hardcoded
-  const minAScVal = bigNumberToI128(minABN);
-  // const minAScVal = bigNumberToI128(minABN.multipliedBy(1.05).decimalPlaces(0));
-  const minBScVal = bigNumberToI128(minBBN);
-  // const minBScVal = bigNumberToI128(minBBN.multipliedBy(1.05).decimalPlaces(0));
+  const minAScVal = bigNumberToI128(minABN.multipliedBy(1.05).decimalPlaces(0).shiftedBy(-7));
+  const minBScVal = bigNumberToI128(minBBN.multipliedBy(1.05).decimalPlaces(0).shiftedBy(-7));
 
   const shareAmountScVal = bigNumberToI128(shareAmount)
 
