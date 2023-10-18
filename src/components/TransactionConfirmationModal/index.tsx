@@ -329,7 +329,7 @@ interface ConfirmationModalProps {
   hash?: string
   reviewContent: () => ReactNode
   attemptingTxn: boolean
-  // pendingText: ReactNode
+  pendingText: ReactNode
   currencyToAdd?: TokenType
 }
 
@@ -337,10 +337,10 @@ export default function TransactionConfirmationModal({
   isOpen,
   onDismiss,
   attemptingTxn,
-  // hash,
-  // pendingText,
+  hash,
+  pendingText,
   reviewContent,
-  // currencyToAdd,
+  currencyToAdd,
 }: ConfirmationModalProps) {
   const sorobanContext = useSorobanReact()
   const { activeChain } = sorobanContext
@@ -348,24 +348,28 @@ export default function TransactionConfirmationModal({
 
   // confirmation screen
   return (
-    <Modal open={isOpen}>
+    <Modal
+      open={isOpen}
+      onClose={onDismiss}
+      aria-labelledby="transaction-confirmation-modal"
+      aria-describedby="transaction-confirmation-modal"
+    >
       <>
-        {reviewContent()}
+        {attemptingTxn ? (
+          <></>
+          // <ConfirmationPendingContent onDismiss={onDismiss} pendingText={pendingText} />
+        ) : hash ? (
+          <></>
+          // <TransactionSubmittedContent
+          //   chainId={chainId}
+          //   hash={hash}
+          //   onDismiss={onDismiss}
+          //   currencyToAdd={currencyToAdd}
+          // />
+        ) : (
+          reviewContent()
+        )}
       </>
-      {/* {isL2ChainId(chainId) && (hash || attemptingTxn) ? (
-        <L2Content chainId={chainId} hash={hash} onDismiss={onDismiss} pendingText={pendingText} />
-      ) : attemptingTxn ? (
-        <ConfirmationPendingContent onDismiss={onDismiss} pendingText={pendingText} />
-      ) : hash ? (
-        <TransactionSubmittedContent
-          chainId={chainId}
-          hash={hash}
-          onDismiss={onDismiss}
-          currencyToAdd={currencyToAdd}
-        />
-      ) : (
-        reviewContent()
-      )} */}
     </Modal>
   )
 }

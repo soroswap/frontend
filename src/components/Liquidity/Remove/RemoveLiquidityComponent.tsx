@@ -1,19 +1,24 @@
 import { Button, Slider, styled, useTheme } from "@mui/material";
 import { useSorobanReact } from "@soroban-react/core";
 import BigNumber from "bignumber.js";
-import { ButtonError, ButtonLight } from "components/Buttons/Button";
+import { ButtonError, ButtonLight, ButtonPrimary } from "components/Buttons/Button";
 import Column, { AutoColumn } from "components/Column";
 import CurrencyLogo from "components/Logo/CurrencyLogo";
-import { RowFixed } from "components/Row";
-import { ButtonText, SubHeaderSmall } from "components/Text";
+import DoubleCurrencyLogo from "components/Logo/DoubleLogo";
+import { RowBetween, RowFixed } from "components/Row";
+import { BodySmall, ButtonText, SubHeaderSmall } from "components/Text";
+import TransactionConfirmationModal, { ConfirmationModalContent } from "components/TransactionConfirmationModal";
 import { AppContext } from "contexts";
 import { getExpectedAmount } from "functions/getExpectedAmount";
+import withdrawOnContract from "functions/withdrawOnContract";
 import { formatTokenAmount } from "helpers/format";
 import { useToken } from "hooks";
 import { useRouter } from "next/router";
 import { useCallback, useContext, useEffect, useState } from "react";
+import { Plus } from "react-feather";
 import { Field } from "state/burn/actions";
 import { useBurnActionHandlers, useBurnState, useDerivedBurnInfo } from "state/burn/hooks";
+import { useUserSlippageToleranceWithDefault } from "state/user/hooks";
 import { opacify } from "themes/utils";
 import { AddRemoveTabs } from "../AddRemoveHeader";
 
@@ -141,23 +146,115 @@ export default function RemoveLiquidityComponent() {
     })
   }, [currencyA, currencyB, sorobanContext])
 
+  const allowedSlippage = useUserSlippageToleranceWithDefault(0.5)
+
+  const removeLiquidity = useCallback(() => {
+    if (pair) {
+      withdrawOnContract({
+        sorobanContext,
+        pairAddress: pair.liquidityToken.token?.address,
+        shareAmount: parsedAmounts.LIQUIDITY,
+        minA: parsedAmounts.CURRENCY_A?.value,
+        minB: parsedAmounts.CURRENCY_B?.value,
+      })
+    }
+  }, [pair, parsedAmounts.CURRENCY_A?.value, parsedAmounts.CURRENCY_B?.value, parsedAmounts.LIQUIDITY, sorobanContext])
+
+  const modalHeader = () => {
+    return (
+      <AutoColumn gap="12px" style={{ marginTop: '20px' }}>
+        <RowBetween align="flex-end">
+          <BodySmall fontSize={18} fontWeight={535}>
+            {formatTokenAmount(parsedAmounts[Field.CURRENCY_A]?.value ?? "")}
+          </BodySmall>
+          <RowFixed gap="4px">
+            <CurrencyLogo currency={currencyA} size="24px" />
+            <BodySmall fontSize={24} fontWeight={535} style={{ marginLeft: '10px' }}>
+              {currencyA?.symbol}
+            </BodySmall>
+          </RowFixed>
+        </RowBetween>
+        <RowFixed>
+          <Plus size="16" color={theme.palette.secondary.main}/>
+        </RowFixed>
+        <RowBetween align="flex-end">
+          <BodySmall fontSize={18} fontWeight={535}>
+            {formatTokenAmount(parsedAmounts[Field.CURRENCY_B]?.value ?? "")}
+          </BodySmall>
+          <RowFixed gap="4px">
+            <CurrencyLogo currency={currencyB} size="24px" />
+            <BodySmall fontSize={24} fontWeight={535} style={{ marginLeft: '10px' }}>
+              {currencyB?.symbol}
+            </BodySmall>
+          </RowFixed>
+        </RowBetween>
+
+        <BodySmall fontSize={12} textAlign="left" padding="12px 0 0 0">
+          {/* TODO: AllowedSlippage*10??? how should we handle this? */}
+          Output is estimated. If the price changes by more than {allowedSlippage*10}% your transaction
+            will revert.
+        </BodySmall>
+      </AutoColumn>
+    )
+  }
+
+  const modalBottom = () => {
+    return (
+      <>
+        <RowBetween>
+          <BodySmall fontWeight={535} fontSize={16} color={theme.palette.secondary.main}>
+              {currencyA?.symbol}/{currencyB?.symbol} Burned
+          </BodySmall>
+          <RowFixed>
+            <DoubleCurrencyLogo currency0={currencyA} currency1={currencyB} margin={true} />
+            <BodySmall fontWeight={535} fontSize={16}>
+              {formatTokenAmount(parsedAmounts[Field.LIQUIDITY] ?? "")}
+            </BodySmall>
+          </RowFixed>
+        </RowBetween>
+        {pair && (
+          <>
+            <RowBetween>
+              <BodySmall fontWeight={535} fontSize={16} color={theme.palette.secondary.main}>
+                Price
+              </BodySmall>
+              <BodySmall fontWeight={535} fontSize={14}>
+                1 {currencyA?.symbol} = {currencyAtoB ?? '-'} {currencyB?.symbol}
+              </BodySmall>
+            </RowBetween>
+            <RowBetween>
+              <div />
+              <BodySmall fontWeight={535} fontSize={14}>
+                1 {currencyB?.symbol} = {currencyBtoA ?? '-'} {currencyA?.symbol}
+              </BodySmall>
+            </RowBetween>
+          </>
+        )}
+        <ButtonPrimary onClick={removeLiquidity}>
+          Confirm
+        </ButtonPrimary>
+      </>
+    )
+  }
+
   return (
     <>
       <PageWrapper>
         <AddRemoveTabs creating={false} adding={false} autoSlippage={"DEFAULT_REMOVE_V2_SLIPPAGE_TOLERANCE"} />
-        {/* <TransactionConfirmationModal
+        <TransactionConfirmationModal
           isOpen={showConfirm}
           onDismiss={handleDismissConfirmation}
           attemptingTxn={attemptingTxn}
           reviewContent={() => (
             <ConfirmationModalContent
-              title={true ? <>You are creating a pool</> : <>You will receive</>}
+              title="You will receive"
               onDismiss={handleDismissConfirmation}
-              topContent={() => AddModalHeader({ currencies, amountOfLpTokensToReceive })}
-              bottomContent={() => AddModalFooter({ currencies, formattedAmounts, totalShares, onConfirm: provideLiquidity })}
+              topContent={modalHeader}
+              bottomContent={modalBottom}
             />
           )}
-        /> */}
+          pendingText={<>ss</>}
+        />
         <AutoColumn gap="20px">
           <Container transparent>
             {typedValue}%
@@ -182,7 +279,7 @@ export default function RemoveLiquidityComponent() {
                     currencyA.symbol.slice(currencyA.symbol.length - 5, currencyA.symbol.length)
                   : currencyA?.symbol)}
               </StyledTokenName>
-              {parsedAmounts[Field.CURRENCY_A]?.value}
+              {formatTokenAmount(parsedAmounts[Field.CURRENCY_A]?.value ?? "")}
             </RowFixed>
             <RowFixed>
               <CurrencyLogo style={{ marginRight: '0.5rem' }} currency={currencyB ?? null} size="24px" />
@@ -193,7 +290,7 @@ export default function RemoveLiquidityComponent() {
                     currencyB.symbol.slice(currencyB.symbol.length - 5, currencyB.symbol.length)
                   : currencyB?.symbol)}
               </StyledTokenName>
-              {parsedAmounts[Field.CURRENCY_B]?.value}
+              {formatTokenAmount(parsedAmounts[Field.CURRENCY_B]?.value ?? "")}
             </RowFixed>
           </Container>
           <SubHeaderSmall>Prices</SubHeaderSmall>

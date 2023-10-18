@@ -1,7 +1,6 @@
 import { useSorobanReact } from "@soroban-react/core";
 import BigNumber from "bignumber.js";
 import { getPairInfo } from "functions/getPairs";
-import { formatTokenAmount } from "helpers/format";
 import { CurrencyAmount, TokenType } from "interfaces";
 import { PairInfo } from "interfaces/pairs";
 import tryParseCurrencyAmount from "lib/utils/tryParseCurrencyAmount";
@@ -18,10 +17,10 @@ export function useDerivedBurnInfo(
   currencyA: TokenType | undefined,
   currencyB: TokenType | undefined
 ): {
-  pair?: any | null
+  pair?: PairInfo | undefined
   parsedAmounts: {
     [Field.LIQUIDITY_PERCENT]: any
-    [Field.LIQUIDITY]?: any
+    [Field.LIQUIDITY]?: BigNumber
     [Field.CURRENCY_A]?: CurrencyAmount | undefined
     [Field.CURRENCY_B]?: CurrencyAmount | undefined
   }
@@ -79,6 +78,8 @@ export function useDerivedBurnInfo(
     }
   }
 
+  let liquidityToBurn = new BigNumber(0)
+
   const getNewCurrencyValue = (currency: TokenType | undefined) => {
     const percent = parseInt(percentToRemove)
     
@@ -93,7 +94,7 @@ export function useDerivedBurnInfo(
         
         // Calculate newUserBalance
         const newUserBalance = userBalance.times(percent / 100);
-
+        liquidityToBurn = newUserBalance
         if (newUserBalance.isNaN()) {
           // Handle cases where the calculation results in NaN
           return "";
@@ -127,9 +128,9 @@ export function useDerivedBurnInfo(
     [Field.CURRENCY_B]?: CurrencyAmount
   } = {
     [Field.LIQUIDITY_PERCENT]: percentToRemove,
-    [Field.LIQUIDITY]: 0,
-    [Field.CURRENCY_A]: currencyA ? {currency: currencyA, value: formatTokenAmount(currencyAEndValue)}: undefined,
-    [Field.CURRENCY_B]: currencyB ? {currency: currencyB, value: formatTokenAmount(currencyBEndValue)}: undefined,
+    [Field.LIQUIDITY]: liquidityToBurn,
+    [Field.CURRENCY_A]: currencyA ? {currency: currencyA, value: currencyAEndValue}: undefined,
+    [Field.CURRENCY_B]: currencyB ? {currency: currencyB, value: currencyBEndValue}: undefined,
   }
 
   let error: ReactNode | undefined

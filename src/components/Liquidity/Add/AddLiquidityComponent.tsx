@@ -247,6 +247,7 @@ export default function AddLiquidityComponent() {
               bottomContent={() => AddModalFooter({ currencies, formattedAmounts, totalShares, onConfirm: provideLiquidity })}
             />
           )}
+          pendingText={<>aa</>}
         />
         <AutoColumn gap="20px">
           <DarkGrayCard>
