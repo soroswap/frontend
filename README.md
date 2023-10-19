@@ -2,7 +2,6 @@
 
 Welcome to Soroswap, a decentralized exchange (DEX) that draws inspiration from the Uniswap V2 protocol and is specifically tailored for the Soroban network.
 
-
 Before you begin, ensure you have met the following requirements:
 
 - docker >= v24.0.2
@@ -84,6 +83,7 @@ For Standalone network
    | HORIZON RPC URL | http://localhost:8000/ |
    | SOROBAN RPC URL | http://localhost:8000/soroban/rpc |
    | Passphrase | Standalone Network ; February 2017 |
+   | Friendbot | http://localhost:8000/friendbot |
    | Allow HTTP connection | Enabled |
    | Switch to this network | Enabled |
    
@@ -94,6 +94,7 @@ For Futurenet network
    | HORIZON RPC URL | http://localhost:8000/ |
    | SOROBAN RPC URL | http://localhost:8000/soroban/rpc |
    | Passphrase | Test SDF Future Network ; October 2022 |
+   | Friendbot | http://localhost:8000/friendbot |
    | Allow HTTP connection | Enabled |
    | Switch to this network | Enabled |
 
@@ -101,6 +102,7 @@ For Futurenet network
 
 7. Last, but not least, add some lumens to your Freighter wallet!
 
+   Do it directly on the wallet or use:
 
    For Standalone: `http://localhost:8000/friendbot?addr=<your address>`
    For Futurenet, visit: https://laboratory.stellar.org/#create-account
