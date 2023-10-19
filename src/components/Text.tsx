@@ -44,9 +44,9 @@ export const ButtonText = styled(Typography)<{color?: string; fontWeight?: numbe
   color: color ?? theme.palette.custom.accentTextLightPrimary,
 }));
 
-export const BodySmall = styled(Typography)<{color?: string; fontWeight?: number}>(({ theme, color, fontWeight }) => ({
+export const BodySmall = styled(Typography)<{ color?: string; fontWeight?: number; fontSize?: number}>(({ theme, color, fontWeight, fontSize }) => ({
   fontWeight: fontWeight ?? 400,
-  fontSize: 14,
+  fontSize: fontSize ?? 14,
   color: color ?? theme.typography.subtitle1.color,
   lineHeight: "24px",
   [theme.breakpoints.down("md")]: {

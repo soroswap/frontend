@@ -1,12 +1,11 @@
-import React from "react";
-import AddLiquidityPage from "../../../src/components/Add";
-import SEO from "../../../src/components/SEO";
+import AddLiquidityComponent from "components/Liquidity/Add/AddLiquidityComponent";
+import SEO from "components/SEO";
 
 export default function MintPage() {
-    return (
-        <>
-            <SEO title="Add - Soroswap" description="Soroswap Add" />
-            <AddLiquidityPage />
-        </>
-    );
+  return (
+    <>
+      <SEO title="Add - Soroswap" description="Soroswap Add" />
+      <AddLiquidityComponent />
+    </>
+  );
 }

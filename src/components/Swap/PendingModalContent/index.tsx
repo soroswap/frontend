@@ -58,7 +58,7 @@ const AnimationWrapper = styled('div')`
   flex-grow: 1;
 `
 
-const CustomLink = styled(Link)`
+export const CustomLink = styled(Link)`
   display: flex;
   flex-direction: row;
   justify-content: center;

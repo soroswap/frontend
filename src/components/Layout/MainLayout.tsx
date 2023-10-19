@@ -17,7 +17,7 @@ const MainBackground = styled("main")<{ isMobile: boolean }>`
   justify-content: center;
   align-items: flex-start;
   width: 100vw;
-  padding: ${({ isMobile }) => isMobile ? '50px 20px 0 20px' : '100px 20px 0 20px'};
+  padding: ${({ isMobile }) => isMobile ? '50px 20px 0 20px' : '65px 20px 0 20px'};
   margin-top: ${({ isMobile }) => isMobile ? '78px' : '120px'};
 `
 

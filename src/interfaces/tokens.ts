@@ -2,8 +2,8 @@ export interface TokenType {
   address: string;
   name: string;
   symbol: string;
-  decimals: number;
-  logoURI: string;
+  decimals?: number;
+  logoURI?: string;
 }
 
 export interface tokensResponse {

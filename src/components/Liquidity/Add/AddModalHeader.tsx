@@ -34,35 +34,34 @@ const CustomRow = styled(Row)`
   `
 
 export default function AddModalHeader({
-    currencies,
-    amountOfLpTokensToReceive,
+  currencies,
+  amountOfLpTokensToReceive,
 }: {
-    currencies: { [field in Field]?: TokenType },
-    amountOfLpTokensToReceive: string,
+  currencies: { [field in Field]?: TokenType },
+  amountOfLpTokensToReceive: string,
+  }) {
+  
+  const currencyA = useMemo(() => {
+      return currencies.CURRENCY_A;
+  }, [currencies])
 
-}) {
-    const currencyA = useMemo(() => {
-        return currencies.CURRENCY_A;
-    }, [currencies])
-
-    const currencyB = useMemo(() => {
-        return currencies.CURRENCY_B;
-    }, [currencies])
+  const currencyB = useMemo(() => {
+      return currencies.CURRENCY_B;
+  }, [currencies])
 
 
-    return (
-        <CustomRow align="end" justify="space-between">
-            <Column gap="4px" alignItems="flex-start">
-                <BodySecondary>
-                </BodySecondary>
-                <CurrencyWrapper>
-                    <CurrencyLogo currency={currencyA} size="24px" />
-                    <CurrencyLogo currency={currencyB} size="24px" />
-                    {amountOfLpTokensToReceive}
-                </CurrencyWrapper>
-                {currencyA?.symbol}/{currencyB?.symbol}  Pool Tokens
-            </Column>
-        </CustomRow>
-    )
-
+  return (
+    <CustomRow align="end" justify="space-between">
+      <Column gap="4px" alignItems="flex-start">
+        <BodySecondary>
+        </BodySecondary>
+        <CurrencyWrapper>
+          <CurrencyLogo currency={currencyA} size="24px" />
+          <CurrencyLogo currency={currencyB} size="24px" />
+          {amountOfLpTokensToReceive}
+        </CurrencyWrapper>
+        {currencyA?.symbol}/{currencyB?.symbol}  Pool Tokens
+      </Column>
+    </CustomRow>
+  )
 }

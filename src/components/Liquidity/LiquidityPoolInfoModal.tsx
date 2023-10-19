@@ -39,7 +39,7 @@ export default function LiquidityPoolInfoModal({
   }
 
   const handleRemoveClick = () => {
-    router.push(`/liquidity/add/${selectedLP.token_0?.address}/${selectedLP.token_1?.address}`)
+    router.push(`/liquidity/remove/${selectedLP.token_0?.address}/${selectedLP.token_1?.address}`)
   }
 
   return (
