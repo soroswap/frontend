@@ -8,7 +8,6 @@ import { ButtonText } from "components/Text";
 import { AppContext } from "contexts";
 import { formatTokenAmount } from "helpers/format";
 import { relevantTokensType } from "hooks";
-import { useRouterContract } from "hooks/useRouterContract";
 import { useSwapCallback } from "hooks/useSwapCallback";
 import { ReactNode, useCallback, useContext, useMemo, useReducer, useState } from "react";
 import { ArrowDown } from "react-feather";
@@ -93,24 +92,9 @@ export default function SwapPage({ className }: { className?: string }) {
     [Field.OUTPUT]: { currencyId: null },
   }
 
-  //DELETE
-  const routerCallback = useRouterContract()
-
-  const handleClickTest = () => {
-    routerCallback("get_factory")
-    .then((result) => {
-      console.log("THEN", result)
-    })
-    .catch((error) => {
-      console.log("CATCH", error)
-    })
-  }
-  //DELETE
-
   return (
     <>
       <SEO title="Swap - Soroswap" description="Soroswap Swap" />
-      <ButtonPrimary onClick={handleClickTest}>TRY USEROUTER</ButtonPrimary>
       <SwapComponent
         className={className}
         prefilledState={prefilledState}
