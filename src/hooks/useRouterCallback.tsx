@@ -36,6 +36,7 @@ export function useRouterCallback() {
       signAndSend: signAndSend,
     })
 
+    sorobanContext.connect()
     return result
   }, [router_address, sorobanContext])
 }

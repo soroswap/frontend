@@ -1,5 +1,6 @@
 import { styled, useTheme } from "@mui/material";
 import { useSorobanReact } from "@soroban-react/core";
+import BigNumber from "bignumber.js";
 import { ButtonError, ButtonLight } from "components/Buttons/Button";
 import { DarkGrayCard } from "components/Card";
 import { AutoColumn, ColumnCenter } from "components/Column";
@@ -7,13 +8,16 @@ import CurrencyInputPanel from "components/CurrencyInputPanel";
 import { BodySmall, ButtonText } from "components/Text";
 import TransactionConfirmationModal, { ConfirmationModalContent } from "components/TransactionConfirmationModal";
 import { AppContext } from "contexts";
-import depositOnContract from "functions/depositOnContract";
+import { getCurrentTimePlusOneHour } from "functions/getCurrentTimePlusOneHour";
 import { formatTokenAmount } from "helpers/format";
+import { bigNumberToI128, bigNumberToU64 } from "helpers/utils";
 import { useToken } from "hooks";
+import { RouterMethod, useRouterCallback } from "hooks/useRouterCallback";
 import { TokenType } from "interfaces";
 import { useRouter } from "next/router";
 import { useCallback, useContext, useMemo, useState } from "react";
 import { Plus } from "react-feather";
+import * as SorobanClient from 'soroban-client';
 import { Field } from "state/mint/actions";
 import { useDerivedMintInfo, useMintActionHandlers, useMintState } from "state/mint/hooks";
 import { opacify } from "themes/utils";
@@ -107,26 +111,79 @@ export default function AddLiquidityComponent() {
   // // Modal and loading
   const [showConfirm, setShowConfirm] = useState<boolean>(false)
   const [attemptingTxn, setAttemptingTxn] = useState<boolean>(false) // clicked confirm
+  const [txHash, setTxHash] = useState<string | undefined>(undefined) // clicked confirm
 
   const handleDismissConfirmation = useCallback(() => {
     setShowConfirm(false)
     // if there was a tx hash, we want to clear the input
-    // if (txHash) {
-    //   onFieldAInput('')
-    // }
-    // setTxHash('')
-  }, [])
+    if (txHash) {
+      onFieldAInput('')
+    }
+    setTxHash('')
+  }, [onFieldAInput, txHash])
+
+  const routerCallback = useRouterCallback()
 
   const provideLiquidity = useCallback(() => {
-
     // TODO: check that amount0 corresponds to token0?
-    depositOnContract({
-      sorobanContext,
-      pairAddress: pairAddress,
-      amount0: formattedAmounts[independentField],
-      amount1: formattedAmounts[dependentField],
+    //TODO: Check all of this, is working weird but using the router, withdraw is not working
+
+  //   fn add_liquidity(
+  //     e: Env,
+  //     token_a: Address,
+  //     token_b: Address,
+  //     amount_a_desired: i128,
+  //     amount_b_desired: i128,
+  //     amount_a_min: i128,
+  //     amount_b_min: i128,
+  //     to: Address,
+  //     deadline: u64,
+    // ) -> (i128, i128, i128);
+
+
+    const amount0BN = new BigNumber(formattedAmounts[independentField])
+    const amount1BN = new BigNumber(formattedAmounts[dependentField])
+
+    const desiredAScVal = bigNumberToI128(amount0BN.shiftedBy(7));
+    const desiredBScVal = bigNumberToI128(amount1BN.shiftedBy(7));
+
+    const minAScVal = bigNumberToI128(amount0BN.multipliedBy(0.9).decimalPlaces(0).shiftedBy(7));
+    const minBScVal = bigNumberToI128(amount1BN.multipliedBy(0.9).decimalPlaces(0).shiftedBy(7));
+
+    const args = [
+      new SorobanClient.Address(baseCurrency?.address ?? "").toScVal(),
+      new SorobanClient.Address(currencyB?.address ?? "").toScVal(),
+      desiredAScVal,
+      desiredBScVal,
+      minAScVal,
+      minBScVal,
+      new SorobanClient.Address(sorobanContext.address ?? "").toScVal(),
+      bigNumberToU64(BigNumber(getCurrentTimePlusOneHour()))
+    ]
+    console.log("🚀 « args:", args)
+    setAttemptingTxn(true)
+    
+    routerCallback(
+      RouterMethod.ADD_LIQUIDITY,
+      args,
+      true
+    ).then((result) => {
+      console.log("🚀 « result:", result)
+      setAttemptingTxn(false)
+      setTxHash(result as string)
+    }).catch((error) => {
+      console.log("🚀 « error:", error)
+      setAttemptingTxn(false)      
     })
-  }, [dependentField, pairAddress, formattedAmounts, independentField, sorobanContext])
+    
+    
+    // depositOnContract({
+    //   sorobanContext,
+    //   pairAddress: pairAddress,
+    //   amount0: formattedAmounts[independentField],
+    //   amount1: formattedAmounts[dependentField],
+    // })
+  }, [formattedAmounts, independentField, dependentField, baseCurrency?.address, currencyB?.address, sorobanContext.address, routerCallback])
 
   const handleCurrencyASelect = useCallback(
     (currencyA: TokenType) => {
@@ -185,7 +242,7 @@ export default function AddLiquidityComponent() {
   // useEffect(() => {
   //   if (!pairAddress || !currencyA || !currencyB) return
   //   // LP tokens
-  //   // We need to get which one is amount0 
+  //   // We need to get which one is amount0
   //   reservesBNWithTokens(pairAddress, sorobanContext).then((reserves) => {
   //     if (!reserves.reserve0 || !reserves.reserve1 || !formattedAmounts.CURRENCY_A || !formattedAmounts.CURRENCY_B) return
 
@@ -231,6 +288,12 @@ export default function AddLiquidityComponent() {
   //     }
   //   })
   // }, [amountOfLpTokensToReceiveBN, pairAddress, sorobanContext])
+  
+  const pendingText = (
+    <BodySmall>Adding {formatTokenAmount(parsedAmounts[Field.CURRENCY_A]?.value ?? "")} {baseCurrency?.symbol} and
+    {' '}{formatTokenAmount(parsedAmounts[Field.CURRENCY_B]?.value ?? "")} {currencyB?.symbol}</BodySmall>
+)
+
   return (
     <>
       <PageWrapper>
@@ -247,7 +310,8 @@ export default function AddLiquidityComponent() {
               bottomContent={() => AddModalFooter({ currencies, formattedAmounts, totalShares, onConfirm: provideLiquidity })}
             />
           )}
-          pendingText={<>aa</>}
+          pendingText={pendingText}
+          hash={txHash}
         />
         <AutoColumn gap="20px">
           <DarkGrayCard>
