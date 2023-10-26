@@ -9,13 +9,16 @@ import { RowBetween, RowFixed } from "components/Row";
 import { BodySmall, ButtonText, SubHeaderSmall } from "components/Text";
 import TransactionConfirmationModal, { ConfirmationModalContent } from "components/TransactionConfirmationModal";
 import { AppContext } from "contexts";
+import { getCurrentTimePlusOneHour } from "functions/getCurrentTimePlusOneHour";
 import { getExpectedAmount } from "functions/getExpectedAmount";
-import withdrawOnContract from "functions/withdrawOnContract";
 import { formatTokenAmount } from "helpers/format";
+import { bigNumberToI128, bigNumberToU64 } from "helpers/utils";
 import { useToken } from "hooks";
+import { RouterMethod, useRouterCallback } from "hooks/useRouterCallback";
 import { useRouter } from "next/router";
 import { useCallback, useContext, useEffect, useState } from "react";
 import { Plus } from "react-feather";
+import * as SorobanClient from 'soroban-client';
 import { Field } from "state/burn/actions";
 import { useBurnActionHandlers, useBurnState, useDerivedBurnInfo } from "state/burn/hooks";
 import { useUserSlippageToleranceWithDefault } from "state/user/hooks";
@@ -154,25 +157,51 @@ export default function RemoveLiquidityComponent() {
 
   const allowedSlippage = useUserSlippageToleranceWithDefault(0.5)
 
+  const routerCallback = useRouterCallback()
+
   const removeLiquidity = useCallback(() => {
-    if (pair) {
-      setAttemptingTxn(true)
-      withdrawOnContract({
-        sorobanContext,
-        pairAddress: pair.liquidityToken.token?.address,
-        shareAmount: parsedAmounts.LIQUIDITY,
-        minA: parsedAmounts.CURRENCY_A?.value,
-        minB: parsedAmounts.CURRENCY_B?.value,
-      }).then((resp) => {
-        console.log("withdraw Response", resp)
-        setAttemptingTxn(false)
-        setTxHash(resp as string)
-      }).catch((error) => {
-        console.log(error)
-        setAttemptingTxn(false)
-      })
-    }
-  }, [pair, parsedAmounts.CURRENCY_A?.value, parsedAmounts.CURRENCY_B?.value, parsedAmounts.LIQUIDITY, sorobanContext])
+    setAttemptingTxn(true)
+    
+  //   fn remove_liquidity(
+  //     e: Env,
+  //     token_a: Address,
+  //     token_b: Address,
+  //     liquidity: i128,
+  //     amount_a_min: i128,
+  //     amount_b_min: i128,
+  //     to: Address,
+  //     deadline: u64,
+    // ) -> (i128, i128);
+
+    const minABN = new BigNumber(parsedAmounts.CURRENCY_A?.value as string)
+    const minBBN = new BigNumber(parsedAmounts.CURRENCY_B?.value as string)
+    const minAScVal = bigNumberToI128(minABN.multipliedBy(1.05).decimalPlaces(0).shiftedBy(-7));
+    const minBScVal = bigNumberToI128(minBBN.multipliedBy(1.05).decimalPlaces(0).shiftedBy(-7));
+  
+    const args = [
+      new SorobanClient.Address(currencyA?.address as string).toScVal(), 
+      new SorobanClient.Address(currencyB?.address as string).toScVal(),
+      bigNumberToI128(parsedAmounts.LIQUIDITY as BigNumber),
+      minAScVal,
+      minBScVal,
+      new SorobanClient.Address(sorobanContext.address as string).toScVal(),
+      bigNumberToU64(BigNumber(getCurrentTimePlusOneHour()))
+    ]
+    
+    routerCallback(
+      RouterMethod.REMOVE_LIQUIDITY,
+      args,
+      true
+    ).then((result) => {
+      console.log("🚀 « result:", result)
+      setAttemptingTxn(false)
+      setTxHash(result as string)
+    }).catch((error) => {
+      console.log("🚀 « error:", error)
+      setAttemptingTxn(false)
+    })
+
+  }, [currencyA?.address, currencyB?.address, parsedAmounts.CURRENCY_A?.value, parsedAmounts.CURRENCY_B?.value, parsedAmounts.LIQUIDITY, routerCallback, sorobanContext.address])
 
   const modalHeader = () => {
     return (

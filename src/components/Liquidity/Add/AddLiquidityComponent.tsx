@@ -57,11 +57,8 @@ export default function AddLiquidityComponent() {
 
   const router = useRouter();
   const { tokens } = router.query as { tokens: TokensType };
-  console.log("🚀 « tokens:", tokens)
 
   const [currencyIdA, currencyIdB] = Array.isArray(tokens) ? tokens : ['', ''];
-  console.log("🚀 « currencyIdB:", currencyIdB)
-  console.log("🚀 « currencyIdA:", currencyIdA)
 
   const sorobanContext = useSorobanReact()
 
@@ -82,9 +79,7 @@ export default function AddLiquidityComponent() {
   const derivedMintInfo = useDerivedMintInfo(
     baseCurrency ?? undefined,
     currencyB ?? undefined)
-  console.log("🚀 « derivedMintInfo:", derivedMintInfo)
   const { dependentField, currencies, parsedAmounts, noLiquidity, pairAddress } = derivedMintInfo
-  console.log("🚀 « currencies:", currencies)
   // console.log("pages/add derivedMintInfo:", derivedMintInfo)
   // const isCreate = false
 
@@ -101,7 +96,6 @@ export default function AddLiquidityComponent() {
       // [dependentField]: otherTypedValue
     }
   }, [dependentField, independentField, noLiquidity, otherTypedValue, parsedAmounts, typedValue])
-  console.log("🚀 « formattedAmounts:", formattedAmounts)
 
   // // console.log("src/components/Add/index.tsx: formattedAmounts:", formattedAmounts)
   // // console.log("src/components/Add/index.tsx: formatTokenAmount(formattedAmounts[dependentField]):", formatTokenAmount(formattedAmounts[dependentField]))
@@ -125,6 +119,7 @@ export default function AddLiquidityComponent() {
   const routerCallback = useRouterCallback()
 
   const provideLiquidity = useCallback(() => {
+    setAttemptingTxn(true)
     // TODO: check that amount0 corresponds to token0?
     //TODO: Check all of this, is working weird but using the router, withdraw is not working
 
@@ -160,8 +155,6 @@ export default function AddLiquidityComponent() {
       new SorobanClient.Address(sorobanContext.address ?? "").toScVal(),
       bigNumberToU64(BigNumber(getCurrentTimePlusOneHour()))
     ]
-    console.log("🚀 « args:", args)
-    setAttemptingTxn(true)
     
     routerCallback(
       RouterMethod.ADD_LIQUIDITY,
@@ -176,13 +169,6 @@ export default function AddLiquidityComponent() {
       setAttemptingTxn(false)      
     })
     
-    
-    // depositOnContract({
-    //   sorobanContext,
-    //   pairAddress: pairAddress,
-    //   amount0: formattedAmounts[independentField],
-    //   amount1: formattedAmounts[dependentField],
-    // })
   }, [formattedAmounts, independentField, dependentField, baseCurrency?.address, currencyB?.address, sorobanContext.address, routerCallback])
 
   const handleCurrencyASelect = useCallback(
