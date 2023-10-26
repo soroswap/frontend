@@ -132,7 +132,8 @@ export default function RemoveLiquidityComponent() {
       onUserInput(Field.LIQUIDITY_PERCENT, '')
     }
     setTxHash(undefined)
-  }, [onUserInput, txHash])
+    router.push('/liquidity')
+  }, [onUserInput, router, txHash])
 
   const handleButtonClick = (newValue: number) => {
     liquidityPercentChange("", newValue);

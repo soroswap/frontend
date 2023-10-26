@@ -114,7 +114,8 @@ export default function AddLiquidityComponent() {
       onFieldAInput('')
     }
     setTxHash('')
-  }, [onFieldAInput, txHash])
+    router.push('/liquidity')
+  }, [onFieldAInput, router, txHash])
 
   const routerCallback = useRouterCallback()
 
