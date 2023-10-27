@@ -1,4 +1,4 @@
-# 🌟 Soroswap Frontend  @ Soroban Preview 10🌟
+# 🌟 Soroswap Frontend @ Soroban Preview 10🌟
 
 Welcome to Soroswap, a decentralized exchange (DEX) that draws inspiration from the Uniswap V2 protocol and is specifically tailored for the Soroban network.
 
@@ -6,7 +6,6 @@ Before you begin, ensure you have met the following requirements:
 
 - docker >= v24.0.2
 - **Freighter Wallet v5.6.3** Please use this version. You can have an intependent environment following the instructios in [this post](https://discord.com/channels/897514728459468821/1135655444157833256/1135655444157833256)
-
 
 ## 🛠 Setting Up Soroswap 🛠
 
@@ -28,11 +27,13 @@ cp .env.local.example .env
 
 Now, edit the `.env` file and provide the `NEXT_PUBLIC_BACKEND_URL` variable.
 This will tell the frontend where to look for:
+
 - the list of known tokens
 - the SoroswapFactory address
 - the tokens admin's private key (in order to mint tokens)
 
 If you are following the instructions in `https://github.com/soroswap/core` in order to deploy the smart contacts in your local environment and serve the API, your .env should look like this:
+
 ```bash
 NEXT_PUBLIC_BACKEND_URL=http://localhost:8010
 ```
@@ -54,7 +55,7 @@ cd docker
 bash run.sh
 ```
 
-This script will set up and start the Docker containers required for Soroswap. 
+This script will set up and start the Docker containers required for Soroswap.
 
 4. Install the Dependencies
 
@@ -74,29 +75,29 @@ yarn dev
 
 This will start the Soroswap development instance.
 
-6. Configure your Freigher Wallet 
+6. Configure your Freigher Wallet
 
 For Standalone network
-   |   |   |
-   |---|---|
-   | Name | Local Standalone |
-   | HORIZON RPC URL | http://localhost:8000/ |
-   | SOROBAN RPC URL | http://localhost:8000/soroban/rpc |
-   | Passphrase | Standalone Network ; February 2017 |
-   | Friendbot | http://localhost:8000/friendbot |
-   | Allow HTTP connection | Enabled |
-   | Switch to this network | Enabled |
-   
+| | |
+|---|---|
+| Name | Local Standalone |
+| HORIZON RPC URL | http://localhost:8000 |
+| SOROBAN RPC URL | http://localhost:8000/soroban/rpc |
+| Passphrase | Standalone Network ; February 2017 |
+| Friendbot | http://localhost:8000/friendbot |
+| Allow HTTP connection | Enabled |
+| Switch to this network | Enabled |
+
 For Futurenet network
-   |   |   |
-   |---|---|
-   | Name | Local Futurenet|
-   | HORIZON RPC URL | http://localhost:8000/ |
-   | SOROBAN RPC URL | http://localhost:8000/soroban/rpc |
-   | Passphrase | Test SDF Future Network ; October 2022 |
-   | Friendbot | http://localhost:8000/friendbot |
-   | Allow HTTP connection | Enabled |
-   | Switch to this network | Enabled |
+| | |
+|---|---|
+| Name | Local Futurenet|
+| HORIZON RPC URL | http://localhost:8000 |
+| SOROBAN RPC URL | http://localhost:8000/soroban/rpc |
+| Passphrase | Test SDF Future Network ; October 2022 |
+| Friendbot | http://localhost:8000/friendbot |
+| Allow HTTP connection | Enabled |
+| Switch to this network | Enabled |
 
 ** Important:** You should also do: Preferences> Allow experimental mode
 
@@ -106,8 +107,6 @@ For Futurenet network
 
    For Standalone: `http://localhost:8000/friendbot?addr=<your address>`
    For Futurenet, visit: https://laboratory.stellar.org/#create-account
-
-
 
 🚀 Congrats! 🚀
 
@@ -123,7 +122,9 @@ License: MIT
 
     Special thanks to the Uniswap team for providing the base protocol on which Soroswap is built.
     Thank you to the Stellar Community for the continuous support.
-___
-___
+
+---
+
+---
 
 Made with ❤️ by the Soroswap Team.
