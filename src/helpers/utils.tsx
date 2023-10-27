@@ -190,3 +190,26 @@ export function contractAddressToScVal(contractAddress: string): any {
     Buffer.from(contractAddress, "hex"),
   ).toScVal();
 }
+
+export function bigNumberToU64(value: BigNumber): SorobanClient.xdr.ScVal {
+  if (value.isNegative() || value.isGreaterThan(new BigNumber(2).pow(64).minus(1))) {
+      throw new Error("BigNumber is out of u64 range");
+  }
+
+  const b: bigint = BigInt(value.toFixed(0));
+  const buf = bigintToBuf(b);
+
+  if (buf.length > 8) {
+      throw new Error("BigNumber overflows u64");
+  }
+
+  // left-pad with zeros up to 8 bytes
+  let padded = Buffer.alloc(8);
+  buf.copy(padded, padded.length - buf.length);
+
+  // Split padded into two parts for Uint64
+  const hi = bigNumberFromBytes(false, ...padded.slice(0, 4)).toNumber();
+  const lo = bigNumberFromBytes(false, ...padded.slice(4, 8)).toNumber();
+
+  return xdr.ScVal.scvU64(new xdr.Uint64([hi, lo]));
+}
