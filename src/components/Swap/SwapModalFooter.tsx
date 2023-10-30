@@ -86,7 +86,7 @@ export default function SwapModalFooter({
   
   const [priceImpact, setPriceImpact] = useState<number>(0)
 
-  getPriceImpactNew(trade?.inputAmount?.currency, trade?.outputAmount?.currency, BigNumber(trade?.inputAmount?.value ?? "0"), sorobanContext).then((resp) => {
+  getPriceImpactNew(trade?.inputAmount?.currency, trade?.outputAmount?.currency, BigNumber(trade?.inputAmount?.value ?? "0"), sorobanContext, trade.tradeType).then((resp) => {
     setPriceImpact(twoDecimalsPercentage(resp.toString())) 
   })
 

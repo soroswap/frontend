@@ -2,12 +2,12 @@ import { SorobanContextType } from "@soroban-react/core";
 import useSWR from "swr";
 import { FactoryResponseType, FactoryType } from "../interfaces/factory";
 // TODO: verify type of fetcher args
-const fetcher = (...args: [any, any]) => fetch(...args).then((resp) => resp.json());
+const fetcher = (url: string) => fetch(url).then((resp) => resp.json());
 
 export const useFactory = (sorobanContext: SorobanContextType) => {
   const { data } = useSWR(
     `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/factory`,
-    fetcher,
+    fetcher
   );
 
   let factory: FactoryType = {

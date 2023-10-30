@@ -2,7 +2,7 @@ import { SorobanContextType, useSorobanReact } from "@soroban-react/core";
 import { RouterResponseType, RouterType } from "interfaces/router";
 import useSWR from "swr";
 // TODO: verify type of fetcher args
-const fetcher = (...args: [any, any]) => fetch(...args).then((resp) => resp.json());
+const fetcher = (url: string) => fetch(url).then((resp) => resp.json());
 
 export const useRouterAddress = () => {
   const sorobanContext: SorobanContextType = useSorobanReact();

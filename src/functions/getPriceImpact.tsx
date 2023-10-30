@@ -2,6 +2,7 @@ import { SorobanContextType } from "@soroban-react/core"
 import BigNumber from "bignumber.js"
 import { reservesBNWithTokens } from "hooks/useReserves"
 import { TokenType } from "interfaces"
+import { TradeType } from "state/routing/types"
 import { getExpectedAmount } from "./getExpectedAmount"
 import { getPairAddress } from "./getPairAddress"
 
@@ -9,7 +10,8 @@ export async function getPriceImpactNew(
   currencyIn: TokenType | undefined,
   currencyOut: TokenType | undefined,
   amountIn: BigNumber,
-  sorobanContext: SorobanContextType
+  sorobanContext: SorobanContextType,
+  tradeType?: TradeType
 ) {
   if(!currencyIn || !currencyOut) return "0"
 
@@ -33,7 +35,7 @@ export async function getPriceImpactNew(
       reserve1: reserveOutAfter
     }
   
-    const expectedAmountAfter = await getExpectedAmount(currencyIn, currencyOut, amountIn, sorobanContext, customReserves)
+    const expectedAmountAfter = await getExpectedAmount(currencyIn, currencyOut, amountIn, sorobanContext, tradeType,customReserves)
   
     const price0 = expectedAmount.dividedBy(amountIn)
     const price1 = expectedAmountAfter.dividedBy(amountIn)
