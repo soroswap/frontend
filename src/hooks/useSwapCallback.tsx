@@ -9,6 +9,10 @@ import { useCallback, useContext } from "react";
 import * as SorobanClient from "soroban-client";
 import { InterfaceTrade, TradeType } from "state/routing/types";
 import { RouterMethod, useRouterCallback } from "./useRouterCallback";
+import { useUserSlippageToleranceWithDefault } from "state/user/hooks";
+import { DEFAULT_SLIPPAGE_INPUT_VALUE } from "components/Settings/MaxSlippageSettings"
+
+
 
 // Returns a function that will execute a swap, if the parameters are all valid
 // and the user has approved the slippage adjusted input amount for the trade
@@ -22,6 +26,8 @@ export function useSwapCallback(
   const sorobanContext = useSorobanReact()
   const { activeChain, address } = sorobanContext
   const routerCallback = useRouterCallback()
+  let allowedSlippage = useUserSlippageToleranceWithDefault(DEFAULT_SLIPPAGE_INPUT_VALUE)
+
 
   return useCallback(async () => {
     console.log("Trying out the TRADE")
@@ -30,48 +36,67 @@ export function useSwapCallback(
 
     //Checks which method in the router to use
     const routerMethod = trade.tradeType == TradeType.EXACT_INPUT ? RouterMethod.SWAP_EXACT_IN : RouterMethod.SWAP_EXACT_OUT
+    console.log("🚀 ~ file: useSwapCallback.tsx:33 ~ returnuseCallback ~ routerMethod:", routerMethod)
 
-    // TODO, this is just temporal, when implementing the Router we'll calculate this better 
-    //(12-10-2023) Amounts that are too large will fail with a panic exit, this will depend on the amounts in the liquidity pool
-    //Thats why we are incrementing the inputAmount by 50% so it doesnt fail, this should be fixed when we implement the router
-    // const amountInBigNumber = BigNumber(trade.inputAmount?.value || 0).multipliedBy(1.5)
-    // const amountInScVal = bigNumberToI128(amountInBigNumber);
-    // const amountOutBigNumber = BigNumber(trade.outputAmount?.value || 0)
+
+    let factorLess = (BigNumber(100).minus(allowedSlippage)).dividedBy(100);
+    let factorMore = (BigNumber(100).plus(allowedSlippage)).dividedBy(100);
+
+    const amount0 = routerMethod === RouterMethod.SWAP_EXACT_IN ? BigNumber(trade.inputAmount?.value as string) : BigNumber(trade.outputAmount?.value as string)
+    const amount1 = routerMethod === RouterMethod.SWAP_EXACT_IN ? 
+        BigNumber(trade.outputAmount?.value as string).multipliedBy(factorLess).decimalPlaces(0) : 
+        BigNumber(trade.inputAmount?.value as string).multipliedBy(factorMore).decimalPlaces(0)  
+  
+    /**
+     * If SWAP_EXACT_IN
+     * amount0 becomes the amount_in (hence trade.inputAmount
+     * amount1 becomes the amount_out_min (hence trade.outputAmount)
+     * Slippage is applied into amount1, we accept to receive 0.5% LESS of the optimal amount_out_min
     
-    // const amountOutScVal = bigNumberToI128(amountOutBigNumber);
+    fn swap_exact_tokens_for_tokens(
+        e: Env,
+        amount_in: i128,
+        amount_out_min: i128,
+        path: Vec<Address>,
+        to: Address,
+        deadline: u64,
+    ) -> Vec<i128>;
 
-    const amount0 = routerMethod === RouterMethod.SWAP_EXACT_IN ? BigNumber(trade.inputAmount?.value as string).multipliedBy(1.5) : BigNumber(trade.outputAmount?.value as string).multipliedBy(1.5)
-    const amount1 = routerMethod === RouterMethod.SWAP_EXACT_IN ? BigNumber(trade.outputAmount?.value as string) : BigNumber(trade.inputAmount?.value as string)
+     */
+    
+    /**
+     * If NOT SWAP_EXACT_IN (nad hence SWAP_EXACT_OUT)
+     * amount0 becomes the amount_out (trade.outputAmount)
+     * amount1 becomes the amount_in_max (trade.inputAmount)
+     * * Slippage is applied into amount1, we accept to send 0.5% MORE of the optimal amount_out_min
+     *    fn swap_tokens_for_exact_tokens(
+        e: Env,
+        amount_out: i128,
+        amount_in_max: i128,
+        path: Vec<Address>,
+        to: Address,
+        deadline: u64,
+    ) -> Vec<i128>;
+     */
+  
+
     const amount0ScVal = bigNumberToI128(amount0)
     const amount1ScVal = bigNumberToI128(amount1)
-    //   fn swap_exact_tokens_for_tokens(
-    //     e: Env,
-    //     amount_in: i128,
-    //     amount_out_min: i128,
-    //     path: Vec<Address>,
-    //     to: Address,
-    //     deadline: u64,
-    // ) -> Vec<i128>;
-  
-    //   fn swap_tokens_for_exact_tokens(
-    //     e: Env,
-    //     amount_out: i128,
-    //     amount_in_max: i128,
-    //     path: Vec<Address>,
-    //     to: Address,
-    //     deadline: u64,
-    // ) -> Vec<i128>;
+
+   
     const pathAddresses = [
       new SorobanClient.Address(trade.inputAmount?.currency.address as string),
       new SorobanClient.Address(trade.outputAmount?.currency.address as string)
     ];
 
+    const pathScVal = SorobanClient.nativeToScVal(pathAddresses)
+
     const args = [
-      amount0ScVal,
-      amount1ScVal,
-      SorobanClient.nativeToScVal(pathAddresses),
-      new SorobanClient.Address(address!).toScVal(),
-      bigNumberToU64(BigNumber(getCurrentTimePlusOneHour()))
+      amount0ScVal, //amount_in or amount_out
+      amount1ScVal, // amount_out_min or amount_in_max
+      pathScVal, // path
+      new SorobanClient.Address(address!).toScVal(), // to
+      bigNumberToU64(BigNumber(getCurrentTimePlusOneHour())) // deadline
     ]
     
     routerCallback(
