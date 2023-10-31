@@ -24,6 +24,8 @@ import { useBurnActionHandlers, useBurnState, useDerivedBurnInfo } from "state/b
 import { useUserSlippageToleranceWithDefault } from "state/user/hooks";
 import { opacify } from "themes/utils";
 import { AddRemoveTabs } from "../AddRemoveHeader";
+import { DEFAULT_SLIPPAGE_INPUT_VALUE } from "components/Settings/MaxSlippageSettings"
+
 
 export const PageWrapper = styled('main')`
   position: relative;
@@ -85,6 +87,7 @@ type TokensType = [string, string];
 export default function RemoveLiquidityComponent() {
   const theme = useTheme()
   const sorobanContext = useSorobanReact()
+  const allowedSlippage = useUserSlippageToleranceWithDefault(DEFAULT_SLIPPAGE_INPUT_VALUE)
 
   // Connect wallet modal
   const {ConnectWalletModal} = useContext(AppContext)
@@ -156,7 +159,7 @@ export default function RemoveLiquidityComponent() {
       {' '}{formatTokenAmount(parsedAmounts[Field.CURRENCY_B]?.value ?? "")} {currencyB?.symbol}</BodySmall>
   )
 
-  const allowedSlippage = useUserSlippageToleranceWithDefault(0.5)
+  
 
   const routerCallback = useRouterCallback()
 
@@ -174,10 +177,17 @@ export default function RemoveLiquidityComponent() {
   //     deadline: u64,
     // ) -> (i128, i128);
 
-    const minABN = new BigNumber(parsedAmounts.CURRENCY_A?.value as string)
-    const minBBN = new BigNumber(parsedAmounts.CURRENCY_B?.value as string)
-    const minAScVal = bigNumberToI128(minABN.multipliedBy(1.05).decimalPlaces(0).shiftedBy(-7));
-    const minBScVal = bigNumberToI128(minBBN.multipliedBy(1.05).decimalPlaces(0).shiftedBy(-7));
+    let factor = (BigNumber(100).minus(allowedSlippage)).dividedBy(100);
+
+    // parsedAmounts.CURRENCY_A?.value already in stroops! (wei in Stellar)
+    const desiredA = new BigNumber(parsedAmounts.CURRENCY_A?.value as string); 
+    const desiredB = new BigNumber(parsedAmounts.CURRENCY_A?.value as string);
+
+    const minABN = desiredA.multipliedBy(factor).decimalPlaces(0);
+    const minBBN = desiredB.multipliedBy(factor).decimalPlaces(0);
+    
+    const minAScVal = bigNumberToI128(minABN);
+    const minBScVal = bigNumberToI128(minBBN);
   
     const args = [
       new SorobanClient.Address(currencyA?.address as string).toScVal(), 
