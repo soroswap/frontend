@@ -43,7 +43,7 @@ export const PageWrapper = styled('main')`
     border: 1px solid ${({ theme }) => opacify(24, theme.palette.secondary.main,)},
   }
 
-  @media (max-width: ${({theme}) => theme.breakpoints.values.md}px) {
+  @media (max-width: ${({ theme }) => theme.breakpoints.values.md}px) {
     padding: 16px;
   }
 `
@@ -53,8 +53,8 @@ type TokensType = [string, string];
 export default function AddLiquidityComponent() {
 
   const theme = useTheme()
-  const userSlippage = useUserSlippageToleranceWithDefault(DEFAULT_SLIPPAGE_INPUT_VALUE) 
-  const {ConnectWalletModal} = useContext(AppContext)
+  const userSlippage = useUserSlippageToleranceWithDefault(DEFAULT_SLIPPAGE_INPUT_VALUE)
+  const { ConnectWalletModal } = useContext(AppContext)
   const { isConnectWalletModalOpen, setConnectWalletModalOpen } = ConnectWalletModal;
 
   const router = useRouter();
@@ -125,33 +125,39 @@ export default function AddLiquidityComponent() {
     setAttemptingTxn(true)
     // TODO: check that amount0 corresponds to token0?
     //TODO: Check all of this, is working weird but using the router, withdraw is not working
-    
-  //   fn add_liquidity(
-  //     e: Env,
-  //     token_a: Address,
-  //     token_b: Address,
-  //     amount_a_desired: i128,
-  //     amount_b_desired: i128,
-  //     amount_a_min: i128,
-  //     amount_b_min: i128,
-  //     to: Address,
-  //     deadline: u64,
+
+    //   fn add_liquidity(
+    //     e: Env,
+    //     token_a: Address,
+    //     token_b: Address,
+    //     amount_a_desired: i128,
+    //     amount_b_desired: i128,
+    //     amount_a_min: i128,
+    //     amount_b_min: i128,
+    //     to: Address,
+    //     deadline: u64,
     // ) -> (i128, i128, i128);
 
     // When providing liquidity for the first time, the independentField is the last the user type.
+    let desired0BN: BigNumber;
+    let desired1BN: BigNumber;
 
-    const desired0BN = new BigNumber(formattedAmounts[independentField]).shiftedBy(7)
-    console.log("🚀 ~ file: AddLiquidityComponent.tsx:144 ~ provideLiquidity ~ desired0BN.toString():", desired0BN.toString())
-    const desired1BN = new BigNumber(formattedAmounts[dependentField]).shiftedBy(7)
-    console.log("🚀 ~ file: AddLiquidityComponent.tsx:146 ~ provideLiquidity ~ desired1BN.toString():", desired1BN.toString())
+    if (independentField === Field.CURRENCY_A) {
+      desired0BN = new BigNumber(formattedAmounts[independentField]).shiftedBy(7);
+      desired1BN = new BigNumber(formattedAmounts[dependentField]).shiftedBy(7);
+    } else {
+      // if (independentField === Field.CURRENCY_B)
+      desired0BN = new BigNumber(formattedAmounts[dependentField]).shiftedBy(7);
+      desired1BN = new BigNumber(formattedAmounts[independentField]).shiftedBy(7);
+    }
 
     const desiredAScVal = bigNumberToI128(desired0BN);
     const desiredBScVal = bigNumberToI128(desired1BN);
 
     // Here we are implementint the slippage: which will be in the "0.5" format when is 0.5%
-    const factor = (BigNumber(100).minus(userSlippage)).dividedBy(100);
+    // const factor = (BigNumber(100).minus(userSlippage)).dividedBy(100);
     // TODO: Solve after solving token orders
-    factor = 10;
+    const factor = 10;
 
     const min0BN = desired0BN.multipliedBy(factor).decimalPlaces(0); // we dont want to have decimals after applying the factor
     console.log("🚀 ~ file: AddLiquidityComponent.tsx:155 ~ provideLiquidity ~ min0BN.toString():", min0BN.toString())
@@ -160,7 +166,7 @@ export default function AddLiquidityComponent() {
 
     const minAScVal = bigNumberToI128(min0BN);
     const minBScVal = bigNumberToI128(min1BN);
-    
+
 
     const args = [
       new SorobanClient.Address(baseCurrency?.address ?? "").toScVal(),
@@ -172,7 +178,7 @@ export default function AddLiquidityComponent() {
       new SorobanClient.Address(sorobanContext.address ?? "").toScVal(),
       bigNumberToU64(BigNumber(getCurrentTimePlusOneHour()))
     ]
-    
+
     routerCallback(
       RouterMethod.ADD_LIQUIDITY,
       args,
@@ -183,9 +189,9 @@ export default function AddLiquidityComponent() {
       setTxHash(result as string)
     }).catch((error) => {
       console.log("🚀 « error:", error)
-      setAttemptingTxn(false)      
+      setAttemptingTxn(false)
     })
-    
+
   }, [formattedAmounts, independentField, dependentField, baseCurrency?.address, currencyB?.address, sorobanContext.address, routerCallback])
 
   const handleCurrencyASelect = useCallback(
@@ -291,11 +297,11 @@ export default function AddLiquidityComponent() {
   //     }
   //   })
   // }, [amountOfLpTokensToReceiveBN, pairAddress, sorobanContext])
-  
+
   const pendingText = (
     <BodySmall>Adding {formatTokenAmount(parsedAmounts[Field.CURRENCY_A]?.value ?? "")} {baseCurrency?.symbol} and
-    {' '}{formatTokenAmount(parsedAmounts[Field.CURRENCY_B]?.value ?? "")} {currencyB?.symbol}</BodySmall>
-)
+      {' '}{formatTokenAmount(parsedAmounts[Field.CURRENCY_B]?.value ?? "")} {currencyB?.symbol}</BodySmall>
+  )
 
   return (
     <>
@@ -320,9 +326,9 @@ export default function AddLiquidityComponent() {
           <DarkGrayCard>
             <BodySmall color={theme.palette.custom.textTertiary}>
               <b>Tip: </b>When you add liquidity, you will receive LP tokens representing your position.
-              <span style={{marginTop: 15}}>These tokens automatically earn fees proportional to your share of the pool.Can be redeemed at any time</span>
+              <span style={{ marginTop: 15 }}>These tokens automatically earn fees proportional to your share of the pool.Can be redeemed at any time</span>
             </BodySmall>
-          </DarkGrayCard>          
+          </DarkGrayCard>
           {/* //Input Token */}
           <CurrencyInputPanel
             id="add-liquidity-input-tokena"
@@ -333,7 +339,7 @@ export default function AddLiquidityComponent() {
             showMaxButton={false}
             currency={currencies[Field.CURRENCY_A] ?? null}
             transparent
-            // showCommonBases
+          // showCommonBases
           />
           <ColumnCenter>
             <Plus size="16" color={theme.palette.secondary.main} />
@@ -350,7 +356,7 @@ export default function AddLiquidityComponent() {
             // }}
             showMaxButton={false}
             currency={currencies[Field.CURRENCY_B] ?? null}
-            // showCommonBases
+          // showCommonBases
           />
           {!sorobanContext.address ? (
 
