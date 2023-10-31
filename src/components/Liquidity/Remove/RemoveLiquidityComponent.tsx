@@ -245,7 +245,7 @@ export default function RemoveLiquidityComponent() {
 
         <BodySmall fontSize={12} textAlign="left" padding="12px 0 0 0">
           {/* TODO: AllowedSlippage*10??? how should we handle this? */}
-          Output is estimated. If the price changes by more than {allowedSlippage*10}% your transaction
+          Output is estimated. If the price changes by more than {allowedSlippage}% your transaction
             will revert.
         </BodySmall>
       </AutoColumn>
