@@ -48,11 +48,10 @@ cp .env.production.example .env
 
 3. Start Docker
 
-Navigate to the docker folder and execute the run.sh script:
+Navigate to the the `run.sh` script inside the `docker` folder
 
 ```bash
-cd docker
-bash run.sh
+bash docker/run.sh
 ```
 
 This script will set up and start the Docker containers required for Soroswap.

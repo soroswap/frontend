@@ -33,7 +33,7 @@ docker run --volume ${currentDir}/..:/workspace \
            --detach \
            --publish-all \
            --memory=12g \
-           --env-file ../.env \
+           --env-file .env \
            --net-alias ${containerName} \
            ${imageName}:${versionTag}
 
