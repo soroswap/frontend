@@ -161,7 +161,7 @@ export default function AddModalFooter({
               id={"CONFIRM_SWAP_BUTTON"}
             >
               <HeadlineSmall color={theme.palette.custom.accentTextLightPrimary}>
-                  Confirm swap
+                  Add liquidity
               </HeadlineSmall>
             </ConfirmButton>
             {swapErrorMessage ? <SwapCallbackError error={swapErrorMessage} /> : null}
