@@ -34,7 +34,7 @@ const NUMBER_WITH_MAX_TWO_DECIMAL_PLACES = /^(?:\d+(?:\.\d{0,2})?|\.\d{0,2})?$/;
 const MINIMUM_RECOMMENDED_SLIPPAGE = 0.05
 const MAXIMUM_RECOMMENDED_SLIPPAGE = 1
 
-const DEFAULT_SLIPPAGE_INPUT_VALUE = 0.5
+export const DEFAULT_SLIPPAGE_INPUT_VALUE = 0.5
 
 export default function MaxSlippageSettings({ autoSlippage }: { autoSlippage: number }) {
 

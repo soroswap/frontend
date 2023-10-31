@@ -11,6 +11,8 @@ import { useMemo, useState } from "react"
 import { AlertTriangle } from "react-feather"
 import { Field } from "state/mint/actions"
 import { Label } from "./AddModalHeader"
+import { useUserSlippageToleranceWithDefault } from 'state/user/hooks'
+import { DEFAULT_SLIPPAGE_INPUT_VALUE } from "components/Settings/MaxSlippageSettings"
 
 const DetailsContainer = styled(Column)`
   padding: 0 8px;
@@ -62,9 +64,7 @@ export default function AddModalFooter({
       return ""
   }, [])
 
-  const allowedSlippage = useMemo(() => {
-      return "0.5"
-  }, [])
+  const userSlippage = useUserSlippageToleranceWithDefault(DEFAULT_SLIPPAGE_INPUT_VALUE) 
 
   const rate = useMemo(() => {
       if (!formattedAmounts.CURRENCY_A || !formattedAmounts.CURRENCY_B) return
@@ -79,7 +79,7 @@ export default function AddModalFooter({
   }, [totalShares])
   return (
     <>
-      <BodySmall> If prices change more than {allowedSlippage}, the transaction will revert</BodySmall>
+      <BodySmall> If prices change more than  {userSlippage}%, the transaction will revert</BodySmall>
       <DetailsContainer gap="md">
         <BodySmall>
           <Row align="flex-start" justify="space-between" gap="sm">
@@ -97,6 +97,8 @@ export default function AddModalFooter({
             <DetailRowValue>{`${formattedAmounts.CURRENCY_B} ${currencyB?.symbol}`}</DetailRowValue>
           </Row>
         </BodySmall>
+
+
         <BodySmall>
           <Row align="flex-start" justify="space-between" gap="sm">
             <MouseoverTooltip
@@ -111,6 +113,24 @@ export default function AddModalFooter({
             </MouseoverTooltip>
           </Row>
         </BodySmall>
+
+        <BodySmall>
+          <Row align="flex-start" justify="space-between" gap="sm">
+            <MouseoverTooltip
+              title={"If prices change more than the allowed slippage percentage, the transaction will revert"}
+            >
+              <Label cursor="help">
+                Maximum slippage
+              </Label>
+            </MouseoverTooltip>
+            <MouseoverTooltip placement="right" title={""}>
+              <DetailRowValue>{userSlippage}%</DetailRowValue>
+            </MouseoverTooltip>
+          </Row>
+        </BodySmall>
+
+
+
         <BodySmall>
           <Row align="flex-start" justify="space-between" gap="sm">
             <MouseoverTooltip
