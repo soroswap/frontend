@@ -26,9 +26,8 @@ export function useSwapCallback(
   const sorobanContext = useSorobanReact()
   const { activeChain, address } = sorobanContext
   const routerCallback = useRouterCallback()
-  let allowedSlippage = useUserSlippageToleranceWithDefault(DEFAULT_SLIPPAGE_INPUT_VALUE)
-
-
+  const allowedSlippage = useUserSlippageToleranceWithDefault(DEFAULT_SLIPPAGE_INPUT_VALUE)
+  
   return useCallback(async () => {
     console.log("Trying out the TRADE")
     if (!trade) throw new Error('missing trade')
@@ -36,17 +35,16 @@ export function useSwapCallback(
 
     //Checks which method in the router to use
     const routerMethod = trade.tradeType == TradeType.EXACT_INPUT ? RouterMethod.SWAP_EXACT_IN : RouterMethod.SWAP_EXACT_OUT
-    console.log("🚀 ~ file: useSwapCallback.tsx:33 ~ returnuseCallback ~ routerMethod:", routerMethod)
 
 
-    let factorLess = (BigNumber(100).minus(allowedSlippage)).dividedBy(100);
-    let factorMore = (BigNumber(100).plus(allowedSlippage)).dividedBy(100);
+    const factorLess = (BigNumber(100).minus(allowedSlippage)).dividedBy(100);
+    const factorMore = (BigNumber(100).plus(allowedSlippage)).dividedBy(100);
 
     const amount0 = routerMethod === RouterMethod.SWAP_EXACT_IN ? BigNumber(trade.inputAmount?.value as string) : BigNumber(trade.outputAmount?.value as string)
     const amount1 = routerMethod === RouterMethod.SWAP_EXACT_IN ? 
         BigNumber(trade.outputAmount?.value as string).multipliedBy(factorLess).decimalPlaces(0) : 
         BigNumber(trade.inputAmount?.value as string).multipliedBy(factorMore).decimalPlaces(0)  
-  
+
     /**
      * If SWAP_EXACT_IN
      * amount0 becomes the amount_in (hence trade.inputAmount
@@ -88,7 +86,7 @@ export function useSwapCallback(
       new SorobanClient.Address(trade.inputAmount?.currency.address as string),
       new SorobanClient.Address(trade.outputAmount?.currency.address as string)
     ];
-
+   
     const pathScVal = SorobanClient.nativeToScVal(pathAddresses)
 
     const args = [
