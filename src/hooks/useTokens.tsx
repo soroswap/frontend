@@ -4,7 +4,7 @@ import { useMemo } from "react";
 import useSWR from "swr";
 import { TokenMapType, TokenType, tokensResponse } from "../interfaces";
 // TODO: verify type of fetcher args
-const fetcher = (...args: [any, any]) => fetch(...args).then((resp) => resp.json());
+const fetcher = (url: string) => fetch(url).then((resp) => resp.json());
 
 export const useTokens = (sorobanContext: SorobanContextType) => {
   const { data } = useSWR(

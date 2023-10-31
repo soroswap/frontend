@@ -1,6 +1,6 @@
 import useSWR from "swr";
 // TODO: verify type of fetcher args
-const fetcher = (...args: [any, any]) => fetch(...args).then((resp) => resp.json());
+const fetcher = (url: string) => fetch(url).then((resp) => resp.json());
 
 type stellarPrice = {
   clp: number,

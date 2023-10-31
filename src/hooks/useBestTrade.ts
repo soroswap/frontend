@@ -59,6 +59,7 @@ export function useBestTrade(
       currencyOut,
       BigNumber(amountSpecified.value),
       sorobanContext,
+      tradeType,
     ).then((resp) => {
       setExpectedAmount(resp?.toString());
     });
