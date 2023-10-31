@@ -24,7 +24,7 @@ else
 fi
 
 # Run a new Docker container
-docker run --volume ${currentDir}/..:/workspace \
+docker run --volume ${currentDir}:/workspace \
            --name ${containerName} \
            --interactive \
            --publish 3000:3000 \
