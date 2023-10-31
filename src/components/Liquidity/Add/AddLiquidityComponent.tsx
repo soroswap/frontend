@@ -141,16 +141,22 @@ export default function AddLiquidityComponent() {
     // When providing liquidity for the first time, the independentField is the last the user type.
 
     const desired0BN = new BigNumber(formattedAmounts[independentField]).shiftedBy(7)
+    console.log("🚀 ~ file: AddLiquidityComponent.tsx:144 ~ provideLiquidity ~ desired0BN.toString():", desired0BN.toString())
     const desired1BN = new BigNumber(formattedAmounts[dependentField]).shiftedBy(7)
+    console.log("🚀 ~ file: AddLiquidityComponent.tsx:146 ~ provideLiquidity ~ desired1BN.toString():", desired1BN.toString())
 
     const desiredAScVal = bigNumberToI128(desired0BN);
     const desiredBScVal = bigNumberToI128(desired1BN);
 
     // Here we are implementint the slippage: which will be in the "0.5" format when is 0.5%
-    const factor = (BigNumber(100).minus(userSlippage)).dividedBy(100);
+    let factor = (BigNumber(100).minus(userSlippage)).dividedBy(100);
+    // TODO: Solve after solving token orders
+    factor = BigNumber(10);
 
     const min0BN = desired0BN.multipliedBy(factor).decimalPlaces(0); // we dont want to have decimals after applying the factor
+    console.log("🚀 ~ file: AddLiquidityComponent.tsx:155 ~ provideLiquidity ~ min0BN.toString():", min0BN.toString())
     const min1BN = desired1BN.multipliedBy(factor).decimalPlaces(0);
+    console.log("🚀 ~ file: AddLiquidityComponent.tsx:157 ~ provideLiquidity ~ min1BN.toString():", min1BN.toString())
 
     const minAScVal = bigNumberToI128(min0BN);
     const minBScVal = bigNumberToI128(min1BN);
