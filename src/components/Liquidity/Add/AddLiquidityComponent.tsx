@@ -149,9 +149,7 @@ export default function AddLiquidityComponent() {
     const desiredBScVal = bigNumberToI128(desired1BN);
 
     // Here we are implementint the slippage: which will be in the "0.5" format when is 0.5%
-    let factor = (BigNumber(100).minus(userSlippage)).dividedBy(100);
-    // TODO: Solve after solving token orders
-    factor = BigNumber(10);
+    const factor = (BigNumber(100).minus(userSlippage)).dividedBy(100);
 
     const min0BN = desired0BN.multipliedBy(factor).decimalPlaces(0); // we dont want to have decimals after applying the factor
     console.log("🚀 ~ file: AddLiquidityComponent.tsx:155 ~ provideLiquidity ~ min0BN.toString():", min0BN.toString())

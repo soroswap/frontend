@@ -177,7 +177,7 @@ export default function RemoveLiquidityComponent() {
   //     deadline: u64,
     // ) -> (i128, i128);
 
-    let factor = (BigNumber(100).minus(allowedSlippage)).dividedBy(100);
+    const factor = (BigNumber(100).minus(allowedSlippage)).dividedBy(100);
 
     // parsedAmounts.CURRENCY_A?.value already in stroops! (wei in Stellar)
     const desiredA = new BigNumber(parsedAmounts.CURRENCY_A?.value as string); 
