@@ -24,6 +24,8 @@ import { opacify } from "themes/utils";
 import { AddRemoveTabs } from "../AddRemoveHeader";
 import AddModalFooter from "./AddModalFooter";
 import AddModalHeader from "./AddModalHeader";
+import { useUserSlippageToleranceWithDefault } from 'state/user/hooks'
+import { DEFAULT_SLIPPAGE_INPUT_VALUE } from "components/Settings/MaxSlippageSettings"
 
 export const PageWrapper = styled('main')`
   position: relative;
@@ -51,7 +53,7 @@ type TokensType = [string, string];
 export default function AddLiquidityComponent() {
 
   const theme = useTheme()
-
+  const userSlippage = useUserSlippageToleranceWithDefault(DEFAULT_SLIPPAGE_INPUT_VALUE) 
   const {ConnectWalletModal} = useContext(AppContext)
   const { isConnectWalletModalOpen, setConnectWalletModalOpen } = ConnectWalletModal;
 
@@ -123,7 +125,7 @@ export default function AddLiquidityComponent() {
     setAttemptingTxn(true)
     // TODO: check that amount0 corresponds to token0?
     //TODO: Check all of this, is working weird but using the router, withdraw is not working
-
+    
   //   fn add_liquidity(
   //     e: Env,
   //     token_a: Address,
@@ -136,15 +138,23 @@ export default function AddLiquidityComponent() {
   //     deadline: u64,
     // ) -> (i128, i128, i128);
 
+    // When providing liquidity for the first time, the independentField is the last the user type.
 
-    const amount0BN = new BigNumber(formattedAmounts[independentField])
-    const amount1BN = new BigNumber(formattedAmounts[dependentField])
+    const desired0BN = new BigNumber(formattedAmounts[independentField]).shiftedBy(7)
+    const desired1BN = new BigNumber(formattedAmounts[dependentField]).shiftedBy(7)
 
-    const desiredAScVal = bigNumberToI128(amount0BN.shiftedBy(7));
-    const desiredBScVal = bigNumberToI128(amount1BN.shiftedBy(7));
+    const desiredAScVal = bigNumberToI128(desired0BN);
+    const desiredBScVal = bigNumberToI128(desired1BN);
 
-    const minAScVal = bigNumberToI128(amount0BN.multipliedBy(0.9).decimalPlaces(0).shiftedBy(7));
-    const minBScVal = bigNumberToI128(amount1BN.multipliedBy(0.9).decimalPlaces(0).shiftedBy(7));
+    // Here we are implementint the slippage: which will be in the "0.5" format when is 0.5%
+    const factor = (BigNumber(100).minus(userSlippage)).dividedBy(100);
+
+    const min0BN = desired0BN.multipliedBy(factor).decimalPlaces(0); // we dont want to have decimals after applying the factor
+    const min1BN = desired1BN.multipliedBy(factor).decimalPlaces(0);
+
+    const minAScVal = bigNumberToI128(min0BN);
+    const minBScVal = bigNumberToI128(min1BN);
+    
 
     const args = [
       new SorobanClient.Address(baseCurrency?.address ?? "").toScVal(),
