@@ -150,11 +150,13 @@ export default function AddLiquidityComponent() {
       desired0BN = new BigNumber(formattedAmounts[dependentField]).shiftedBy(7);
       desired1BN = new BigNumber(formattedAmounts[independentField]).shiftedBy(7);
     }
+    console.log("🚀 ~ file: AddLiquidityComponent.tsx:155 ~ provideLiquidity ~  desired0BN, desired1BN: ", desired0BN.toString(), desired1BN.toString())
 
     const desiredAScVal = bigNumberToI128(desired0BN);
     const desiredBScVal = bigNumberToI128(desired1BN);
 
     // Here we are implementint the slippage: which will be in the "0.5" format when is 0.5%
+    // const factor = (BigNumber(100).minus(110)).dividedBy(100);
     // const factor = (BigNumber(100).minus(userSlippage)).dividedBy(100);
     // TODO: Solve after solving token orders
     const factor = 10;
@@ -167,6 +169,7 @@ export default function AddLiquidityComponent() {
     const minAScVal = bigNumberToI128(min0BN);
     const minBScVal = bigNumberToI128(min1BN);
 
+    console.log("🚀 ~ file: AddLiquidityComponent.tsx:155 ~ provideLiquidity ~  baseCurrency, currencyB: ", baseCurrency, currencyB)
 
     const args = [
       new SorobanClient.Address(baseCurrency?.address ?? "").toScVal(),
@@ -186,13 +189,13 @@ export default function AddLiquidityComponent() {
     ).then((result) => {
       console.log("🚀 « result:", result)
       setAttemptingTxn(false)
-      setTxHash(result as string)
+      setTxHash(result as unknown as string)
     }).catch((error) => {
       console.log("🚀 « error:", error)
       setAttemptingTxn(false)
     })
 
-  }, [formattedAmounts, independentField, dependentField, baseCurrency?.address, currencyB?.address, sorobanContext.address, routerCallback])
+  }, [independentField, baseCurrency, currencyB, sorobanContext.address, routerCallback, formattedAmounts, dependentField])
 
   const handleCurrencyASelect = useCallback(
     (currencyA: TokenType) => {
