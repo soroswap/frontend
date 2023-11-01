@@ -1,19 +1,19 @@
-import { memo, useCallback, useEffect, useState } from 'react'
-import { TokenType } from '../../interfaces'
-import useLast from '../../hooks/useLast'
-import { CurrencySearch } from './CurrencySearch'
-import { Modal } from '@mui/material'
+import { memo, useCallback, useEffect, useState } from 'react';
+import { TokenType } from '../../interfaces';
+import useLast from '../../hooks/useLast';
+import { CurrencySearch } from './CurrencySearch';
+import { Modal } from '@mui/material';
 
 interface CurrencySearchModalProps {
-  isOpen: boolean
-  onDismiss: () => void
-  selectedCurrency?: TokenType | null
-  onCurrencySelect: (currency: TokenType) => void
-  otherSelectedCurrency?: TokenType | null
-  showCommonBases?: boolean
-  showCurrencyAmount?: boolean
-  disableNonToken?: boolean
-  onlyShowCurrenciesWithBalance?: boolean
+  isOpen: boolean;
+  onDismiss: () => void;
+  selectedCurrency?: TokenType | null;
+  onCurrencySelect: (currency: TokenType) => void;
+  otherSelectedCurrency?: TokenType | null;
+  showCommonBases?: boolean;
+  showCurrencyAmount?: boolean;
+  disableNonToken?: boolean;
+  onlyShowCurrenciesWithBalance?: boolean;
 }
 
 enum CurrencyModalView {
@@ -33,33 +33,33 @@ export default memo(function CurrencySearchModal({
   disableNonToken = false,
   onlyShowCurrenciesWithBalance = false,
 }: CurrencySearchModalProps) {
-  const [modalView, setModalView] = useState<CurrencyModalView>(CurrencyModalView.search)
-  const lastOpen = useLast(isOpen)
+  const [modalView, setModalView] = useState<CurrencyModalView>(CurrencyModalView.search);
+  const lastOpen = useLast(isOpen);
   // const userAddedTokens = useUserAddedTokens()
 
   useEffect(() => {
     if (isOpen && !lastOpen) {
-      setModalView(CurrencyModalView.search)
+      setModalView(CurrencyModalView.search);
     }
-  }, [isOpen, lastOpen])
+  }, [isOpen, lastOpen]);
 
   const showTokenSafetySpeedbump = (token: TokenType) => {
     // setWarningToken(token)
-    setModalView(CurrencyModalView.tokenSafety)
-  }
+    setModalView(CurrencyModalView.tokenSafety);
+  };
 
   const handleCurrencySelect = useCallback(
     (currency: TokenType, hasWarning?: boolean) => {
       // if (hasWarning && currency.isToken && !userAddedTokens.find((token) => token.equals(currency))) {
       //   // showTokenSafetySpeedbump(currency)
       // } else {
-        onCurrencySelect(currency)
-        onDismiss()
+      onCurrencySelect(currency);
+      onDismiss();
       // }
     },
-    [onDismiss, onCurrencySelect]
-  )
-  
+    [onDismiss, onCurrencySelect],
+  );
+
   return (
     <Modal
       open={isOpen}
@@ -67,17 +67,19 @@ export default memo(function CurrencySearchModal({
       aria-labelledby="modal-modal-title"
       aria-describedby="modal-modal-description"
     >
-      <CurrencySearch
-        isOpen={isOpen}
-        onDismiss={onDismiss}
-        onCurrencySelect={handleCurrencySelect}
-        selectedCurrency={selectedCurrency}
-        otherSelectedCurrency={otherSelectedCurrency}
-        showCommonBases={showCommonBases}
-        showCurrencyAmount={showCurrencyAmount}
-        disableNonToken={disableNonToken}
-        onlyShowCurrenciesWithBalance={onlyShowCurrenciesWithBalance}
-      />
+      <div>
+        <CurrencySearch
+          isOpen={isOpen}
+          onDismiss={onDismiss}
+          onCurrencySelect={handleCurrencySelect}
+          selectedCurrency={selectedCurrency}
+          otherSelectedCurrency={otherSelectedCurrency}
+          showCommonBases={showCommonBases}
+          showCurrencyAmount={showCurrencyAmount}
+          disableNonToken={disableNonToken}
+          onlyShowCurrenciesWithBalance={onlyShowCurrenciesWithBalance}
+        />
+      </div>
     </Modal>
-  )
-})
+  );
+});

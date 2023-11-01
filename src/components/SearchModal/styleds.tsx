@@ -1,17 +1,19 @@
-import searchIcon from 'assets/svg/searchDark.svg'
-import searchIconLight from 'assets/svg/searchLight.svg'
+import searchIcon from 'assets/svg/searchDark.svg';
+import searchIconLight from 'assets/svg/searchLight.svg';
 
-import { AutoColumn } from '../Column'
-import { RowBetween } from '../Row'
-import { styled } from '@mui/material'
-import { opacify } from '../../themes/utils'
-import { LoadingRows as BaseLoadingRows} from 'components/Loader/styled'
+import { AutoColumn } from '../Column';
+import { RowBetween } from '../Row';
+import { styled } from '@mui/material';
+import { opacify } from '../../themes/utils';
+import { LoadingRows as BaseLoadingRows } from 'components/Loader/styled';
 
 export const PaddedColumn = styled(AutoColumn)`
   padding: 20px;
-`
+`;
 
-export const MenuItem = styled(RowBetween)<{ dim?: boolean, disabled: boolean, selected: boolean }>`
+export const MenuItem = styled(RowBetween, {
+  shouldForwardProp: (prop) => prop !== 'dim',
+})<{ dim?: boolean; disabled: boolean; selected: boolean }>`
   padding: 4px 20px;
   height: 56px;
   display: grid;
@@ -23,11 +25,12 @@ export const MenuItem = styled(RowBetween)<{ dim?: boolean, disabled: boolean, s
     background-color: ${({ theme }) => opacify(8, theme.palette.secondary.main)};
   }
   opacity: ${({ disabled, selected, dim }) => (dim || disabled || selected ? 0.4 : 1)};
-`
+`;
 
 export const SearchInput = styled('input')`
   background: no-repeat scroll 7px 7px;
-  background-image: ${({theme})=> theme.palette.mode == 'dark' ? `url(${searchIcon.src})` : `url(${searchIconLight.src})`};
+  background-image: ${({ theme }) =>
+    theme.palette.mode == 'dark' ? `url(${searchIcon.src})` : `url(${searchIconLight.src})`};
   background-size: 20px 20px;
   background-position: 12px center;
   position: relative;
@@ -55,16 +58,16 @@ export const SearchInput = styled('input')`
   }
   transition: border 100ms;
   :focus {
-    border: 1px solid ${({ theme }) =>  opacify(24, theme.palette.custom.borderColor)};
+    border: 1px solid ${({ theme }) => opacify(24, theme.palette.custom.borderColor)};
     background-color: ${({ theme }) => theme.palette.customBackground.surface};
     outline: none;
   }
-`
+`;
 export const Separator = styled('div')`
   width: 100%;
   height: 1px;
   background-color: ${({ theme }) => theme.palette.custom.textTertiary};
-`
+`;
 
 export const LoadingRows = styled(BaseLoadingRows)`
   grid-column-gap: 0.5em;
@@ -86,4 +89,4 @@ export const LoadingRows = styled(BaseLoadingRows)`
     grid-column: 1 / 4;
     height: 0.75em;
   }
-`
+`;
