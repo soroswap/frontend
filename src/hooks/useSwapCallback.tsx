@@ -23,7 +23,7 @@ export function useSwapCallback(
   const { activeChain, address } = sorobanContext;
   const routerCallback = useRouterCallback();
 
-  return useCallback(async () => {
+  const doSwap = () => {
     console.log('Trying out the TRADE');
     if (!trade) throw new Error('missing trade');
     if (!address || !activeChain) throw new Error('wallet must be connected to swap');
@@ -83,7 +83,7 @@ export function useSwapCallback(
       bigNumberToU64(BigNumber(getCurrentTimePlusOneHour())),
     ];
 
-    routerCallback(routerMethod, args, true)
+    return routerCallback(routerMethod, args, true)
       .then((result) => {
         console.log('🚀 « result:', result);
 
@@ -98,7 +98,9 @@ export function useSwapCallback(
       })
       .catch((error) => {
         console.log('🚀 « error:', error);
-        return error;
+        throw error;
       });
-  }, [SnackbarContext, activeChain, address, routerCallback, trade]);
+  };
+
+  return doSwap;
 }
