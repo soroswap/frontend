@@ -70,9 +70,9 @@ export function useDerivedMintInfo(
 } {
   const sorobanContext = useSorobanReact();
   const { address: account } = sorobanContext
-  
+
   const factoryAddress = useFactory(sorobanContext);
-  
+
   const [pairAddress, setPairAddress] = useState<any>(undefined)
   const [reservesBNToken, setReservesBNToken] = useState<any>(undefined)
 
@@ -165,8 +165,13 @@ export function useDerivedMintInfo(
         reserve0 = reservesBNToken.reserve1
         reserve1 = reservesBNToken.reserve0
       }
-      // console.log("state/mint/hooks: reserve0: ", reserve0.toString())
-      // console.log("state/mint/hooks: reserve1: ", reserve1.toString())
+      console.log("state/mint/hooks: reservesBNToken: ", reservesBNToken)
+      console.log("state/mint/hooks: reservesBNToken.reserve0: ", reservesBNToken.reserve0.toString())
+      console.log("state/mint/hooks: reservesBNToken.reserve1: ", reservesBNToken.reserve1.toString())
+      console.log("state/mint/hooks: independentAmount: ", independentAmount)
+
+      console.log("state/mint/hooks: reserve0: ", reserve0.toString())
+      console.log("state/mint/hooks: reserve1: ", reserve1.toString())
 
       const calculatedPoolTokenOptimalAmount = calculatePoolTokenOptimalAmount(
         BigNumber(independentAmount.value),
