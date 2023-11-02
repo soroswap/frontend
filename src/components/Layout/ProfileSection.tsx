@@ -1,13 +1,13 @@
-import { Chip } from "@mui/material";
-import { useTheme } from "@mui/material/styles";
-import { SorobanContextType, useSorobanReact } from "@soroban-react/core";
-import { AppContext } from "contexts";
-import { useContext, useRef } from "react";
-import { shortenAddress } from "../../helpers/address";
+import { Chip } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
+import { SorobanContextType, useSorobanReact } from '@soroban-react/core';
+import { AppContext } from 'contexts';
+import { useContext, useRef } from 'react';
+import { shortenAddress } from '../../helpers/address';
 
 export default function ProfileSection() {
   const theme = useTheme();
-  const { ConnectWalletModal } = useContext(AppContext)
+  const { ConnectWalletModal } = useContext(AppContext);
   const sorobanContext: SorobanContextType = useSorobanReact();
 
   const anchorRef = useRef(null);
@@ -19,9 +19,9 @@ export default function ProfileSection() {
       //HERE WALLET IS CONNECTED
       //TODO: Disconnect function not working
       sorobanContext.disconnect();
-      console.log("Disconnected");
+      console.log('Disconnected');
     } else {
-      setConnectWalletModalOpen(true)
+      setConnectWalletModalOpen(true);
     }
   };
 
@@ -36,30 +36,28 @@ export default function ProfileSection() {
           alignItems: 'center',
           gap: 10,
           flexShrink: 0,
-          borderRadius: "16px",
+          borderRadius: '16px',
           backgroundColor: '#8866DD',
           '&[aria-controls="menu-list-grow"], &:hover': {
             color: theme.palette.primary.light,
-            "& svg": {
+            '& svg': {
               stroke: theme.palette.primary.light,
             },
           },
-          "& .MuiChip-label": {
-            color: "#FFFFFF",
+          '& .MuiChip-label': {
+            color: '#FFFFFF',
             fontSize: 20,
-            fontFamily: "Inter",
+            fontFamily: 'Inter',
             fontWeight: 600,
-            lineHeight: '140%', 
+            lineHeight: '140%',
           },
-          ":hover": {
+          ':hover': {
             backgroundColor: '#8866DD',
-          }
+          },
         }}
         label={
           sorobanContext.activeChain ? (
-            <div>
-              {shortenAddress(sorobanContext.address ?? "")}
-            </div>
+            <div>{shortenAddress(sorobanContext.address ?? '')}</div>
           ) : (
             <div>Connect wallet</div>
           )

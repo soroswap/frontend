@@ -1,19 +1,19 @@
 // import { Trans } from '@lingui/macro'
-import { ButtonBase, styled, useMediaQuery, useTheme } from "@mui/material"
-import { useSorobanReact } from "@soroban-react/core"
-import { darken } from "polished"
-import { ReactNode, useCallback, useState } from "react"
-import { ChevronDown } from "react-feather"
-import { TokenType } from "../../interfaces"
-import { flexColumnNoWrap, flexRowNoWrap } from "../../themes/styles"
-import { opacify } from '../../themes/utils'
-import { LoadingOpacityContainer } from "../Loader/styled"
-import CurrencyLogo from "../Logo/CurrencyLogo"
-import { Input as NumericalInput } from '../NumericalInput'
-import { RowBetween, RowFixed } from "../Row"
-import CurrencySearchModal from "../SearchModal/CurrencySearchModal"
-import CurrencyBalance from "./CurrencyBalance"
-import { FiatValue } from "./FiatValue"
+import { ButtonBase, styled, useMediaQuery, useTheme } from '@mui/material';
+import { useSorobanReact } from '@soroban-react/core';
+import { darken } from 'polished';
+import { ReactNode, useCallback, useState } from 'react';
+import { ChevronDown } from 'react-feather';
+import { TokenType } from '../../interfaces';
+import { flexColumnNoWrap, flexRowNoWrap } from '../../themes/styles';
+import { opacify } from '../../themes/utils';
+import { LoadingOpacityContainer } from '../Loader/styled';
+import CurrencyLogo from '../Logo/CurrencyLogo';
+import { Input as NumericalInput } from '../NumericalInput';
+import { RowBetween, RowFixed } from '../Row';
+import CurrencySearchModal from '../SearchModal/CurrencySearchModal';
+import CurrencyBalance from './CurrencyBalance';
+import { FiatValue } from './FiatValue';
 
 const InputPanel = styled('div')<{ hideInput?: boolean }>`
   ${flexColumnNoWrap};
@@ -23,29 +23,34 @@ const InputPanel = styled('div')<{ hideInput?: boolean }>`
   width: ${({ hideInput }) => (hideInput ? '100%' : 'initial')};
   transition: height 1s ease;
   will-change: height;
-`
+`;
 
 const Container = styled('div')<{ hideInput: boolean }>`
   min-height: 44px;
   border-radius: ${({ hideInput }) => (hideInput ? '16px' : '20px')};
   width: ${({ hideInput }) => (hideInput ? '100%' : 'initial')};
 
-  @media (max-width: ${({theme}) => theme.breakpoints.values.md}px) {
+  @media (max-width: ${({ theme }) => theme.breakpoints.values.md}px) {
     font-size: 12px;
   }
-`
+`;
 
-const CurrencySelect = styled(ButtonBase)<{
-  visible: boolean
-  selected: boolean
-  hideInput?: boolean
-  disabled?: boolean
+const shouldNotForwardPropsCurrencySelect = ['hideInput', 'visible'];
+
+const CurrencySelect = styled(ButtonBase, {
+  shouldForwardProp: (prop) => !shouldNotForwardPropsCurrencySelect.includes(prop as string),
+})<{
+  visible: boolean;
+  selected: boolean;
+  hideInput?: boolean;
+  disabled?: boolean;
 }>`
   align-items: center;
-  background-color: ${({ selected, theme }) => (selected ? theme.palette.customBackground.interactive : theme.palette.custom.borderColor)};
+  background-color: ${({ selected, theme }) =>
+    selected ? theme.palette.customBackground.interactive : theme.palette.custom.borderColor};
   opacity: ${({ disabled }) => (!disabled ? 1 : 0.4)};
   box-shadow: ${({ selected }) => (selected ? 'none' : '0px 6px 10px rgba(0, 0, 0, 0.075)')};
-  color: ${({ selected, theme }) => (selected ? theme.palette.primary.main : "#FFFFFF")};
+  color: ${({ selected, theme }) => (selected ? theme.palette.primary.main : '#FFFFFF')};
   height: unset;
   border-radius: 16px;
   outline: none;
@@ -60,7 +65,8 @@ const CurrencySelect = styled(ButtonBase)<{
 
   &:hover,
   &:active {
-    background-color: ${({ theme, selected }) => (selected ? theme.palette.customBackground.interactive : theme.palette.custom.borderColor)};
+    background-color: ${({ theme, selected }) =>
+      selected ? theme.palette.customBackground.interactive : theme.palette.custom.borderColor};
   }
 
   &:before {
@@ -85,13 +91,13 @@ const CurrencySelect = styled(ButtonBase)<{
   }
 
   visibility: ${({ visible }) => (visible ? 'visible' : 'hidden')};
-`
+`;
 
 const InputRow = styled('div')`
   ${flexRowNoWrap};
   align-items: center;
   justify-content: space-between;
-`
+`;
 
 const LabelRow = styled('div')`
   ${flexRowNoWrap};
@@ -104,20 +110,20 @@ const LabelRow = styled('div')`
     cursor: pointer;
     color: ${({ theme }) => darken(0.2, theme.palette.secondary.main)};
   }
-`
+`;
 
 const FiatRow = styled(LabelRow)`
   justify-content: flex-end;
   min-height: 20px;
   padding: 8px 0px 0px 0px;
-`
+`;
 
 const Aligner = styled('span')`
   display: flex;
   align-items: center;
   justify-content: space-between;
   width: 100%;
-`
+`;
 
 const StyledDropDown = styled(ChevronDown)<{ selected: boolean }>`
   margin: 0 0.25rem 0 0.35rem;
@@ -125,20 +131,20 @@ const StyledDropDown = styled(ChevronDown)<{ selected: boolean }>`
   margin-left: 8px;
 
   path {
-    stroke: ${({ selected, theme }) => (selected ? theme.palette.primary.main : "#FFF")};
+    stroke: ${({ selected, theme }) => (selected ? theme.palette.primary.main : '#FFF')};
     stroke-width: 2px;
   }
-`
+`;
 
 const StyledTokenName = styled('span')<{ active?: boolean }>`
   ${({ active }) => (active ? '  margin: 0 0.25rem 0 0.25rem;' : '  margin: 0 0.25rem 0 0.25rem;')}
   font-size: 20px;
   font-weight: 600;
 
-  @media (max-width: ${({theme}) => theme.breakpoints.values.md}px) {
+  @media (max-width: ${({ theme }) => theme.breakpoints.values.md}px) {
     font-size: 14px;
   }
-`
+`;
 
 const StyledNumericalInput = styled(NumericalInput)<{ $loading: boolean }>`
   filter: ${({ $loading }) => ($loading ? 'grayscale(1)' : 'none')};
@@ -149,32 +155,32 @@ const StyledNumericalInput = styled(NumericalInput)<{ $loading: boolean }>`
   line-height: 44px;
   font-variant: small-caps;
 
-  @media (max-width: ${({theme}) => theme.breakpoints.values.md}px) {
+  @media (max-width: ${({ theme }) => theme.breakpoints.values.md}px) {
     font-size: 20px;
   }
-`
+`;
 
 interface SwapCurrencyInputPanelProps {
-  value: any
-  onUserInput: (value: string) => void
-  onMax: (maxValue: number) => void
-  showMaxButton: boolean
-  label?: ReactNode
-  onCurrencySelect: (currency: TokenType) => void
-  currency?: TokenType | null
-  hideBalance?: boolean
-  hideInput?: boolean
-  otherCurrency?: TokenType | null
-  fiatValue?: { data?: number; isLoading: boolean }
-  priceImpact?: string
-  id: string
-  showCommonBases?: boolean
-  showCurrencyAmount?: boolean
-  disableNonToken?: boolean
-  renderBalance?: (amount: string) => string
-  locked?: boolean
-  loading?: boolean
-  disabled?: boolean
+  value: any;
+  onUserInput: (value: string) => void;
+  onMax: (maxValue: number) => void;
+  showMaxButton: boolean;
+  label?: ReactNode;
+  onCurrencySelect: (currency: TokenType) => void;
+  currency?: TokenType | null;
+  hideBalance?: boolean;
+  hideInput?: boolean;
+  otherCurrency?: TokenType | null;
+  fiatValue?: { data?: number; isLoading: boolean };
+  priceImpact?: string;
+  id: string;
+  showCommonBases?: boolean;
+  showCurrencyAmount?: boolean;
+  disableNonToken?: boolean;
+  renderBalance?: (amount: string) => string;
+  locked?: boolean;
+  loading?: boolean;
+  disabled?: boolean;
 }
 
 export default function SwapCurrencyInputPanel({
@@ -199,18 +205,18 @@ export default function SwapCurrencyInputPanel({
   disabled = false,
   ...rest
 }: SwapCurrencyInputPanelProps) {
-  const [modalOpen, setModalOpen] = useState(false)
-  const { address, activeChain } = useSorobanReact()
-  const theme = useTheme()
-  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+  const [modalOpen, setModalOpen] = useState(false);
+  const { address, activeChain } = useSorobanReact();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
   const handleDismissSearch = useCallback(() => {
-    setModalOpen(false)
-  }, [setModalOpen])
+    setModalOpen(false);
+  }, [setModalOpen]);
 
-  const chainAllowed = true //isSupportedChain(activeChain)
+  const chainAllowed = true; //isSupportedChain(activeChain)
 
-  const sellOrReceive = id == "swap-input" ? "sell" : "receive"
+  const sellOrReceive = id == 'swap-input' ? 'sell' : 'receive';
 
   return (
     <InputPanel id={id} hideInput={hideInput} {...rest}>
@@ -224,15 +230,22 @@ export default function SwapCurrencyInputPanel({
             hideInput={hideInput}
             className="open-currency-select-button"
             onClick={() => {
-                setModalOpen(true)
+              setModalOpen(true);
             }}
           >
             <Aligner>
               <RowFixed>
                 {currency ? (
-                  <CurrencyLogo style={{ marginRight: '2px' }} currency={currency} size={isMobile ? "16px" : "24px"} />
+                  <CurrencyLogo
+                    style={{ marginRight: '2px' }}
+                    currency={currency}
+                    size={isMobile ? '16px' : '24px'}
+                  />
                 ) : null}
-                <StyledTokenName className="token-symbol-container" active={Boolean(currency && currency.symbol)}>
+                <StyledTokenName
+                  className="token-symbol-container"
+                  active={Boolean(currency && currency.symbol)}
+                >
                   {(currency && currency.symbol && currency.symbol.length > 20
                     ? currency.symbol.slice(0, 4) +
                       '...' +
@@ -256,14 +269,14 @@ export default function SwapCurrencyInputPanel({
         {Boolean(!hideInput && !hideBalance) && (
           <FiatRow>
             <RowBetween>
-              {address && currency? (
-                <CurrencyBalance 
-                  address={address} 
-                  currency={currency} 
+              {address && currency ? (
+                <CurrencyBalance
+                  address={address}
+                  currency={currency}
                   onMax={onMax}
                   hideBalance={hideBalance}
                   showMaxButton={showMaxButton}
-                  />
+                />
               ) : (
                 <span />
               )}
@@ -274,18 +287,17 @@ export default function SwapCurrencyInputPanel({
           </FiatRow>
         )}
       </Container>
-      
-        <CurrencySearchModal
-          isOpen={modalOpen}
-          onDismiss={handleDismissSearch}
-          onCurrencySelect={onCurrencySelect}
-          selectedCurrency={currency}
-          otherSelectedCurrency={otherCurrency}
-          showCommonBases={showCommonBases}
-          showCurrencyAmount={showCurrencyAmount}
-          disableNonToken={disableNonToken}
-        />
-      
+
+      <CurrencySearchModal
+        isOpen={modalOpen}
+        onDismiss={handleDismissSearch}
+        onCurrencySelect={onCurrencySelect}
+        selectedCurrency={currency}
+        otherSelectedCurrency={otherCurrency}
+        showCommonBases={showCommonBases}
+        showCurrencyAmount={showCurrencyAmount}
+        disableNonToken={disableNonToken}
+      />
     </InputPanel>
-  )
+  );
 }
