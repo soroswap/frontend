@@ -64,16 +64,8 @@ export default function AddLiquidityComponent() {
 
   const sorobanContext = useSorobanReact()
 
-  // const [currencyA, setCurrencyA] = useState<TokenType | undefined>()
-  // const [currencyB, setCurrencyB] = useState<TokenType | undefined>()
-
   const [amountOfLpTokensToReceive, setAmountOfLpTokensToReceive] = useState<string>("")
-  // const [amountOfLpTokensToReceiveBN, setAmountOfLpTokensToReceiveBN] = useState<BigNumber>()
   const [totalShares, setTotalShares] = useState<string>("")
-
-  // const navigate = useCallback((destination: any) => { router.push(destination) }, [router]
-  // )
-  // // console.log("pages/add, currencyA, currencyB", currencyA, currencyB)
 
   const baseCurrency = useToken(currencyIdA)
   const currencyB = useToken(currencyIdB)
@@ -150,7 +142,6 @@ export default function AddLiquidityComponent() {
       desired0BN = new BigNumber(formattedAmounts[dependentField]).shiftedBy(7);
       desired1BN = new BigNumber(formattedAmounts[independentField]).shiftedBy(7);
     }
-    console.log("🚀 ~ file: AddLiquidityComponent.tsx:155 ~ provideLiquidity ~  desired0BN, desired1BN: ", desired0BN.toString(), desired1BN.toString())
 
     const desiredAScVal = bigNumberToI128(desired0BN);
     const desiredBScVal = bigNumberToI128(desired1BN);
@@ -162,14 +153,10 @@ export default function AddLiquidityComponent() {
     const factor = 10;
 
     const min0BN = desired0BN.multipliedBy(factor).decimalPlaces(0); // we dont want to have decimals after applying the factor
-    console.log("🚀 ~ file: AddLiquidityComponent.tsx:155 ~ provideLiquidity ~ min0BN.toString():", min0BN.toString())
     const min1BN = desired1BN.multipliedBy(factor).decimalPlaces(0);
-    console.log("🚀 ~ file: AddLiquidityComponent.tsx:157 ~ provideLiquidity ~ min1BN.toString():", min1BN.toString())
 
     const minAScVal = bigNumberToI128(min0BN);
     const minBScVal = bigNumberToI128(min1BN);
-
-    console.log("🚀 ~ file: AddLiquidityComponent.tsx:155 ~ provideLiquidity ~  baseCurrency, currencyB: ", baseCurrency, currencyB)
 
     const args = [
       new SorobanClient.Address(baseCurrency?.address ?? "").toScVal(),
