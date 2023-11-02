@@ -51,6 +51,7 @@ const LPTokensContainer = styled('div')`
 
 const LPCard = styled('div')`
   background-color: ${({ theme }) => theme.palette.customBackground.bg1};
+  background-color: ${({ theme }) => theme.palette.customBackground.bg1};
   border-radius: 16px;
   width: 100%;
   min-height: 86px;
@@ -76,16 +77,25 @@ const StatusWrapper = styled('div')`
 `;
 
 export default function LiquidityPage() {
-  const { lpTokens, sorobanContext } = useGetLpTokens();
+  const sorobanContext = useSorobanReact();
   const { address } = sorobanContext;
   const router = useRouter();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   const v2IsLoading = false;
+  const noLiquidity = false;
+  const isCreate = false;
 
+  const [lpTokens, setLpTokens] = useState<LpTokensObj[]>();
   const [isModalOpen, setModalOpen] = useState<boolean>(false);
   const [selectedLP, setSelectedLP] = useState<LpTokensObj>();
+
+  useEffect(() => {
+    getLpTokens(sorobanContext).then((resp) => {
+      setLpTokens(resp);
+    });
+  }, [sorobanContext]);
 
   const handleLPClick = (obj: LpTokensObj) => {
     setSelectedLP(obj);
