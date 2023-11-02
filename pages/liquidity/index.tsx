@@ -13,6 +13,7 @@ import { LpTokensObj, getLpTokens } from 'functions/getLpTokens';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import SEO from '../../src/components/SEO';
+import useGetLpTokens from 'hooks/useGetLpTokens';
 
 const PageWrapper = styled(AutoColumn)`
   position: relative;
@@ -49,6 +50,7 @@ const LPTokensContainer = styled('div')`
 `;
 
 const LPCard = styled('div')`
+  background-color: ${({ theme }) => theme.palette.customBackground.bg1};
   background-color: ${({ theme }) => theme.palette.customBackground.bg1};
   border-radius: 16px;
   width: 100%;

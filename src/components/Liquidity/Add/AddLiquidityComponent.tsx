@@ -28,6 +28,7 @@ import AddModalFooter from './AddModalFooter';
 import AddModalHeader from './AddModalHeader';
 import { useUserSlippageToleranceWithDefault } from 'state/user/hooks';
 import { DEFAULT_SLIPPAGE_INPUT_VALUE } from 'components/Settings/MaxSlippageSettings';
+import useLiquidityValidations from 'hooks/useLiquidityValidations';
 
 export const PageWrapper = styled('main')`
   position: relative;
@@ -59,11 +60,9 @@ export const PageWrapper = styled('main')`
 type TokensType = [string, string];
 
 export default function AddLiquidityComponent() {
-
-
-  const theme = useTheme()
-  const userSlippage = useUserSlippageToleranceWithDefault(DEFAULT_SLIPPAGE_INPUT_VALUE)
-  const { ConnectWalletModal } = useContext(AppContext)
+  const theme = useTheme();
+  const userSlippage = useUserSlippageToleranceWithDefault(DEFAULT_SLIPPAGE_INPUT_VALUE);
+  const { ConnectWalletModal } = useContext(AppContext);
   const { isConnectWalletModalOpen, setConnectWalletModalOpen } = ConnectWalletModal;
 
   const router = useRouter();
@@ -73,38 +72,27 @@ export default function AddLiquidityComponent() {
 
   const sorobanContext = useSorobanReact();
 
+  const [amountOfLpTokensToReceive, setAmountOfLpTokensToReceive] = useState<string>('');
+  const [totalShares, setTotalShares] = useState<string>('');
 
-  const [amountOfLpTokensToReceive, setAmountOfLpTokensToReceive] = useState<string>("")
-  const [totalShares, setTotalShares] = useState<string>("")
-
-  const baseCurrency = useToken(currencyIdA)
-  const currencyB = useToken(currencyIdB)
+  const baseCurrency = useToken(currencyIdA);
+  const currencyB = useToken(currencyIdB);
 
   const derivedMintInfo = useDerivedMintInfo(baseCurrency ?? undefined, currencyB ?? undefined);
   const { dependentField, currencies, parsedAmounts, noLiquidity, pairAddress } = derivedMintInfo;
-  // console.log("pages/add derivedMintInfo:", derivedMintInfo)
-  // const isCreate = false
 
   const { onFieldAInput, onFieldBInput } = useMintActionHandlers(noLiquidity);
 
   const { independentField, typedValue, otherTypedValue } = useMintState();
 
-  // // console.log("src/components/Add/index.tsx: independentField:", independentField)
   const formattedAmounts = useMemo(() => {
     return {
       [independentField]: typedValue,
-      // [dependentField]: noLiquidity ? otherTypedValue : parsedAmounts[dependentField]?.value ?? '',
       [dependentField]: noLiquidity
         ? otherTypedValue
         : formatTokenAmount(parsedAmounts[dependentField]?.value ?? ''),
-      // [dependentField]: otherTypedValue
     };
   }, [dependentField, independentField, noLiquidity, otherTypedValue, parsedAmounts, typedValue]);
-
-  // // console.log("src/components/Add/index.tsx: formattedAmounts:", formattedAmounts)
-  // // console.log("src/components/Add/index.tsx: formatTokenAmount(formattedAmounts[dependentField]):", formatTokenAmount(formattedAmounts[dependentField]))
-  // // console.log("src/components/Add/index.tsx: parsedAmounts:", parsedAmounts)
-  // // console.log("src/components/Add/index.tsx: noLiquidity:", noLiquidity)
 
   // // Modal and loading
   const [showConfirm, setShowConfirm] = useState<boolean>(false);
@@ -138,6 +126,17 @@ export default function AddLiquidityComponent() {
     //     amount_b_min: i128,
     //     to: Address,
     //     deadline: u64,
+
+    //   fn add_liquidity(
+    //     e: Env,
+    //     token_a: Address,
+    //     token_b: Address,
+    //     amount_a_desired: i128,
+    //     amount_b_desired: i128,
+    //     amount_a_min: i128,
+    //     amount_b_min: i128,
+    //     to: Address,
+    //     deadline: u64,
     // ) -> (i128, i128, i128);
 
     // When providing liquidity for the first time, the independentField is the last the user type.
@@ -157,8 +156,7 @@ export default function AddLiquidityComponent() {
     const desiredBScVal = bigNumberToI128(desired1BN);
 
     // Here we are implementint the slippage: which will be in the "0.5" format when is 0.5%
-
-    let factor = (BigNumber(100).minus(userSlippage)).dividedBy(100);
+    let factor = BigNumber(100).minus(userSlippage).dividedBy(100);
     // TODO: Solve after solving token orders
     factor = BigNumber(10);
 
@@ -175,25 +173,29 @@ export default function AddLiquidityComponent() {
       desiredBScVal,
       minAScVal,
       minBScVal,
+      new SorobanClient.Address(sorobanContext.address ?? '').toScVal(),
+      bigNumberToU64(BigNumber(getCurrentTimePlusOneHour())),
+    ];
 
-      new SorobanClient.Address(sorobanContext.address ?? "").toScVal(),
-      bigNumberToU64(BigNumber(getCurrentTimePlusOneHour()))
-    ]
-
-    routerCallback(
-      RouterMethod.ADD_LIQUIDITY,
-      args,
-      true
-    ).then((result) => {
-      console.log("🚀 « result:", result)
-      setAttemptingTxn(false)
-      setTxHash(result as unknown as string)
-    }).catch((error) => {
-      console.log("🚀 « error:", error)
-      setAttemptingTxn(false)
-    })
-
-  }, [independentField, baseCurrency, currencyB, sorobanContext.address, routerCallback, formattedAmounts, dependentField])
+    routerCallback(RouterMethod.ADD_LIQUIDITY, args, true)
+      .then((result) => {
+        console.log('🚀 « result:', result);
+        setAttemptingTxn(false);
+        setTxHash(result as unknown as string);
+      })
+      .catch((error) => {
+        console.log('🚀 « error:', error);
+        setAttemptingTxn(false);
+      });
+  }, [
+    independentField,
+    baseCurrency,
+    currencyB,
+    sorobanContext.address,
+    routerCallback,
+    formattedAmounts,
+    dependentField,
+  ]);
 
   const handleCurrencyASelect = useCallback(
     (currencyA: TokenType) => {
@@ -219,90 +221,21 @@ export default function AddLiquidityComponent() {
     [currencyIdA, router],
   );
 
-  // const handleCurrencyBSelect = useCallback(
-  //   (currencyBNew: Currency) => {
-  //     const [idB, idA] = handleCurrencySelect(currencyBNew, currencyIdA)
-  //     if (idA === undefined) {
-  //       navigate(`/add/${idB}`)
-  //     } else {
-  //       navigate(`/add/${idA}/${idB}`)
-  //     }
-  //   },
-  //   [handleCurrencySelect, currencyIdA, navigate]
-  // )
-
-  // // update currencies
-  // useEffect(() => {
-  //   if (currencyIdA || currencyIdA !== '') {
-  //     getToken(sorobanContext, currencyIdA).then((token) => {
-  //       // console.log("src/components/Add/index: get Token A called: ", token)
-  //       setCurrencyA(token)
-  //     })
-  //   }
-  //   if (currencyIdB || currencyIdB !== '') {
-  //     getToken(sorobanContext, currencyIdB).then((token) => {
-  //       // console.log("src/components/Add/index: get Token B called: ", token)
-  //       setCurrencyB(token)
-  //     })
-  //   }
-
-  // }, [currencyIdA, currencyIdB, sorobanContext])
-
-  // // Get the LP token amount to receive
-  // useEffect(() => {
-  //   if (!pairAddress || !currencyA || !currencyB) return
-  //   // LP tokens
-  //   // We need to get which one is amount0
-  //   reservesBNWithTokens(pairAddress, sorobanContext).then((reserves) => {
-  //     if (!reserves.reserve0 || !reserves.reserve1 || !formattedAmounts.CURRENCY_A || !formattedAmounts.CURRENCY_B) return
-
-  //     let amount0, amount1
-  //     // Check if currencyA corresponds to token0 or token1
-  //     if (currencyA.address === reserves.token0) {
-  //       amount0 = new BigNumber(formattedAmounts.CURRENCY_A)
-  //       amount1 = new BigNumber(formattedAmounts.CURRENCY_B)
-  //     } else if (currencyA.address === reserves.token1) {
-  //       amount0 = new BigNumber(formattedAmounts.CURRENCY_B)
-  //       amount1 = new BigNumber(formattedAmounts.CURRENCY_A)
-  //     } else {
-  //       console.log("currencyA does not correspond to either token0 or token1");
-  //       return
-  //     }
-  //     getLpTokensAmount(
-  //       amount0,
-  //       reserves.reserve0,
-  //       amount1,
-  //       reserves.reserve1,
-  //       pairAddress,
-  //       sorobanContext
-  //     ).then((lpTokens) => {
-  //       if (lpTokens === undefined) console.log("src/components/Add/index.tsx: lpTokens are undefined")
-  //       else {
-  //         setAmountOfLpTokensToReceive(lpTokens.toString())
-  //         setAmountOfLpTokensToReceiveBN(lpTokens)
-  //       }
-  //     })
-  //   })
-  // }, [currencyA, currencyB, formattedAmounts, pairAddress, sorobanContext])
-
-  // // Get share of Pool
-  // useEffect(() => {
-  //   if (!pairAddress || !amountOfLpTokensToReceiveBN) return
-  //   getTotalShares(pairAddress, sorobanContext).then((totalSharesResult) => {
-  //     if (typeof totalSharesResult === 'number' || typeof totalSharesResult === 'string') {
-  //       const totalSharesBN = new BigNumber(totalSharesResult)
-  //       const share = amountOfLpTokensToReceiveBN.multipliedBy(100).dividedBy(amountOfLpTokensToReceiveBN.plus(totalSharesBN.shiftedBy(-7)))
-  //       setTotalShares(share.toString())
-  //     } else {
-  //       console.error("Invalid type for totalSharesResult", totalSharesResult);
-  //     }
-  //   })
-  // }, [amountOfLpTokensToReceiveBN, pairAddress, sorobanContext])
-
   const pendingText = (
-    <BodySmall>Adding {formatTokenAmount(parsedAmounts[Field.CURRENCY_A]?.value ?? "")} {baseCurrency?.symbol} and
-      {' '}{formatTokenAmount(parsedAmounts[Field.CURRENCY_B]?.value ?? "")} {currencyB?.symbol}</BodySmall>
-  )
+    <BodySmall>
+      Adding {formatTokenAmount(parsedAmounts[Field.CURRENCY_A]?.value ?? '')}{' '}
+      {baseCurrency?.symbol} and {formatTokenAmount(parsedAmounts[Field.CURRENCY_B]?.value ?? '')}{' '}
+      {currencyB?.symbol}
+    </BodySmall>
+  );
+
+  const { hasEnoughBalance, hasSelectedTokens, hasValidInputValues, getSupplyButtonText } =
+    useLiquidityValidations({
+      currencies,
+      currencyIdA,
+      currencyIdB,
+      formattedAmounts,
+    });
 
   return (
     <>
@@ -337,9 +270,12 @@ export default function AddLiquidityComponent() {
         <AutoColumn gap="20px">
           <DarkGrayCard>
             <BodySmall color={theme.palette.custom.textTertiary}>
-
-              <b>Tip: </b>When you add liquidity, you will receive LP tokens representing your position.
-              <span style={{ marginTop: 15 }}>These tokens automatically earn fees proportional to your share of the pool.Can be redeemed at any time</span>
+              <b>Tip: </b>When you add liquidity, you will receive LP tokens representing your
+              position.
+              <span style={{ marginTop: 15 }}>
+                These tokens automatically earn fees proportional to your share of the pool.Can be
+                redeemed at any time
+              </span>
             </BodySmall>
           </DarkGrayCard>
           {/* //Input Token */}
@@ -352,7 +288,7 @@ export default function AddLiquidityComponent() {
             showMaxButton={false}
             currency={currencies[Field.CURRENCY_A] ?? null}
             transparent
-          // showCommonBases
+            // showCommonBases
           />
           <ColumnCenter>
             <Plus size="16" color={theme.palette.secondary.main} />
@@ -369,7 +305,7 @@ export default function AddLiquidityComponent() {
             // }}
             showMaxButton={false}
             currency={currencies[Field.CURRENCY_B] ?? null}
-          // showCommonBases
+            // showCommonBases
           />
           {!sorobanContext.address ? (
             <ButtonLight onClick={() => setConnectWalletModalOpen(true)}>
@@ -383,11 +319,11 @@ export default function AddLiquidityComponent() {
                   // provideLiquidity()
                   console.log('pages/add: ButtonError onClick');
                 }}
-                disabled={false}
+                disabled={!hasValidInputValues() || !hasEnoughBalance() || !hasSelectedTokens()}
                 error={false}
               >
                 <ButtonText fontSize={20} fontWeight={600}>
-                  Supply
+                  {getSupplyButtonText()}
                 </ButtonText>
               </ButtonError>
             </AutoColumn>

@@ -1,12 +1,9 @@
-import { Typography, styled } from '@mui/material';
+import { CircularProgress, Typography, styled } from '@mui/material';
 import CardContent from '@mui/material/CardContent';
-import { useSorobanReact } from '@soroban-react/core';
-import { tokenBalances, tokenBalancesType } from 'hooks';
 import { useMintTestToken } from 'hooks/useMintTestToken';
-import { useEffect, useState } from 'react';
-import { useTokens } from '../hooks/useTokens';
 import { ButtonPrimary } from './Buttons/Button';
 import { AutoColumn } from './Column';
+import useGetMyBalances from 'hooks/useGetMyBalances';
 
 const PageWrapper = styled(AutoColumn)`
   position: relative;
@@ -31,34 +28,13 @@ const PageWrapper = styled(AutoColumn)`
 `;
 
 export function Balances() {
-  const sorobanContext = useSorobanReact();
-  const tokens = useTokens(sorobanContext);
+  const { sorobanContext, tokens, tokenBalancesResponse, isLoading, isError } = useGetMyBalances();
 
-  // State to hold token balances
-  const [tokenBalancesResponse, setTokenBalancesResponse] = useState<
-    tokenBalancesType | undefined
-  >();
-
-  //Disable Mint Test Tokens if already minted
-  const [mintDisabled, setMintDisabled] = useState(true);
-
-  // Effect to fetch token balances
-  useEffect(() => {
-    if (sorobanContext.activeChain && sorobanContext.address && tokens.length > 0) {
-      tokenBalances(sorobanContext.address, tokens, sorobanContext, true).then((resp) => {
-        setTokenBalancesResponse(resp);
-        if (Number(resp?.balances[0].balance) > 0) {
-          setMintDisabled(true);
-        } else {
-          setMintDisabled(false);
-        }
-      });
-    }
-  }, [sorobanContext, tokens]);
+  const isMintDisabled = Number(tokenBalancesResponse?.balances[0].balance) > 0;
 
   const mintTestTokens = useMintTestToken();
+
   const handleMint = () => {
-    setMintDisabled(true);
     mintTestTokens();
   };
 
@@ -68,8 +44,10 @@ export function Balances() {
         <Typography gutterBottom variant="h5" component="div">
           Balances
         </Typography>
+
         {sorobanContext.address && tokens.length > 0 ? (
           <>
+            {isLoading && <CircularProgress />}
             {tokenBalancesResponse?.balances?.map((tokenBalance) => (
               <p key={tokenBalance.address}>
                 {tokenBalance.symbol} : {tokenBalance.balance as string}
@@ -80,7 +58,7 @@ export function Balances() {
           <div>Connect your Wallet</div>
         )}
 
-        <ButtonPrimary onClick={handleMint} disabled={mintDisabled}>
+        <ButtonPrimary onClick={handleMint} disabled={isMintDisabled}>
           Mint test tokens
         </ButtonPrimary>
       </CardContent>
