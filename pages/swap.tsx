@@ -1,4 +1,4 @@
-import { styled, useTheme } from '@mui/material';
+import { styled } from '@mui/material';
 import { useSorobanReact } from '@soroban-react/core';
 import { ButtonError, ButtonLight, ButtonPrimary } from 'components/Buttons/Button';
 import { AutoColumn } from 'components/Column';
@@ -111,7 +111,6 @@ export function SwapComponent({
   onCurrencyChange?: (selected: Pick<SwapState, Field.INPUT | Field.OUTPUT>) => void;
   disableTokenInputs?: boolean;
 }) {
-  const theme = useTheme();
   const sorobanContext = useSorobanReact();
   const { address } = sorobanContext;
 
@@ -278,7 +277,7 @@ export function SwapComponent({
     // allowance.state === AllowanceState.ALLOWED ? allowance.permitSignature : undefined
   );
 
-  const handleSwap = useCallback(() => {
+  const handleSwap = () => {
     if (!swapCallback) {
       return;
     }
@@ -301,11 +300,10 @@ export function SwapComponent({
       .catch((error) => {
         setSwapState((currentState) => ({
           ...currentState,
-          swapError: error,
-          swapResult: undefined,
+          showConfirm: false,
         }));
       });
-  }, [swapCallback]);
+  };
 
   const showDetailsDropdown = Boolean(
     userHasSpecifiedInputOutput && (trade || routeIsLoading || routeIsSyncing),
