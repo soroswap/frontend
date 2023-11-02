@@ -28,7 +28,7 @@ import AddModalFooter from './AddModalFooter';
 import AddModalHeader from './AddModalHeader';
 import { useUserSlippageToleranceWithDefault } from 'state/user/hooks';
 import { DEFAULT_SLIPPAGE_INPUT_VALUE } from 'components/Settings/MaxSlippageSettings';
-import useGetMyBalances from 'hooks/useGetMyBalances';
+import useLiquidityValidations from 'hooks/useLiquidityValidations';
 
 export const PageWrapper = styled('main')`
   position: relative;
@@ -226,51 +226,13 @@ export default function AddLiquidityComponent() {
     </BodySmall>
   );
 
-  const { tokenBalancesResponse } = useGetMyBalances();
-
-  const hasEnoughBalance = () => {
-    const currentCurrencyAValue = formattedAmounts[Field.CURRENCY_A];
-    const currentCurrencyBValue = formattedAmounts[Field.CURRENCY_B];
-
-    const myCurrencyABalance =
-      tokenBalancesResponse?.balances.find((balance) => balance.address === currencyIdA)?.balance ??
-      0;
-
-    const myCurrencyBBalance =
-      tokenBalancesResponse?.balances.find((balance) => balance.address === currencyIdB)?.balance ??
-      0;
-
-    if (Number(currentCurrencyAValue) > Number(myCurrencyABalance)) {
-      return false;
-    }
-
-    if (Number(currentCurrencyBValue) > Number(myCurrencyBBalance)) {
-      return false;
-    }
-
-    return true;
-  };
-
-  const hasSelectedTokens = () => {
-    const isCurrencyASelected = currencies[Field.CURRENCY_A];
-    const isCurrencyBSelected = currencies[Field.CURRENCY_B];
-
-    return isCurrencyASelected && isCurrencyBSelected;
-  };
-
-  const hasValidInputValues = () => {
-    const isValidCurrencyAValue = Number(formattedAmounts[Field.CURRENCY_A]) > 0;
-    const isValidCurrencyBValue = Number(formattedAmounts[Field.CURRENCY_B]) > 0;
-
-    return isValidCurrencyAValue && isValidCurrencyBValue;
-  };
-
-  const getSupplyButtonText = () => {
-    if (!hasSelectedTokens()) return 'Select tokens';
-    if (!hasValidInputValues()) return 'Enter an amount';
-    if (!hasEnoughBalance()) return 'Insufficient balance';
-    return 'Supply';
-  };
+  const { hasEnoughBalance, hasSelectedTokens, hasValidInputValues, getSupplyButtonText } =
+    useLiquidityValidations({
+      currencies,
+      currencyIdA,
+      currencyIdB,
+      formattedAmounts,
+    });
 
   return (
     <>
