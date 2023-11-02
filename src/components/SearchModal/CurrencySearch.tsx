@@ -1,22 +1,31 @@
-import { Typography, styled, useTheme } from '@mui/material'
-import Column from '../Column'
-import Row, { RowBetween } from '../Row'
+import { Typography, styled, useTheme } from '@mui/material';
+import Column from '../Column';
+import Row, { RowBetween } from '../Row';
 // import CommonBases from './CommonBases'
-import { useSorobanReact } from '@soroban-react/core'
-import { SubHeader } from 'components/Text'
-import { isAddress } from 'helpers/address'
-import { useDefaultActiveTokens, useToken } from 'hooks'
-import useDebounce from 'hooks/useDebounce'
-import { useWindowSize } from 'hooks/useWindowSize'
-import { TokenType } from 'interfaces'
-import { getTokenFilter } from 'lib/hooks/useTokenList/filtering'
-import { useSortTokensByQuery } from 'lib/hooks/useTokenList/sorting'
-import { ChangeEvent, KeyboardEvent, RefObject, useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import AutoSizer from 'react-virtualized-auto-sizer'
-import { FixedSizeList } from 'react-window'
-import { CloseButton } from '../../components/Buttons/CloseButton'
-import CurrencyList, { CurrencyRow, formatAnalyticsEventProperties } from './CurrencyList'
-import { PaddedColumn, SearchInput, Separator } from './styleds'
+import { useSorobanReact } from '@soroban-react/core';
+import { SubHeader } from 'components/Text';
+import { isAddress } from 'helpers/address';
+import { useDefaultActiveTokens, useToken } from 'hooks';
+import useDebounce from 'hooks/useDebounce';
+import { useWindowSize } from 'hooks/useWindowSize';
+import { TokenType } from 'interfaces';
+import { getTokenFilter } from 'lib/hooks/useTokenList/filtering';
+import { useSortTokensByQuery } from 'lib/hooks/useTokenList/sorting';
+import {
+  ChangeEvent,
+  KeyboardEvent,
+  RefObject,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
+import AutoSizer from 'react-virtualized-auto-sizer';
+import { FixedSizeList } from 'react-window';
+import { CloseButton } from '../../components/Buttons/CloseButton';
+import CurrencyList, { CurrencyRow, formatAnalyticsEventProperties } from './CurrencyList';
+import { PaddedColumn, SearchInput, Separator } from './styleds';
 
 const ContentWrapper = styled(Column)<{ modalheight?: number }>`
   overflow: hidden;
@@ -27,23 +36,29 @@ const ContentWrapper = styled(Column)<{ modalheight?: number }>`
   transform: translate(-50%, -50%);
   width: calc(100% - 40px);
   max-width: 420px;
-  height: ${({ modalheight }) => modalheight+'vh' ?? '90px'};
+  height: ${({ modalheight }) => modalheight + 'vh' ?? '90px'};
   min-height: 90px;
-  background: ${({ theme }) => `linear-gradient(${theme.palette.customBackground.module}, ${theme.palette.customBackground.module}) padding-box,
-              linear-gradient(150deg, rgba(136,102,221,1) 0%, rgba(${theme.palette.mode == 'dark' ? "33,29,50,1" : "255,255,255,1"}) 35%, rgba(${theme.palette.mode == 'dark' ? "33,29,50,1" : "255,255,255,1"}) 65%, rgba(136,102,221,1) 100%) border-box`};
+  background: ${({ theme }) => `linear-gradient(${theme.palette.customBackground.module}, ${
+    theme.palette.customBackground.module
+  }) padding-box,
+              linear-gradient(150deg, rgba(136,102,221,1) 0%, rgba(${
+                theme.palette.mode == 'dark' ? '33,29,50,1' : '255,255,255,1'
+              }) 35%, rgba(${
+                theme.palette.mode == 'dark' ? '33,29,50,1' : '255,255,255,1'
+              }) 65%, rgba(136,102,221,1) 100%) border-box`};
   border: 1px solid transparent;
-`
+`;
 
 interface CurrencySearchProps {
-  isOpen: boolean
-  onDismiss: () => void
-  selectedCurrency?: TokenType | null
-  onCurrencySelect: (currency: TokenType, hasWarning?: boolean) => void
-  otherSelectedCurrency?: TokenType | null
-  showCommonBases?: boolean
-  showCurrencyAmount?: boolean
-  disableNonToken?: boolean
-  onlyShowCurrenciesWithBalance?: boolean
+  isOpen: boolean;
+  onDismiss: () => void;
+  selectedCurrency?: TokenType | null;
+  onCurrencySelect: (currency: TokenType, hasWarning?: boolean) => void;
+  otherSelectedCurrency?: TokenType | null;
+  showCommonBases?: boolean;
+  showCurrencyAmount?: boolean;
+  disableNonToken?: boolean;
+  onlyShowCurrenciesWithBalance?: boolean;
 }
 
 export function CurrencySearch({
@@ -57,20 +72,20 @@ export function CurrencySearch({
   isOpen,
   onlyShowCurrenciesWithBalance,
 }: CurrencySearchProps) {
-  const { address, activeChain } = useSorobanReact()
+  const { address, activeChain } = useSorobanReact();
   const sorobanContext = useSorobanReact();
-  const theme = useTheme()
+  const theme = useTheme();
 
-  const [tokenLoaderTimerElapsed, setTokenLoaderTimerElapsed] = useState(false)
+  const [tokenLoaderTimerElapsed, setTokenLoaderTimerElapsed] = useState(false);
 
   // refs for fixed size lists
-  const fixedList = useRef<FixedSizeList>()
+  const fixedList = useRef<FixedSizeList>();
 
-  const [searchQuery, setSearchQuery] = useState<string>('')
-  const debouncedQuery = useDebounce(searchQuery, 200)
-  const isAddressSearch = isAddress(debouncedQuery)
-  const searchToken = useToken(debouncedQuery)
-  const searchTokenIsAdded = false //useIsUserAddedToken(searchToken)
+  const [searchQuery, setSearchQuery] = useState<string>('');
+  const debouncedQuery = useDebounce(searchQuery, 200);
+  const isAddressSearch = isAddress(debouncedQuery);
+  const searchToken = useToken(debouncedQuery);
+  const searchTokenIsAdded = false; //useIsUserAddedToken(searchToken)
 
   //This sends and event when a token is searched to google analytics
   // useEffect(() => {
@@ -83,36 +98,34 @@ export function CurrencySearch({
   //   }
   // }, [isAddressSearch])
 
-  const defaultTokens = useDefaultActiveTokens()
+  const defaultTokens = useDefaultActiveTokens();
   const filteredTokens: TokenType[] = useMemo(() => {
-    return Object.values(defaultTokens).filter(getTokenFilter(debouncedQuery))
-  }, [defaultTokens, debouncedQuery])
+    return Object.values(defaultTokens).filter(getTokenFilter(debouncedQuery));
+  }, [defaultTokens, debouncedQuery]);
 
-
-
-  const searchCurrencies = useSortTokensByQuery(debouncedQuery, filteredTokens)
+  const searchCurrencies = useSortTokensByQuery(debouncedQuery, filteredTokens);
 
   const handleCurrencySelect = useCallback(
     (currency: TokenType, hasWarning?: boolean) => {
-      onCurrencySelect(currency, hasWarning)
-      if (!hasWarning) onDismiss()
+      onCurrencySelect(currency, hasWarning);
+      if (!hasWarning) onDismiss();
     },
-    [onDismiss, onCurrencySelect]
-  )
+    [onDismiss, onCurrencySelect],
+  );
 
   // clear the input on open
   useEffect(() => {
-    if (isOpen) setSearchQuery('')
-  }, [isOpen])
+    if (isOpen) setSearchQuery('');
+  }, [isOpen]);
 
   // // manage focus on modal show
-  const inputRef = useRef<HTMLInputElement>()
+  const inputRef = useRef<HTMLInputElement>();
   const handleInput = useCallback((event: ChangeEvent<HTMLInputElement>) => {
-    const input = event.target.value
-    console.log("🚀 « input:", input)
-    setSearchQuery(input)
-    fixedList.current?.scrollTo(0)
-  }, [])
+    const input = event.target.value;
+    console.log('🚀 « input:', input);
+    setSearchQuery(input);
+    fixedList.current?.scrollTo(0);
+  }, []);
 
   const handleEnter = useCallback(
     (e: KeyboardEvent<HTMLInputElement>) => {
@@ -122,36 +135,34 @@ export function CurrencySearch({
             searchCurrencies[0].symbol?.toLowerCase() === debouncedQuery.trim().toLowerCase() ||
             searchCurrencies.length === 1
           ) {
-            handleCurrencySelect(searchCurrencies[0])
+            handleCurrencySelect(searchCurrencies[0]);
           }
         }
       }
     },
-    [debouncedQuery, searchCurrencies, handleCurrencySelect]
-  )
+    [debouncedQuery, searchCurrencies, handleCurrencySelect],
+  );
 
   // Timeout token loader after 3 seconds to avoid hanging in a loading state.
   useEffect(() => {
     const tokenLoaderTimer = setTimeout(() => {
-      setTokenLoaderTimerElapsed(true)
-    }, 3000)
-    return () => clearTimeout(tokenLoaderTimer)
-  }, [])
+      setTokenLoaderTimerElapsed(true);
+    }, 3000);
+    return () => clearTimeout(tokenLoaderTimer);
+  }, []);
 
-  const { height: windowHeight } = useWindowSize()
-  let modalHeight
+  const { height: windowHeight } = useWindowSize();
+  let modalHeight;
   if (windowHeight) {
     // Converts pixel units to vh for Modal component
-    modalHeight = Math.min(Math.round((680 / windowHeight) * 100), 80)
+    modalHeight = Math.min(Math.round((680 / windowHeight) * 100), 80);
   }
 
   return (
     <ContentWrapper modalheight={modalHeight}>
       <PaddedColumn gap="16px">
         <RowBetween>
-          <SubHeader fontWeight={500}>
-            Select a token
-          </SubHeader>
+          <SubHeader fontWeight={500}>Select a token</SubHeader>
           <CloseButton onClick={onDismiss} />
         </RowBetween>
         <Row>
@@ -183,35 +194,38 @@ export function CurrencySearch({
           <CurrencyRow
             currency={searchToken}
             isSelected={Boolean(searchToken && selectedCurrency && selectedCurrency == searchToken)}
-            onSelect={(hasWarning: boolean) => searchToken && handleCurrencySelect(searchToken, hasWarning)}
-            otherSelected={Boolean(searchToken && otherSelectedCurrency && otherSelectedCurrency == searchToken)}
+            onSelect={(hasWarning: boolean) =>
+              searchToken && handleCurrencySelect(searchToken, hasWarning)
+            }
+            otherSelected={Boolean(
+              searchToken && otherSelectedCurrency && otherSelectedCurrency == searchToken,
+            )}
             showCurrencyAmount={showCurrencyAmount}
             eventProperties={formatAnalyticsEventProperties(
               searchToken,
               0,
               [searchToken],
               searchQuery,
-              isAddressSearch
+              isAddressSearch,
             )}
           />
         </Column>
       ) : searchCurrencies?.length > 0 ? (
         <div style={{ flex: '1' }}>
           <AutoSizer disableWidth>
-              {({ height }: {height: number})  => (
-                <CurrencyList
-                  height={height}
-                  currencies={searchCurrencies}
-                  onCurrencySelect={handleCurrencySelect}
-                  otherCurrency={otherSelectedCurrency}
-                  selectedCurrency={selectedCurrency}
-                  fixedListRef={fixedList}
-                  showCurrencyAmount={showCurrencyAmount}
-                  searchQuery={searchQuery}
-                  isAddressSearch={isAddressSearch}
-                />
-              )
-            }
+            {({ height }: { height: number }) => (
+              <CurrencyList
+                height={height}
+                currencies={searchCurrencies}
+                onCurrencySelect={handleCurrencySelect}
+                otherCurrency={otherSelectedCurrency}
+                selectedCurrency={selectedCurrency}
+                fixedListRef={fixedList}
+                showCurrencyAmount={showCurrencyAmount}
+                searchQuery={searchQuery}
+                isAddressSearch={isAddressSearch}
+              />
+            )}
           </AutoSizer>
         </div>
       ) : (
@@ -222,5 +236,5 @@ export function CurrencySearch({
         </Column>
       )}
     </ContentWrapper>
-  )
+  );
 }

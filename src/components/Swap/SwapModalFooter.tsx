@@ -1,19 +1,20 @@
-import { styled, useTheme } from "@mui/material"
-import { useSorobanReact } from "@soroban-react/core"
-import BigNumber from "bignumber.js"
-import { ButtonError, SmallButtonPrimary } from "components/Buttons/Button"
-import Column from "components/Column"
-import Row, { AutoRow, RowBetween, RowFixed } from "components/Row"
-import { BodySmall, HeadlineSmall, SubHeaderSmall } from "components/Text"
-import { MouseoverTooltip } from "components/Tooltip"
-import { getExpectedAmount } from "functions/getExpectedAmount"
-import { getPriceImpactNew } from "functions/getPriceImpact"
-import { formatTokenAmount, twoDecimalsPercentage } from "helpers/format"
-import { ReactNode, useMemo, useState } from "react"
-import { AlertTriangle } from "react-feather"
-import { InterfaceTrade, TradeType } from "state/routing/types"
-import { Label } from "./SwapModalHeaderAmount"
-import { SwapCallbackError, SwapShowAcceptChanges } from "./styleds"
+import { styled, useTheme } from '@mui/material';
+import { useSorobanReact } from '@soroban-react/core';
+import BigNumber from 'bignumber.js';
+import { ButtonError, SmallButtonPrimary } from 'components/Buttons/Button';
+import Column from 'components/Column';
+import Row, { AutoRow, RowBetween, RowFixed } from 'components/Row';
+import { BodySmall, HeadlineSmall, SubHeaderSmall } from 'components/Text';
+import { MouseoverTooltip } from 'components/Tooltip';
+import { getExpectedAmount } from 'functions/getExpectedAmount';
+import { getPriceImpactNew } from 'functions/getPriceImpact';
+import { formatTokenAmount, twoDecimalsPercentage } from 'helpers/format';
+import { ReactNode, useMemo, useState } from 'react';
+import { AlertTriangle } from 'react-feather';
+import { InterfaceTrade, TradeType } from 'state/routing/types';
+import { Label } from './SwapModalHeaderAmount';
+import { SwapCallbackError, SwapShowAcceptChanges } from './styleds';
+import CurrencyLogo from 'components/Logo/CurrencyLogo';
 
 const DetailsContainer = styled(Column)`
   padding: 0 8px;
@@ -59,8 +60,8 @@ export default function SwapModalFooter({
   showAcceptChanges: boolean;
   onAcceptChanges: () => void;
 }) {
-  const sorobanContext = useSorobanReact()
-  const theme = useTheme()
+  const sorobanContext = useSorobanReact();
+  const theme = useTheme();
   // const transactionDeadlineSecondsSinceEpoch = useTransactionDeadline()?.toNumber() // in seconds since epoch
   // const isAutoSlippage = useUserSlippageTolerance()[0] === 'auto'
   // const [routerPreference] = useRouterPreference()
@@ -68,49 +69,65 @@ export default function SwapModalFooter({
   // const { chainId } = useWeb3React()
   // const nativeCurrency = useNativeCurrency(chainId)
 
-  const label = `${trade?.inputAmount?.currency.symbol}`
-  const labelInverted = `${trade?.outputAmount?.currency.symbol}`
+  const label = `${trade?.inputAmount?.currency.symbol}`;
+  const labelInverted = `${trade?.outputAmount?.currency.symbol}`;
 
-  const [expectedAmountOfOne, setExpectedAmountOfOne] = useState<string | number>()
+  const [expectedAmountOfOne, setExpectedAmountOfOne] = useState<string | number>();
 
   const formattedPrice = useMemo(() => {
     try {
-      getExpectedAmount(trade?.inputAmount?.currency, trade?.outputAmount?.currency, BigNumber(1).shiftedBy(7), sorobanContext).then((resp) => {
-        setExpectedAmountOfOne(formatTokenAmount(resp))
-      })
-      return expectedAmountOfOne
+      getExpectedAmount(
+        trade?.inputAmount?.currency,
+        trade?.outputAmount?.currency,
+        BigNumber(1).shiftedBy(7),
+        sorobanContext,
+      ).then((resp) => {
+        setExpectedAmountOfOne(formatTokenAmount(resp));
+      });
+      return expectedAmountOfOne;
     } catch {
-      return '0'
+      return '0';
     }
-  }, [expectedAmountOfOne, sorobanContext, trade?.inputAmount?.currency, trade?.outputAmount?.currency])
-  
-  const [priceImpact, setPriceImpact] = useState<number>(0)
+  }, [
+    expectedAmountOfOne,
+    sorobanContext,
+    trade?.inputAmount?.currency,
+    trade?.outputAmount?.currency,
+  ]);
 
-  getPriceImpactNew(trade?.inputAmount?.currency, trade?.outputAmount?.currency, BigNumber(trade?.inputAmount?.value ?? "0"), sorobanContext, trade.tradeType).then((resp) => {
-    setPriceImpact(twoDecimalsPercentage(resp.toString())) 
-  })
+  const [priceImpact, setPriceImpact] = useState<number>(0);
+
+  getPriceImpactNew(
+    trade?.inputAmount?.currency,
+    trade?.outputAmount?.currency,
+    BigNumber(trade?.inputAmount?.value ?? '0'),
+    sorobanContext,
+    trade.tradeType,
+  ).then((resp) => {
+    setPriceImpact(twoDecimalsPercentage(resp.toString()));
+  });
 
   return (
     <>
       <DetailsContainer gap="md">
         <BodySmall>
           <Row align="flex-start" justify="space-between" gap="sm">
-            <Label>
-              Exchange rate
-            </Label>
-            <DetailRowValue>{`1 ${label} = ${formattedPrice ?? '-'} ${labelInverted}`}</DetailRowValue>
+            <Label>Exchange rate</Label>
+            <DetailRowValue>{`1 ${label} = ${
+              formattedPrice ?? '-'
+            } ${labelInverted}`}</DetailRowValue>
           </Row>
         </BodySmall>
         <BodySmall>
           <Row align="flex-start" justify="space-between" gap="sm">
             <MouseoverTooltip
               title={
-                "The fee paid to miners who process your transaction. This must be paid in ${nativeCurrency.symbol}."
+                'The fee paid to miners who process your transaction. This must be paid in ${nativeCurrency.symbol}.'
               }
             >
               <Label cursor="help">Network fees</Label>
             </MouseoverTooltip>
-            <MouseoverTooltip placement="right" title={"<GasBreakdownTooltip trade={trade} />"}>
+            <MouseoverTooltip placement="right" title={'<GasBreakdownTooltip trade={trade} />'}>
               <DetailRowValue>-$0</DetailRowValue>
             </MouseoverTooltip>
           </Row>
@@ -121,9 +138,7 @@ export default function SwapModalFooter({
               <MouseoverTooltip title="The impact your trade has on the market price of this pool.">
                 <Label cursor="help">Price impact</Label>
               </MouseoverTooltip>
-              <DetailRowValue>
-                {priceImpact}%
-              </DetailRowValue>
+              <DetailRowValue>{priceImpact}%</DetailRowValue>
             </Row>
           </BodySmall>
         )}
@@ -133,13 +148,13 @@ export default function SwapModalFooter({
               title={
                 trade.tradeType === TradeType.EXACT_INPUT ? (
                   <>
-                    The minimum amount you are guaranteed to receive. If the
-                    price slips any further, your transaction will revert.
+                    The minimum amount you are guaranteed to receive. If the price slips any
+                    further, your transaction will revert.
                   </>
                 ) : (
                   <>
-                    The maximum amount you are guaranteed to spend. If the price
-                    slips any further, your transaction will revert.
+                    The maximum amount you are guaranteed to spend. If the price slips any further,
+                    your transaction will revert.
                   </>
                 )
               }
@@ -152,8 +167,14 @@ export default function SwapModalFooter({
                 )}
               </Label>
             </MouseoverTooltip>
-            <DetailRowValue>
-              {formatTokenAmount(trade?.outputAmount?.value ?? "0")} {trade?.outputAmount?.currency.symbol}
+            <DetailRowValue style={{ display: 'flex', alignItems: 'center' }}>
+              {formatTokenAmount(trade?.outputAmount?.value ?? '0')}{' '}
+              {trade?.outputAmount?.currency.symbol}
+              <CurrencyLogo
+                currency={trade?.outputAmount?.currency}
+                size="16px"
+                style={{ marginLeft: '6px' }}
+              />
             </DetailRowValue>
           </Row>
         </BodySmall>
@@ -163,15 +184,11 @@ export default function SwapModalFooter({
           <RowBetween>
             <RowFixed>
               <StyledAlertTriangle size={20} />
-              <SubHeaderSmall
-                color={theme.palette.customBackground.accentAction}
-              >
+              <SubHeaderSmall color={theme.palette.customBackground.accentAction}>
                 Price updated
               </SubHeaderSmall>
             </RowFixed>
-            <SmallButtonPrimary onClick={onAcceptChanges}>
-              Accept
-            </SmallButtonPrimary>
+            <SmallButtonPrimary onClick={onAcceptChanges}>Accept</SmallButtonPrimary>
           </RowBetween>
         </SwapShowAcceptChanges>
       ) : (
@@ -181,15 +198,13 @@ export default function SwapModalFooter({
             onClick={onConfirm}
             disabled={disabledConfirm}
             $borderRadius="20px"
-            id={"CONFIRM_SWAP_BUTTON"}
+            id={'CONFIRM_SWAP_BUTTON'}
           >
             <HeadlineSmall color={theme.palette.custom.accentTextLightPrimary}>
               Confirm swap
             </HeadlineSmall>
           </ConfirmButton>
-          {swapErrorMessage ? (
-            <SwapCallbackError error={swapErrorMessage} />
-          ) : null}
+          {swapErrorMessage ? <SwapCallbackError error={swapErrorMessage} /> : null}
         </AutoRow>
       )}
     </>
