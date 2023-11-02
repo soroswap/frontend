@@ -17,7 +17,7 @@ import { useToken } from 'hooks';
 import { RouterMethod, useRouterCallback } from 'hooks/useRouterCallback';
 import { TokenType } from 'interfaces';
 import { useRouter } from 'next/router';
-import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { useCallback, useContext, useMemo, useState } from 'react';
 import { Plus } from 'react-feather';
 import * as SorobanClient from 'soroban-client';
 import { Field } from 'state/mint/actions';
@@ -126,20 +126,31 @@ export default function AddLiquidityComponent() {
     //     amount_b_min: i128,
     //     to: Address,
     //     deadline: u64,
+
+    //   fn add_liquidity(
+    //     e: Env,
+    //     token_a: Address,
+    //     token_b: Address,
+    //     amount_a_desired: i128,
+    //     amount_b_desired: i128,
+    //     amount_a_min: i128,
+    //     amount_b_min: i128,
+    //     to: Address,
+    //     deadline: u64,
     // ) -> (i128, i128, i128);
 
     // When providing liquidity for the first time, the independentField is the last the user type.
+    let desired0BN: BigNumber;
+    let desired1BN: BigNumber;
 
-    const desired0BN = new BigNumber(formattedAmounts[independentField]).shiftedBy(7);
-    console.log(
-      '🚀 ~ file: AddLiquidityComponent.tsx:144 ~ provideLiquidity ~ desired0BN.toString():',
-      desired0BN.toString(),
-    );
-    const desired1BN = new BigNumber(formattedAmounts[dependentField]).shiftedBy(7);
-    console.log(
-      '🚀 ~ file: AddLiquidityComponent.tsx:146 ~ provideLiquidity ~ desired1BN.toString():',
-      desired1BN.toString(),
-    );
+    if (independentField === Field.CURRENCY_A) {
+      desired0BN = new BigNumber(formattedAmounts[independentField]).shiftedBy(7);
+      desired1BN = new BigNumber(formattedAmounts[dependentField]).shiftedBy(7);
+    } else {
+      // if (independentField === Field.CURRENCY_B)
+      desired0BN = new BigNumber(formattedAmounts[dependentField]).shiftedBy(7);
+      desired1BN = new BigNumber(formattedAmounts[independentField]).shiftedBy(7);
+    }
 
     const desiredAScVal = bigNumberToI128(desired0BN);
     const desiredBScVal = bigNumberToI128(desired1BN);
@@ -150,15 +161,7 @@ export default function AddLiquidityComponent() {
     factor = BigNumber(10);
 
     const min0BN = desired0BN.multipliedBy(factor).decimalPlaces(0); // we dont want to have decimals after applying the factor
-    console.log(
-      '🚀 ~ file: AddLiquidityComponent.tsx:155 ~ provideLiquidity ~ min0BN.toString():',
-      min0BN.toString(),
-    );
     const min1BN = desired1BN.multipliedBy(factor).decimalPlaces(0);
-    console.log(
-      '🚀 ~ file: AddLiquidityComponent.tsx:157 ~ provideLiquidity ~ min1BN.toString():',
-      min1BN.toString(),
-    );
 
     const minAScVal = bigNumberToI128(min0BN);
     const minBScVal = bigNumberToI128(min1BN);
@@ -178,20 +181,20 @@ export default function AddLiquidityComponent() {
       .then((result) => {
         console.log('🚀 « result:', result);
         setAttemptingTxn(false);
-        setTxHash(result as string);
+        setTxHash(result as unknown as string);
       })
       .catch((error) => {
         console.log('🚀 « error:', error);
         setAttemptingTxn(false);
       });
   }, [
-    formattedAmounts,
     independentField,
-    dependentField,
-    baseCurrency?.address,
-    currencyB?.address,
+    baseCurrency,
+    currencyB,
     sorobanContext.address,
     routerCallback,
+    formattedAmounts,
+    dependentField,
   ]);
 
   const handleCurrencyASelect = useCallback(
