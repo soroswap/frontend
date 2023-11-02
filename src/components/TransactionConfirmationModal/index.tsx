@@ -11,18 +11,21 @@
 // import { isL2ChainId } from 'utils/chains'
 // import { ExplorerDataType, getExplorerLink } from 'utils/getExplorerLink'
 
-import { Modal, styled, useTheme } from "@mui/material"
-import { useSorobanReact } from "@soroban-react/core"
-import { ButtonLight, ButtonPrimary } from "components/Buttons/Button"
-import { CloseButton } from "components/Buttons/CloseButton"
-import { AutoColumn, ColumnCenter } from "components/Column"
-import Row, { RowBetween, RowFixed } from "components/Row"
-import { CustomLink } from "components/Swap/PendingModalContent"
-import { AnimatedEntranceConfirmationIcon, LoadingIndicatorOverlay } from "components/Swap/PendingModalContent/Logos"
-import { HeadlineMedium, SubHeader, SubHeaderLarge, SubHeaderSmall } from "components/Text"
-import { TokenType } from "interfaces"
-import { ReactNode, useState } from "react"
-import { CheckCircle } from "react-feather"
+import { Modal, styled, useTheme } from '@mui/material';
+import { useSorobanReact } from '@soroban-react/core';
+import { ButtonLight, ButtonPrimary } from 'components/Buttons/Button';
+import { CloseButton } from 'components/Buttons/CloseButton';
+import { AutoColumn, ColumnCenter } from 'components/Column';
+import Row, { RowBetween, RowFixed } from 'components/Row';
+import { CustomLink } from 'components/Swap/PendingModalContent';
+import {
+  AnimatedEntranceConfirmationIcon,
+  LoadingIndicatorOverlay,
+} from 'components/Swap/PendingModalContent/Logos';
+import { HeadlineMedium, SubHeader, SubHeaderLarge, SubHeaderSmall } from 'components/Text';
+import { TokenType } from 'interfaces';
+import { ReactNode, useState } from 'react';
+import { CheckCircle } from 'react-feather';
 
 // import Circle from '../../assets/images/blue-loader.svg'
 // import { ExternalLink, ThemedText } from '../../theme'
@@ -42,47 +45,53 @@ const Wrapper = styled('div')`
   left: 50%;
   transform: translate(-50%, -50%);
   width: calc(100% - 40px);
-  max-width: 420px;  
+  max-width: 420px;
   padding: 32px;
-  background: ${({ theme }) => `linear-gradient(${theme.palette.customBackground.bg1}, ${theme.palette.customBackground.bg1}) padding-box,
-              linear-gradient(150deg, rgba(136,102,221,1) 0%, rgba(${theme.palette.mode == 'dark' ? "33,29,50,1" : "255,255,255,1"}) 35%, rgba(${theme.palette.mode == 'dark' ? "33,29,50,1" : "255,255,255,1"}) 65%, rgba(136,102,221,1) 100%) border-box`};
+  background: ${({ theme }) => `linear-gradient(${theme.palette.customBackground.bg1}, ${
+    theme.palette.customBackground.bg1
+  }) padding-box,
+              linear-gradient(150deg, rgba(136,102,221,1) 0%, rgba(${
+                theme.palette.mode == 'dark' ? '33,29,50,1' : '255,255,255,1'
+              }) 35%, rgba(${
+                theme.palette.mode == 'dark' ? '33,29,50,1' : '255,255,255,1'
+              }) 65%, rgba(136,102,221,1) 100%) border-box`};
   border: 1px solid transparent;
-`
+`;
 
 const BottomSection = styled(AutoColumn)`
   border-bottom-left-radius: 20px;
   border-bottom-right-radius: 20px;
-`
+`;
 
 const CustomWrapper = styled(AutoColumn)`
   display: flex;
   flex-direction: column;
   gap: 8px;
-`
+`;
 
-const ConfirmedIcon = styled(ColumnCenter) <{ inline?: boolean }>`
+const ConfirmedIcon = styled(ColumnCenter)<{ inline?: boolean }>`
   padding: ${({ inline }) => (inline ? '20px 0' : '32px 0;')};
   position: relative;
-`
+`;
 
 const StyledLogo = styled('img')`
   height: 16px;
   width: 16px;
   margin-left: 6px;
-`
+`;
 
 const ConfirmationModalContentWrapper = styled(AutoColumn)`
   padding-bottom: 12px;
-`
+`;
 
 function ConfirmationPendingContent({
   onDismiss,
   pendingText,
   inline,
 }: {
-  onDismiss: () => void
-  pendingText: ReactNode
-  inline?: boolean // not in modal
+  onDismiss: () => void;
+  pendingText: ReactNode;
+  inline?: boolean; // not in modal
 }) {
   return (
     <Wrapper>
@@ -100,7 +109,7 @@ function ConfirmationPendingContent({
           <SubHeaderLarge color="textPrimary" textAlign="center">
             Waiting for confirmation
           </SubHeaderLarge>
-          <SubHeader color="textPrimary" textAlign="center">
+          <SubHeader color="textPrimary" textAlign="center" component="div">
             {pendingText}
           </SubHeader>
           <SubHeaderSmall color="textSecondary" textAlign="center" marginBottom="12px">
@@ -109,7 +118,7 @@ function ConfirmationPendingContent({
         </AutoColumn>
       </AutoColumn>
     </Wrapper>
-  )
+  );
 }
 
 function TransactionSubmittedContent({
@@ -118,19 +127,19 @@ function TransactionSubmittedContent({
   currencyToAdd,
   inline,
 }: {
-  onDismiss: () => void
-  hash?: string
-  currencyToAdd?: TokenType
-  inline?: boolean // not in modal
+  onDismiss: () => void;
+  hash?: string;
+  currencyToAdd?: TokenType;
+  inline?: boolean; // not in modal
 }) {
-  const theme = useTheme()
+  const theme = useTheme();
 
-  const { activeChain } = useSorobanReact()
+  const { activeChain } = useSorobanReact();
 
   // const token = currencyToAdd?.wrapped
   // const logoURL = useCurrencyLogoURIs(token)[0]
 
-  const [success, setSuccess] = useState<boolean | undefined>()
+  const [success, setSuccess] = useState<boolean | undefined>();
 
   // const addToken = useCallback(() => {
   //   if (!token?.symbol || !connector.watchAsset) return
@@ -145,7 +154,7 @@ function TransactionSubmittedContent({
   //     .catch(() => setSuccess(false))
   // }, [connector, logoURL, token])
 
-  const href = "https://google.com"//TODO: getExplorerLink(chainId, swapResult.response.hash, ExplorerDataType.TRANSACTION)
+  const href = 'https://google.com'; //TODO: getExplorerLink(chainId, swapResult.response.hash, ExplorerDataType.TRANSACTION)
 
   return (
     <Wrapper>
@@ -160,35 +169,44 @@ function TransactionSubmittedContent({
           <AnimatedEntranceConfirmationIcon />
         </ConfirmedIcon>
         <ConfirmationModalContentWrapper gap="12px" justify="center">
-          <HeadlineMedium textAlign="center">
-            Transaction submitted
-          </HeadlineMedium>
+          <HeadlineMedium textAlign="center">Transaction submitted</HeadlineMedium>
           {currencyToAdd && activeChain && (
-            <ButtonLight margin-top="12px" padding="6px 12px" width="fit-content" onClick={() => console.log("addToken")}>
+            <ButtonLight
+              margin-top="12px"
+              padding="6px 12px"
+              width="fit-content"
+              onClick={() => console.log('addToken')}
+            >
               {!success ? (
-                <RowFixed>
-                  Add {currencyToAdd.symbol}
-                </RowFixed>
+                <RowFixed>Add {currencyToAdd.symbol}</RowFixed>
               ) : (
                 <RowFixed>
-                  Added {currencyToAdd.symbol} 
-                  <CheckCircle size="16px" stroke={theme.palette.customBackground.accentSuccess} style={{ marginLeft: '6px' }} />
+                  Added {currencyToAdd.symbol}
+                  <CheckCircle
+                    size="16px"
+                    stroke={theme.palette.customBackground.accentSuccess}
+                    style={{ marginLeft: '6px' }}
+                  />
                 </RowFixed>
               )}
             </ButtonLight>
           )}
-          <ButtonPrimary onClick={onDismiss} style={{ margin: '20px 0 0 0' }} data-testid="dismiss-tx-confirmation">
+          <ButtonPrimary
+            onClick={onDismiss}
+            style={{ margin: '20px 0 0 0' }}
+            data-testid="dismiss-tx-confirmation"
+          >
             {inline ? 'Return' : 'Close'}
           </ButtonPrimary>
           {hash && (
-            <CustomLink href={href} target='_blank'>
+            <CustomLink href={href} target="_blank">
               View on Explorer
             </CustomLink>
           )}
         </ConfirmationModalContentWrapper>
       </AutoColumn>
     </Wrapper>
-  )
+  );
 }
 
 export function ConfirmationModalContent({
@@ -198,11 +216,11 @@ export function ConfirmationModalContent({
   topContent,
   headerContent,
 }: {
-  title: ReactNode
-  onDismiss: () => void
-  topContent: () => ReactNode
-  bottomContent?: () => ReactNode
-  headerContent?: () => ReactNode
+  title: ReactNode;
+  onDismiss: () => void;
+  topContent: () => ReactNode;
+  bottomContent?: () => ReactNode;
+  headerContent?: () => ReactNode;
 }) {
   return (
     <Wrapper>
@@ -218,17 +236,17 @@ export function ConfirmationModalContent({
       </CustomWrapper>
       {bottomContent && <BottomSection gap="12px">{bottomContent()}</BottomSection>}
     </Wrapper>
-  )
+  );
 }
 
 interface ConfirmationModalProps {
-  isOpen: boolean
-  onDismiss: () => void
-  hash?: string
-  reviewContent: () => ReactNode
-  attemptingTxn: boolean
-  pendingText: ReactNode
-  currencyToAdd?: TokenType
+  isOpen: boolean;
+  onDismiss: () => void;
+  hash?: string;
+  reviewContent: () => ReactNode;
+  attemptingTxn: boolean;
+  pendingText: ReactNode;
+  currencyToAdd?: TokenType;
 }
 
 export default function TransactionConfirmationModal({
@@ -240,9 +258,9 @@ export default function TransactionConfirmationModal({
   reviewContent,
   currencyToAdd,
 }: ConfirmationModalProps) {
-  const sorobanContext = useSorobanReact()
-  const { activeChain } = sorobanContext
-  if (!activeChain) return null
+  const sorobanContext = useSorobanReact();
+  const { activeChain } = sorobanContext;
+  if (!activeChain) return null;
 
   // confirmation screen
   return (
@@ -266,7 +284,7 @@ export default function TransactionConfirmationModal({
         )}
       </>
     </Modal>
-  )
+  );
 }
 
 // Waiting for confirmation

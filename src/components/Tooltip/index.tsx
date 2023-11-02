@@ -1,4 +1,4 @@
-import { Tooltip, TooltipProps, styled, tooltipClasses } from "@mui/material";
+import { Tooltip, TooltipProps, styled, tooltipClasses } from '@mui/material';
 // import { PropsWithChildren, ReactNode, useEffect, useState } from 'react'
 // import Popover, { PopoverProps } from '../Popover'
 // import noop from 'utils/noop'
@@ -11,18 +11,18 @@ export const MouseoverTooltip = styled(({ className, ...props }: TooltipProps) =
   },
   [`& .${tooltipClasses.tooltip}`]: {
     backgroundColor: theme.palette.common.black,
-    width: "calc(100vw - 16px)",
-    cursor: "default",
-    padding: "12px",
-    pointerEvents: "auto",
-    color: "#FFFFFF",
+    width: 'calc(100vw - 16px)',
+    cursor: 'default',
+    padding: '12px',
+    pointerEvents: 'auto',
+    color: '#FFFFFF',
     fontWeight: 400,
-    fontSize: "12px",
-    lineHeight: "16px",
-    wordBreak: "break-word",
-    borderRadius: "12px",
-    border: "1px solid #293249",
-    boxShadow: "0 4px 8px 0 rgba(0,0,0,0.1)",
+    fontSize: '12px',
+    lineHeight: '16px',
+    wordBreak: 'break-word',
+    borderRadius: '12px',
+    border: '1px solid #293249',
+    boxShadow: '0 4px 8px 0 rgba(0,0,0,0.1)',
     maxWidth: 256,
   },
 }));
