@@ -4,7 +4,7 @@ import { TokenType } from 'interfaces';
 // import { useWeb3React } from '@web3-react/core'
 import { useSorobanReact } from '@soroban-react/core';
 // import JSBI from 'jsbi'
-import { CurrencyAmount } from "interfaces";
+import { CurrencyAmount } from 'interfaces';
 import tryParseCurrencyAmount from 'lib/utils/tryParseCurrencyAmount';
 import { ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
 import { useAppDispatch, useAppSelector } from 'state/hooks';
@@ -21,64 +21,69 @@ import { Field, typeInput } from './actions';
 // const ZERO = JSBI.BigInt(0)
 
 export function useMintState(): AppState['mint'] {
-  return useAppSelector((state) => state.mint)
+  return useAppSelector((state) => state.mint);
 }
 
 // export function useMintActionHandlers(noLiquidity: boolean | undefined): {
 export function useMintActionHandlers(noLiquidity: boolean | undefined): {
-  onFieldAInput: (typedValue: string) => void
-  onFieldBInput: (typedValue: string) => void
+  onFieldAInput: (typedValue: string) => void;
+  onFieldBInput: (typedValue: string) => void;
 } {
-  const dispatch = useAppDispatch()
+  const dispatch = useAppDispatch();
 
   const onFieldAInput = useCallback(
     (typedValue: string) => {
-      dispatch(typeInput({ field: Field.CURRENCY_A, typedValue, noLiquidity: noLiquidity === true }))
+      dispatch(
+        typeInput({ field: Field.CURRENCY_A, typedValue, noLiquidity: noLiquidity === true }),
+      );
     },
-    [dispatch, noLiquidity]
-  )
+    [dispatch, noLiquidity],
+  );
 
   const onFieldBInput = useCallback(
     (typedValue: string) => {
-      dispatch(typeInput({ field: Field.CURRENCY_B, typedValue, noLiquidity: noLiquidity === true }))
+      dispatch(
+        typeInput({ field: Field.CURRENCY_B, typedValue, noLiquidity: noLiquidity === true }),
+      );
     },
-    [dispatch, noLiquidity]
-  )
+    [dispatch, noLiquidity],
+  );
 
   return {
     onFieldAInput,
     onFieldBInput,
-  }
+  };
 }
 
 export function useDerivedMintInfo(
   currencyA: TokenType | undefined,
-  currencyB: TokenType | undefined
+  currencyB: TokenType | undefined,
 ): {
-  dependentField: Field
-  currencies: { [field in Field]?: TokenType }
-  pairAddress: string | undefined
+  dependentField: Field;
+  currencies: { [field in Field]?: TokenType };
+  pairAddress: string | undefined;
   // pair?: Pair | null
   // pairState: PairState
   // currencyBalances: { [field in Field]?: CurrencyAmount<TokenType> }
-  parsedAmounts: { [field in Field]?: CurrencyAmount }
+  parsedAmounts: { [field in Field]?: CurrencyAmount };
   // price?: Price<TokenType, TokenType>
-  noLiquidity?: boolean
+  noLiquidity?: boolean;
   // liquidityMinted?: CurrencyAmount<Token>
   // poolTokenPercentage?: Percent
-  error?: ReactNode
+  error?: ReactNode;
 } {
   const sorobanContext = useSorobanReact();
-  const { address: account } = sorobanContext
-  
+  const { address: account } = sorobanContext;
+
   const factoryAddress = useFactory(sorobanContext);
-  
-  const [pairAddress, setPairAddress] = useState<any>(undefined)
-  const [reservesBNToken, setReservesBNToken] = useState<any>(undefined)
 
-  const { independentField, typedValue, otherTypedValue } = useMintState()
+  const [pairAddress, setPairAddress] = useState<any>(undefined);
+  const [reservesBNToken, setReservesBNToken] = useState<any>(undefined);
 
-  const dependentField = independentField === Field.CURRENCY_A ? Field.CURRENCY_B : Field.CURRENCY_A
+  const { independentField, typedValue, otherTypedValue } = useMintState();
+
+  const dependentField =
+    independentField === Field.CURRENCY_A ? Field.CURRENCY_B : Field.CURRENCY_A;
 
   // tokens
   const currencies: { [field in Field]?: TokenType } = useMemo(
@@ -86,23 +91,24 @@ export function useDerivedMintInfo(
       [Field.CURRENCY_A]: currencyA ?? undefined,
       [Field.CURRENCY_B]: currencyB ?? undefined,
     }),
-    [currencyA, currencyB]
-  )
+    [currencyA, currencyB],
+  );
 
   useEffect(() => {
-    if (!currencyA || !currencyB) return
-    if (factoryAddress.factory_address !== "" && currencyA && currencyB) {
-      getPairAddress(currencyA.address, currencyB.address, sorobanContext)
-        .then((response) => {
-          setPairAddress(response)
-        })
+    if (!currencyA || !currencyB) return;
+    if (factoryAddress.factory_address !== '' && currencyA && currencyB) {
+      getPairAddress(currencyA.address, currencyB.address, sorobanContext).then((response) => {
+        setPairAddress(response);
+      });
     }
-  }, [currencyA, currencyB, factoryAddress.factory_address, sorobanContext])
+  }, [currencyA, currencyB, factoryAddress.factory_address, sorobanContext]);
 
-  const [reservesBN, setReservesBN] = useState<{ reserve0: BigNumber; reserve1: BigNumber; } | undefined>();
+  const [reservesBN, setReservesBN] = useState<
+    { reserve0: BigNumber; reserve1: BigNumber } | undefined
+  >();
   useEffect(() => {
     if (sorobanContext.activeChain && sorobanContext.address) {
-      reservesBigNumber(pairAddress ?? "", sorobanContext).then((resp) => {
+      reservesBigNumber(pairAddress ?? '', sorobanContext).then((resp) => {
         setReservesBN(resp);
       });
     }
@@ -111,19 +117,20 @@ export function useDerivedMintInfo(
   // console.log("state/mint/hooks: reservesBN:", reservesBN, reservesBN.reserve0.toString(), reservesBN.reserve1.toString())
 
   useEffect(() => {
-    if (!pairAddress || !sorobanContext.address) return
+    if (!pairAddress || !sorobanContext.address) return;
     reservesBNWithTokens(pairAddress, sorobanContext).then((response) => {
-      setReservesBNToken(response)
+      setReservesBNToken(response);
       // console.log("reservesBNWithTokens response:", response)
-    })
-  }, [pairAddress, sorobanContext])
+    });
+  }, [pairAddress, sorobanContext]);
 
   // console.log("state/mint/hooks: reservesBNToken:", reservesBNToken)
 
   const noLiquidity: boolean | undefined = useMemo(() => {
-    return pairAddress === undefined ||
-      (reservesBN?.reserve0.isZero() && reservesBN?.reserve1.isZero())
-  }, [pairAddress, reservesBN])
+    return (
+      pairAddress === undefined || (reservesBN?.reserve0.isZero() && reservesBN?.reserve1.isZero())
+    );
+  }, [pairAddress, reservesBN]);
   // console.log("state/mint/hooks: noLiquidity:", noLiquidity)
 
   // // balances
@@ -138,20 +145,16 @@ export function useDerivedMintInfo(
 
   // // amounts
   const independentAmount: CurrencyAmount | undefined = useMemo(() => {
-    return tryParseCurrencyAmount(
-      typedValue,
-      currencies[independentField]
-    )
-
-  }, [currencies, independentField, typedValue])
+    return tryParseCurrencyAmount(typedValue, currencies[independentField]);
+  }, [currencies, independentField, typedValue]);
 
   const dependentAmount: CurrencyAmount | undefined = useMemo(() => {
-    if (!reservesBNToken) return undefined
+    if (!reservesBNToken) return undefined;
     if (noLiquidity) {
       if (otherTypedValue && currencies[dependentField]) {
-        return tryParseCurrencyAmount(otherTypedValue, currencies[dependentField])
+        return tryParseCurrencyAmount(otherTypedValue, currencies[dependentField]);
       }
-      return undefined
+      return undefined;
     } else if (independentAmount) {
       // We need the reserves. which are in reservesBN but how to know which corresponds to.
       // console.log("state/mint/hooks: here", independentAmount)
@@ -159,23 +162,26 @@ export function useDerivedMintInfo(
       let reserve0, reserve1;
 
       if (independentAmount.currency.address == reservesBNToken.token0) {
-        reserve0 = reservesBNToken.reserve0
-        reserve1 = reservesBNToken.reserve1
+        reserve0 = reservesBNToken.reserve0;
+        reserve1 = reservesBNToken.reserve1;
       } else {
-        reserve0 = reservesBNToken.reserve1
-        reserve1 = reservesBNToken.reserve0
+        reserve0 = reservesBNToken.reserve1;
+        reserve1 = reservesBNToken.reserve0;
       }
       // console.log("state/mint/hooks: reserve0: ", reserve0.toString())
       // console.log("state/mint/hooks: reserve1: ", reserve1.toString())
 
       const calculatedPoolTokenOptimalAmount = calculatePoolTokenOptimalAmount(
         BigNumber(independentAmount.value),
-        reserve0, // it should be reserve0 if idependentAmount.currency.address == 
+        reserve0, // it should be reserve0 if idependentAmount.currency.address ==
         reserve1,
-      )
+      );
       // console.log("state/mint/hooks: calculatedPoolTokenOptimalAmount:", calculatedPoolTokenOptimalAmount.toString())
-      const parsedCurrencyAmount = tryParseCurrencyAmount(formatTokenAmount(calculatedPoolTokenOptimalAmount.toString()), currencies[dependentField])
-      return parsedCurrencyAmount
+      const parsedCurrencyAmount = tryParseCurrencyAmount(
+        formatTokenAmount(calculatedPoolTokenOptimalAmount.toString()),
+        currencies[dependentField],
+      );
+      return parsedCurrencyAmount;
       //   // we wrap the currencies just to get the price in terms of the other token
       //   const wrappedIndependentAmount = independentAmount?.wrapped
       //   const [tokenA, tokenB] = [currencyA?.wrapped, currencyB?.wrapped]
@@ -189,9 +195,16 @@ export function useDerivedMintInfo(
       //       ? CurrencyAmount.fromRawAmount(dependentCurrency, dependentTokenAmount.quotient)
       //       : dependentTokenAmount
     } else {
-      return undefined
+      return undefined;
     }
-  }, [noLiquidity, independentAmount, otherTypedValue, currencies, dependentField, reservesBNToken])
+  }, [
+    noLiquidity,
+    independentAmount,
+    otherTypedValue,
+    currencies,
+    dependentField,
+    reservesBNToken,
+  ]);
   // console.log("state/mint/hooks: independentAmount:", independentAmount)
   // console.log("state/mint/hooks: dependentAmount:", dependentAmount)
 
@@ -229,10 +242,12 @@ export function useDerivedMintInfo(
   // }, [dependentAmount, independentAmount, independentField])
   const parsedAmounts: { [field in Field]: CurrencyAmount | undefined } = useMemo(() => {
     return {
-      [Field.CURRENCY_A]: independentField === Field.CURRENCY_A ? independentAmount : dependentAmount,
-      [Field.CURRENCY_B]: independentField === Field.CURRENCY_A ? dependentAmount : independentAmount,
-    }
-  }, [dependentAmount, independentAmount, independentField])
+      [Field.CURRENCY_A]:
+        independentField === Field.CURRENCY_A ? independentAmount : dependentAmount,
+      [Field.CURRENCY_B]:
+        independentField === Field.CURRENCY_A ? dependentAmount : independentAmount,
+    };
+  }, [dependentAmount, independentAmount, independentField]);
 
   // const price = useMemo(() => {
   //   if (noLiquidity) {
@@ -272,7 +287,7 @@ export function useDerivedMintInfo(
   //   }
   // }, [liquidityMinted, totalSupply])
 
-  let error: ReactNode | undefined
+  let error: ReactNode | undefined;
   // if (!account) {
   //   error = <Trans>Connect Wallet</Trans>
   // }
@@ -308,7 +323,7 @@ export function useDerivedMintInfo(
     // liquidityMinted,
     // poolTokenPercentage,
     error,
-  }
+  };
 }
 
 /*
