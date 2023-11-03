@@ -13,6 +13,7 @@ import { Field } from 'state/mint/actions';
 import { Label } from './AddModalHeader';
 import { useUserSlippageToleranceWithDefault } from 'state/user/hooks';
 import { DEFAULT_SLIPPAGE_INPUT_VALUE } from 'components/Settings/MaxSlippageSettings';
+import CurrencyLogo from 'components/Logo/CurrencyLogo';
 
 const DetailsContainer = styled(Column)`
   padding: 0 8px;
@@ -69,12 +70,13 @@ export default function AddModalFooter({
     const amountA = new BigNumber(formattedAmounts.CURRENCY_A);
     const amountB = new BigNumber(formattedAmounts.CURRENCY_B);
 
-    return `1 ${currencyA?.symbol} = ${amountB.dividedBy(amountA)} ${currencyB?.symbol}`;
+    return `1 ${currencyA?.symbol} = ${amountB.dividedBy(amountA).toFixed(6)} ${currencyB?.symbol}`;
   }, [currencyA, currencyB, formattedAmounts]);
 
   const shareOfPool = useMemo(() => {
     return `${totalShares} %`;
   }, [totalShares]);
+
   return (
     <>
       <BodySmall component="div">
@@ -85,13 +87,19 @@ export default function AddModalFooter({
         <BodySmall component="div">
           <Row align="flex-start" justify="space-between" gap="sm">
             <Label>{currencyA?.name} to deposit</Label>
-            <DetailRowValue>{`${formattedAmounts.CURRENCY_A} ${currencyA?.symbol}`}</DetailRowValue>
+            <DetailRowValue style={{ display: 'flex', alignItems: 'center' }}>
+              {`${formattedAmounts.CURRENCY_A} ${currencyA?.symbol}`}{' '}
+              <CurrencyLogo currency={currencyA} size="16px" style={{ marginLeft: '6px' }} />
+            </DetailRowValue>
           </Row>
         </BodySmall>
         <BodySmall component="div">
           <Row align="flex-start" justify="space-between" gap="sm">
             <Label>{currencyB?.name} to deposit</Label>
-            <DetailRowValue>{`${formattedAmounts.CURRENCY_B} ${currencyB?.symbol}`}</DetailRowValue>
+            <DetailRowValue style={{ display: 'flex', alignItems: 'center' }}>
+              {`${formattedAmounts.CURRENCY_B} ${currencyB?.symbol}`}{' '}
+              <CurrencyLogo currency={currencyB} size="16px" style={{ marginLeft: '6px' }} />
+            </DetailRowValue>
           </Row>
         </BodySmall>
 

@@ -229,13 +229,18 @@ export default function AddLiquidityComponent() {
     </BodySmall>
   );
 
-  const { hasEnoughBalance, hasSelectedTokens, hasValidInputValues, getSupplyButtonText } =
-    useLiquidityValidations({
-      currencies,
-      currencyIdA,
-      currencyIdB,
-      formattedAmounts,
-    });
+  const {
+    hasEnoughBalance,
+    hasSelectedTokens,
+    hasValidInputValues,
+    getSupplyButtonText,
+    getModalTitleText,
+  } = useLiquidityValidations({
+    currencies,
+    currencyIdA,
+    currencyIdB,
+    formattedAmounts,
+  });
 
   return (
     <>
@@ -251,7 +256,7 @@ export default function AddLiquidityComponent() {
           attemptingTxn={attemptingTxn}
           reviewContent={() => (
             <ConfirmationModalContent
-              title={true ? <>You are creating a pool</> : <>You will receive</>}
+              title={getModalTitleText()}
               onDismiss={handleDismissConfirmation}
               topContent={() => AddModalHeader({ currencies, amountOfLpTokensToReceive })}
               bottomContent={() =>

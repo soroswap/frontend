@@ -5,10 +5,11 @@ import { getCurrentTimePlusOneHour } from 'functions/getCurrentTimePlusOneHour';
 import { sendNotification } from 'functions/sendNotification';
 import { formatTokenAmount } from 'helpers/format';
 import { bigNumberToI128, bigNumberToU64 } from 'helpers/utils';
-import { useCallback, useContext } from 'react';
+import { useContext } from 'react';
 import * as SorobanClient from 'soroban-client';
 import { InterfaceTrade, TradeType } from 'state/routing/types';
 import { RouterMethod, useRouterCallback } from './useRouterCallback';
+import { scValToJs } from 'helpers/convert';
 
 // Returns a function that will execute a swap, if the parameters are all valid
 // and the user has approved the slippage adjusted input amount for the trade
@@ -23,7 +24,7 @@ export function useSwapCallback(
   const { activeChain, address } = sorobanContext;
   const routerCallback = useRouterCallback();
 
-  const doSwap = () => {
+  const doSwap = async () => {
     console.log('Trying out the TRADE');
     if (!trade) throw new Error('missing trade');
     if (!address || !activeChain) throw new Error('wallet must be connected to swap');
@@ -51,6 +52,7 @@ export function useSwapCallback(
       routerMethod === RouterMethod.SWAP_EXACT_IN
         ? BigNumber(trade.outputAmount?.value as string)
         : BigNumber(trade.inputAmount?.value as string);
+
     const amount0ScVal = bigNumberToI128(amount0);
     const amount1ScVal = bigNumberToI128(amount1);
     //   fn swap_exact_tokens_for_tokens(
@@ -83,23 +85,33 @@ export function useSwapCallback(
       bigNumberToU64(BigNumber(getCurrentTimePlusOneHour())),
     ];
 
-    return routerCallback(routerMethod, args, true)
-      .then((result) => {
-        console.log('🚀 « result:', result);
+    try {
+      const result = (await routerCallback(
+        routerMethod,
+        args,
+        true,
+      )) as SorobanClient.SorobanRpc.GetSuccessfulTransactionResponse;
+      console.log('🚀 « result:', result);
 
-        //TODO: Investigate result xdr to get swapped amount and hash, there is a warmHash, is it this one?
-        const notificationMessage = `${formatTokenAmount(trade?.inputAmount?.value ?? '0')} ${trade
-          ?.inputAmount?.currency.symbol} for ${formatTokenAmount(
-          trade?.outputAmount?.value ?? '0',
-        )} ${trade?.outputAmount?.currency.symbol}`;
-        sendNotification(notificationMessage, 'Swapped', SnackbarIconType.SWAP, SnackbarContext);
+      if (!result.returnValue) return result;
 
-        return result;
-      })
-      .catch((error) => {
-        console.log('🚀 « error:', error);
-        throw error;
-      });
+      const switchValues: [] = scValToJs(result.returnValue!);
+
+      const parsedSwitchValues = switchValues.map((val) => BigNumber(val).dividedBy(1.5));
+
+      const [currencyA, currencyB] = parsedSwitchValues;
+
+      const notificationMessage = `${formatTokenAmount(currencyA ?? '0')} ${trade?.inputAmount
+        ?.currency.symbol} for ${formatTokenAmount(currencyB ?? '0')} ${trade?.outputAmount
+        ?.currency.symbol}`;
+
+      sendNotification(notificationMessage, 'Swapped', SnackbarIconType.SWAP, SnackbarContext);
+
+      return result;
+    } catch (error) {
+      console.log('🚀 « error:', error);
+      throw error;
+    }
   };
 
   return doSwap;

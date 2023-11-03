@@ -62,30 +62,40 @@ const useLiquidityValidations = ({
     return isValidCurrencyAValue && isValidCurrencyBValue;
   };
 
-  const isPairAlreadyCreated = () => {
-    const pairs = lpTokens?.map((obj) => [obj.token_0?.address, obj.token_1?.address]);
+  const getPairInfo = () => {
+    const pairExists = lpTokens?.find((obj) => {
+      const pair = [obj.token_0?.address, obj.token_1?.address];
 
-    const pairExists = pairs?.find(
-      (pair) => pair.includes(currencyIdA) && pair.includes(currencyIdB),
-    );
+      return pair.includes(currencyIdA) && pair.includes(currencyIdB);
+    });
 
-    return !!pairExists;
+    return { exists: !!pairExists, balance: pairExists?.balance };
   };
 
   const getSupplyButtonText = () => {
     if (!hasSelectedTokens()) return 'Select tokens';
     if (!hasValidInputValues()) return 'Enter an amount';
     if (!hasEnoughBalance()) return 'Insufficient balance';
-    if (!isPairAlreadyCreated()) return 'Create';
+    if (!getPairInfo().exists) return 'Create';
     return 'Supply';
+  };
+
+  const getModalTitleText = () => {
+    const pairInfo = getPairInfo();
+    if (pairInfo.exists) {
+      if (Number(pairInfo.balance ?? 0) === 0) return 'You are the first to add liquidity';
+      return 'Add liquidity';
+    }
+    return 'You are creating a pool';
   };
 
   return {
     hasEnoughBalance,
     hasSelectedTokens,
     hasValidInputValues,
-    isPairAlreadyCreated,
     getSupplyButtonText,
+    getPairInfo,
+    getModalTitleText,
   };
 };
 
