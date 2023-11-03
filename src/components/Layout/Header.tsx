@@ -1,25 +1,25 @@
-import { Switch, SwitchProps, useMediaQuery } from "@mui/material";
-import { styled, useTheme } from "@mui/material/styles";
-import Image from "next/image";
-import Link from "next/link";
-import { useRouter } from "next/router";
-import React from "react";
-import { Menu } from "react-feather";
+import { Switch, SwitchProps, useMediaQuery } from '@mui/material';
+import { styled, useTheme } from '@mui/material/styles';
+import Image from 'next/image';
+import Link from 'next/link';
+import { useRouter } from 'next/router';
+import React from 'react';
+import { Menu } from 'react-feather';
 import soroswapLogoPurpleBlack from '../../assets/svg/SoroswapPurpleBlack.svg';
 import soroswapLogoPurpleWhite from '../../assets/svg/SoroswapPurpleWhite.svg';
 import darkModeMoon from '../../assets/svg/darkModeMoon.svg';
 import lightModeSun from '../../assets/svg/lightModeSun.svg';
-import { ColorModeContext } from "../../contexts";
-import ProfileSection from "./ProfileSection";
+import { ColorModeContext } from '../../contexts';
+import ProfileSection from './ProfileSection';
 
 const MainBox = styled('div')<{ isMobile: boolean }>`
   display: flex;
   width: 100%;
-  padding: ${({ isMobile }) => isMobile ? '24px 15px' : '24px 75px'};
+  padding: ${({ isMobile }) => (isMobile ? '24px 15px' : '24px 75px')};
   align-items: center;
   justify-content: space-between;
   gap: 40px;
-`
+`;
 
 const NavBar = styled('div')`
   display: flex;
@@ -30,7 +30,7 @@ const NavBar = styled('div')`
   border-radius: 32px;
   background: ${({ theme }) => theme.palette.background.paper};
   box-shadow: 0px 4px 10px 0px rgba(136, 102, 221, 0.03);
-`
+`;
 
 const NavBarMobile = styled('div')`
   display: flex;
@@ -42,7 +42,7 @@ const NavBarMobile = styled('div')`
   border-radius: 32px;
   background: ${({ theme }) => theme.palette.background.paper};
   box-shadow: 0px 4px 10px 0px rgba(136, 102, 221, 0.03);
-`
+`;
 
 const NavBarContainer = styled('div')`
   position: fixed;
@@ -50,42 +50,46 @@ const NavBarContainer = styled('div')`
   display: flex;
   left: 50%;
   transform: translateX(-50%);
-`
+`;
 
 const ButtonsBox = styled('div')`
   display: flex;
   align-items: center;
-`
+`;
 
-const NavItem = styled(Link)<{active?: boolean}>`
+const NavItem = styled(Link, {
+  shouldForwardProp: (prop) => prop !== 'active',
+})<{ active?: boolean }>`
   display: flex;
   padding: 4px 24px;
   align-items: center;
   gap: 10px;
   border-radius: 32px;
-  background: ${({ active }) => (active ? "#8866DD" : "")};
+  background: ${({ active }) => (active ? '#8866DD' : '')};
   text-align: center;
-  color: ${({ theme, active }) => (active ? "#FFFFFF" : theme.palette.custom.textTertiary)};
+  color: ${({ theme, active }) => (active ? '#FFFFFF' : theme.palette.custom.textTertiary)};
   font-family: Inter;
   font-size: 20px;
   font-weight: 600;
   line-height: 140%;
-`
+`;
 
-const NavItemMobile = styled(Link)<{active?: boolean}>`
+const NavItemMobile = styled(Link, {
+  shouldForwardProp: (prop) => prop !== 'active',
+})<{ active?: boolean }>`
   display: flex;
   padding: 8px 18px;
   align-items: center;
   gap: 10px;
   border-radius: 18px;
-  background: ${({ active }) => (active ? "#8866DD" : "")};
+  background: ${({ active }) => (active ? '#8866DD' : '')};
   text-align: center;
-  color: ${({ theme, active }) => (active ? "#FFFFFF" : theme.palette.custom.textTertiary)};
+  color: ${({ theme, active }) => (active ? '#FFFFFF' : theme.palette.custom.textTertiary)};
   font-family: Inter;
   font-size: 16px;
   font-weight: 600;
   line-height: 100%;
-`
+`;
 
 export const ModeSwitch = styled((props: SwitchProps) => (
   <Switch focusVisibleClassName=".Mui-focusVisible" disableRipple {...props} />
@@ -135,11 +139,11 @@ export const ModeSwitch = styled((props: SwitchProps) => (
 }));
 
 interface HeaderProps {
-  isDrawerOpen: boolean,
-  setDrawerOpen: React.Dispatch<React.SetStateAction<boolean>>,
+  isDrawerOpen: boolean;
+  setDrawerOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export default function Header({isDrawerOpen, setDrawerOpen}: HeaderProps) {
+export default function Header({ isDrawerOpen, setDrawerOpen }: HeaderProps) {
   const theme = useTheme();
   const colorMode = React.useContext(ColorModeContext);
 
@@ -147,31 +151,51 @@ export default function Header({isDrawerOpen, setDrawerOpen}: HeaderProps) {
   const { pathname } = router;
 
   const isMobile = useMediaQuery(theme.breakpoints.down(1220));
-  
-  const logoWidth = isMobile ? 88 : 162
-  const logoHeight = isMobile ? 30 : 56
+
+  const logoWidth = isMobile ? 88 : 162;
+  const logoHeight = isMobile ? 30 : 56;
 
   return (
     <>
       <MainBox isMobile={isMobile}>
         <Image
-          src={theme.palette.mode === "dark" ? soroswapLogoPurpleWhite.src : soroswapLogoPurpleBlack.src}
+          src={
+            theme.palette.mode === 'dark'
+              ? soroswapLogoPurpleWhite.src
+              : soroswapLogoPurpleBlack.src
+          }
           width={88}
           height={32}
-          style={{ width: "100%", height: "100%", maxWidth: logoWidth, maxHeight: logoHeight, minHeight: 30, minWidth: 88 }}
-          alt={"Soroswap"} />
+          style={{
+            width: '100%',
+            height: '100%',
+            maxWidth: logoWidth,
+            maxHeight: logoHeight,
+            minHeight: 30,
+            minWidth: 88,
+          }}
+          alt={'Soroswap'}
+        />
         {!isMobile ? (
           <>
             <NavBar>
-              <NavItem href={"/"} active={pathname === "/"}>Balance</NavItem>
-              <NavItem href={"/swap"} active={pathname.includes("/swap")}>Swap</NavItem>
-              <NavItem href={"/liquidity"} active={pathname.includes("/liquidity")}>Liquidity</NavItem>
-              <NavItem href={"/mint"} active={pathname.includes("/mint")}>Mint</NavItem>
+              <NavItem href={'/'} active={pathname === '/'}>
+                Balance
+              </NavItem>
+              <NavItem href={'/swap'} active={pathname.includes('/swap')}>
+                Swap
+              </NavItem>
+              <NavItem href={'/liquidity'} active={pathname.includes('/liquidity')}>
+                Liquidity
+              </NavItem>
+              <NavItem href={'/mint'} active={pathname.includes('/mint')}>
+                Mint
+              </NavItem>
             </NavBar>
             <ButtonsBox>
               <ModeSwitch
                 sx={{ m: 1 }}
-                defaultChecked={theme.palette.mode === "dark" ? true : false}
+                defaultChecked={theme.palette.mode === 'dark' ? true : false}
                 onChange={(e) => colorMode.toggleColorMode()}
               />
               <ProfileSection />
@@ -179,14 +203,25 @@ export default function Header({isDrawerOpen, setDrawerOpen}: HeaderProps) {
           </>
         ) : (
           <>
-              <Menu onClick={() => setDrawerOpen(!isDrawerOpen)} width={24} height={24} color={theme.palette.custom.borderColor} />
-              <NavBarContainer>
-                <NavBarMobile>
-                  <NavItemMobile href={"/swap"} active={pathname.includes("/swap")}>Swap</NavItemMobile>
-                  <NavItemMobile href={"/liquidity"} active={pathname.includes("/liquidity")}>Liquidity</NavItemMobile>
-                  <NavItemMobile href={"/mint"} active={pathname.includes("/mint")}>Mint</NavItemMobile>
-                </NavBarMobile>
-              </NavBarContainer>
+            <Menu
+              onClick={() => setDrawerOpen(!isDrawerOpen)}
+              width={24}
+              height={24}
+              color={theme.palette.custom.borderColor}
+            />
+            <NavBarContainer>
+              <NavBarMobile>
+                <NavItemMobile href={'/swap'} active={pathname.includes('/swap')}>
+                  Swap
+                </NavItemMobile>
+                <NavItemMobile href={'/liquidity'} active={pathname.includes('/liquidity')}>
+                  Liquidity
+                </NavItemMobile>
+                <NavItemMobile href={'/mint'} active={pathname.includes('/mint')}>
+                  Mint
+                </NavItemMobile>
+              </NavBarMobile>
+            </NavBarContainer>
           </>
         )}
       </MainBox>

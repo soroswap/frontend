@@ -1,21 +1,21 @@
-import { styled, useTheme } from "@mui/material"
-import Column from "components/Column"
-import CurrencyLogo from "components/Logo/CurrencyLogo"
-import Row from "components/Row"
-import { BodySecondary, BodySmall, ResponsiveMediumText } from "components/Text"
-import { MouseoverTooltip } from "components/Tooltip"
-import { formatTokenAmount } from "helpers/format"
-import { TokenType } from "interfaces"
-import { ReactNode } from "react"
-import { Field } from "state/swap/actions"
+import { styled, useTheme } from '@mui/material';
+import Column from 'components/Column';
+import CurrencyLogo from 'components/Logo/CurrencyLogo';
+import Row from 'components/Row';
+import { BodySecondary, BodySmall, ResponsiveMediumText } from 'components/Text';
+import { MouseoverTooltip } from 'components/Tooltip';
+import { formatTokenAmount } from 'helpers/format';
+import { TokenType } from 'interfaces';
+import { ReactNode } from 'react';
+import { Field } from 'state/swap/actions';
 
-const MAX_AMOUNT_STR_LENGTH = 9
+const MAX_AMOUNT_STR_LENGTH = 9;
 
 export const Label = styled(BodySmall)<{ cursor?: string }>`
   cursor: ${({ cursor }) => cursor};
   color: ${({ theme }) => theme.palette.secondary.main};
   margin-right: 8px;
-`
+`;
 
 const CurrencyWrapper = styled('div')`
   display: flex;
@@ -31,26 +31,33 @@ const CurrencyWrapper = styled('div')`
   font-size: 18px;
   font-style: normal;
   font-weight: 600;
-`
+`;
 
 const CustomRow = styled(Row)`
   border-radius: 16px;
-  border: 1px solid #4E4E4E;
+  border: 1px solid #4e4e4e;
   padding: 15px;
   overflow: auto;
-`
+`;
 
 interface AmountProps {
-  field: Field
-  tooltipText?: ReactNode
-  label: ReactNode
-  amount: string
-  usdAmount?: string
-  currency: TokenType | undefined
+  field: Field;
+  tooltipText?: ReactNode;
+  label: ReactNode;
+  amount: string;
+  usdAmount?: string;
+  currency: TokenType | undefined;
 }
-export function SwapModalHeaderAmount({ tooltipText, label, amount, usdAmount, field, currency }: AmountProps) {
-  const theme = useTheme()
-  let formattedAmount = formatTokenAmount(amount)//formatCurrencyAmount(amount, NumberType.TokenTx)
+export function SwapModalHeaderAmount({
+  tooltipText,
+  label,
+  amount,
+  usdAmount,
+  field,
+  currency,
+}: AmountProps) {
+  const theme = useTheme();
+  let formattedAmount = formatTokenAmount(amount); //formatCurrencyAmount(amount, NumberType.TokenTx)
   // if (formattedAmount.length > MAX_AMOUNT_STR_LENGTH) {
   //   formattedAmount = ""//formatCurrencyAmount(amount, NumberType.SwapTradeAmount)
   // }
@@ -69,15 +76,11 @@ export function SwapModalHeaderAmount({ tooltipText, label, amount, usdAmount, f
         </CurrencyWrapper>
       </Column>
       <Column gap="4px" alignItems="flex-end">
-          <ResponsiveMediumText>
-            {formattedAmount}
-          </ResponsiveMediumText>
-          {usdAmount !== undefined && (
-            <BodySmall color={theme.palette.custom.textTertiary}>
-              {usdAmount}
-            </BodySmall>
-          )}
-        </Column>
+        <ResponsiveMediumText>{formattedAmount}</ResponsiveMediumText>
+        {usdAmount !== undefined && (
+          <BodySmall color={theme.palette.custom.textTertiary}>{usdAmount}</BodySmall>
+        )}
+      </Column>
     </CustomRow>
-  )
+  );
 }

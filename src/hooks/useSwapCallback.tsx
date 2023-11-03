@@ -1,18 +1,17 @@
-import { useSorobanReact } from "@soroban-react/core";
-import BigNumber from "bignumber.js";
-import { AppContext, SnackbarIconType } from "contexts";
-import { getCurrentTimePlusOneHour } from "functions/getCurrentTimePlusOneHour";
-import { sendNotification } from "functions/sendNotification";
-import { formatTokenAmount } from "helpers/format";
-import { bigNumberToI128, bigNumberToU64 } from "helpers/utils";
-import { useCallback, useContext } from "react";
-import * as SorobanClient from "soroban-client";
-import { InterfaceTrade, TradeType } from "state/routing/types";
-import { RouterMethod, useRouterCallback } from "./useRouterCallback";
+import { useSorobanReact } from '@soroban-react/core';
+import BigNumber from 'bignumber.js';
+import { AppContext, SnackbarIconType } from 'contexts';
+import { getCurrentTimePlusOneHour } from 'functions/getCurrentTimePlusOneHour';
+import { sendNotification } from 'functions/sendNotification';
+import { formatTokenAmount } from 'helpers/format';
+import { bigNumberToI128, bigNumberToU64 } from 'helpers/utils';
+import { useContext } from 'react';
+import * as SorobanClient from 'soroban-client';
+import { InterfaceTrade, TradeType } from 'state/routing/types';
+import { RouterMethod, useRouterCallback } from './useRouterCallback';
+import { scValToJs } from 'helpers/convert';
 import { useUserSlippageToleranceWithDefault } from "state/user/hooks";
 import { DEFAULT_SLIPPAGE_INPUT_VALUE } from "components/Settings/MaxSlippageSettings"
-
-
 
 // Returns a function that will execute a swap, if the parameters are all valid
 // and the user has approved the slippage adjusted input amount for the trade
@@ -22,25 +21,31 @@ export function useSwapCallback(
   // allowedSlippage: Percent, // in bips
   // permitSignature: PermitSignature | undefined
 ) {
-  const { SnackbarContext } = useContext(AppContext)
-  const sorobanContext = useSorobanReact()
-  const { activeChain, address } = sorobanContext
-  const routerCallback = useRouterCallback()
+  const { SnackbarContext } = useContext(AppContext);
+  const sorobanContext = useSorobanReact();
+  const { activeChain, address } = sorobanContext;
+  const routerCallback = useRouterCallback();
   const allowedSlippage = useUserSlippageToleranceWithDefault(DEFAULT_SLIPPAGE_INPUT_VALUE)
-  
-  return useCallback(async () => {
-    console.log("Trying out the TRADE")
-    if (!trade) throw new Error('missing trade')
-    if (!address || !activeChain) throw new Error('wallet must be connected to swap')
+
+
+  const doSwap = async () => {
+    console.log('Trying out the TRADE');
+    if (!trade) throw new Error('missing trade');
+    if (!address || !activeChain) throw new Error('wallet must be connected to swap');
 
     //Checks which method in the router to use
-    const routerMethod = trade.tradeType == TradeType.EXACT_INPUT ? RouterMethod.SWAP_EXACT_IN : RouterMethod.SWAP_EXACT_OUT
+    const routerMethod =
+      trade.tradeType == TradeType.EXACT_INPUT
+        ? RouterMethod.SWAP_EXACT_IN
+        : RouterMethod.SWAP_EXACT_OUT;
 
 
     const factorLess = (BigNumber(100).minus(allowedSlippage)).dividedBy(100);
     const factorMore = (BigNumber(100).plus(allowedSlippage)).dividedBy(100);
 
-    const amount0 = routerMethod === RouterMethod.SWAP_EXACT_IN ? BigNumber(trade.inputAmount?.value as string) : BigNumber(trade.outputAmount?.value as string)
+    const amount0 = routerMethod === RouterMethod.SWAP_EXACT_IN ? 
+      BigNumber(trade.inputAmount?.value as string) 
+      : BigNumber(trade.outputAmount?.value as string)
     const amount1 = routerMethod === RouterMethod.SWAP_EXACT_IN ? 
         BigNumber(trade.outputAmount?.value as string).multipliedBy(factorLess).decimalPlaces(0) : 
         BigNumber(trade.inputAmount?.value as string).multipliedBy(factorMore).decimalPlaces(0)  
@@ -82,37 +87,67 @@ export function useSwapCallback(
     const amount1ScVal = bigNumberToI128(amount1)
 
    
+
+    //   fn swap_exact_tokens_for_tokens(
+    //     e: Env,
+    //     amount_in: i128,
+    //     amount_out_min: i128,
+    //     path: Vec<Address>,
+    //     to: Address,
+    //     deadline: u64,
+    // ) -> Vec<i128>;
+
+    //   fn swap_tokens_for_exact_tokens(
+    //     e: Env,
+    //     amount_out: i128,
+    //     amount_in_max: i128,
+    //     path: Vec<Address>,
+    //     to: Address,
+    //     deadline: u64,
+    // ) -> Vec<i128>;
     const pathAddresses = [
       new SorobanClient.Address(trade.inputAmount?.currency.address as string),
-      new SorobanClient.Address(trade.outputAmount?.currency.address as string)
+      new SorobanClient.Address(trade.outputAmount?.currency.address as string),
     ];
    
     const pathScVal = SorobanClient.nativeToScVal(pathAddresses)
 
     const args = [
-      amount0ScVal, //amount_in or amount_out
-      amount1ScVal, // amount_out_min or amount_in_max
+      amount0ScVal,
+      amount1ScVal,
       pathScVal, // path
-      new SorobanClient.Address(address!).toScVal(), // to
-      bigNumberToU64(BigNumber(getCurrentTimePlusOneHour())) // deadline
-    ]
-    
-    routerCallback(
-      routerMethod,
-      args,
-      true
-    ).then((result) => {
-      console.log("🚀 « result:", result)
-      
-      //TODO: Investigate result xdr to get swapped amount and hash, there is a warmHash, is it this one?
-      const notificationMessage = `${formatTokenAmount(trade?.inputAmount?.value ?? "0")} ${trade?.inputAmount?.currency.symbol} for ${formatTokenAmount(trade?.outputAmount?.value ?? "0")} ${trade?.outputAmount?.currency.symbol}`
-      sendNotification(notificationMessage, 'Swapped', SnackbarIconType.SWAP, SnackbarContext)
-      
-      return result
-    }).catch((error) => {
-      console.log("🚀 « error:", error)
-      return error
-    })
+      new SorobanClient.Address(address!).toScVal(),
+      bigNumberToU64(BigNumber(getCurrentTimePlusOneHour())),
+    ];
 
-  }, [SnackbarContext, activeChain, address, routerCallback, trade])
+    try {
+      const result = (await routerCallback(
+        routerMethod,
+        args,
+        true,
+      )) as SorobanClient.SorobanRpc.GetSuccessfulTransactionResponse;
+      console.log('🚀 « result:', result);
+
+      if (!result.returnValue) return result;
+
+      const switchValues: [] = scValToJs(result.returnValue!);
+
+      const parsedSwitchValues = switchValues.map((val) => BigNumber(val).dividedBy(1.5));
+
+      const [currencyA, currencyB] = parsedSwitchValues;
+
+      const notificationMessage = `${formatTokenAmount(currencyA ?? '0')} ${trade?.inputAmount
+        ?.currency.symbol} for ${formatTokenAmount(currencyB ?? '0')} ${trade?.outputAmount
+        ?.currency.symbol}`;
+
+      sendNotification(notificationMessage, 'Swapped', SnackbarIconType.SWAP, SnackbarContext);
+
+      return result;
+    } catch (error) {
+      console.log('🚀 « error:', error);
+      throw error;
+    }
+  };
+
+  return doSwap;
 }
