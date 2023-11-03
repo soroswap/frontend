@@ -13,7 +13,6 @@ import { LpTokensObj, getLpTokens } from 'functions/getLpTokens';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import SEO from '../../src/components/SEO';
-import useGetLpTokens from 'hooks/useGetLpTokens';
 
 const PageWrapper = styled(AutoColumn)`
   position: relative;
