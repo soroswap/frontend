@@ -97,9 +97,11 @@ export function useDerivedMintInfo(
   useEffect(() => {
     if (!currencyA || !currencyB) return;
     if (factoryAddress.factory_address !== '' && currencyA && currencyB) {
-      getPairAddress(currencyA.address, currencyB.address, sorobanContext).then((response) => {
-        setPairAddress(response);
-      });
+      getPairAddress(currencyA.address, currencyB.address, sorobanContext)
+        .then((response) => {
+          setPairAddress(response);
+        })
+        .catch(() => setPairAddress(undefined));
     }
   }, [currencyA, currencyB, factoryAddress.factory_address, sorobanContext]);
 
@@ -108,9 +110,11 @@ export function useDerivedMintInfo(
   >();
   useEffect(() => {
     if (sorobanContext.activeChain && sorobanContext.address) {
-      reservesBigNumber(pairAddress ?? '', sorobanContext).then((resp) => {
-        setReservesBN(resp);
-      });
+      reservesBigNumber(pairAddress ?? '', sorobanContext)
+        .then((resp) => {
+          setReservesBN(resp);
+        })
+        .catch((err) => console.log('err reserves'));
     }
   }, [pairAddress, sorobanContext]);
 
@@ -118,10 +122,12 @@ export function useDerivedMintInfo(
 
   useEffect(() => {
     if (!pairAddress || !sorobanContext.address) return;
-    reservesBNWithTokens(pairAddress, sorobanContext).then((response) => {
-      setReservesBNToken(response);
-      // console.log("reservesBNWithTokens response:", response)
-    });
+    reservesBNWithTokens(pairAddress, sorobanContext)
+      .then((response) => {
+        setReservesBNToken(response);
+        // console.log("reservesBNWithTokens response:", response)
+      })
+      .catch((err) => console.log('err reservesBNWithTokens'));
   }, [pairAddress, sorobanContext]);
 
   // console.log("state/mint/hooks: reservesBNToken:", reservesBNToken)

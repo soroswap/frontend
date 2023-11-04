@@ -13,6 +13,7 @@ interface useLiquidityValidationsProps {
   };
   currencyIdA: string;
   currencyIdB: string;
+  pairAddress?: string;
 }
 
 const useLiquidityValidations = ({
@@ -20,6 +21,7 @@ const useLiquidityValidations = ({
   formattedAmounts,
   currencyIdA,
   currencyIdB,
+  pairAddress,
 }: useLiquidityValidationsProps) => {
   const { tokenBalancesResponse } = useGetMyBalances();
 
@@ -63,13 +65,13 @@ const useLiquidityValidations = ({
   };
 
   const getPairInfo = () => {
-    const pairExists = lpTokens?.find((obj) => {
+    const pair = lpTokens?.find((obj) => {
       const pair = [obj.token_0?.address, obj.token_1?.address];
 
       return pair.includes(currencyIdA) && pair.includes(currencyIdB);
     });
 
-    return { exists: !!pairExists, balance: pairExists?.balance };
+    return { exists: !!pairAddress, balance: pair?.balance };
   };
 
   const getSupplyButtonText = () => {
