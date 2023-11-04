@@ -1,6 +1,21 @@
-import { Address, Contract, xdr } from 'soroban-client';
+import { Address, xdr } from 'soroban-client';
 import { Buffer } from 'buffer';
 import { bufToBigint } from 'bigint-conversion';
+import { I128 } from './xdr';
+
+export const decodei128ScVal = (value: any) => {
+  try {
+    return new I128([
+      BigInt(value.i128().lo().low),
+      BigInt(value.i128().lo().high),
+      BigInt(value.i128().hi().low),
+      BigInt(value.i128().hi().high),
+    ]).toString();
+  } catch (error) {
+    console.log(error);
+    return 0;
+  }
+};
 
 export function scvalToBigInt(scval: xdr.ScVal | undefined): BigInt {
   switch (scval?.switch()) {
@@ -19,13 +34,16 @@ export function scvalToBigInt(scval: xdr.ScVal | undefined): BigInt {
       const parts = scval.u128();
       const a = parts.hi();
       const b = parts.lo();
-      return bufToBigint(new Uint32Array([a.high, a.low, b.high, b.low]));
+      return decodei128ScVal(scval);
+      // return bufToBigint(new Uint32Array([a.high, a.low, b.high, b.low]));
     }
     case xdr.ScValType.scvI128(): {
       const parts = scval.i128();
       const a = parts.hi();
       const b = parts.lo();
-      return bufToBigint(new Int32Array([a.high, a.low, b.high, b.low]));
+
+      return decodei128ScVal(scval);
+      // return bufToBigint(new Int32Array([a.high, a.low, b.high, b.low]));
     }
     default: {
       throw new Error(`Invalid type for scvalToBigInt: ${scval?.switch().name}`);
