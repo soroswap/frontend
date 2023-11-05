@@ -7,9 +7,13 @@ import { RowBetween, RowFixed } from 'components/Row';
 import { Separator } from 'components/SearchModal/styleds';
 import { BodySmall } from 'components/Text';
 import { MouseoverTooltip } from 'components/Tooltip';
-import { getPriceImpactNew } from 'functions/getPriceImpact';
+import { ReservesType } from 'functions/getExpectedAmount';
+import { getPairAddress } from 'functions/getPairAddress';
+import { getPriceImpactNew, getPriceImpactNew2 } from 'functions/getPriceImpact';
 import { formatTokenAmount, twoDecimalsPercentage } from 'helpers/format';
-import { useState } from 'react';
+import useGetReservesByPair from 'hooks/useGetReservesByPair';
+import { reservesBNWithTokens } from 'hooks/useReserves';
+import { useEffect, useState } from 'react';
 import { InterfaceTrade } from 'state/routing/types';
 
 interface AdvancedSwapDetailsProps {
@@ -78,17 +82,33 @@ export function AdvancedSwapDetails({
   //   console.log("resp", Resp)
   // })
 
+  const { pairAddress, reserves, currentBaseAddress, currentOtherAddress } = useGetReservesByPair({
+    baseAddress: trade?.inputAmount?.currency?.address,
+    otherAddress: trade?.outputAmount?.currency.address,
+  });
+
   const [priceImpact, setPriceImpact] = useState<number>(0);
 
-  getPriceImpactNew(
+  useEffect(() => {
+    if (reserves) {
+      getPriceImpactNew2(
+        trade?.inputAmount?.currency,
+        trade?.outputAmount?.currency,
+        BigNumber(trade?.inputAmount?.value ?? '0'),
+        reserves,
+        trade?.tradeType,
+      ).then((resp) => {
+        setPriceImpact(twoDecimalsPercentage(resp.toString()));
+      });
+    }
+  }, [
+    sorobanContext,
     trade?.inputAmount?.currency,
     trade?.outputAmount?.currency,
-    BigNumber(trade?.inputAmount?.value ?? '0'),
-    sorobanContext,
+    trade?.inputAmount?.value,
     trade?.tradeType,
-  ).then((resp) => {
-    setPriceImpact(twoDecimalsPercentage(resp.toString()));
-  });
+    reserves,
+  ]);
 
   // twoDecimalsPercentage()}%
 

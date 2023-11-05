@@ -1,10 +1,10 @@
 import { useSorobanReact } from '@soroban-react/core';
 import BigNumber from 'bignumber.js';
-import { getExpectedAmount } from 'functions/getExpectedAmount';
-import { getPairAddress } from 'functions/getPairAddress';
+import { getExpectedAmountNew } from 'functions/getExpectedAmount';
 import { CurrencyAmount, TokenType } from 'interfaces';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { InterfaceTrade, QuoteState, TradeState, TradeType } from 'state/routing/types';
+import useGetReservesByPair from './useGetReservesByPair';
 
 const TRADE_NOT_FOUND = {
   state: TradeState.NO_ROUTE_FOUND,
@@ -28,7 +28,11 @@ export function useBestTrade(
   trade?: InterfaceTrade;
 } {
   const sorobanContext = useSorobanReact();
-  const [pairAddress, setPairAddress] = useState<string | undefined>(undefined);
+
+  const { pairAddress, reserves } = useGetReservesByPair({
+    baseAddress: amountSpecified?.currency?.address,
+    otherAddress: otherCurrency?.address,
+  });
 
   const [currencyIn, currencyOut]: [TokenType | undefined, TokenType | undefined] = useMemo(
     () =>
@@ -39,31 +43,55 @@ export function useBestTrade(
   );
 
   /* This is because the user can set some input amount and input token, before setting the output token */
-  if (amountSpecified?.currency?.address && otherCurrency?.address) {
-    getPairAddress(amountSpecified?.currency?.address, otherCurrency?.address, sorobanContext).then(
-      (response) => {
-        if (response) {
-          setPairAddress(response);
-        } else {
-          setPairAddress(undefined);
-        }
-      },
-    );
-  }
+  // if (amountSpecified?.currency?.address && otherCurrency?.address) {
+  //   getPairAddress(amountSpecified?.currency?.address, otherCurrency?.address, sorobanContext).then(
+  //     (response) => {
+  //       if (response) {
+  //         setPairAddress(response);
+  //       } else {
+  //         setPairAddress(undefined);
+  //       }
+  //     },
+  //   );
+  // }
 
   // EXPECTED AMOUNTS. TODO: THIS WILL CHANGE AFTER USING THE ROUTER CONTRACT
   const [expectedAmount, setExpectedAmount] = useState<string>('0');
-  if (amountSpecified?.value) {
-    getExpectedAmount(
-      currencyIn,
-      currencyOut,
-      BigNumber(amountSpecified.value),
-      sorobanContext,
-      tradeType,
-    ).then((resp) => {
-      setExpectedAmount(resp?.toString());
-    });
-  }
+
+  useEffect(() => {
+    if (amountSpecified?.value && pairAddress && reserves) {
+      getExpectedAmountNew(
+        currencyIn,
+        currencyOut,
+        BigNumber(amountSpecified.value),
+        reserves,
+        tradeType,
+      ).then((resp) => {
+        console.log(resp);
+        setExpectedAmount(resp?.toString());
+      });
+    }
+  }, [
+    amountSpecified?.value,
+    currencyIn,
+    currencyOut,
+    sorobanContext,
+    tradeType,
+    pairAddress,
+    reserves,
+  ]);
+
+  // if (amountSpecified?.value) {
+  //   getExpectedAmount(
+  //     currencyIn,
+  //     currencyOut,
+  //     BigNumber(amountSpecified.value),
+  //     sorobanContext,
+  //     tradeType,
+  //   ).then((resp) => {
+  //     setExpectedAmount(resp?.toString());
+  //   });
+  // }
   // Now both expectedAmount and amountSpecified are strings in stroop format
   // Lets convert all of this to two CurrencyAmount objects: inputAmount & outputAmount
 

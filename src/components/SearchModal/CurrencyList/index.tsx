@@ -43,6 +43,8 @@ const ListWrapper = styled('div')`
 
 function Balance({ balance }: { balance: string }) {
   const formatBalance = () => {
+    if (!balance) return '0';
+
     const [numbers, decimals] = balance.split('.');
 
     if (numbers.length > 7) return numbers;

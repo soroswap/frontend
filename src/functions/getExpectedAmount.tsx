@@ -30,9 +30,47 @@ export async function getExpectedAmount(
       currencyOut.address,
       sorobanContext,
     );
-
     const reserves = customReserves ?? (await reservesBNWithTokens(pairAddress, sorobanContext));
 
+    let expectedOutput;
+    if (tradeType === TradeType.EXACT_INPUT) {
+      expectedOutput = fromExactInputGetExpectedOutput(
+        amountIn,
+        reserves.reserve0,
+        reserves.reserve1,
+      );
+    } else {
+      expectedOutput = fromExactOutputGetExpectedInput(
+        amountIn,
+        reserves.reserve0,
+        reserves.reserve1,
+      );
+    }
+
+    return expectedOutput;
+  } catch (error) {
+    console.log('🚀 « error:', error);
+    return BigNumber(0);
+  }
+}
+
+export interface ReservesType {
+  reserve0: BigNumber | undefined;
+  reserve1: BigNumber | undefined;
+  token0: string;
+  token1: string;
+}
+//This function do not call pairAddress and reservesBNWithTokens every time the input changes, instead it uses the reserves passed as argument
+export async function getExpectedAmountNew(
+  currencyIn: TokenType | undefined,
+  currencyOut: TokenType | undefined,
+  amountIn: BigNumber,
+  reserves: ReservesType,
+  tradeType?: TradeType,
+) {
+  if (!currencyIn || !currencyOut) return BigNumber('0');
+
+  try {
     let expectedOutput;
     if (tradeType === TradeType.EXACT_INPUT) {
       expectedOutput = fromExactInputGetExpectedOutput(

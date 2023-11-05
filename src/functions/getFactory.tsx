@@ -1,13 +1,14 @@
-import { SorobanContextType } from "@soroban-react/core";
-import { FactoryResponseType, FactoryType } from "interfaces/factory";
+import { SorobanContextType } from '@soroban-react/core';
+import { FactoryResponseType, FactoryType } from 'interfaces/factory';
+import { useEffect } from 'react';
 
 export const getFactory = async (sorobanContext: SorobanContextType) => {
-  const fetchResponse = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/factory`)
-  const data = await fetchResponse.json()
+  const fetchResponse = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/factory`);
+  const data = await fetchResponse.json();
 
   let factory: FactoryType = {
-    factory_address: "",
-    factory_id: "",
+    factory_address: '',
+    factory_id: '',
   };
 
   const filtered = data?.filter(

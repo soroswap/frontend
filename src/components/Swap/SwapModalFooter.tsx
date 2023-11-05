@@ -9,7 +9,7 @@ import { MouseoverTooltip } from 'components/Tooltip';
 import { getExpectedAmount } from 'functions/getExpectedAmount';
 import { getPriceImpactNew } from 'functions/getPriceImpact';
 import { formatTokenAmount, twoDecimalsPercentage } from 'helpers/format';
-import { ReactNode, useMemo, useState } from 'react';
+import { ReactNode, useEffect, useMemo, useState } from 'react';
 import { AlertTriangle } from 'react-feather';
 import { InterfaceTrade, TradeType } from 'state/routing/types';
 import { Label } from './SwapModalHeaderAmount';
@@ -74,38 +74,38 @@ export default function SwapModalFooter({
 
   const [expectedAmountOfOne, setExpectedAmountOfOne] = useState<string | number>();
 
-  const formattedPrice = useMemo(() => {
-    try {
-      getExpectedAmount(
-        trade?.inputAmount?.currency,
-        trade?.outputAmount?.currency,
-        BigNumber(1).shiftedBy(7),
-        sorobanContext,
-      ).then((resp) => {
-        setExpectedAmountOfOne(formatTokenAmount(resp));
-      });
-      return expectedAmountOfOne;
-    } catch {
-      return '0';
-    }
-  }, [
-    expectedAmountOfOne,
-    sorobanContext,
-    trade?.inputAmount?.currency,
-    trade?.outputAmount?.currency,
-  ]);
+  useEffect(() => {
+    console.log('entro aca expetec amunt');
+    getExpectedAmount(
+      trade?.inputAmount?.currency,
+      trade?.outputAmount?.currency,
+      BigNumber(1).shiftedBy(7),
+      sorobanContext,
+    ).then((resp) => {
+      setExpectedAmountOfOne(formatTokenAmount(resp));
+    });
+  }, [sorobanContext, trade?.inputAmount?.currency, trade?.outputAmount?.currency]);
 
   const [priceImpact, setPriceImpact] = useState<number>(0);
 
-  getPriceImpactNew(
+  useEffect(() => {
+    console.log('entro aca impactnew');
+    getPriceImpactNew(
+      trade?.inputAmount?.currency,
+      trade?.outputAmount?.currency,
+      BigNumber(trade?.inputAmount?.value ?? '0'),
+      sorobanContext,
+      trade.tradeType,
+    ).then((resp) => {
+      setPriceImpact(twoDecimalsPercentage(resp.toString()));
+    });
+  }, [
+    sorobanContext,
     trade?.inputAmount?.currency,
     trade?.outputAmount?.currency,
-    BigNumber(trade?.inputAmount?.value ?? '0'),
-    sorobanContext,
+    trade?.inputAmount?.value,
     trade.tradeType,
-  ).then((resp) => {
-    setPriceImpact(twoDecimalsPercentage(resp.toString()));
-  });
+  ]);
 
   return (
     <>
@@ -114,7 +114,7 @@ export default function SwapModalFooter({
           <Row align="flex-start" justify="space-between" gap="sm">
             <Label>Exchange rate</Label>
             <DetailRowValue>{`1 ${label} = ${
-              formattedPrice ?? '-'
+              expectedAmountOfOne ?? '-'
             } ${labelInverted}`}</DetailRowValue>
           </Row>
         </BodySmall>

@@ -1,15 +1,16 @@
-import { styled } from "@mui/material"
-import { useSorobanReact } from "@soroban-react/core"
-import BigNumber from "bignumber.js"
-import { BodySmall } from "components/Text"
-import { getExpectedAmount } from "functions/getExpectedAmount"
-import { formatTokenAmount } from "helpers/format"
-import { useCallback, useMemo, useState } from "react"
-import { AlertCircle } from "react-feather"
-import { InterfaceTrade } from "state/routing/types"
+import { styled } from '@mui/material';
+import { useSorobanReact } from '@soroban-react/core';
+import BigNumber from 'bignumber.js';
+import { BodySmall } from 'components/Text';
+import { getExpectedAmount, getExpectedAmountNew } from 'functions/getExpectedAmount';
+import { formatTokenAmount } from 'helpers/format';
+import useGetReservesByPair from 'hooks/useGetReservesByPair';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { AlertCircle } from 'react-feather';
+import { InterfaceTrade } from 'state/routing/types';
 
 interface TradePriceProps {
-  trade: InterfaceTrade
+  trade: InterfaceTrade;
 }
 
 const StyledPriceContainer = styled('button')`
@@ -26,41 +27,52 @@ const StyledPriceContainer = styled('button')`
   text-align: left;
   flex-wrap: wrap;
   user-select: text;
-`
+`;
 
 export default function TradePrice({ trade }: TradePriceProps) {
-  const sorobanContext = useSorobanReact()
-  const [showInverted, setShowInverted] = useState<boolean>(false)
-  const [expectedAmountOfOne, setExpectedAmountOfOne] = useState<string | number>()
+  const sorobanContext = useSorobanReact();
+  const [showInverted, setShowInverted] = useState<boolean>(false);
+  const [expectedAmountOfOne, setExpectedAmountOfOne] = useState<string | number>('0');
 
-  const label = showInverted ? `${trade?.outputAmount?.currency.symbol}` : `${trade?.inputAmount?.currency.symbol} `
-  const mainCurrency = showInverted ? trade?.inputAmount?.currency : trade?.outputAmount?.currency
-  const otherCurrency = !showInverted ? trade?.inputAmount?.currency : trade?.outputAmount?.currency
-  const flipPrice = useCallback(() => setShowInverted(!showInverted), [setShowInverted, showInverted])
+  const label = showInverted
+    ? `${trade?.outputAmount?.currency.symbol}`
+    : `${trade?.inputAmount?.currency.symbol} `;
+  const mainCurrency = showInverted ? trade?.inputAmount?.currency : trade?.outputAmount?.currency;
+  const otherCurrency = !showInverted
+    ? trade?.inputAmount?.currency
+    : trade?.outputAmount?.currency;
+  const flipPrice = useCallback(
+    () => setShowInverted(!showInverted),
+    [setShowInverted, showInverted],
+  );
 
-  const formattedPrice = useMemo(() => {
-    try {
-      getExpectedAmount(mainCurrency, otherCurrency, BigNumber(1).shiftedBy(7), sorobanContext).then((resp) => {
-        setExpectedAmountOfOne(formatTokenAmount(resp))
-      })
-      return expectedAmountOfOne
-    } catch {
-      return '0';
+  const { reserves } = useGetReservesByPair({
+    baseAddress: mainCurrency?.address,
+    otherAddress: otherCurrency?.address,
+  });
+
+  useEffect(() => {
+    if (reserves && mainCurrency && otherCurrency) {
+      getExpectedAmountNew(mainCurrency, otherCurrency, BigNumber(1).shiftedBy(7), reserves).then(
+        (resp) => {
+          setExpectedAmountOfOne(formatTokenAmount(resp));
+        },
+      );
     }
-  }, [expectedAmountOfOne, mainCurrency, otherCurrency, sorobanContext])
+  }, [reserves, mainCurrency, otherCurrency]);
 
-  const text = `${'1 ' + mainCurrency?.symbol + ' = ' + formattedPrice ?? '-'} ${label}`
+  const text = `${'1 ' + mainCurrency?.symbol + ' = ' + expectedAmountOfOne ?? '-'} ${label}`;
 
   return (
     <StyledPriceContainer
       onClick={(e) => {
-        e.stopPropagation() // dont want this click to affect dropdowns / hovers
-        flipPrice()
+        e.stopPropagation(); // dont want this click to affect dropdowns / hovers
+        flipPrice();
       }}
       title={text}
     >
-      <AlertCircle width={16} height={16}/>
+      <AlertCircle width={16} height={16} />
       <BodySmall>{text}</BodySmall>{' '}
     </StyledPriceContainer>
-  )
+  );
 }
