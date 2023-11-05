@@ -211,7 +211,7 @@ export default function Header({ isDrawerOpen, setDrawerOpen }: HeaderProps) {
             />
             <NavBarContainer>
               <NavBarMobile>
-                <NavItemMobile href={'/'} active={pathname.includes('/')}>
+                <NavItemMobile href={'/'} active={pathname === '/'}>
                   Balance
                 </NavItemMobile>
                 <NavItemMobile href={'/swap'} active={pathname.includes('/swap')}>

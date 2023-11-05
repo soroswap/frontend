@@ -25,9 +25,8 @@ const CheckIcon = styled(Check)`
 `;
 
 const StyledBalanceText = styled(Typography)`
-  white-space: nowrap;
-  overflow: hidden;
-  max-width: 5rem;
+  word-break: break-all;
+  max-width: 7rem;
   text-overflow: ellipsis;
 `;
 
@@ -43,9 +42,16 @@ const ListWrapper = styled('div')`
 `;
 
 function Balance({ balance }: { balance: string }) {
-  const balanceToShow = balance; //== 0 ? 0 : balance.toFixed(4)
+  const formatBalance = () => {
+    const [numbers, decimals] = balance.split('.');
 
-  return <StyledBalanceText title={String(balance)}>{balanceToShow}</StyledBalanceText>;
+    if (numbers.length > 7) return numbers;
+    if (numbers.length > 1 && decimals?.length > 3) return `${numbers}.${decimals.slice(0, 3)}`;
+
+    return balance;
+  };
+
+  return <StyledBalanceText title={String(balance)}>{formatBalance()}</StyledBalanceText>;
 }
 
 export function CurrencyRow({
