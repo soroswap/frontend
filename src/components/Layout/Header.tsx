@@ -188,9 +188,9 @@ export default function Header({ isDrawerOpen, setDrawerOpen }: HeaderProps) {
               <NavItem href={'/liquidity'} active={pathname.includes('/liquidity')}>
                 Liquidity
               </NavItem>
-              <NavItem href={'/mint'} active={pathname.includes('/mint')}>
+              {/* <NavItem href={'/mint'} active={pathname.includes('/mint')}>
                 Mint
-              </NavItem>
+              </NavItem> */}
             </NavBar>
             <ButtonsBox>
               <ModeSwitch
@@ -211,15 +211,18 @@ export default function Header({ isDrawerOpen, setDrawerOpen }: HeaderProps) {
             />
             <NavBarContainer>
               <NavBarMobile>
+                <NavItemMobile href={'/'} active={pathname.includes('/')}>
+                  Balance
+                </NavItemMobile>
                 <NavItemMobile href={'/swap'} active={pathname.includes('/swap')}>
                   Swap
                 </NavItemMobile>
                 <NavItemMobile href={'/liquidity'} active={pathname.includes('/liquidity')}>
                   Liquidity
                 </NavItemMobile>
-                <NavItemMobile href={'/mint'} active={pathname.includes('/mint')}>
+                {/* <NavItemMobile href={'/mint'} active={pathname.includes('/mint')}>
                   Mint
-                </NavItemMobile>
+                </NavItemMobile> */}
               </NavBarMobile>
             </NavBarContainer>
           </>

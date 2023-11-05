@@ -26,6 +26,7 @@ import { FixedSizeList } from 'react-window';
 import { CloseButton } from '../../components/Buttons/CloseButton';
 import CurrencyList, { CurrencyRow, formatAnalyticsEventProperties } from './CurrencyList';
 import { PaddedColumn, SearchInput, Separator } from './styleds';
+import useGetMyBalances from 'hooks/useGetMyBalances';
 
 const ContentWrapper = styled(Column)<{ modalheight?: number }>`
   overflow: hidden;
@@ -72,8 +73,6 @@ export function CurrencySearch({
   isOpen,
   onlyShowCurrenciesWithBalance,
 }: CurrencySearchProps) {
-  const { address, activeChain } = useSorobanReact();
-  const sorobanContext = useSorobanReact();
   const theme = useTheme();
 
   const [tokenLoaderTimerElapsed, setTokenLoaderTimerElapsed] = useState(false);
@@ -98,10 +97,29 @@ export function CurrencySearch({
   //   }
   // }, [isAddressSearch])
 
+  const { tokenBalancesResponse, isLoading } = useGetMyBalances();
+
   const defaultTokens = useDefaultActiveTokens();
+
   const filteredTokens: TokenType[] = useMemo(() => {
-    return Object.values(defaultTokens).filter(getTokenFilter(debouncedQuery));
-  }, [defaultTokens, debouncedQuery]);
+    const getTokensSortedByBalance = () => {
+      if (!tokenBalancesResponse) return Object.values(defaultTokens);
+
+      return Object.values(defaultTokens).sort((a, b) => {
+        const aBalance = tokenBalancesResponse?.balances.find((tokenBalance) => {
+          return tokenBalance.address === a.address;
+        });
+        const bBalance = tokenBalancesResponse?.balances.find((tokenBalance) => {
+          return tokenBalance.address === b.address;
+        });
+        if (aBalance && bBalance) {
+          return Number(bBalance.balance) - Number(aBalance.balance);
+        }
+        return 0;
+      });
+    };
+    return getTokensSortedByBalance().filter(getTokenFilter(debouncedQuery));
+  }, [defaultTokens, tokenBalancesResponse, debouncedQuery]);
 
   const searchCurrencies = useSortTokensByQuery(debouncedQuery, filteredTokens);
 
@@ -151,15 +169,15 @@ export function CurrencySearch({
     return () => clearTimeout(tokenLoaderTimer);
   }, []);
 
-  const { height: windowHeight } = useWindowSize();
-  let modalHeight;
-  if (windowHeight) {
-    // Converts pixel units to vh for Modal component
-    modalHeight = Math.min(Math.round((680 / windowHeight) * 100), 80);
-  }
+  // const { height: windowHeight } = useWindowSize();
+  // let modalHeight;
+  // if (windowHeight) {
+  //   // Converts pixel units to vh for Modal component
+  //   modalHeight = Math.min(Math.round((680 / windowHeight) * 100), 80);
+  // }
 
   return (
-    <ContentWrapper modalheight={modalHeight}>
+    <ContentWrapper modalheight={80}>
       <PaddedColumn gap="16px">
         <RowBetween>
           <SubHeader fontWeight={500}>Select a token</SubHeader>
@@ -224,6 +242,7 @@ export function CurrencySearch({
                 showCurrencyAmount={showCurrencyAmount}
                 searchQuery={searchQuery}
                 isAddressSearch={isAddressSearch}
+                isLoading={isLoading}
               />
             )}
           </AutoSizer>
