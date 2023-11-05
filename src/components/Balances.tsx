@@ -4,6 +4,10 @@ import { useMintTestToken } from 'hooks/useMintTestToken';
 import { ButtonPrimary } from './Buttons/Button';
 import { AutoColumn } from './Column';
 import useGetMyBalances from 'hooks/useGetMyBalances';
+import { useContext, useState } from 'react';
+import { TokenType } from 'interfaces';
+import CurrencyLogo from './Logo/CurrencyLogo';
+import { AppContext } from 'contexts';
 
 const PageWrapper = styled(AutoColumn)`
   position: relative;
@@ -28,39 +32,80 @@ const PageWrapper = styled(AutoColumn)`
 `;
 
 export function Balances() {
-  const { sorobanContext, tokens, tokenBalancesResponse, isLoading, isError } = useGetMyBalances();
-
-  const isMintDisabled = Number(tokenBalancesResponse?.balances[0].balance) > 0;
+  const { sorobanContext, tokens, tokenBalancesResponse, isLoading, isError, refetch } =
+    useGetMyBalances();
 
   const mintTestTokens = useMintTestToken();
+  const { ConnectWalletModal } = useContext(AppContext);
+  const { isConnectWalletModalOpen, setConnectWalletModalOpen } = ConnectWalletModal;
+
+  const [currentMintingToken, setCurrentMintingToken] = useState<TokenType | null>(null);
+  const [isMinting, setIsMinting] = useState(false);
 
   const handleMint = () => {
-    mintTestTokens();
+    setIsMinting(true);
+    mintTestTokens({
+      onTokenMintedStart(token) {
+        setCurrentMintingToken(token);
+      },
+      onTokenMintedSuccess(token) {
+        setCurrentMintingToken(null);
+        refetch();
+      },
+      onTokenMintedError(token) {
+        setCurrentMintingToken(null);
+      },
+    }).finally(() => {
+      setIsMinting(false);
+    });
   };
 
   return (
     <PageWrapper>
       <CardContent>
         <Typography gutterBottom variant="h5" component="div">
-          Balances
+          Your Balances:
         </Typography>
 
-        {sorobanContext.address && tokens.length > 0 ? (
-          <>
-            {isLoading && <CircularProgress />}
+        {sorobanContext.address && tokens.length > 0 && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+            {isLoading && <CircularProgress size="24px" />}
             {tokenBalancesResponse?.balances?.map((tokenBalance) => (
-              <p key={tokenBalance.address}>
-                {tokenBalance.symbol} : {tokenBalance.balance as string}
-              </p>
+              <div key={tokenBalance.address} style={{ display: 'flex', alignItems: 'center' }}>
+                <CurrencyLogo
+                  currency={tokens.find((token) => token.address === tokenBalance.address)}
+                  size={'16px'}
+                  style={{ marginRight: '8px' }}
+                />
+                {currentMintingToken?.address === tokenBalance.address ? (
+                  <CircularProgress size="12px" />
+                ) : (
+                  <p>
+                    {tokenBalance.symbol} : {tokenBalance.balance as string}
+                  </p>
+                )}
+              </div>
             ))}
-          </>
-        ) : (
-          <div>Connect your Wallet</div>
+          </div>
         )}
 
-        <ButtonPrimary onClick={handleMint} disabled={isMintDisabled}>
-          Mint test tokens
-        </ButtonPrimary>
+        {!sorobanContext.address ? (
+          <>
+            <Typography gutterBottom>
+              Connect your wallet to see your test tokens balances
+            </Typography>
+            <ButtonPrimary
+              onClick={() => setConnectWalletModalOpen(true)}
+              style={{ marginTop: '24px' }}
+            >
+              Connect Wallet
+            </ButtonPrimary>
+          </>
+        ) : (
+          <ButtonPrimary onClick={handleMint} disabled={isMinting} style={{ marginTop: '24px' }}>
+            {isMinting ? `Minting ${currentMintingToken?.symbol}` : `Mint test tokens`}
+          </ButtonPrimary>
+        )}
       </CardContent>
     </PageWrapper>
   );
