@@ -1,47 +1,50 @@
-import { SorobanContextType, useSorobanReact } from "@soroban-react/core";
-import { isAddress } from "helpers/address";
-import { useMemo } from "react";
-import useSWR from "swr";
-import { TokenMapType, TokenType, tokensResponse } from "../interfaces";
+import { SorobanContextType, useSorobanReact } from '@soroban-react/core';
+import { isAddress } from 'helpers/address';
+import { useEffect, useMemo, useState } from 'react';
+import useSWR from 'swr';
+import { TokenMapType, TokenType, tokensResponse } from '../interfaces';
 // TODO: verify type of fetcher args
 const fetcher = (url: string) => fetch(url).then((resp) => resp.json());
 
 export const useTokens = (sorobanContext: SorobanContextType) => {
-  const { data } = useSWR(
-    `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/tokens`,
-    fetcher,
-  );
-  let tokens: TokenType[] = [];
+  const { data } = useSWR(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/tokens`, fetcher);
 
-  //TODO: Hardcode one activeChain for default tokens
-  const filtered = data?.filter(
-    (item: tokensResponse) =>
-      item.network === sorobanContext?.activeChain?.name?.toLowerCase(),
-  );
+  const [tokens, setTokens] = useState<TokenType[]>([]);
 
-  if (filtered?.length > 0) {
-    tokens = filtered[0].tokens;
-  }
+  useEffect(() => {
+    if (data && data.length > 0) {
+      //TODO: Hardcode one activeChain for default tokens
+      const filtered = data?.filter(
+        (item: tokensResponse) => item.network === sorobanContext?.activeChain?.name?.toLowerCase(),
+      );
+
+      if (filtered?.length > 0) {
+        setTokens(filtered[0].tokens);
+      }
+    }
+  }, [data, sorobanContext?.activeChain?.name, tokens]);
 
   return tokens;
 };
 
-// reduce token array into a map 
+// reduce token array into a map
 function useTokensAsMap(): TokenMapType {
-  const sorobanContext = useSorobanReact()
-  const tokens = useTokens(sorobanContext)
+  const sorobanContext = useSorobanReact();
+  const tokens = useTokens(sorobanContext);
+
   return useMemo(() => {
     // reduce to just tokens
     return tokens.reduce((map: TokenMapType, token) => {
       map[token.address] = token;
       return map;
-    }, {})
-  }, [tokens])
+    }, {});
+  }, [tokens]);
 }
 
 //TODO: Enable useUserAddedTokens() from uniswap interface
 export function useDefaultActiveTokens(): TokenMapType {
-  const tokensAsMap = useTokensAsMap()
+  const tokensAsMap = useTokensAsMap();
+
   // const userAddedTokens = useUserAddedTokens()
   // return useMemo(() => {
   //   return (
@@ -58,20 +61,23 @@ export function useDefaultActiveTokens(): TokenMapType {
   //       )
   //   )
   // }, [tokensFromMap, userAddedTokens])
-  return tokensAsMap
+  return tokensAsMap;
 }
 
 export function useToken(tokenAddress?: string | null) {
-  const tokens = useDefaultActiveTokens()
-  return useTokenFromMapOrNetwork(tokens, tokenAddress)
+  const tokens = useDefaultActiveTokens();
+  return useTokenFromMapOrNetwork(tokens, tokenAddress);
 }
 
-export async function getToken(sorobanContext: SorobanContextType, tokenAddress?: string | undefined): Promise<TokenType | undefined> {
-  if (!tokenAddress || tokenAddress === '' || !sorobanContext.activeChain) return undefined
+export async function getToken(
+  sorobanContext: SorobanContextType,
+  tokenAddress?: string | undefined,
+): Promise<TokenType | undefined> {
+  if (!tokenAddress || tokenAddress === '' || !sorobanContext.activeChain) return undefined;
 
   const backendURL = `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/tokens`;
 
-  // fetch token list from url 
+  // fetch token list from url
   try {
     const response = await fetch(backendURL);
     if (!response.ok) {
@@ -83,13 +89,14 @@ export async function getToken(sorobanContext: SorobanContextType, tokenAddress?
 
     // Find the object that matches the activeChain
     const activeChainTokens = tokenData.find(
-      (chain: { network: string }) => chain.network.toLowerCase() === sorobanContext.activeChain?.name?.toLowerCase()
+      (chain: { network: string }) =>
+        chain.network.toLowerCase() === sorobanContext.activeChain?.name?.toLowerCase(),
     );
     if (!activeChainTokens) return undefined;
 
     // Find the token that matches the tokenAddress
     const token = activeChainTokens.tokens.find(
-      (tkn: TokenType) => tkn.address.toLowerCase() === tokenAddress.toLowerCase()
+      (tkn: TokenType) => tkn.address.toLowerCase() === tokenAddress.toLowerCase(),
     );
     if (!token) return undefined;
 
@@ -103,15 +110,19 @@ export async function getToken(sorobanContext: SorobanContextType, tokenAddress?
     console.error('Error fetching token data:', error);
     return undefined;
   }
-
 }
 
-export function useTokenFromMapOrNetwork(tokens: TokenMapType, tokenAddress?: string | null): TokenType | null | undefined {
-  const address = isAddress(tokenAddress)
-  const token: TokenType | undefined = address ? tokens[address] : undefined
-  const tokenFromNetwork = useTokenFromActiveNetwork(token ? undefined : address ? address : undefined)
+export function useTokenFromMapOrNetwork(
+  tokens: TokenMapType,
+  tokenAddress?: string | null,
+): TokenType | null | undefined {
+  const address = isAddress(tokenAddress);
+  const token: TokenType | undefined = address ? tokens[address] : undefined;
+  const tokenFromNetwork = useTokenFromActiveNetwork(
+    token ? undefined : address ? address : undefined,
+  );
 
-  return tokenFromNetwork ?? token
+  return tokenFromNetwork ?? token;
 }
 
 /**
@@ -119,10 +130,12 @@ export function useTokenFromMapOrNetwork(tokens: TokenMapType, tokenAddress?: st
  * Returns null if token is loading or null was passed.
  * Returns undefined if tokenAddress is invalid or token does not exist.
  */
-export function useTokenFromActiveNetwork(tokenAddress: string | undefined): TokenType | null | undefined {
+export function useTokenFromActiveNetwork(
+  tokenAddress: string | undefined,
+): TokenType | null | undefined {
   //This is from uniswap interface
   //TODO: Make it work with useContractValue
-  return null
+  return null;
   // const { chainId } = useWeb3React()
 
   // const formattedAddress = isAddress(tokenAddress)

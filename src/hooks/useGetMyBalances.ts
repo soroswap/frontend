@@ -9,10 +9,16 @@ const useGetMyBalances = () => {
 
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isError, setIsError] = useState<boolean>(false);
+  const [update, setUpdate] = useState<boolean>(false);
 
   const [tokenBalancesResponse, setTokenBalancesResponse] = useState<
     tokenBalancesType | undefined
   >();
+
+  const refetch = () => {
+    setUpdate((prev) => !prev);
+  };
+
   useEffect(() => {
     if (sorobanContext.activeChain && sorobanContext.address && tokens.length > 0) {
       tokenBalances(sorobanContext.address, tokens, sorobanContext, true)
@@ -22,9 +28,9 @@ const useGetMyBalances = () => {
         .catch(() => setIsError(true))
         .finally(() => setIsLoading(false));
     }
-  }, [sorobanContext, tokens]);
+  }, [sorobanContext, tokens, update]);
 
-  return { sorobanContext, tokens, tokenBalancesResponse, isError, isLoading };
+  return { sorobanContext, tokens, tokenBalancesResponse, isError, isLoading, refetch };
 };
 
 export default useGetMyBalances;

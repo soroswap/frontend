@@ -1,50 +1,51 @@
-import { Typography, styled } from "@mui/material"
-import { useSorobanReact } from "@soroban-react/core"
-import Column, { AutoColumn } from "components/Column"
-import Loader from 'components/Icons/LoadingSpinner'
-import CurrencyLogo from "components/Logo/CurrencyLogo"
-import Row, { RowFixed } from "components/Row"
-import { formatTokenAmount } from "helpers/format"
-import { tokenBalance } from 'hooks'
-import { CSSProperties, MutableRefObject, useCallback, useEffect, useMemo, useState } from "react"
-import { Check } from "react-feather"
-import { FixedSizeList } from 'react-window'
-import { TokenType } from "../../../interfaces"
-import { LoadingRows, MenuItem } from "../styleds"
+import { CircularProgress, Typography, styled } from '@mui/material';
+import { useSorobanReact } from '@soroban-react/core';
+import Column, { AutoColumn } from 'components/Column';
+import Loader from 'components/Icons/LoadingSpinner';
+import CurrencyLogo from 'components/Logo/CurrencyLogo';
+import Row, { RowFixed, RowFlat } from 'components/Row';
+import { formatTokenAmount } from 'helpers/format';
+import { tokenBalance } from 'hooks';
+import { CSSProperties, MutableRefObject, useCallback, useEffect, useMemo, useState } from 'react';
+import { Check } from 'react-feather';
+import { FixedSizeList } from 'react-window';
+import { TokenType } from '../../../interfaces';
+import { LoadingRows, MenuItem } from '../styleds';
+import StyledRow from '../../Row';
 
 function currencyKey(currency: TokenType): string {
-  return currency.address ? currency.address : 'ETHER'
+  return currency.address ? currency.address : 'ETHER';
 }
 
 const CheckIcon = styled(Check)`
   height: 20px;
   width: 20px;
   margin-left: 4px;
-  color: ${({ theme }) => "#4C82FB"};
-`
+  color: ${({ theme }) => '#4C82FB'};
+`;
 
 const StyledBalanceText = styled(Typography)`
   white-space: nowrap;
   overflow: hidden;
   max-width: 5rem;
   text-overflow: ellipsis;
-`
+`;
 
 const CurrencyName = styled(Typography)`
   font-weight: 500;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-`
+`;
 
 const ListWrapper = styled('div')`
   padding-right: 0.25rem;
-`
+`;
 
 function Balance({ balance }: { balance: string }) {
-  const balanceToShow = balance //== 0 ? 0 : balance.toFixed(4)
+  const balanceToShow = balance; //== 0 ? 0 : balance.toFixed(4)
 
-  return <StyledBalanceText title={String(balance)}>{balanceToShow}</StyledBalanceText>
+  return <StyledBalanceText title={String(balance)}>{balanceToShow}</StyledBalanceText>;
 }
 
 export function CurrencyRow({
@@ -56,15 +57,15 @@ export function CurrencyRow({
   showCurrencyAmount,
   eventProperties,
 }: {
-  currency: TokenType
-  onSelect: (hasWarning: boolean) => void
-  isSelected: boolean
-  otherSelected: boolean
-  style?: CSSProperties
-  showCurrencyAmount?: boolean
-  eventProperties: Record<string, unknown>
+  currency: TokenType;
+  onSelect: (hasWarning: boolean) => void;
+  isSelected: boolean;
+  otherSelected: boolean;
+  style?: CSSProperties;
+  showCurrencyAmount?: boolean;
+  eventProperties: Record<string, unknown>;
 }) {
-  const sorobanContext = useSorobanReact()
+  const sorobanContext = useSorobanReact();
 
   const [balance, setBalance] = useState<string>();
 
@@ -75,57 +76,57 @@ export function CurrencyRow({
       });
     }
   }, [currency.address, sorobanContext]);
-  
-  const warning = false
-  const isBlockedToken = false
-  const blockedTokenOpacity = '0.6'
+
+  const warning = false;
+  const isBlockedToken = false;
+  const blockedTokenOpacity = '0.6';
 
   // only show add or remove buttons if not on selected list
   return (
-  <MenuItem
-    tabIndex={0}
-    style={style}
-    onKeyPress={(e) => (!isSelected && e.key === 'Enter' ? onSelect(!!warning) : null)}
-    onClick={() => (isSelected ? null : onSelect(!!warning))}
-    disabled={isSelected}
-    selected={otherSelected}
-    dim={isBlockedToken}
-  >
-    <Column>
-      <CurrencyLogo
-        currency={currency}
-        size="36px"
-        style={{ opacity: isBlockedToken ? blockedTokenOpacity : '1' }}
-      />
-    </Column>
-    <AutoColumn style={{ opacity: isBlockedToken ? blockedTokenOpacity : '1' }}>
-      <Row>
-        <CurrencyName title={currency.name}>{currency.name}</CurrencyName>
-      </Row>
-      <Typography ml="0px" fontSize="12px" fontWeight={300}>
-        {currency.symbol}
-      </Typography>
-    </AutoColumn>
-    {showCurrencyAmount ? (
-      <RowFixed style={{ justifySelf: 'flex-end' }}>
-        {sorobanContext.address ? balance ? <Balance balance={balance} /> : <Loader /> : null}
-        {isSelected && <CheckIcon />}
-      </RowFixed>
-    ) : (
-      isSelected && (
+    <MenuItem
+      tabIndex={0}
+      style={style}
+      onKeyPress={(e) => (!isSelected && e.key === 'Enter' ? onSelect(!!warning) : null)}
+      onClick={() => (isSelected ? null : onSelect(!!warning))}
+      disabled={isSelected}
+      selected={otherSelected}
+      dim={isBlockedToken}
+    >
+      <Column>
+        <CurrencyLogo
+          currency={currency}
+          size="36px"
+          style={{ opacity: isBlockedToken ? blockedTokenOpacity : '1' }}
+        />
+      </Column>
+      <AutoColumn style={{ opacity: isBlockedToken ? blockedTokenOpacity : '1' }}>
+        <Row>
+          <CurrencyName title={currency.name}>{currency.name}</CurrencyName>
+        </Row>
+        <Typography ml="0px" fontSize="12px" fontWeight={300}>
+          {currency.symbol}
+        </Typography>
+      </AutoColumn>
+      {showCurrencyAmount ? (
         <RowFixed style={{ justifySelf: 'flex-end' }}>
-          <CheckIcon />
+          {sorobanContext.address ? balance ? <Balance balance={balance} /> : <Loader /> : null}
+          {isSelected && <CheckIcon />}
         </RowFixed>
-      )
-    )}
-  </MenuItem>
-  )
+      ) : (
+        isSelected && (
+          <RowFixed style={{ justifySelf: 'flex-end' }}>
+            <CheckIcon />
+          </RowFixed>
+        )
+      )}
+    </MenuItem>
+  );
 }
 
 interface TokenRowProps {
-  data: Array<TokenType>
-  index: number
-  style: CSSProperties
+  data: Array<TokenType>;
+  index: number;
+  style: CSSProperties;
 }
 
 export const formatAnalyticsEventProperties = (
@@ -133,7 +134,7 @@ export const formatAnalyticsEventProperties = (
   index: number,
   data: any[],
   searchQuery: string,
-  isAddressSearch: string | false
+  isAddressSearch: string | false,
 ) => ({
   symbol: token?.symbol,
   address: token?.address,
@@ -145,7 +146,7 @@ export const formatAnalyticsEventProperties = (
   ...(isAddressSearch === false
     ? { search_token_symbol_input: searchQuery }
     : { search_token_address_input: isAddressSearch }),
-})
+});
 
 const LoadingRow = () => (
   <LoadingRows data-testid="loading-rows">
@@ -153,7 +154,7 @@ const LoadingRow = () => (
     <div />
     <div />
   </LoadingRows>
-)
+);
 
 export default function CurrencyList({
   height,
@@ -166,36 +167,39 @@ export default function CurrencyList({
   showCurrencyAmount,
   searchQuery,
   isAddressSearch,
+  isLoading,
 }: {
-  height: number
-  currencies: TokenType[]
-  otherListTokens?: TokenType[]
-  selectedCurrency?: TokenType | null
-  onCurrencySelect: (currency: TokenType, hasWarning?: boolean) => void
-  otherCurrency?: TokenType | null
-  fixedListRef?: MutableRefObject<FixedSizeList | undefined>
-  showCurrencyAmount?: boolean
-  searchQuery: string
-  isAddressSearch: string | false
+  height: number;
+  currencies: TokenType[];
+  otherListTokens?: TokenType[];
+  selectedCurrency?: TokenType | null;
+  onCurrencySelect: (currency: TokenType, hasWarning?: boolean) => void;
+  otherCurrency?: TokenType | null;
+  fixedListRef?: MutableRefObject<FixedSizeList | undefined>;
+  showCurrencyAmount?: boolean;
+  searchQuery: string;
+  isAddressSearch: string | false;
+  isLoading?: boolean;
 }) {
   const itemData: TokenType[] = useMemo(() => {
     if (otherListTokens && otherListTokens?.length > 0) {
-      return [...currencies, ...otherListTokens]
+      return [...currencies, ...otherListTokens];
     }
-    return currencies
-  }, [currencies, otherListTokens])
+    return currencies;
+  }, [currencies, otherListTokens]);
 
   const Row = useCallback(
     function TokenRow({ data, index, style }: TokenRowProps) {
-      const row: TokenType = data[index]
+      const row: TokenType = data[index];
 
-      const currency = row
+      const currency = row;
 
-      const isSelected = Boolean(currency && selectedCurrency && selectedCurrency == (currency))
-      const otherSelected = Boolean(currency && otherCurrency && otherCurrency == (currency))
-      const handleSelect = (hasWarning: boolean) => currency && onCurrencySelect(currency, hasWarning)
+      const isSelected = Boolean(currency && selectedCurrency && selectedCurrency == currency);
+      const otherSelected = Boolean(currency && otherCurrency && otherCurrency == currency);
+      const handleSelect = (hasWarning: boolean) =>
+        currency && onCurrencySelect(currency, hasWarning);
 
-      const token = currency
+      const token = currency;
 
       if (currency) {
         return (
@@ -206,24 +210,41 @@ export default function CurrencyList({
             onSelect={handleSelect}
             otherSelected={otherSelected}
             showCurrencyAmount={showCurrencyAmount}
-            eventProperties={formatAnalyticsEventProperties(token, index, data, searchQuery, isAddressSearch)}
+            eventProperties={formatAnalyticsEventProperties(
+              token,
+              index,
+              data,
+              searchQuery,
+              isAddressSearch,
+            )}
           />
-        )
+        );
       } else {
-        return null
+        return null;
       }
     },
-    [selectedCurrency, otherCurrency, onCurrencySelect, showCurrencyAmount, searchQuery, isAddressSearch]
-  )
+    [
+      selectedCurrency,
+      otherCurrency,
+      onCurrencySelect,
+      showCurrencyAmount,
+      searchQuery,
+      isAddressSearch,
+    ],
+  );
 
   const itemKey = useCallback((index: number, data: typeof itemData) => {
-    const currency = data[index]
-    return currencyKey(currency)
-  }, [])
+    const currency = data[index];
+    return currencyKey(currency);
+  }, []);
 
   return (
     <ListWrapper data-testid="currency-list-wrapper">
-      {(
+      {isLoading ? (
+        <StyledRow justify="center" padding="12px">
+          <CircularProgress size="16px" />
+        </StyledRow>
+      ) : (
         <FixedSizeList
           height={height}
           ref={fixedListRef as any}
@@ -237,5 +258,5 @@ export default function CurrencyList({
         </FixedSizeList>
       )}
     </ListWrapper>
-  )
+  );
 }

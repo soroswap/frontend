@@ -312,11 +312,7 @@ export default function ConfirmSwapModal({
   ]);
 
   const titleToShow =
-    confirmModalState === ConfirmModalState.REVIEWING
-      ? 'Confirm Swap'
-      : confirmModalState === ConfirmModalState.PENDING_CONFIRMATION
-      ? 'You will receive'
-      : undefined;
+    confirmModalState === ConfirmModalState.REVIEWING ? 'Confirm Swap' : undefined;
 
   return (
     <Modal
