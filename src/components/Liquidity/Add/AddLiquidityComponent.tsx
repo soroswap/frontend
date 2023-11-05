@@ -29,6 +29,11 @@ import AddModalHeader from './AddModalHeader';
 import { useUserSlippageToleranceWithDefault } from 'state/user/hooks';
 import { DEFAULT_SLIPPAGE_INPUT_VALUE } from 'components/Settings/MaxSlippageSettings';
 import useLiquidityValidations from 'hooks/useLiquidityValidations';
+import getLpTokensAmount from 'functions/getLpTokensAmount';
+import { reservesBNWithTokens } from 'hooks/useReserves';
+import { getTotalShares } from 'functions/LiquidityPools';
+import useCalculateLp from 'hooks/useCalculateLp';
+import useCalculateLpToReceive from 'hooks/useCalculateLp';
 
 export const PageWrapper = styled('main')`
   position: relative;
@@ -106,8 +111,7 @@ export default function AddLiquidityComponent() {
       onFieldAInput('');
     }
     setTxHash('');
-    router.push('/liquidity');
-  }, [onFieldAInput, router, txHash]);
+  }, [onFieldAInput, txHash]);
 
   const routerCallback = useRouterCallback();
 
@@ -228,6 +232,20 @@ export default function AddLiquidityComponent() {
     </BodySmall>
   );
 
+  const { getLpAmountAndPercentage } = useCalculateLpToReceive({
+    pairAddress,
+    formattedAmounts,
+    baseCurrency,
+  });
+
+  const handleClickMainButton = async () => {
+    const { amount, percentage } = await getLpAmountAndPercentage();
+
+    setAmountOfLpTokensToReceive(`${amount} (${percentage.toFixed(2)}%)`);
+
+    setShowConfirm(true);
+  };
+
   const {
     hasEnoughBalance,
     hasSelectedTokens,
@@ -239,6 +257,7 @@ export default function AddLiquidityComponent() {
     currencyIdA,
     currencyIdB,
     formattedAmounts,
+    pairAddress,
   });
 
   return (
@@ -318,11 +337,7 @@ export default function AddLiquidityComponent() {
           ) : (
             <AutoColumn gap="md">
               <ButtonError
-                onClick={() => {
-                  setShowConfirm(true);
-                  // provideLiquidity()
-                  console.log('pages/add: ButtonError onClick');
-                }}
+                onClick={handleClickMainButton}
                 disabled={!hasValidInputValues() || !hasEnoughBalance() || !hasSelectedTokens()}
                 error={false}
               >
