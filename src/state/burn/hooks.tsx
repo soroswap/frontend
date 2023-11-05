@@ -81,7 +81,11 @@ export function useDerivedBurnInfo(
   let liquidityToBurn = new BigNumber(0)
 
   const getNewCurrencyValue = (currency: TokenType | undefined) => {
+    console.log("getNewCurrencyValue")
+    console.log("🚀 ~ file: hooks.tsx:84 ~ getNewCurrencyValue ~ currency:", currency)
+    
     const percent = parseInt(percentToRemove)
+    console.log("🚀 ~ file: hooks.tsx:88 ~ getNewCurrencyValue ~ percent:", percent)
     
     if (isNaN(percent)) {
       console.error('Invalid percentToRemove:', percentToRemove);
@@ -93,17 +97,19 @@ export function useDerivedBurnInfo(
         const userBalance = new BigNumber(pair.liquidityToken.userBalance)
         
         // Calculate newUserBalance
-        const newUserBalance = userBalance.times(percent / 100);
-        liquidityToBurn = newUserBalance
-        if (newUserBalance.isNaN()) {
+        liquidityToBurn = userBalance.multipliedBy(percent).dividedBy(100).decimalPlaces(0);;
+        if (liquidityToBurn.isNaN()) {
           // Handle cases where the calculation results in NaN
+          console.error("liquidityToBurn is NaN: ", liquidityToBurn)
           return "";
         }
 
         // Calculate newTokenAmount
         const tokenAmount = currency?.address === pair?.tokenAmounts[0].currency?.address ? pair?.tokenAmounts[0] : pair?.tokenAmounts[1]
+        console.log("🚀 ~ file: hooks.tsx:105 ~ getNewCurrencyValue ~ tokenAmount.balance.toString():", tokenAmount.balance.toString())
 
-        const newTokenAmount = tokenAmount.balance.times(newUserBalance).div(userBalance).dp(tokenAmount.currency?.decimals ?? 7)
+        const newTokenAmount = tokenAmount.balance.times(liquidityToBurn).div(userBalance).dp(tokenAmount.currency?.decimals ?? 7)
+        console.log("🚀 ~ file: hooks.tsx:108 ~ getNewCurrencyValue ~ newTokenAmount.toString():", newTokenAmount.toString())
         
         return newTokenAmount.toString()
       } else {

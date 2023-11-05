@@ -61,10 +61,11 @@ export const getPairsInfo = async (
 
         const userShare0 = BigNumber(reserves.reserve0 as BigNumber)
           .multipliedBy(BigNumber(liquidityToken.userBalance))
-          .dividedBy(BigNumber(totalSupply));
+          .dividedBy(BigNumber(totalSupply)).decimalPlaces(0);
+          
         const userShare1 = BigNumber(reserves.reserve1 as BigNumber)
           .multipliedBy(BigNumber(liquidityToken.userBalance))
-          .dividedBy(BigNumber(totalSupply));
+          .dividedBy(BigNumber(totalSupply)).decimalPlaces(0);
 
         const tokenAmounts = [
           {

@@ -161,6 +161,7 @@ export default function AddLiquidityComponent() {
     const min0BN = desired0BN.multipliedBy(factor).decimalPlaces(0); // we dont want to have decimals after applying the factor
     const min1BN = desired1BN.multipliedBy(factor).decimalPlaces(0);
 
+    
     const minAScVal = bigNumberToI128(min0BN);
     const minBScVal = bigNumberToI128(min1BN);
 

@@ -44,12 +44,14 @@ export function useSwapCallback(
     const factorMore = (BigNumber(100).plus(allowedSlippage)).dividedBy(100);
 
     const amount0 = routerMethod === RouterMethod.SWAP_EXACT_IN ? 
-      BigNumber(trade.inputAmount?.value as string) 
-      : BigNumber(trade.outputAmount?.value as string)
+    BigNumber(trade.inputAmount?.value as string) 
+    : BigNumber(trade.outputAmount?.value as string)
     const amount1 = routerMethod === RouterMethod.SWAP_EXACT_IN ? 
-        BigNumber(trade.outputAmount?.value as string).multipliedBy(factorLess).decimalPlaces(0) : 
-        BigNumber(trade.inputAmount?.value as string).multipliedBy(factorMore).decimalPlaces(0)  
-
+    BigNumber(trade.outputAmount?.value as string).multipliedBy(factorLess).decimalPlaces(0) : 
+    BigNumber(trade.inputAmount?.value as string).multipliedBy(factorMore).decimalPlaces(0)  
+    
+    console.log("🚀 ~ file: useSwapCallback.tsx:50 ~ doSwap ~ amount1.toString():", amount1.toString())
+    console.log("🚀 ~ file: useSwapCallback.tsx:47 ~ doSwap ~ amount0.toString():", amount0.toString())
     /**
      * If SWAP_EXACT_IN
      * amount0 becomes the amount_in (hence trade.inputAmount

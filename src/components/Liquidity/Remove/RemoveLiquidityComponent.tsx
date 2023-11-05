@@ -99,6 +99,7 @@ export default function RemoveLiquidityComponent() {
   const [currencyIdA, currencyIdB] = Array.isArray(tokens) ? tokens : ['', ''];
 
   const currencyA = useToken(currencyIdA)
+  console.log("🚀 ~ file: RemoveLiquidityComponent.tsx:102 ~ RemoveLiquidityComponent ~ currencyA:", currencyA)
   const currencyB = useToken(currencyIdB)
 
   // Burn State
@@ -180,11 +181,14 @@ export default function RemoveLiquidityComponent() {
     const factor = (BigNumber(100).minus(allowedSlippage)).dividedBy(100);
 
     // parsedAmounts.CURRENCY_A?.value already in stroops! (wei in Stellar)
+    console.log("🚀 ~ file: RemoveLiquidityComponent.tsx:183 ~ removeLiquidity ~ parsedAmounts:", parsedAmounts)
     const desiredA = new BigNumber(parsedAmounts.CURRENCY_A?.value as string); 
-    const desiredB = new BigNumber(parsedAmounts.CURRENCY_A?.value as string);
+    const desiredB = new BigNumber(parsedAmounts.CURRENCY_B?.value as string);
 
     const minABN = desiredA.multipliedBy(factor).decimalPlaces(0);
+    console.log("🚀 ~ file: RemoveLiquidityComponent.tsx:187 ~ removeLiquidity ~ minABN.toString():", minABN.toString())
     const minBBN = desiredB.multipliedBy(factor).decimalPlaces(0);
+    console.log("🚀 ~ file: RemoveLiquidityComponent.tsx:189 ~ removeLiquidity ~ minBBN.toString():", minBBN.toString())
     
     const minAScVal = bigNumberToI128(minABN);
     const minBScVal = bigNumberToI128(minBBN);
