@@ -1,13 +1,10 @@
 import { Typography, styled, useTheme } from '@mui/material';
 import Column from '../Column';
 import Row, { RowBetween } from '../Row';
-// import CommonBases from './CommonBases'
-import { useSorobanReact } from '@soroban-react/core';
 import { SubHeader } from 'components/Text';
 import { isAddress } from 'helpers/address';
 import { useDefaultActiveTokens, useToken } from 'hooks';
 import useDebounce from 'hooks/useDebounce';
-import { useWindowSize } from 'hooks/useWindowSize';
 import { TokenType } from 'interfaces';
 import { getTokenFilter } from 'lib/hooks/useTokenList/filtering';
 import { useSortTokensByQuery } from 'lib/hooks/useTokenList/sorting';
@@ -168,13 +165,6 @@ export function CurrencySearch({
     }, 3000);
     return () => clearTimeout(tokenLoaderTimer);
   }, []);
-
-  // const { height: windowHeight } = useWindowSize();
-  // let modalHeight;
-  // if (windowHeight) {
-  //   // Converts pixel units to vh for Modal component
-  //   modalHeight = Math.min(Math.round((680 / windowHeight) * 100), 80);
-  // }
 
   return (
     <ContentWrapper modalheight={80}>

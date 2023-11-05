@@ -30,6 +30,8 @@ export async function tokenBalance(
 ) {
   const user = accountToScVal(userAddress);
 
+  if (!tokenAddress) return 0;
+
   try {
     const tokenBalance = await contractInvoke({
       contractAddress: tokenAddress,

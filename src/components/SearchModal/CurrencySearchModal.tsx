@@ -67,17 +67,19 @@ export default memo(function CurrencySearchModal({
       aria-labelledby="modal-modal-title"
       aria-describedby="modal-modal-description"
     >
-      <CurrencySearch
-        isOpen={isOpen}
-        onDismiss={onDismiss}
-        onCurrencySelect={handleCurrencySelect}
-        selectedCurrency={selectedCurrency}
-        otherSelectedCurrency={otherSelectedCurrency}
-        showCommonBases={showCommonBases}
-        showCurrencyAmount={showCurrencyAmount}
-        disableNonToken={disableNonToken}
-        onlyShowCurrenciesWithBalance={onlyShowCurrenciesWithBalance}
-      />
+      <div>
+        <CurrencySearch
+          isOpen={isOpen}
+          onDismiss={onDismiss}
+          onCurrencySelect={handleCurrencySelect}
+          selectedCurrency={selectedCurrency}
+          otherSelectedCurrency={otherSelectedCurrency}
+          showCommonBases={showCommonBases}
+          showCurrencyAmount={showCurrencyAmount}
+          disableNonToken={disableNonToken}
+          onlyShowCurrenciesWithBalance={onlyShowCurrenciesWithBalance}
+        />
+      </div>
     </Modal>
   );
 });
