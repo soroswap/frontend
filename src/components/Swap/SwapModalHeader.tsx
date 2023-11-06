@@ -27,7 +27,6 @@ export default function SwapModalHeader({
   inputCurrency?: TokenType;
   allowedSlippage: any;
 }) {
-  console.log('🚀 « trade:', trade);
   const fiatValueInput = '-$0'; //useUSDPrice(trade.inputAmount) TODO: Get USD Value
   const fiatValueOutput = '-$0'; //useUSDPrice(trade.outputAmount)
 

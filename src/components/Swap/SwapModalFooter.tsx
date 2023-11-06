@@ -30,10 +30,10 @@ const ConfirmButton = styled(ButtonError)`
   margin-top: 10px;
 `;
 
-const DetailRowValue = styled(BodySmall)`
-  text-align: right;
-  overflow-wrap: break-word;
-`;
+const DetailRowValue = styled(BodySmall)<{ component?: string }>(({}) => ({
+  textAlign: 'right',
+  overflowWrap: 'break-word',
+}));
 
 export default function SwapModalFooter({
   trade,
@@ -75,7 +75,6 @@ export default function SwapModalFooter({
   const [expectedAmountOfOne, setExpectedAmountOfOne] = useState<string | number>();
 
   useEffect(() => {
-    console.log('entro aca expetec amunt');
     getExpectedAmount(
       trade?.inputAmount?.currency,
       trade?.outputAmount?.currency,
@@ -89,7 +88,6 @@ export default function SwapModalFooter({
   const [priceImpact, setPriceImpact] = useState<number>(0);
 
   useEffect(() => {
-    console.log('entro aca impactnew');
     getPriceImpactNew(
       trade?.inputAmount?.currency,
       trade?.outputAmount?.currency,
@@ -110,7 +108,7 @@ export default function SwapModalFooter({
   return (
     <>
       <DetailsContainer gap="md">
-        <BodySmall>
+        <BodySmall component="div">
           <Row align="flex-start" justify="space-between" gap="sm">
             <Label>Exchange rate</Label>
             <DetailRowValue>{`1 ${label} = ${
@@ -118,7 +116,7 @@ export default function SwapModalFooter({
             } ${labelInverted}`}</DetailRowValue>
           </Row>
         </BodySmall>
-        <BodySmall>
+        <BodySmall component="div">
           <Row align="flex-start" justify="space-between" gap="sm">
             <MouseoverTooltip
               title={
@@ -133,7 +131,7 @@ export default function SwapModalFooter({
           </Row>
         </BodySmall>
         {true && (
-          <BodySmall>
+          <BodySmall component="div">
             <Row align="flex-start" justify="space-between" gap="sm">
               <MouseoverTooltip title="The impact your trade has on the market price of this pool.">
                 <Label cursor="help">Price impact</Label>
@@ -142,7 +140,7 @@ export default function SwapModalFooter({
             </Row>
           </BodySmall>
         )}
-        <BodySmall>
+        <BodySmall component="div">
           <Row align="flex-start" justify="space-between" gap="sm">
             <MouseoverTooltip
               title={
@@ -167,7 +165,7 @@ export default function SwapModalFooter({
                 )}
               </Label>
             </MouseoverTooltip>
-            <DetailRowValue style={{ display: 'flex', alignItems: 'center' }}>
+            <DetailRowValue style={{ display: 'flex', alignItems: 'center' }} component="div">
               {formatTokenAmount(trade?.outputAmount?.value ?? '0')}{' '}
               {trade?.outputAmount?.currency.symbol}
               <CurrencyLogo

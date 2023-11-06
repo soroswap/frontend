@@ -104,9 +104,9 @@ declare module '@mui/material/styles/createPalette' {
 }
 
 export const theme = (mode: PaletteMode) => {
-  // console.log("🚀 « mode:", mode);
+  //
   const isDark = mode === 'dark';
-  // console.log("🚀 « isDark:", isDark);
+  //
 
   const newTheme = createTheme({
     palette: {

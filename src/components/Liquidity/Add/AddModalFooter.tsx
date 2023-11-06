@@ -29,10 +29,25 @@ const ConfirmButton = styled(ButtonError)`
   margin-top: 10px;
 `;
 
-const DetailRowValue = styled(BodySmall)`
+const DetailRowValue = styled(
+  ({
+    component = 'div',
+    children,
+    ...props
+  }: {
+    component?: string;
+    children: React.ReactNode;
+    [x: string]: any;
+  }) => (
+    <BodySmall component={component} {...props}>
+      {children}
+    </BodySmall>
+  ),
+)`
   text-align: right;
   overflow-wrap: break-word;
 `;
+
 type TokensType = [string, string];
 
 export default function AddModalFooter({
@@ -40,11 +55,13 @@ export default function AddModalFooter({
   formattedAmounts,
   totalShares,
   onConfirm,
+  shareOfPool,
 }: {
   currencies: { [field in Field]?: TokenType };
   formattedAmounts: { [field in Field]?: string };
   totalShares: string;
   onConfirm: () => void;
+  shareOfPool?: string;
 }) {
   const theme = useTheme();
 
@@ -72,10 +89,6 @@ export default function AddModalFooter({
 
     return `1 ${currencyA?.symbol} = ${amountB.dividedBy(amountA).toFixed(6)} ${currencyB?.symbol}`;
   }, [currencyA, currencyB, formattedAmounts]);
-
-  const shareOfPool = useMemo(() => {
-    return `${totalShares} %`;
-  }, [totalShares]);
 
   return (
     <>
@@ -108,9 +121,7 @@ export default function AddModalFooter({
             <MouseoverTooltip title={'The current rate for this pool'}>
               <Label cursor="help">Rate</Label>
             </MouseoverTooltip>
-            <MouseoverTooltip placement="right" title={''}>
-              <DetailRowValue>{rate}</DetailRowValue>
-            </MouseoverTooltip>
+            <DetailRowValue>{rate}</DetailRowValue>
           </Row>
         </BodySmall>
 
@@ -123,15 +134,13 @@ export default function AddModalFooter({
             >
               <Label cursor="help">Maximum slippage</Label>
             </MouseoverTooltip>
-            <MouseoverTooltip placement="right" title={''}>
-              <DetailRowValue>{userSlippage}%</DetailRowValue>
-            </MouseoverTooltip>
+            <DetailRowValue>{userSlippage}%</DetailRowValue>
           </Row>
         </BodySmall>
 
         <BodySmall component="div">
           <Row align="flex-start" justify="space-between" gap="sm">
-            <MouseoverTooltip title={<>The percentage of shares you will have.</>}>
+            <MouseoverTooltip title={<div>The percentage of shares you will have.</div>}>
               <Label cursor="help">Share of Pool</Label>
             </MouseoverTooltip>
             <DetailRowValue>{shareOfPool}</DetailRowValue>

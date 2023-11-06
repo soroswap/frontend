@@ -1,12 +1,10 @@
-import BigNumber from "bignumber.js";
-import * as SorobanClient from "soroban-client";
-import { I128 } from "./xdr";
+import BigNumber from 'bignumber.js';
+import * as SorobanClient from 'soroban-client';
+import { I128 } from './xdr';
 
 let xdr = SorobanClient.xdr;
 
-export function scvalToBigNumber(
-  scval: SorobanClient.xdr.ScVal | undefined,
-): BigNumber {
+export function scvalToBigNumber(scval: SorobanClient.xdr.ScVal | undefined): BigNumber {
   switch (scval?.switch()) {
     case undefined: {
       return BigNumber(0);
@@ -40,17 +38,7 @@ export function scvalToBigNumber(
       const b = parts.hiLo();
       const c = parts.loHi();
       const d = parts.loLo();
-      return bigNumberFromBytes(
-        false,
-        a.high,
-        a.low,
-        b.high,
-        b.low,
-        c.high,
-        c.low,
-        d.high,
-        d.low,
-      );
+      return bigNumberFromBytes(false, a.high, a.low, b.high, b.low, c.high, c.low, d.high, d.low);
     }
     case xdr.ScValType.scvI256(): {
       const parts = scval.i256();
@@ -58,30 +46,15 @@ export function scvalToBigNumber(
       const b = parts.hiLo();
       const c = parts.loHi();
       const d = parts.loLo();
-      return bigNumberFromBytes(
-        true,
-        a.high,
-        a.low,
-        b.high,
-        b.low,
-        c.high,
-        c.low,
-        d.high,
-        d.low,
-      );
+      return bigNumberFromBytes(true, a.high, a.low, b.high, b.low, c.high, c.low, d.high, d.low);
     }
     default: {
-      throw new Error(
-        `Invalid type for scvalToBigNumber: ${scval?.switch().name}`,
-      );
+      throw new Error(`Invalid type for scvalToBigNumber: ${scval?.switch().name}`);
     }
   }
 }
 
-function bigNumberFromBytes(
-  signed: boolean,
-  ...bytes: (string | number | bigint)[]
-): BigNumber {
+function bigNumberFromBytes(signed: boolean, ...bytes: (string | number | bigint)[]): BigNumber {
   let sign = 1;
   if (signed && bytes[0] === 0x80) {
     // top bit is set, negative number.
@@ -100,7 +73,7 @@ export function bigNumberToI128(value: BigNumber): SorobanClient.xdr.ScVal {
   const b: bigint = BigInt(value.toFixed(0));
   const buf = bigintToBuf(b);
   if (buf.length > 16) {
-    throw new Error("BigNumber overflows i128");
+    throw new Error('BigNumber overflows i128');
   }
 
   if (value.isNegative()) {
@@ -117,20 +90,22 @@ export function bigNumberToI128(value: BigNumber): SorobanClient.xdr.ScVal {
     padded[0] |= 0x80;
   }
 
-  const hi = new xdr.Int64(
-    [bigNumberFromBytes(false, ...padded.slice(4, 8)).toNumber(), bigNumberFromBytes(false, ...padded.slice(0, 4)).toNumber()]
-  );
-  const lo = new xdr.Uint64(
-    [bigNumberFromBytes(false, ...padded.slice(12, 16)).toNumber(), bigNumberFromBytes(false, ...padded.slice(8, 12)).toNumber(),]
-  );
+  const hi = new xdr.Int64([
+    bigNumberFromBytes(false, ...padded.slice(4, 8)).toNumber(),
+    bigNumberFromBytes(false, ...padded.slice(0, 4)).toNumber(),
+  ]);
+  const lo = new xdr.Uint64([
+    bigNumberFromBytes(false, ...padded.slice(12, 16)).toNumber(),
+    bigNumberFromBytes(false, ...padded.slice(8, 12)).toNumber(),
+  ]);
 
   return xdr.ScVal.scvI128(new xdr.Int128Parts({ lo, hi }));
 }
 
 function bigintToBuf(bn: bigint): Buffer {
-  var hex = BigInt(bn).toString(16).replace(/^-/, "");
+  var hex = BigInt(bn).toString(16).replace(/^-/, '');
   if (hex.length % 2) {
-    hex = "0" + hex;
+    hex = '0' + hex;
   }
 
   var len = hex.length / 2;
@@ -160,9 +135,7 @@ export function xdrUint64ToNumber(value: SorobanClient.xdr.Uint64): number {
   return b;
 }
 
-export function scvalToString(
-  value: SorobanClient.xdr.ScVal,
-): string | undefined {
+export function scvalToString(value: SorobanClient.xdr.ScVal): string | undefined {
   return value.bytes().toString();
 }
 
@@ -176,7 +149,6 @@ export const decodei128ScVal = (value: SorobanClient.xdr.ScVal) => {
       BigInt(value.i128().hi().high),
     ]).toString();
   } catch (error) {
-    console.log(error);
     return 0;
   }
 };
@@ -186,21 +158,19 @@ export function accountToScVal(account: string): SorobanClient.xdr.ScVal {
 }
 
 export function contractAddressToScVal(contractAddress: string): any {
-  return SorobanClient.Address.contract(
-    Buffer.from(contractAddress, "hex"),
-  ).toScVal();
+  return SorobanClient.Address.contract(Buffer.from(contractAddress, 'hex')).toScVal();
 }
 
 export function bigNumberToU64(value: BigNumber): SorobanClient.xdr.ScVal {
   if (value.isNegative() || value.isGreaterThan(new BigNumber(2).pow(64).minus(1))) {
-      throw new Error("BigNumber is out of u64 range");
+    throw new Error('BigNumber is out of u64 range');
   }
 
   const b: bigint = BigInt(value.toFixed(0));
   const buf = bigintToBuf(b);
 
   if (buf.length > 8) {
-      throw new Error("BigNumber overflows u64");
+    throw new Error('BigNumber overflows u64');
   }
 
   // left-pad with zeros up to 8 bytes

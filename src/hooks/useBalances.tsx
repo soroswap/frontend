@@ -42,7 +42,6 @@ export async function tokenBalance(
 
     return scValToJs(tokenBalance as xdr.ScVal) as BigNumber;
   } catch (error) {
-    console.error('Error fetching token balance:', error);
     return 0; // or throw error;
   }
 }
@@ -58,7 +57,6 @@ export async function tokenDecimals(tokenAddress: string, sorobanContext: Soroba
 
     return tokenDecimals;
   } catch (error) {
-    console.error('Error fetching token balance:', error);
     return 7; // or throw error;
   }
 }

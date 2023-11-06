@@ -55,7 +55,7 @@ import { scValToJs } from './convert';
 //       BigInt(value.i128().hi().high),
 //     ]).toString();
 //   } catch (error) {
-//     console.log(error);
+//
 //     return 0;
 //   }
 // };

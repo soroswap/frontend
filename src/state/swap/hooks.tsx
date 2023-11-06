@@ -86,10 +86,10 @@ export function useDerivedSwapInfo(state: SwapState): any {
   } = state;
 
   const inputCurrency = useToken(inputCurrencyId);
-  // console.log("🚀 « inputCurrency:", inputCurrency)
+  //
   const outputCurrency = useToken(outputCurrencyId);
   const recipientLookup = { address: '' }; //TODO: Use ENS useENS(recipient ?? undefined)
-  // console.log("🚀 « outputCurrency:", outputCurrency)
+  //
   const to: string | null | undefined = account; //recipient === null ? account : recipientLookup.address) ?? null
 
   const tokensArray = useMemo(() => {
@@ -110,7 +110,7 @@ export function useDerivedSwapInfo(state: SwapState): any {
   }, [account, tokensArray, sorobanContext]);
 
   const isExactIn: boolean = independentField === Field.INPUT;
-  // console.log("🚀 « isExactIn:", isExactIn)
+  //
 
   const parsedAmount = useMemo(
     () =>

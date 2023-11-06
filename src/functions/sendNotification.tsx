@@ -1,4 +1,4 @@
-import { SnackbarContextType, SnackbarIconType } from "contexts";
+import { SnackbarContextType, SnackbarIconType } from 'contexts';
 
 export const sendNotification = (
   message: string,
@@ -6,14 +6,13 @@ export const sendNotification = (
   type: SnackbarIconType,
   SnackbarContext: SnackbarContextType,
 ) => {
-  const { setOpenSnackbar, setSnackbarMessage, setSnackbarTitle, setSnackbarType } = SnackbarContext
-      
+  const { setOpenSnackbar, setSnackbarMessage, setSnackbarTitle, setSnackbarType } =
+    SnackbarContext;
+
   try {
-    setSnackbarMessage(message)
-    setSnackbarTitle(title)
-    setSnackbarType(type)
-    setOpenSnackbar(true)        
-  } catch (error) {
-    console.log("Error sendting notification",error)
-  }
+    setSnackbarMessage(message);
+    setSnackbarTitle(title);
+    setSnackbarType(type);
+    setOpenSnackbar(true);
+  } catch (error) {}
 };

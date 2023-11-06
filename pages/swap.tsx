@@ -1,4 +1,4 @@
-import { styled } from '@mui/material';
+import { Modal, styled } from '@mui/material';
 import { useSorobanReact } from '@soroban-react/core';
 import { ButtonError, ButtonLight, ButtonPrimary } from 'components/Buttons/Button';
 import { AutoColumn } from 'components/Column';
@@ -21,6 +21,7 @@ import SwapHeader from '../src/components/Swap/SwapHeader';
 import { ArrowWrapper, SwapWrapper } from '../src/components/Swap/styleds';
 import { TokenType } from '../src/interfaces';
 import { opacify } from '../src/themes/utils';
+import { TransactionFailedContent } from 'components/TransactionConfirmationModal';
 
 const SwapSection = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -118,6 +119,7 @@ export function SwapComponent({
   const { isConnectWalletModalOpen, setConnectWalletModalOpen } = ConnectWalletModal;
 
   const [showPriceImpactModal, setShowPriceImpactModal] = useState<boolean>(false);
+  const [txError, setTxError] = useState<boolean>(false);
 
   // modal and loading
   const [{ showConfirm, tradeToConfirm, swapError, swapResult }, setSwapState] = useState<{
@@ -139,7 +141,6 @@ export function SwapComponent({
     useSwapActionHandlers(dispatch);
   const dependentField: Field = independentField === Field.INPUT ? Field.OUTPUT : Field.INPUT;
 
-  // console.log("🚀 « state:", state)
   const swapInfo = useDerivedSwapInfo(state);
   const {
     trade: { state: tradeState, trade },
@@ -150,7 +151,6 @@ export function SwapComponent({
     currencies,
     inputError: swapInputError,
   } = swapInfo;
-  // console.log("🚀 « inputError:", swapInputError)
 
   const parsedAmounts = useMemo(
     () => ({
@@ -216,10 +216,6 @@ export function SwapComponent({
     },
     [onCurrencyChange, onCurrencySelection, state],
   );
-
-  const handleMaxInput = useCallback(() => {
-    maxInputAmount && onUserInput(Field.INPUT, String(maxInputAmount?.balance));
-  }, [maxInputAmount, onUserInput]);
 
   const handleTypeInput = useCallback(
     (value: string) => {
@@ -298,6 +294,7 @@ export function SwapComponent({
         }));
       })
       .catch((error) => {
+        setTxError(true);
         setSwapState((currentState) => ({
           ...currentState,
           showConfirm: false,
@@ -313,21 +310,32 @@ export function SwapComponent({
   const swapIsUnsupported = false; //useIsSwapUnsupported(currencies[Field.INPUT], currencies[Field.OUTPUT])
   const priceImpactSeverity = 2; //IF is < 2 it shows Swap anyway button in red
   const showPriceImpactWarning = false;
+
   return (
     <>
       <SwapWrapper>
         <SwapHeader />
+        <Modal
+          open={txError}
+          onClose={() => setTxError(false)}
+          aria-labelledby="modal-modal-title"
+          aria-describedby="modal-modal-description"
+        >
+          <div>
+            <TransactionFailedContent onDismiss={() => setTxError(false)} />
+          </div>
+        </Modal>
         {trade && showConfirm && (
           <ConfirmSwapModal
             trade={trade}
             inputCurrency={inputCurrency}
             originalTrade={tradeToConfirm}
-            onAcceptChanges={() => console.log('handleAcceptChanges')} //handleAcceptChanges}
+            onAcceptChanges={() => null} //handleAcceptChanges}
             onCurrencySelection={onCurrencySelection}
             swapResult={swapResult}
-            allowedSlippage={() => console.log('allowedSlippage')} //allowedSlippage}
+            allowedSlippage={() => null} //allowedSlippage}
             onConfirm={handleSwap}
-            allowance={() => console.log('allowance')} //allowance}
+            allowance={() => null} //allowance}
             swapError={swapError}
             onDismiss={handleConfirmDismiss}
             swapQuoteReceivedDate={new Date()} //swapQuoteReceivedDate}
@@ -355,7 +363,7 @@ export function SwapComponent({
               value={formattedAmounts[Field.INPUT]}
               showMaxButton={showMaxButton}
               onUserInput={handleTypeInput}
-              onMax={handleMaxInput}
+              onMax={(maxBalance) => handleTypeInput(maxBalance.toString())}
               fiatValue={showFiatValueInput ? fiatValueInput : undefined}
               onCurrencySelect={handleInputSelect}
               otherCurrency={currencies[Field.OUTPUT]}

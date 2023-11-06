@@ -67,7 +67,6 @@ export function useBestTrade(
         reserves,
         tradeType,
       ).then((resp) => {
-        console.log(resp);
         setExpectedAmount(resp?.toString());
       });
     }
@@ -128,9 +127,9 @@ export function useBestTrade(
   }
 
   // const inputAmount = (currencyIn?.address == amountSpecified?.currency.address) ? tryParseCurrencyAmount(amountSpecified?.value, currencyIn) : tryParseCurrencyAmount(expectedAmount, currencyIn)
-  // console.log("🚀 ~ file: useBestTrade.ts: 🚀 « inputAmount:", inputAmount?.value)
+  //
   // const outputAmount = (currencyOut?.address == otherCurrency?.address) ? tryParseCurrencyAmount(expectedAmount, currencyOut) : tryParseCurrencyAmount(amountSpecified?.value, currencyOut)
-  // console.log("🚀 ~ file: useBestTrade.ts: 🚀 « outputAmount:", outputAmount?.value)
+  //
 
   //TODO: Set the trade specs, getQuote
 

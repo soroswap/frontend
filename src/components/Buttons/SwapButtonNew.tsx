@@ -140,7 +140,6 @@ export function SwapButtonNew({
     let walletSource;
 
     if (!account) {
-      console.log('Error on account:', account);
       return;
     }
 
@@ -152,7 +151,6 @@ export function SwapButtonNew({
       return;
     }
     if (!walletSource) {
-      console.log('Error on walletSource:', walletSource);
       return;
     }
     const options = {
@@ -175,20 +173,16 @@ export function SwapButtonNew({
       });
 
       //Sends the transactions to the blockchain
-      console.log(tx);
 
       let result = await sendTransaction(tx, options);
 
       if (result) {
         alert('Success!');
       }
-      console.log('🚀 ~ file: SwapButton.tsx ~ swapTokens ~ result:', result);
 
       //This will connect again the wallet to fetch its data
       sorobanContext.connect();
-    } catch (error) {
-      console.log('🚀 « error:', error);
-    }
+    } catch (error) {}
 
     setSubmitting(false);
   };

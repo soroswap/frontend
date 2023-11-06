@@ -18,6 +18,9 @@ export enum RouterMethod {
 
 // Returns a function that will execute a any method on RouterContract, if the parameters are all valid
 // and the user has approved the slippage adjusted input amount for the trade
+
+const isObject = (val: any) => typeof val === 'object' && val !== null && !Array.isArray(val);
+
 export function useRouterCallback() {
   const sorobanContext = useSorobanReact();
   const { router_address } = useRouterAddress();
@@ -33,6 +36,15 @@ export function useRouterCallback() {
       });
 
       sorobanContext.connect();
+
+      const response = result as SorobanClient.SorobanRpc.GetSuccessfulTransactionResponse;
+
+      if (
+        isObject(response) &&
+        response?.status !== SorobanClient.SorobanRpc.GetTransactionStatus.SUCCESS
+      )
+        throw response;
+
       return result;
     },
     [router_address, sorobanContext],

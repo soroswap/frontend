@@ -1,10 +1,10 @@
-import { css, keyframes, styled, useTheme } from '@mui/material'
-import { LoaderV3 } from 'components/Icons/LoadingSpinner'
-import CurrencyLogo from 'components/Logo/CurrencyLogo'
-import { useUnmountingAnimation } from 'hooks/useUnmountingAnimation'
-import { TokenType } from 'interfaces'
-import { useRef } from 'react'
-import { Paperclip } from 'react-feather'
+import { css, keyframes, styled, useTheme } from '@mui/material';
+import { LoaderV3 } from 'components/Icons/LoadingSpinner';
+import CurrencyLogo from 'components/Logo/CurrencyLogo';
+import { useUnmountingAnimation } from 'hooks/useUnmountingAnimation';
+import { TokenType } from 'interfaces';
+import { useRef } from 'react';
+import { Paperclip } from 'react-feather';
 
 export const LogoContainer = styled('div')`
   height: 48px;
@@ -13,51 +13,52 @@ export const LogoContainer = styled('div')`
   display: flex;
   border-radius: 50%;
   overflow: visible;
-`
+`;
 
 const fadeIn = keyframes`
   from { opacity: 0;}
   to { opacity: 1;}
-`
+`;
 const fadeAndScaleIn = keyframes`
   from { opacity: 0; transform: scale(0); }
   to { opacity: 1; transform: scale(1); }
-`
+`;
 const fadeInAnimation = css`
   animation: from { opacity: 0;} to { opacity: 1;} 250ms ease-in-out;
-`
+`;
 const fadeAndScaleInAnimation = css`
   animation: from { opacity: 0; transform: scale(0); } to { opacity: 1; transform: scale(1); } 250ms ease-in-out;
-`
+`;
 
 const fadeOut = keyframes`
   from { opacity: 1; }
   to { opacity: 0;  }
-`
+`;
 const fadeAndScaleOut = keyframes`
   from { opacity: 1; transform: scale(1); }
   to { opacity: 0; transform: scale(0); }
-`
+`;
 const fadeOutAnimation = css`
   animation: from { opacity: 1; } to { opacity: 0;  } 250ms ease-in-out;
-`
+`;
 const fadeAndScaleOutAnimation = css`
   animation: from { opacity: 1; transform: scale(1); } to { opacity: 0; transform: scale(0); } 250ms ease-in-out;
-`
+`;
 
 export enum AnimationType {
   EXITING = 'exiting',
 }
 
 const FadeWrapper = styled('div')<{ $scale: boolean }>`
-  transition: display 250ms ease-in-out,
+  transition:
+    display 250ms ease-in-out,
     transform 250ms ease-in-out;
   ${({ $scale }) => ($scale ? fadeAndScaleInAnimation : fadeInAnimation)}
 
   &.${AnimationType.EXITING} {
     ${({ $scale }) => ($scale ? fadeAndScaleOutAnimation : fadeOutAnimation)}
   }
-`
+`;
 
 export function FadePresence({
   children,
@@ -65,17 +66,17 @@ export function FadePresence({
   $scale = false,
   ...rest
 }: {
-  children: React.ReactNode
-  className?: string
-  $scale?: boolean
+  children: React.ReactNode;
+  className?: string;
+  $scale?: boolean;
 }) {
-  const ref = useRef<HTMLDivElement>(null)
-  useUnmountingAnimation(ref, () => AnimationType.EXITING)
+  const ref = useRef<HTMLDivElement>(null);
+  useUnmountingAnimation(ref, () => AnimationType.EXITING);
   return (
     <FadeWrapper ref={ref} className={className} $scale={$scale} {...rest}>
       {children}
     </FadeWrapper>
-  )
+  );
 }
 
 const CurrencyLoaderContainer = styled(FadePresence)<{ asBadge: boolean }>`
@@ -87,19 +88,29 @@ const CurrencyLoaderContainer = styled(FadePresence)<{ asBadge: boolean }>`
   width: ${({ asBadge }) => (asBadge ? '20px' : '100%')};
   bottom: ${({ asBadge }) => (asBadge ? '-4px' : 0)};
   right: ${({ asBadge }) => (asBadge ? '-4px' : 0)};
-  outline: ${({ theme, asBadge }) => (asBadge ? `2px solid ${theme.palette.background.default}` : '')};
-`
+  outline: ${({ theme, asBadge }) =>
+    asBadge ? `2px solid ${theme.palette.background.default}` : ''};
+`;
 
 const RaisedCurrencyLogo = styled(CurrencyLogo)`
   z-index: 1;
-`
+`;
 
-export function CurrencyLoader({ currency, asBadge = false }: { currency?: TokenType; asBadge?: boolean }) {
+export function CurrencyLoader({
+  currency,
+  asBadge = false,
+}: {
+  currency?: TokenType;
+  asBadge?: boolean;
+}) {
   return (
-    <CurrencyLoaderContainer asBadge={asBadge} data-testid={`pending-modal-currency-logo-${currency?.symbol}`}>
+    <CurrencyLoaderContainer
+      asBadge={asBadge}
+      data-testid={`pending-modal-currency-logo-${currency?.symbol}`}
+    >
       <RaisedCurrencyLogo currency={currency} size="100%" />
     </CurrencyLoaderContainer>
-  )
+  );
 }
 
 const PinkCircle = styled(FadePresence)`
@@ -112,14 +123,14 @@ const PinkCircle = styled(FadePresence)`
   justify-content: center;
   background-color: ${({ theme }) => theme.palette.background.default};
   z-index: 1;
-`
+`;
 
 export function PaperIcon() {
   return (
     <PinkCircle>
       <Paperclip />
     </PinkCircle>
-  )
+  );
 }
 
 const LoadingIndicator = styled(LoaderV3)<{ color: string }>`
@@ -130,18 +141,18 @@ const LoadingIndicator = styled(LoaderV3)<{ color: string }>`
   top: -4px;
   left: -4px;
   position: absolute;
-`
+`;
 
 export function LoadingIndicatorOverlay() {
   return (
     <FadePresence>
-      <LoadingIndicator color='#F88F6D' />
+      <LoadingIndicator color="#F88F6D" />
     </FadePresence>
-  )
+  );
 }
 
-function ConfirmedIcon({ className }: { className?: string }) {
-  const theme = useTheme()
+export function ConfirmedIcon({ className }: { className?: string }) {
+  const theme = useTheme();
   return (
     <FadePresence $scale>
       <svg
@@ -159,10 +170,10 @@ function ConfirmedIcon({ className }: { className?: string }) {
         />
       </svg>
     </FadePresence>
-  )
+  );
 }
 
 export const AnimatedEntranceConfirmationIcon = styled(ConfirmedIcon)`
   height: 48px;
   width: 48px;
-`
+`;

@@ -51,7 +51,7 @@ export default function AddModalHeader({
   return (
     <CustomRow align="end" justify="space-between">
       <Column gap="4px" alignItems="flex-start">
-        <BodySecondary></BodySecondary>
+        <Label cursor="help">You will mint</Label>
         <CurrencyWrapper>
           <CurrencyLogo currency={currencyA} size="24px" />
           <CurrencyLogo currency={currencyB} size="24px" />

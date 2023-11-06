@@ -12,7 +12,6 @@ export const decodei128ScVal = (value: any) => {
       BigInt(value.i128().hi().high),
     ]).toString();
   } catch (error) {
-    console.log(error);
     return 0;
   }
 };

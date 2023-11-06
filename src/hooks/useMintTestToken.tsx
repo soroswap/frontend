@@ -41,21 +41,17 @@ export function useMintTestToken() {
       }
 
       if (!account) {
-        console.log('Error on account:', account);
         return;
       }
       if (!adminSource) {
-        console.log('Error on adminSource:', adminSource);
         return;
       }
 
-      console.log('🚀 « tokens:', tokens);
       let result;
       let totalMinted = 0;
 
       for (const token of tokens) {
         try {
-          console.log(`Minting token ${token.symbol}`);
           onTokenMintedStart?.(token);
           result = await contractInvoke({
             contractAddress: token.address,
@@ -68,7 +64,6 @@ export function useMintTestToken() {
           totalMinted++;
           onTokenMintedSuccess?.(token);
         } catch (error) {
-          console.log(`🚀 « error minting token ${token.symbol}`, error);
           onTokenMintedError?.(token);
         }
       }
