@@ -1,11 +1,8 @@
 import { Modal, styled } from '@mui/material';
-import { useSorobanReact } from '@soroban-react/core';
-import { ButtonError, ButtonLight, ButtonPrimary } from 'components/Buttons/Button';
 import { AutoColumn } from 'components/Column';
 import ConfirmSwapModal from 'components/Swap/ConfirmSwapModal';
 import SwapDetailsDropdown from 'components/Swap/SwapDetailsDropdown';
 import { ButtonText } from 'components/Text';
-import { AppContext } from 'contexts';
 import { formatTokenAmount } from 'helpers/format';
 import { relevantTokensType } from 'hooks';
 import { useSwapCallback } from 'hooks/useSwapCallback';
@@ -22,6 +19,7 @@ import { ArrowWrapper, SwapWrapper } from '../src/components/Swap/styleds';
 import { TokenType } from '../src/interfaces';
 import { opacify } from '../src/themes/utils';
 import { TransactionFailedContent } from 'components/TransactionConfirmationModal';
+import useSwapMainButton from 'hooks/useSwapMainButton';
 
 const SwapSection = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -112,12 +110,6 @@ export function SwapComponent({
   onCurrencyChange?: (selected: Pick<SwapState, Field.INPUT | Field.OUTPUT>) => void;
   disableTokenInputs?: boolean;
 }) {
-  const sorobanContext = useSorobanReact();
-  const { address } = sorobanContext;
-
-  const { ConnectWalletModal } = useContext(AppContext);
-  const { isConnectWalletModalOpen, setConnectWalletModalOpen } = ConnectWalletModal;
-
   const [showPriceImpactModal, setShowPriceImpactModal] = useState<boolean>(false);
   const [txError, setTxError] = useState<boolean>(false);
 
@@ -311,30 +303,14 @@ export function SwapComponent({
   const priceImpactSeverity = 2; //IF is < 2 it shows Swap anyway button in red
   const showPriceImpactWarning = false;
 
-  const getButtonText = () => {
-    if (routeNotFound) return 'Route not found';
-    if (!address) return 'Connect Wallet';
-    if (!currencies[Field.OUTPUT] && !currencies[Field.INPUT]) return 'Select a token';
-    if (!formattedAmounts[Field.INPUT] || !formattedAmounts[Field.OUTPUT]) return 'Enter an amount';
-    return 'Swap';
-  };
-
-  const isMainButtonDisabled = () => {
-    const noCurrencySelected = !currencies[Field.OUTPUT] && !currencies[Field.INPUT];
-    const noAmountTyped = !formattedAmounts[Field.INPUT] || !formattedAmounts[Field.OUTPUT];
-
-    return !!address && (noCurrencySelected || noAmountTyped || routeNotFound);
-  };
-
-  const handleMainButtonClick = () => {
-    if (!address) {
-      setConnectWalletModalOpen(true);
-    } else {
-      handleContinueToReview();
-    }
-  };
-
-  const MainButton = address ? ButtonPrimary : ButtonLight;
+  const { getMainButtonText, isMainButtonDisabled, handleMainButtonClick, MainButton } =
+    useSwapMainButton({
+      currencies,
+      currencyBalances,
+      formattedAmounts,
+      routeNotFound,
+      onSubmit: handleContinueToReview,
+    });
 
   return (
     <>
@@ -451,7 +427,7 @@ export function SwapComponent({
           <div>
             <MainButton disabled={isMainButtonDisabled()} onClick={handleMainButtonClick}>
               <ButtonText fontSize={20} fontWeight={600}>
-                {getButtonText()}
+                {getMainButtonText()}
               </ButtonText>
             </MainButton>
           </div>
