@@ -10,6 +10,7 @@ import { LpTokensObj } from 'functions/getLpTokens';
 import { formatTokenAmount } from 'helpers/format';
 import { useRouter } from 'next/router';
 import { LPPercentage } from './styleds';
+import BigNumber from 'bignumber.js';
 
 const ContentWrapper = styled('div')<{ isMobile: boolean }>`
   display: flex;
@@ -69,6 +70,20 @@ export default function LiquidityPoolInfoModal({
               <Row justify="space-between">
                 <BodyPrimary>LP Balance</BodyPrimary>
                 <BodyPrimary>{formatTokenAmount(selectedLP.balance)}</BodyPrimary>
+              </Row>
+              <Row justify="space-between">
+                <Row gap="6px">
+                  <CurrencyLogo currency={selectedLP.token_0} size="16px" />
+                  <BodyPrimary>{selectedLP?.token_0?.symbol}</BodyPrimary>
+                </Row>
+                <BodyPrimary>{formatTokenAmount(selectedLP?.reserve0 as BigNumber)}</BodyPrimary>
+              </Row>
+              <Row justify="space-between">
+                <Row gap="6px">
+                  <CurrencyLogo currency={selectedLP.token_1} size="16px" />
+                  <BodyPrimary>{selectedLP?.token_1?.symbol}</BodyPrimary>
+                </Row>
+                <BodyPrimary>{formatTokenAmount(selectedLP?.reserve1 as BigNumber)}</BodyPrimary>
               </Row>
             </Column>
             <ButtonPrimary onClick={handleAddClick}>Add</ButtonPrimary>
