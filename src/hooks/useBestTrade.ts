@@ -26,6 +26,7 @@ export function useBestTrade(
 ): {
   state: TradeState;
   trade?: InterfaceTrade;
+  pairAddress?: string;
 } {
   const sorobanContext = useSorobanReact();
 
@@ -193,30 +194,34 @@ export function useBestTrade(
   const bestTrade = useMemo(() => {
     if (skipFetch && amountSpecified && otherCurrency) {
       // If we don't want to fetch new trades, but have valid inputs, return the stale trade.
-      return { state: TradeState.STALE, trade: trade };
+      return { state: TradeState.STALE, trade: trade, pairAddress };
     } else if (!amountSpecified || (amountSpecified && !otherCurrency)) {
       return {
         state: TradeState.INVALID,
         trade: undefined,
+        pairAddress,
       };
     } else if (tradeResult?.state === QuoteState.NOT_FOUND) {
       return {
         state: TradeState.NO_ROUTE_FOUND,
         trade: undefined,
+        pairAddress,
       };
     } else if (!tradeResult?.trade) {
       // TODO(WEB-1985): use `isLoading` returned by rtk-query hook instead of checking for `trade` status
       return {
         state: TradeState.LOADING,
         trade: undefined,
+        pairAddress,
       };
     } else {
       return {
         state: TradeState.VALID, //isCurrent ? TradeState.VALID : TradeState.LOADING,
         trade: tradeResult.trade,
+        pairAddress,
       };
     }
-  }, [skipFetch, amountSpecified, otherCurrency, tradeResult, trade]);
+  }, [skipFetch, amountSpecified, otherCurrency, tradeResult, trade, pairAddress]);
 
   return bestTrade;
 }

@@ -207,6 +207,7 @@ export function useDerivedSwapInfo(state: SwapState): any {
       trade,
       // autoSlippage,
       allowedSlippage,
+      pairAddress: trade.pairAddress,
     }),
     [currencies, currencyBalances, parsedAmount, inputError, trade, allowedSlippage],
   );

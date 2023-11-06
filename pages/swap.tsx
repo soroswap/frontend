@@ -149,6 +149,7 @@ export function SwapComponent({
     currencyBalances,
     parsedAmount,
     currencies,
+    pairAddress,
     inputError: swapInputError,
   } = swapInfo;
 
@@ -307,9 +308,33 @@ export function SwapComponent({
   );
 
   const inputCurrency = currencies[Field.INPUT] ?? undefined;
-  const swapIsUnsupported = false; //useIsSwapUnsupported(currencies[Field.INPUT], currencies[Field.OUTPUT])
   const priceImpactSeverity = 2; //IF is < 2 it shows Swap anyway button in red
   const showPriceImpactWarning = false;
+
+  const getButtonText = () => {
+    if (routeNotFound) return 'Route not found';
+    if (!address) return 'Connect Wallet';
+    if (!currencies[Field.OUTPUT] && !currencies[Field.INPUT]) return 'Select a token';
+    if (!formattedAmounts[Field.INPUT] || !formattedAmounts[Field.OUTPUT]) return 'Enter an amount';
+    return 'Swap';
+  };
+
+  const isMainButtonDisabled = () => {
+    const noCurrencySelected = !currencies[Field.OUTPUT] && !currencies[Field.INPUT];
+    const noAmountTyped = !formattedAmounts[Field.INPUT] || !formattedAmounts[Field.OUTPUT];
+
+    return !!address && (noCurrencySelected || noAmountTyped || routeNotFound);
+  };
+
+  const handleMainButtonClick = () => {
+    if (!address) {
+      setConnectWalletModalOpen(true);
+    } else {
+      handleContinueToReview();
+    }
+  };
+
+  const MainButton = address ? ButtonPrimary : ButtonLight;
 
   return (
     <>
@@ -424,41 +449,11 @@ export function SwapComponent({
           )}
           {/* {showPriceImpactWarning && <PriceImpactWarning priceImpact={largerPriceImpact} />} */}
           <div>
-            {swapIsUnsupported ? (
-              <ButtonPrimary disabled={true}>
-                <ButtonText mb="4px">Unsupported Asset</ButtonText>
-              </ButtonPrimary>
-            ) : !address ? (
-              <ButtonLight onClick={() => setConnectWalletModalOpen(true)}>
-                Connect Wallet
-              </ButtonLight>
-            ) : routeNotFound ? (
-              <ButtonError disabled={true}>
-                <ButtonText>Route not found</ButtonText>
-              </ButtonError>
-            ) : (
-              <ButtonError
-                onClick={() =>
-                  showPriceImpactWarning ? setShowPriceImpactModal(true) : handleContinueToReview()
-                }
-                id="swap-button"
-                data-testid="swap-button"
-                disabled={swapInputError ? true : false}
-                error={!swapInputError && priceImpactSeverity > 2} //&& allowance.state === AllowanceState.ALLOWED}
-              >
-                <ButtonText fontSize={20} fontWeight={600}>
-                  {swapInputError ? (
-                    swapInputError
-                  ) : routeIsSyncing || routeIsLoading ? (
-                    <>Swap</>
-                  ) : priceImpactSeverity > 2 ? (
-                    <>Swap Anyway</>
-                  ) : (
-                    <>Swap</>
-                  )}
-                </ButtonText>
-              </ButtonError>
-            )}
+            <MainButton disabled={isMainButtonDisabled()} onClick={handleMainButtonClick}>
+              <ButtonText fontSize={20} fontWeight={600}>
+                {getButtonText()}
+              </ButtonText>
+            </MainButton>
           </div>
         </AutoColumn>
       </SwapWrapper>
