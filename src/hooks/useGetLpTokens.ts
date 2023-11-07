@@ -1,6 +1,5 @@
 import { useSorobanReact } from '@soroban-react/core';
-import { LpTokensObj, getLpTokens } from 'functions/getLpTokens';
-import { useEffect, useState } from 'react';
+import { getLpTokens } from 'functions/getLpTokens';
 import useSWRImmutable from 'swr/immutable';
 
 const useGetLpTokens = () => {
