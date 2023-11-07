@@ -13,6 +13,7 @@ import { LpTokensObj, getLpTokens } from 'functions/getLpTokens';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import SEO from '../../src/components/SEO';
+import useGetLpTokens from 'hooks/useGetLpTokens';
 
 const PageWrapper = styled(AutoColumn)`
   position: relative;
@@ -86,15 +87,10 @@ export default function LiquidityPage() {
   const noLiquidity = false;
   const isCreate = false;
 
-  const [lpTokens, setLpTokens] = useState<LpTokensObj[]>();
+  const { lpTokens } = useGetLpTokens();
+
   const [isModalOpen, setModalOpen] = useState<boolean>(false);
   const [selectedLP, setSelectedLP] = useState<LpTokensObj>();
-
-  useEffect(() => {
-    getLpTokens(sorobanContext).then((resp) => {
-      setLpTokens(resp);
-    });
-  }, [sorobanContext]);
 
   const handleLPClick = (obj: LpTokensObj) => {
     setSelectedLP(obj);

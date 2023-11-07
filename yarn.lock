@@ -2155,7 +2155,7 @@
   dependencies:
     "@sinonjs/commons" "^3.0.0"
 
-"@soroban-react/chains@7.1.1":
+"@soroban-react/chains@^7.1.1":
   version "7.1.1"
   resolved "https://registry.npmjs.org/@soroban-react/chains/-/chains-7.1.1.tgz"
   integrity sha512-vn8iDr+3/m2qFHYYUf4pr1vIEVYToo8UBCPSi+HUvBscjP75qsWYp3DUFeiHXDl+59HBzNLUBSa/t48f0pL72A==
@@ -2164,13 +2164,13 @@
     soroban-client "1.0.0-beta.2"
 
 "@soroban-react/connect-button@^7.1.1":
-  version "7.1.1"
-  resolved "https://registry.npmjs.org/@soroban-react/connect-button/-/connect-button-7.1.1.tgz"
-  integrity sha512-hhag9edwuL4caqSzhOYGqf/O5CatrDkxg06BdjrwMKrJg5wrQq77D3nXLQGP6SXmitXoFzRfOmFNxDcfFpbmCw==
+  version "7.3.1"
+  resolved "https://registry.npmjs.org/@soroban-react/connect-button/-/connect-button-7.3.1.tgz"
+  integrity sha512-EDN0Vt3A2UUrFeY5YKcvoxfSp+YYJmRXK9WYY+QCy/C5A+ImA+or2+pVmnTokXWq0EC1HuR0M+8sZ9+4b19vCw==
   dependencies:
-    "@soroban-react/core" "^7.1.1"
+    "@soroban-react/core" "^7.3.1"
 
-"@soroban-react/contracts@7.1.1":
+"@soroban-react/contracts@^7.1.1":
   version "7.1.1"
   resolved "https://registry.npmjs.org/@soroban-react/contracts/-/contracts-7.1.1.tgz"
   integrity sha512-zmM96lbdH/zCALjlT+L1mqoP2mMN6jPdpNhxGOCpgEWzUFSLIoKhyIMHnNn76CxoXtN+OcnIEB4cW/P+kVjcJw==
@@ -2178,7 +2178,7 @@
     "@soroban-react/core" "^7.1.1"
     soroban-client "1.0.0-beta.2"
 
-"@soroban-react/core@^7.1.1", "@soroban-react/core@7.1.1":
+"@soroban-react/core@^7.1.1":
   version "7.1.1"
   resolved "https://registry.npmjs.org/@soroban-react/core/-/core-7.1.1.tgz"
   integrity sha512-PGsMi9ourF56X76iEYDbuk9TjykMOEHxX9+NKgMvx9Qsg/gIOnCCYKgECn000J4qs+P9/e4OaP2uUM3//kG+ew==
@@ -2187,10 +2187,27 @@
     "@soroban-react/types" "^7.1.1"
     soroban-client "1.0.0-beta.2"
 
-"@soroban-react/freighter@^7.1.1", "@soroban-react/freighter@7.1.1":
+"@soroban-react/core@^7.3.1":
+  version "7.3.1"
+  resolved "https://registry.npmjs.org/@soroban-react/core/-/core-7.3.1.tgz"
+  integrity sha512-vVrgpPixk/fMg8PHPdQLxG+lQ6surgVdy42ozAp/KeaDF6J8pVUabvqiBjoEHMKoKl3gxtl0oRZeTgqUiG5YJQ==
+  dependencies:
+    "@soroban-react/freighter" "^7.3.1"
+    "@soroban-react/types" "^7.1.1"
+    soroban-client "1.0.0-beta.4"
+
+"@soroban-react/freighter@^7.1.1":
   version "7.1.1"
   resolved "https://registry.npmjs.org/@soroban-react/freighter/-/freighter-7.1.1.tgz"
   integrity sha512-pzlkQFru8pWpIkI+08XxYkH0+kUQ5ytZQE65zRu0rRTBPtsEdUYcOx8Y3xhIqSZptfgM4lX0husLSn1KS0kyiw==
+  dependencies:
+    "@soroban-react/types" "^7.1.1"
+    "@stellar/freighter-api" "1.7.1"
+
+"@soroban-react/freighter@^7.3.1":
+  version "7.3.1"
+  resolved "https://registry.npmjs.org/@soroban-react/freighter/-/freighter-7.3.1.tgz"
+  integrity sha512-j+6EGLk7veTqRfI+Gj7MybdI4M9NQoPKktPKcsbIvT6wTrlb0dEVkiVTstwa5A+3tfthzCf7Re0d1YI+Rsg/Ag==
   dependencies:
     "@soroban-react/types" "^7.1.1"
     "@stellar/freighter-api" "1.7.1"
@@ -2208,7 +2225,7 @@
     bignumber.js "^9.1.1"
     soroban-client "1.0.0-beta.2"
 
-"@soroban-react/wallet-data@7.1.1":
+"@soroban-react/wallet-data@^7.1.1":
   version "7.1.1"
   resolved "https://registry.npmjs.org/@soroban-react/wallet-data/-/wallet-data-7.1.1.tgz"
   integrity sha512-GVQkFn5cUmRN4J9FSnVV6td9/1CJi8haTzz/F3l36O0mzrollCiC+lHllIcka63hBJy5TscnzCHk/LAZKs/Osw==
@@ -7160,6 +7177,17 @@ soroban-client@1.0.0-beta.2:
     stellar-base v10.0.0-beta.1
     urijs "^1.19.1"
 
+soroban-client@1.0.0-beta.4:
+  version "1.0.0-beta.4"
+  resolved "https://registry.npmjs.org/soroban-client/-/soroban-client-1.0.0-beta.4.tgz"
+  integrity sha512-M1jLCwQtWZkQIJ6U72nYpvj+giYnB2/Vw4E1DBaiCgg5iWIWatDto+QTI/aUR9m7fNGTt/AhFtQzhjksK1rFkQ==
+  dependencies:
+    axios "^1.6.0"
+    bignumber.js "^9.1.1"
+    buffer "^6.0.3"
+    stellar-base v10.0.0-beta.4
+    urijs "^1.19.1"
+
 source-map-js@^1.0.2:
   version "1.0.2"
   resolved "https://registry.npmjs.org/source-map-js/-/source-map-js-1.0.2.tgz"
@@ -7254,6 +7282,20 @@ stellar-base@v10.0.0-beta.1:
   version "10.0.0-beta.1"
   resolved "https://registry.npmjs.org/stellar-base/-/stellar-base-10.0.0-beta.1.tgz"
   integrity sha512-zXC5AsbUsLi57JruyeIMv23s3iUxq/P2ZFrSJ+FerLIZjSAjY8EDs4zwY4LCuu7swUu46Lm8GK6sqxUZCPekHw==
+  dependencies:
+    base32.js "^0.1.0"
+    bignumber.js "^9.1.2"
+    buffer "^6.0.3"
+    js-xdr "^3.0.0"
+    sha.js "^2.3.6"
+    tweetnacl "^1.0.3"
+  optionalDependencies:
+    sodium-native "^4.0.1"
+
+stellar-base@v10.0.0-beta.4:
+  version "10.0.0-beta.4"
+  resolved "https://registry.npmjs.org/stellar-base/-/stellar-base-10.0.0-beta.4.tgz"
+  integrity sha512-3EXDFHSahVDMTHrHiFOO8kFf5KN+AL4x5kd5rxjElElPG+385cyWDbO83GrNmDGU/u9/XiVL+riJjz5gQTv6RQ==
   dependencies:
     base32.js "^0.1.0"
     bignumber.js "^9.1.2"
