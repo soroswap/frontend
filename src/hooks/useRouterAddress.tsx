@@ -7,7 +7,7 @@ import useSWRImmutable from 'swr/immutable';
 export const useRouterAddress = () => {
   const sorobanContext: SorobanContextType = useSorobanReact();
 
-  const { data } = useSWRImmutable('router', fetchRouter);
+  const { data, mutate, isLoading, error } = useSWRImmutable('router', fetchRouter);
 
   const [router, setRouter] = useState<RouterType>({
     router_address: '',
@@ -30,5 +30,5 @@ export const useRouterAddress = () => {
     }
   }, [data, sorobanContext]);
 
-  return router;
+  return { router, isLoading, isError: error, data };
 };

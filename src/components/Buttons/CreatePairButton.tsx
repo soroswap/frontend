@@ -14,7 +14,7 @@ interface CreatePairProps {
 }
 
 export function CreatePairButton({ token0, token1, sorobanContext }: CreatePairProps) {
-  const factory = useFactory(sorobanContext);
+  const { factory } = useFactory(sorobanContext);
   const [isSubmitting, setSubmitting] = useState(false);
   const networkPassphrase = sorobanContext.activeChain?.networkPassphrase ?? '';
   const server = sorobanContext.server;

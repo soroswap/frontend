@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 import useSWRImmutable from 'swr/immutable';
 
 export const useFactory = (sorobanContext: SorobanContextType) => {
-  const { data } = useSWRImmutable('factory', fetchFactory);
+  const { data, mutate, isLoading, error } = useSWRImmutable('factory', fetchFactory);
 
   const [factory, setFactory] = useState<FactoryType>({
     factory_address: '',
@@ -28,5 +28,5 @@ export const useFactory = (sorobanContext: SorobanContextType) => {
     }
   }, [data, sorobanContext]);
 
-  return factory;
+  return { factory, isLoading, isError: error, mutate };
 };

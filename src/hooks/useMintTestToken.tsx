@@ -18,7 +18,7 @@ interface MintTestTokenProps {
 export function useMintTestToken() {
   const sorobanContext = useSorobanReact();
   const { admin_public, admin_secret } = useKeys(sorobanContext);
-  const tokens = useTokens(sorobanContext);
+  const { tokens } = useTokens();
   const { SnackbarContext } = useContext(AppContext);
 
   return useCallback(

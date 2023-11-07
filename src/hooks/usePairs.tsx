@@ -5,7 +5,7 @@ import useSWRImmutable from 'swr/immutable';
 
 export const usePairs = () => {
   const sorobanContext = useSorobanReact();
-  const { data } = useSWRImmutable('pairs', fetchPairs);
+  const { data, mutate, isLoading, error } = useSWRImmutable('pairs', fetchPairs);
 
   const [pairs, setPairs] = useState([]);
 
@@ -21,5 +21,5 @@ export const usePairs = () => {
     }
   }, [data, sorobanContext]);
 
-  return pairs;
+  return { pairs, mutate, isLoading, isError: error, data };
 };
