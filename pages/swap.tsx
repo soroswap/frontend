@@ -135,13 +135,12 @@ export function SwapComponent({
 
   const swapInfo = useDerivedSwapInfo(state);
   const {
-    trade: { state: tradeState, trade },
+    trade: { state: tradeState, trade, reserves },
     allowedSlippage,
     // autoSlippage,
     currencyBalances,
     parsedAmount,
     currencies,
-    pairAddress,
     inputError: swapInputError,
   } = swapInfo;
 
@@ -157,12 +156,12 @@ export function SwapComponent({
     () => ({
       [Field.INPUT]:
         independentField === Field.INPUT
-          ? trade?.outputAmount.currency.decimals ?? 7
-          : trade?.inputAmount.currency.decimals ?? 7,
+          ? trade?.outputAmount?.currency.decimals ?? 7
+          : trade?.inputAmount?.currency.decimals ?? 7,
       [Field.OUTPUT]:
         independentField === Field.OUTPUT
-          ? trade?.inputAmount.currency.decimals ?? 7
-          : trade?.outputAmount.currency.decimals ?? 7,
+          ? trade?.inputAmount?.currency.decimals ?? 7
+          : trade?.outputAmount?.currency.decimals ?? 7,
     }),
     [independentField, trade],
   );
@@ -170,7 +169,7 @@ export function SwapComponent({
   const userHasSpecifiedInputOutput = Boolean(
     currencies[Field.INPUT] &&
       currencies[Field.OUTPUT] &&
-      parsedAmounts[independentField]?.value > 0,
+      Number(parsedAmounts[independentField]?.value) > 0,
   );
 
   const fiatValueInput = { data: 0, isLoading: true }; //useUSDPrice(parsedAmounts[Field.INPUT]) //TODO: create USDPrice function when available method to get this, for now it will be shown as loading
@@ -178,7 +177,7 @@ export function SwapComponent({
   const showFiatValueInput = Boolean(parsedAmounts[Field.INPUT]);
   const showFiatValueOutput = Boolean(parsedAmounts[Field.OUTPUT]);
 
-  const maxInputAmount: relevantTokensType | undefined = useMemo(
+  const maxInputAmount: relevantTokensType | string = useMemo(
     () => currencyBalances[Field.INPUT],
     // () => maxAmountSpend(currencyBalances[Field.INPUT]), TODO: Create maxAmountSpend if is native token (XLM) should count for the fees and minimum xlm for the account to have
     [currencyBalances],
@@ -231,7 +230,7 @@ export function SwapComponent({
     [decimals, dependentField, independentField, trade?.expectedAmount, typedValue],
   );
 
-  const showMaxButton = Boolean(maxInputAmount?.balance ?? 0 > 0);
+  const showMaxButton = Boolean((maxInputAmount as relevantTokensType)?.balance ?? 0 > 0);
 
   const [routeNotFound, routeIsLoading, routeIsSyncing] = useMemo(
     () => [
@@ -310,6 +309,7 @@ export function SwapComponent({
       formattedAmounts,
       routeNotFound,
       onSubmit: handleContinueToReview,
+      reserves,
     });
 
   return (
