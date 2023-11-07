@@ -12,7 +12,7 @@ export default function SwapPage() {
   return (
     <>
       <SEO title="Swap - Soroswap" description="Soroswap Swap" />
-      <SwapComponent />
+      <SwapComponent paramTokenA={tokenA} paramTokenB={tokenB} />
     </>
   );
 }
