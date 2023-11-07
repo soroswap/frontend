@@ -59,7 +59,7 @@ export function AdvancedSwapDetails({
   //   const pairAddress = await getPairAddress(trade?.inputAmount.currency.address, trade?.outputAmount.currency.address, sorobanContext)
   //   const reserves = await reservesBNWithTokens(pairAddress, sorobanContext)
   //   const { token0, token1 } = reserves
-  //   console.log("🚀 « pairAddress:", pairAddress)
+  //
 
   //   if (trade?.inputAmount.currency && trade.outputAmount.currency) {
   //     const priceImpactTemp = getPriceImpact(
@@ -69,7 +69,7 @@ export function AdvancedSwapDetails({
   //       token1 === trade.outputAmount.currency.address ? reserves.reserve1 : reserves.reserve0,
   //       sorobanContext
   //     )
-  //     console.log("🚀 « priceImpactTemp:", priceImpactTemp)
+  //
 
   //     return twoDecimalsPercentage(priceImpactTemp).toString()
 
@@ -79,7 +79,7 @@ export function AdvancedSwapDetails({
 
   // }
   // priceImpact().then((Resp) => {
-  //   console.log("resp", Resp)
+  //
   // })
 
   const { pairAddress, reserves, currentBaseAddress, currentOtherAddress } = useGetReservesByPair({
@@ -122,20 +122,15 @@ export function AdvancedSwapDetails({
           >
             <BodySmall color="textSecondary">Network fee</BodySmall>
           </MouseoverTooltip>
-          <MouseoverTooltip
-            placement="right"
-            title={''} //<GasBreakdownTooltip trade={trade} hideUniswapXDescription />}
-          >
-            <TextWithLoadingPlaceholder syncing={syncing} width={50}>
-              <BodySmall>
-                ~$?
-                {/* {`${trade.totalGasUseEstimateUSD ? '~' : ''}${formatNumber(
+          <TextWithLoadingPlaceholder syncing={syncing} width={50}>
+            <BodySmall>
+              ~$?
+              {/* {`${trade.totalGasUseEstimateUSD ? '~' : ''}${formatNumber(
                   trade.totalGasUseEstimateUSD,
                   NumberType.FiatGasPrice
                 )}`} */}
-              </BodySmall>
-            </TextWithLoadingPlaceholder>
-          </MouseoverTooltip>
+            </BodySmall>
+          </TextWithLoadingPlaceholder>
         </RowBetween>
       )}
       {true && (
@@ -163,7 +158,7 @@ export function AdvancedSwapDetails({
           </MouseoverTooltip>
         </RowFixed>
         <TextWithLoadingPlaceholder syncing={syncing} width={65}>
-          <BodySmall style={{ display: 'flex', alignItems: 'center' }}>
+          <BodySmall style={{ display: 'flex', alignItems: 'center' }} component="div">
             {formatTokenAmount(trade?.outputAmount?.value ?? '0')}{' '}
             {trade?.outputAmount?.currency.symbol}{' '}
             <CurrencyLogo

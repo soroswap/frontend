@@ -46,11 +46,9 @@ export function MintButton({ sorobanContext, token, amountToMint }: MintButtonPr
     }
 
     if (!account) {
-      console.log('Error on account:', account);
       return;
     }
     if (!adminSource) {
-      console.log('Error on adminSource:', adminSource);
       return;
     }
 
@@ -73,7 +71,6 @@ export function MintButton({ sorobanContext, token, amountToMint }: MintButtonPr
         signAndSend: true,
         secretKey: admin_secret,
       });
-      console.log('🚀 « result:', result);
 
       if (result) {
         sendNotification(
@@ -86,9 +83,7 @@ export function MintButton({ sorobanContext, token, amountToMint }: MintButtonPr
 
       //This will connect again the wallet to fetch its data
       sorobanContext.connect();
-    } catch (error) {
-      console.log('🚀 « error: sendTransaction: ', error);
-    }
+    } catch (error) {}
 
     setSubmitting(false);
   };

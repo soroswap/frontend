@@ -49,7 +49,6 @@ export async function getExpectedAmount(
 
     return expectedOutput;
   } catch (error) {
-    console.log('🚀 « error:', error);
     return BigNumber(0);
   }
 }
@@ -88,7 +87,6 @@ export async function getExpectedAmountNew(
 
     return expectedOutput;
   } catch (error) {
-    console.log('🚀 « error:', error);
     return BigNumber(0);
   }
 }

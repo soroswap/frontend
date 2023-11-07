@@ -65,7 +65,7 @@ export function SwapModalHeaderAmount({
   return (
     <CustomRow align="end" justify="space-between">
       <Column gap="4px" alignItems="flex-start">
-        <BodySecondary>
+        <BodySecondary component="div">
           <MouseoverTooltip title={tooltipText} disableInteractive={!tooltipText}>
             <Label cursor="help">{label}</Label>
           </MouseoverTooltip>

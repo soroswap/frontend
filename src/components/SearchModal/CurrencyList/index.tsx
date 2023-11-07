@@ -5,13 +5,14 @@ import Loader from 'components/Icons/LoadingSpinner';
 import CurrencyLogo from 'components/Logo/CurrencyLogo';
 import Row, { RowFixed, RowFlat } from 'components/Row';
 import { formatTokenAmount } from 'helpers/format';
-import { tokenBalance } from 'hooks';
+import { tokenBalance, tokenBalancesType } from 'hooks';
 import { CSSProperties, MutableRefObject, useCallback, useEffect, useMemo, useState } from 'react';
 import { Check } from 'react-feather';
 import { FixedSizeList } from 'react-window';
 import { TokenType } from '../../../interfaces';
 import { LoadingRows, MenuItem } from '../styleds';
 import StyledRow from '../../Row';
+import BigNumber from 'bignumber.js';
 
 function currencyKey(currency: TokenType): string {
   return currency.address ? currency.address : 'ETHER';
@@ -64,14 +65,16 @@ export function CurrencyRow({
   style,
   showCurrencyAmount,
   eventProperties,
+  currentBalance,
 }: {
   currency: TokenType;
   onSelect: (hasWarning: boolean) => void;
   isSelected: boolean;
   otherSelected: boolean;
-  style?: CSSProperties;
   showCurrencyAmount?: boolean;
   eventProperties: Record<string, unknown>;
+  style?: CSSProperties;
+  currentBalance?: string | number | BigNumber | undefined;
 }) {
   const sorobanContext = useSorobanReact();
 
@@ -79,11 +82,15 @@ export function CurrencyRow({
 
   useEffect(() => {
     if (sorobanContext.activeChain && sorobanContext.address) {
-      tokenBalance(currency.address, sorobanContext.address, sorobanContext).then((resp) => {
-        setBalance(formatTokenAmount(resp));
-      });
+      if (currentBalance) {
+        setBalance(currentBalance as string);
+      } else {
+        tokenBalance(currency.address, sorobanContext.address, sorobanContext).then((resp) => {
+          setBalance(formatTokenAmount(resp));
+        });
+      }
     }
-  }, [currency.address, sorobanContext]);
+  }, [currency.address, sorobanContext, currentBalance]);
 
   const warning = false;
   const isBlockedToken = false;
@@ -176,6 +183,7 @@ export default function CurrencyList({
   searchQuery,
   isAddressSearch,
   isLoading,
+  tokenBalancesResponse,
 }: {
   height: number;
   currencies: TokenType[];
@@ -188,6 +196,7 @@ export default function CurrencyList({
   searchQuery: string;
   isAddressSearch: string | false;
   isLoading?: boolean;
+  tokenBalancesResponse?: tokenBalancesType;
 }) {
   const itemData: TokenType[] = useMemo(() => {
     if (otherListTokens && otherListTokens?.length > 0) {
@@ -212,6 +221,11 @@ export default function CurrencyList({
       if (currency) {
         return (
           <CurrencyRow
+            currentBalance={
+              tokenBalancesResponse?.balances?.find(
+                (tokenBalance) => tokenBalance.address === currency.address,
+              )?.balance
+            }
             style={style}
             currency={currency}
             isSelected={isSelected}
@@ -238,6 +252,7 @@ export default function CurrencyList({
       showCurrencyAmount,
       searchQuery,
       isAddressSearch,
+      tokenBalancesResponse,
     ],
   );
 

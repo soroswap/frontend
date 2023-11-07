@@ -137,7 +137,7 @@ export function CurrencySearch({
   const inputRef = useRef<HTMLInputElement>();
   const handleInput = useCallback((event: ChangeEvent<HTMLInputElement>) => {
     const input = event.target.value;
-    console.log('🚀 « input:', input);
+
     setSearchQuery(input);
     fixedList.current?.scrollTo(0);
   }, []);
@@ -197,9 +197,14 @@ export function CurrencySearch({
         )} */}
       </PaddedColumn>
       <Separator />
-      {searchToken && !searchTokenIsAdded ? (
+      {searchToken && !searchTokenIsAdded && !isLoading ? (
         <Column style={{ padding: '20px 0', height: '100%' }}>
           <CurrencyRow
+            currentBalance={
+              tokenBalancesResponse?.balances?.find(
+                (tokenBalance) => tokenBalance.address === searchToken.address,
+              )?.balance
+            }
             currency={searchToken}
             isSelected={Boolean(searchToken && selectedCurrency && selectedCurrency == searchToken)}
             onSelect={(hasWarning: boolean) =>
@@ -218,11 +223,12 @@ export function CurrencySearch({
             )}
           />
         </Column>
-      ) : searchCurrencies?.length > 0 ? (
+      ) : searchCurrencies?.length > 0 && !isLoading ? (
         <div style={{ flex: '1' }}>
           <AutoSizer disableWidth>
             {({ height }: { height: number }) => (
               <CurrencyList
+                tokenBalancesResponse={tokenBalancesResponse}
                 height={height}
                 currencies={searchCurrencies}
                 onCurrencySelect={handleCurrencySelect}

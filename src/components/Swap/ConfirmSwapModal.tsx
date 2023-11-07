@@ -90,7 +90,6 @@ function useConfirmModalState({
   const catchUserReject = async (e: any, errorType: PendingModalError) => {
     setConfirmModalState(ConfirmModalState.REVIEWING);
     // if (didUserReject(e)) return
-    console.error(e);
     setApprovalError(errorType);
   };
 
@@ -321,13 +320,15 @@ export default function ConfirmSwapModal({
       aria-labelledby="modal-modal-title"
       aria-describedby="modal-modal-description"
     >
-      <ConfirmationModalContent
-        title={titleToShow}
-        onDismiss={onDismiss}
-        topContent={modalHeader}
-        bottomContent={modalBottom}
-        // headerContent={l2Badge}
-      />
+      <div>
+        <ConfirmationModalContent
+          title={titleToShow}
+          onDismiss={onDismiss}
+          topContent={modalHeader}
+          bottomContent={modalBottom}
+          // headerContent={l2Badge}
+        />
+      </div>
     </Modal>
   );
 }

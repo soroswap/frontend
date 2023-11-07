@@ -1,11 +1,8 @@
-import { styled } from '@mui/material';
-import { useSorobanReact } from '@soroban-react/core';
-import { ButtonError, ButtonLight, ButtonPrimary } from 'components/Buttons/Button';
+import { Modal, styled } from '@mui/material';
 import { AutoColumn } from 'components/Column';
 import ConfirmSwapModal from 'components/Swap/ConfirmSwapModal';
 import SwapDetailsDropdown from 'components/Swap/SwapDetailsDropdown';
 import { ButtonText } from 'components/Text';
-import { AppContext } from 'contexts';
 import { formatTokenAmount } from 'helpers/format';
 import { relevantTokensType } from 'hooks';
 import { useSwapCallback } from 'hooks/useSwapCallback';
@@ -21,6 +18,8 @@ import SwapHeader from '../src/components/Swap/SwapHeader';
 import { ArrowWrapper, SwapWrapper } from '../src/components/Swap/styleds';
 import { TokenType } from '../src/interfaces';
 import { opacify } from '../src/themes/utils';
+import { TransactionFailedContent } from 'components/TransactionConfirmationModal';
+import useSwapMainButton from 'hooks/useSwapMainButton';
 
 const SwapSection = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -111,13 +110,8 @@ export function SwapComponent({
   onCurrencyChange?: (selected: Pick<SwapState, Field.INPUT | Field.OUTPUT>) => void;
   disableTokenInputs?: boolean;
 }) {
-  const sorobanContext = useSorobanReact();
-  const { address } = sorobanContext;
-
-  const { ConnectWalletModal } = useContext(AppContext);
-  const { isConnectWalletModalOpen, setConnectWalletModalOpen } = ConnectWalletModal;
-
   const [showPriceImpactModal, setShowPriceImpactModal] = useState<boolean>(false);
+  const [txError, setTxError] = useState<boolean>(false);
 
   // modal and loading
   const [{ showConfirm, tradeToConfirm, swapError, swapResult }, setSwapState] = useState<{
@@ -139,7 +133,6 @@ export function SwapComponent({
     useSwapActionHandlers(dispatch);
   const dependentField: Field = independentField === Field.INPUT ? Field.OUTPUT : Field.INPUT;
 
-  // console.log("🚀 « state:", state)
   const swapInfo = useDerivedSwapInfo(state);
   const {
     trade: { state: tradeState, trade },
@@ -148,9 +141,9 @@ export function SwapComponent({
     currencyBalances,
     parsedAmount,
     currencies,
+    pairAddress,
     inputError: swapInputError,
   } = swapInfo;
-  // console.log("🚀 « inputError:", swapInputError)
 
   const parsedAmounts = useMemo(
     () => ({
@@ -216,10 +209,6 @@ export function SwapComponent({
     },
     [onCurrencyChange, onCurrencySelection, state],
   );
-
-  const handleMaxInput = useCallback(() => {
-    maxInputAmount && onUserInput(Field.INPUT, String(maxInputAmount?.balance));
-  }, [maxInputAmount, onUserInput]);
 
   const handleTypeInput = useCallback(
     (value: string) => {
@@ -298,6 +287,7 @@ export function SwapComponent({
         }));
       })
       .catch((error) => {
+        setTxError(true);
         setSwapState((currentState) => ({
           ...currentState,
           showConfirm: false,
@@ -310,24 +300,43 @@ export function SwapComponent({
   );
 
   const inputCurrency = currencies[Field.INPUT] ?? undefined;
-  const swapIsUnsupported = false; //useIsSwapUnsupported(currencies[Field.INPUT], currencies[Field.OUTPUT])
   const priceImpactSeverity = 2; //IF is < 2 it shows Swap anyway button in red
   const showPriceImpactWarning = false;
+
+  const { getMainButtonText, isMainButtonDisabled, handleMainButtonClick, MainButton } =
+    useSwapMainButton({
+      currencies,
+      currencyBalances,
+      formattedAmounts,
+      routeNotFound,
+      onSubmit: handleContinueToReview,
+    });
+
   return (
     <>
       <SwapWrapper>
         <SwapHeader />
+        <Modal
+          open={txError}
+          onClose={() => setTxError(false)}
+          aria-labelledby="modal-modal-title"
+          aria-describedby="modal-modal-description"
+        >
+          <div>
+            <TransactionFailedContent onDismiss={() => setTxError(false)} />
+          </div>
+        </Modal>
         {trade && showConfirm && (
           <ConfirmSwapModal
             trade={trade}
             inputCurrency={inputCurrency}
             originalTrade={tradeToConfirm}
-            onAcceptChanges={() => console.log('handleAcceptChanges')} //handleAcceptChanges}
+            onAcceptChanges={() => null} //handleAcceptChanges}
             onCurrencySelection={onCurrencySelection}
             swapResult={swapResult}
-            allowedSlippage={() => console.log('allowedSlippage')} //allowedSlippage}
+            allowedSlippage={() => null} //allowedSlippage}
             onConfirm={handleSwap}
-            allowance={() => console.log('allowance')} //allowance}
+            allowance={() => null} //allowance}
             swapError={swapError}
             onDismiss={handleConfirmDismiss}
             swapQuoteReceivedDate={new Date()} //swapQuoteReceivedDate}
@@ -355,7 +364,7 @@ export function SwapComponent({
               value={formattedAmounts[Field.INPUT]}
               showMaxButton={showMaxButton}
               onUserInput={handleTypeInput}
-              onMax={handleMaxInput}
+              onMax={(maxBalance) => handleTypeInput(maxBalance.toString())}
               fiatValue={showFiatValueInput ? fiatValueInput : undefined}
               onCurrencySelect={handleInputSelect}
               otherCurrency={currencies[Field.OUTPUT]}
@@ -416,41 +425,11 @@ export function SwapComponent({
           )}
           {/* {showPriceImpactWarning && <PriceImpactWarning priceImpact={largerPriceImpact} />} */}
           <div>
-            {swapIsUnsupported ? (
-              <ButtonPrimary disabled={true}>
-                <ButtonText mb="4px">Unsupported Asset</ButtonText>
-              </ButtonPrimary>
-            ) : !address ? (
-              <ButtonLight onClick={() => setConnectWalletModalOpen(true)}>
-                Connect Wallet
-              </ButtonLight>
-            ) : routeNotFound ? (
-              <ButtonError disabled={true}>
-                <ButtonText>Route not found</ButtonText>
-              </ButtonError>
-            ) : (
-              <ButtonError
-                onClick={() =>
-                  showPriceImpactWarning ? setShowPriceImpactModal(true) : handleContinueToReview()
-                }
-                id="swap-button"
-                data-testid="swap-button"
-                disabled={swapInputError ? true : false}
-                error={!swapInputError && priceImpactSeverity > 2} //&& allowance.state === AllowanceState.ALLOWED}
-              >
-                <ButtonText fontSize={20} fontWeight={600}>
-                  {swapInputError ? (
-                    swapInputError
-                  ) : routeIsSyncing || routeIsLoading ? (
-                    <>Swap</>
-                  ) : priceImpactSeverity > 2 ? (
-                    <>Swap Anyway</>
-                  ) : (
-                    <>Swap</>
-                  )}
-                </ButtonText>
-              </ButtonError>
-            )}
+            <MainButton disabled={isMainButtonDisabled()} onClick={handleMainButtonClick}>
+              <ButtonText fontSize={20} fontWeight={600}>
+                {getMainButtonText()}
+              </ButtonText>
+            </MainButton>
           </div>
         </AutoColumn>
       </SwapWrapper>

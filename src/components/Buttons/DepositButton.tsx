@@ -1,13 +1,10 @@
-import { Button } from "@mui/material";
-import {
-    contractTransaction,
-    useSendTransaction
-} from "@soroban-react/contracts";
-import { SorobanContextType } from "@soroban-react/core";
-import BigNumber from "bignumber.js";
-import { useState } from "react";
-import * as SorobanClient from "soroban-client";
-import { bigNumberToI128 } from "../../helpers/utils";
+import { Button } from '@mui/material';
+import { contractTransaction, useSendTransaction } from '@soroban-react/contracts';
+import { SorobanContextType } from '@soroban-react/core';
+import BigNumber from 'bignumber.js';
+import { useState } from 'react';
+import * as SorobanClient from 'soroban-client';
+import { bigNumberToI128 } from '../../helpers/utils';
 
 interface DepositButtonProps {
   pairAddress: string;
@@ -23,7 +20,7 @@ export function DepositButton({
   sorobanContext,
 }: DepositButtonProps) {
   const [isSubmitting, setSubmitting] = useState(false);
-  const networkPassphrase = sorobanContext.activeChain?.networkPassphrase ?? "";
+  const networkPassphrase = sorobanContext.activeChain?.networkPassphrase ?? '';
   const server = sorobanContext.server;
   const account = sorobanContext.address;
   const { sendTransaction } = useSendTransaction();
@@ -41,21 +38,19 @@ export function DepositButton({
     let walletSource;
 
     if (!account) {
-      console.log("Error on account:", account)
       return;
     }
 
     try {
       walletSource = await server?.getAccount(account!);
     } catch (error) {
-      alert("Your wallet or the token admin wallet might not be funded");
+      alert('Your wallet or the token admin wallet might not be funded');
       setSubmitting(false);
       return;
     }
-    if(!walletSource){
-      console.log("Error on walletSource:", walletSource)
-      return
-    }    
+    if (!walletSource) {
+      return;
+    }
 
     const options = {
       sorobanContext,
@@ -67,34 +62,27 @@ export function DepositButton({
         source: walletSource!,
         networkPassphrase,
         contractAddress: pairAddress,
-        method: "deposit",
+        method: 'deposit',
         args: [
           new SorobanClient.Address(account!).toScVal(),
           desiredAScVal,
           minAScVal,
           desiredBScVal,
-          minBScVal
+          minBScVal,
         ],
       });
 
       //Sends the transactions to the blockchain
-      console.log(tx);
 
       let result = await sendTransaction(tx, options);
 
       if (result) {
-        alert("Success!");
+        alert('Success!');
       }
-      console.log(
-        "🚀 ~ file: DepositButton.tsx ~ depositTokens ~ result:",
-        result,
-      );
 
       //This will connect again the wallet to fetch its data
       sorobanContext.connect();
-    } catch (error) {
-      console.log("🚀 « error:", error);
-    }
+    } catch (error) {}
 
     setSubmitting(false);
   };

@@ -22,7 +22,6 @@ export async function getLpTokensAmount(
     let LP1 = amount1.multipliedBy(totalShares).dividedBy(reserve1).decimalPlaces(0);
     return BigNumber.min(LP0, LP1);
   } else {
-    console.error('Invalid type for totalShares', totalShares);
   }
 }
 

@@ -81,7 +81,6 @@ export async function getToken(
   try {
     const response = await fetch(backendURL);
     if (!response.ok) {
-      console.error('Network response was not ok:', response);
       return undefined;
     }
 
@@ -107,7 +106,6 @@ export async function getToken(
 
     return token;
   } catch (error) {
-    console.error('Error fetching token data:', error);
     return undefined;
   }
 }

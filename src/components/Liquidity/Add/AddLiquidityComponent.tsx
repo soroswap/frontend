@@ -78,6 +78,7 @@ export default function AddLiquidityComponent() {
   const sorobanContext = useSorobanReact();
 
   const [amountOfLpTokensToReceive, setAmountOfLpTokensToReceive] = useState<string>('');
+  const [lpPercentage, setLpPercentage] = useState<string>('');
   const [totalShares, setTotalShares] = useState<string>('');
 
   const baseCurrency = useToken(currencyIdA);
@@ -103,6 +104,7 @@ export default function AddLiquidityComponent() {
   const [showConfirm, setShowConfirm] = useState<boolean>(false);
   const [attemptingTxn, setAttemptingTxn] = useState<boolean>(false); // clicked confirm
   const [txHash, setTxHash] = useState<string | undefined>(undefined); // clicked confirm
+  const [txError, setTxError] = useState<boolean>(false);
 
   const handleDismissConfirmation = useCallback(() => {
     setShowConfirm(false);
@@ -111,6 +113,7 @@ export default function AddLiquidityComponent() {
       onFieldAInput('');
     }
     setTxHash('');
+    setTxError(false);
   }, [onFieldAInput, txHash]);
 
   const routerCallback = useRouterCallback();
@@ -160,12 +163,11 @@ export default function AddLiquidityComponent() {
     const desiredBScVal = bigNumberToI128(desired1BN);
 
     // Here we are implementint the slippage: which will be in the "0.5" format when is 0.5%
-    const factor = (BigNumber(100).minus(userSlippage)).dividedBy(100);
+    const factor = BigNumber(100).minus(userSlippage).dividedBy(100);
 
     const min0BN = desired0BN.multipliedBy(factor).decimalPlaces(0); // we dont want to have decimals after applying the factor
     const min1BN = desired1BN.multipliedBy(factor).decimalPlaces(0);
 
-    
     const minAScVal = bigNumberToI128(min0BN);
     const minBScVal = bigNumberToI128(min1BN);
 
@@ -182,13 +184,12 @@ export default function AddLiquidityComponent() {
 
     routerCallback(RouterMethod.ADD_LIQUIDITY, args, true)
       .then((result) => {
-        console.log('🚀 « result:', result);
         setAttemptingTxn(false);
         setTxHash(result as unknown as string);
       })
       .catch((error) => {
-        console.log('🚀 « error:', error);
         setAttemptingTxn(false);
+        setTxError(true);
       });
   }, [
     independentField,
@@ -198,6 +199,7 @@ export default function AddLiquidityComponent() {
     routerCallback,
     formattedAmounts,
     dependentField,
+    userSlippage,
   ]);
 
   const handleCurrencyASelect = useCallback(
@@ -241,7 +243,8 @@ export default function AddLiquidityComponent() {
   const handleClickMainButton = async () => {
     const { amount, percentage } = await getLpAmountAndPercentage();
 
-    setAmountOfLpTokensToReceive(`${amount} (${percentage.toFixed(2)}%)`);
+    setAmountOfLpTokensToReceive(`${amount}`);
+    setLpPercentage(`${percentage.toFixed(2)}%`);
 
     setShowConfirm(true);
   };
@@ -283,12 +286,14 @@ export default function AddLiquidityComponent() {
                   formattedAmounts,
                   totalShares,
                   onConfirm: provideLiquidity,
+                  shareOfPool: lpPercentage,
                 })
               }
             />
           )}
           pendingText={pendingText}
           hash={txHash}
+          txError={txError}
         />
         <AutoColumn gap="20px">
           <DarkGrayCard>
@@ -306,11 +311,12 @@ export default function AddLiquidityComponent() {
             id="add-liquidity-input-tokena"
             value={formattedAmounts[Field.CURRENCY_A]}
             onUserInput={onFieldAInput}
-            onMax={() => {}} //TODO: Add max button functionality, currently disabled
+            onMax={(maxBalance) => onFieldAInput(maxBalance.toString())}
             onCurrencySelect={handleCurrencyASelect}
-            showMaxButton={false}
+            showMaxButton
             currency={currencies[Field.CURRENCY_A] ?? null}
             transparent
+
             // showCommonBases
           />
           <ColumnCenter>
@@ -321,12 +327,9 @@ export default function AddLiquidityComponent() {
             id="add-liquidity-input-tokenb"
             value={formattedAmounts[Field.CURRENCY_B]}
             onUserInput={onFieldBInput}
-            onMax={() => {}}
+            onMax={(maxBalance) => onFieldBInput(maxBalance.toString())}
             onCurrencySelect={handleCurrencyBSelect}
-            // onMax={() => {
-            //   onFieldBInput(maxAmounts[Field.CURRENCY_B]?.toExact() ?? '')
-            // }}
-            showMaxButton={false}
+            showMaxButton
             currency={currencies[Field.CURRENCY_B] ?? null}
             // showCommonBases
           />

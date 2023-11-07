@@ -20,7 +20,9 @@ export const PendingModalContainer = styled(ColumnCenter)`
   margin: 48px 0 8px;
 `;
 
-const HeaderContainer = styled(ColumnCenter)<{ $disabled?: boolean }>`
+const HeaderContainer = styled(ColumnCenter, {
+  shouldForwardProp: (prop) => prop !== '$disabled',
+})<{ $disabled?: boolean }>`
   ${({ $disabled }) => $disabled && `opacity: 0.5;`}
   gap: 10px;
   overflow: visible;
@@ -70,7 +72,9 @@ export const CustomLink = styled(Link)`
   align-items: center;
 `;
 
-const StepTitleAnimationContainer = styled(Column)<{ disableEntranceAnimation?: boolean }>`
+const StepTitleAnimationContainer = styled(Column, {
+  shouldForwardProp: (prop) => prop !== 'disableEntranceAnimation',
+})<{ disableEntranceAnimation?: boolean }>`
   position: relative;
   width: 100%;
   align-items: center;
@@ -312,10 +316,16 @@ export function PendingModalContent({
                     key={step}
                     ref={step === currentStep ? currentStepContainerRef : undefined}
                   >
-                    <SubHeaderLarge textAlign="center" data-testid="pending-modal-content-title">
+                    <SubHeaderLarge
+                      textAlign="center"
+                      data-testid="pending-modal-content-title"
+                      component="div"
+                    >
                       {title}
                     </SubHeaderLarge>
-                    <LabelSmall textAlign="center">{subtitle}</LabelSmall>
+                    <LabelSmall textAlign="center" component="div">
+                      {subtitle}
+                    </LabelSmall>
                   </StepTitleAnimationContainer>
                 )
               );

@@ -19,7 +19,6 @@ export default function ProfileSection() {
       //HERE WALLET IS CONNECTED
       //TODO: Disconnect function not working
       sorobanContext.disconnect();
-      console.log('Disconnected');
     } else {
       setConnectWalletModalOpen(true);
     }

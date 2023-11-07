@@ -1,22 +1,26 @@
 import { Typography, styled } from '@mui/material';
 
-export const SubHeaderLarge = styled(Typography)<{ color?: string; fontWeight?: number }>(
-  ({ theme, color, fontWeight }) => ({
-    fontWeight: fontWeight ?? 500,
-    fontSize: 20,
-    color: color ?? theme.typography.subtitle1.color,
-    lineHeight: '24px',
-  }),
-);
+export const SubHeaderLarge = styled(Typography)<{
+  color?: string;
+  fontWeight?: number;
+  component?: string;
+}>(({ theme, color, fontWeight }) => ({
+  fontWeight: fontWeight ?? 500,
+  fontSize: 20,
+  color: color ?? theme.typography.subtitle1.color,
+  lineHeight: '24px',
+}));
 
-export const BodySecondary = styled(Typography)<{ color?: string; fontWeight?: number }>(
-  ({ theme, color, fontWeight }) => ({
-    fontWeight: fontWeight ?? 400,
-    fontSize: 16,
-    color: color ?? theme.typography.subtitle1.color,
-    lineHeight: '24px',
-  }),
-);
+export const BodySecondary = styled(Typography)<{
+  color?: string;
+  fontWeight?: number;
+  component?: string;
+}>(({ theme, color, fontWeight }) => ({
+  fontWeight: fontWeight ?? 400,
+  fontSize: 16,
+  color: color ?? theme.typography.subtitle1.color,
+  lineHeight: '24px',
+}));
 
 export const SubHeader = styled(Typography)<{
   color?: string;
@@ -122,14 +126,16 @@ export const Caption = styled(Typography)<{ color?: string; fontWeight?: number 
   }),
 );
 
-export const LabelSmall = styled(Typography)<{ color?: string; fontWeight?: number }>(
-  ({ theme, color, fontWeight }) => ({
-    fontWeight: fontWeight ?? 600,
-    fontSize: 14,
-    color: color ?? theme.typography.subtitle1.color,
-    lineHeight: '24px',
-  }),
-);
+export const LabelSmall = styled(Typography)<{
+  color?: string;
+  fontWeight?: number;
+  component?: string;
+}>(({ theme, color, fontWeight }) => ({
+  fontWeight: fontWeight ?? 600,
+  fontSize: 14,
+  color: color ?? theme.typography.subtitle1.color,
+  lineHeight: '24px',
+}));
 
 export const ResponsiveMediumText = styled(Typography)<{ color?: string; fontWeight?: number }>(
   ({ theme, color, fontWeight }) => ({

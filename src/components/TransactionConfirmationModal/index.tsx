@@ -25,7 +25,7 @@ import {
 import { HeadlineMedium, SubHeader, SubHeaderLarge, SubHeaderSmall } from 'components/Text';
 import { TokenType } from 'interfaces';
 import { ReactNode, useState } from 'react';
-import { CheckCircle } from 'react-feather';
+import { CheckCircle, XCircle } from 'react-feather';
 
 // import Circle from '../../assets/images/blue-loader.svg'
 // import { ExternalLink, ThemedText } from '../../theme'
@@ -83,6 +83,39 @@ const StyledLogo = styled('img')`
 const ConfirmationModalContentWrapper = styled(AutoColumn)`
   padding-bottom: 12px;
 `;
+
+export const TransactionFailedContent = ({ onDismiss }: { onDismiss: () => void }) => {
+  const theme = useTheme();
+
+  return (
+    <Wrapper>
+      <AutoColumn>
+        <RowBetween>
+          <div />
+          <CloseButton onClick={onDismiss} />
+        </RowBetween>
+        <ConfirmationModalContentWrapper gap="12px" justify="center">
+          <RowFixed>
+            <XCircle
+              size="64px"
+              stroke={theme.palette.customBackground.accentCritical}
+              style={{ marginLeft: '6px' }}
+            />
+          </RowFixed>
+          <HeadlineMedium textAlign="center">Transaction Failed</HeadlineMedium>
+
+          <ButtonPrimary
+            onClick={onDismiss}
+            style={{ margin: '20px 0 0 0' }}
+            data-testid="dismiss-tx-confirmation"
+          >
+            Close
+          </ButtonPrimary>
+        </ConfirmationModalContentWrapper>
+      </AutoColumn>
+    </Wrapper>
+  );
+};
 
 function ConfirmationPendingContent({
   onDismiss,
@@ -175,7 +208,7 @@ function TransactionSubmittedContent({
               margin-top="12px"
               padding="6px 12px"
               width="fit-content"
-              onClick={() => console.log('addToken')}
+              onClick={() => null}
             >
               {!success ? (
                 <RowFixed>Add {currencyToAdd.symbol}</RowFixed>
@@ -247,6 +280,7 @@ interface ConfirmationModalProps {
   attemptingTxn: boolean;
   pendingText: ReactNode;
   currencyToAdd?: TokenType;
+  txError?: boolean;
 }
 
 export default function TransactionConfirmationModal({
@@ -257,6 +291,7 @@ export default function TransactionConfirmationModal({
   pendingText,
   reviewContent,
   currencyToAdd,
+  txError,
 }: ConfirmationModalProps) {
   const sorobanContext = useSorobanReact();
   const { activeChain } = sorobanContext;
@@ -279,6 +314,8 @@ export default function TransactionConfirmationModal({
             onDismiss={onDismiss}
             currencyToAdd={currencyToAdd}
           />
+        ) : txError ? (
+          <TransactionFailedContent onDismiss={onDismiss} />
         ) : (
           reviewContent()
         )}
