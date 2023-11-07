@@ -206,7 +206,7 @@ export default function RemoveLiquidityComponent() {
     routerCallback(RouterMethod.REMOVE_LIQUIDITY, args, true)
       .then((result) => {
         setAttemptingTxn(false);
-        setTxHash(result as string);
+        setTxHash(result as unknown as string);
       })
       .catch((error) => {
         setTxError(true);
