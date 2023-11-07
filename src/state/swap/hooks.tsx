@@ -73,7 +73,7 @@ export type SwapInfo = {
 };
 
 // from the current swap inputs, compute the best trade and return it.
-export function useDerivedSwapInfo(state: SwapState): any {
+export function useDerivedSwapInfo(state: SwapState) {
   const sorobanContext = useSorobanReact();
   const { address: account } = sorobanContext;
 

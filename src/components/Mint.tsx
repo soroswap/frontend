@@ -20,7 +20,7 @@ import { TokenType } from '../interfaces';
 
 export function Mint() {
   const sorobanContext: SorobanContextType = useSorobanReact();
-  const tokensList = useTokens(sorobanContext);
+  const { tokens: tokensList } = useTokens();
 
   const [inputToken, setInputToken] = useState<TokenType>();
   const [mintTokenId, setMintTokenId] = useState<string>('');

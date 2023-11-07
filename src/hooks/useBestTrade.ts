@@ -1,6 +1,6 @@
 import { useSorobanReact } from '@soroban-react/core';
 import BigNumber from 'bignumber.js';
-import { getExpectedAmountNew } from 'functions/getExpectedAmount';
+import { ReservesType, getExpectedAmountNew } from 'functions/getExpectedAmount';
 import { CurrencyAmount, TokenType } from 'interfaces';
 import { useEffect, useMemo, useState } from 'react';
 import { InterfaceTrade, QuoteState, TradeState, TradeType } from 'state/routing/types';
@@ -27,6 +27,7 @@ export function useBestTrade(
   state: TradeState;
   trade?: InterfaceTrade;
   pairAddress?: string;
+  reserves?: ReservesType | null;
 } {
   const sorobanContext = useSorobanReact();
 
@@ -194,18 +195,20 @@ export function useBestTrade(
   const bestTrade = useMemo(() => {
     if (skipFetch && amountSpecified && otherCurrency) {
       // If we don't want to fetch new trades, but have valid inputs, return the stale trade.
-      return { state: TradeState.STALE, trade: trade, pairAddress };
+      return { state: TradeState.STALE, trade: trade, pairAddress, reserves };
     } else if (!amountSpecified || (amountSpecified && !otherCurrency)) {
       return {
         state: TradeState.INVALID,
         trade: undefined,
         pairAddress,
+        reserves,
       };
     } else if (tradeResult?.state === QuoteState.NOT_FOUND) {
       return {
         state: TradeState.NO_ROUTE_FOUND,
         trade: undefined,
         pairAddress,
+        reserves,
       };
     } else if (!tradeResult?.trade) {
       // TODO(WEB-1985): use `isLoading` returned by rtk-query hook instead of checking for `trade` status
@@ -213,15 +216,17 @@ export function useBestTrade(
         state: TradeState.LOADING,
         trade: undefined,
         pairAddress,
+        reserves,
       };
     } else {
       return {
         state: TradeState.VALID, //isCurrent ? TradeState.VALID : TradeState.LOADING,
         trade: tradeResult.trade,
         pairAddress,
+        reserves,
       };
     }
-  }, [skipFetch, amountSpecified, otherCurrency, tradeResult, trade, pairAddress]);
+  }, [skipFetch, amountSpecified, otherCurrency, tradeResult, trade, pairAddress, reserves]);
 
   return bestTrade;
 }

@@ -69,7 +69,7 @@ export function useDerivedMintInfo(
   const sorobanContext = useSorobanReact();
   const { address: account } = sorobanContext;
 
-  const factoryAddress = useFactory(sorobanContext);
+  const { factory: factoryAddress } = useFactory(sorobanContext);
 
   const [pairAddress, setPairAddress] = useState<any>(undefined);
   const [reservesBNToken, setReservesBNToken] = useState<any>(undefined);

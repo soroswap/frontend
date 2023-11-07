@@ -280,6 +280,7 @@ export default function SwapCurrencyInputPanel({
               ) : (
                 <span />
               )}
+
               <LoadingOpacityContainer $loading={loading}>
                 {fiatValue && <FiatValue fiatValue={fiatValue} />}
               </LoadingOpacityContainer>

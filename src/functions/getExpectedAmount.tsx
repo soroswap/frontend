@@ -56,8 +56,8 @@ export async function getExpectedAmount(
 export interface ReservesType {
   reserve0: BigNumber | undefined;
   reserve1: BigNumber | undefined;
-  token0: string;
-  token1: string;
+  token0?: string;
+  token1?: string;
 }
 //This function do not call pairAddress and reservesBNWithTokens every time the input changes, instead it uses the reserves passed as argument
 export async function getExpectedAmountNew(

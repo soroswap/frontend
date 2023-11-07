@@ -1,27 +1,32 @@
-import { SorobanContextType } from "@soroban-react/core";
-import useSWR from "swr";
-import { AdminKeyResponseType, KeysType } from "../interfaces";
-// TODO: verify type of fetcher args
-const fetcher = (url: string) => fetch(url).then((resp) => resp.json());
+import { SorobanContextType } from '@soroban-react/core';
+import useSWRImmutable from 'swr/immutable';
+import { AdminKeyResponseType, KeysType } from '../interfaces';
+import { useEffect, useState } from 'react';
+import { fetchKeys } from 'services/keys';
 
 export const useKeys = (sorobanContext: SorobanContextType) => {
-  const { data } = useSWR(
-    `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/keys`,
-    fetcher
-  );
-  let keys: KeysType = { admin_public: "", admin_secret: "" };
+  const { data } = useSWRImmutable('keys', fetchKeys);
 
-  const filtered = data?.filter(
-    (item: AdminKeyResponseType) =>
-      item.network === sorobanContext?.activeChain?.name?.toLowerCase(),
-  );
+  const [keys, setKeys] = useState<KeysType>({
+    admin_public: '',
+    admin_secret: '',
+  });
 
-  if (filtered?.length > 0) {
-    keys = {
-      admin_public: filtered[0].admin_public,
-      admin_secret: filtered[0].admin_secret,
-    };
-  }
+  useEffect(() => {
+    if (!data || !sorobanContext) return;
+
+    const filtered = data?.filter(
+      (item: AdminKeyResponseType) =>
+        item.network === sorobanContext?.activeChain?.name?.toLowerCase(),
+    );
+
+    if (filtered?.length > 0) {
+      setKeys({
+        admin_public: filtered[0].admin_public,
+        admin_secret: filtered[0].admin_secret,
+      });
+    }
+  }, [data, sorobanContext]);
 
   return keys;
 };

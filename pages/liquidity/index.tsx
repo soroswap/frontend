@@ -1,4 +1,4 @@
-import { styled, useMediaQuery, useTheme } from '@mui/material';
+import { Box, CircularProgress, styled, useMediaQuery, useTheme } from '@mui/material';
 import { useSorobanReact } from '@soroban-react/core';
 import { ButtonPrimary } from 'components/Buttons/Button';
 import { AutoColumn } from 'components/Column';
@@ -9,10 +9,11 @@ import { Dots } from 'components/Pool/styleds';
 import { AutoRow } from 'components/Row';
 import SettingsTab from 'components/Settings';
 import { BodySmall, SubHeader } from 'components/Text';
-import { LpTokensObj, getLpTokens } from 'functions/getLpTokens';
+import { LpTokensObj } from 'functions/getLpTokens';
 import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import SEO from '../../src/components/SEO';
+import useGetLpTokens from 'hooks/useGetLpTokens';
 
 const PageWrapper = styled(AutoColumn)`
   position: relative;
@@ -86,15 +87,10 @@ export default function LiquidityPage() {
   const noLiquidity = false;
   const isCreate = false;
 
-  const [lpTokens, setLpTokens] = useState<LpTokensObj[]>();
+  const { lpTokens, isLoading } = useGetLpTokens();
+
   const [isModalOpen, setModalOpen] = useState<boolean>(false);
   const [selectedLP, setSelectedLP] = useState<LpTokensObj>();
-
-  useEffect(() => {
-    getLpTokens(sorobanContext).then((resp) => {
-      setLpTokens(resp);
-    });
-  }, [sorobanContext]);
 
   const handleLPClick = (obj: LpTokensObj) => {
     setSelectedLP(obj);
@@ -143,6 +139,10 @@ export default function LiquidityPage() {
                 <StatusWrapper>{obj.status}</StatusWrapper>
               </LPCard>
             ))}
+          </LPTokensContainer>
+        ) : isLoading ? (
+          <LPTokensContainer>
+            <CircularProgress size="16px" />
           </LPTokensContainer>
         ) : (
           <LPTokensContainer>

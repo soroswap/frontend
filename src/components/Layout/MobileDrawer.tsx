@@ -7,17 +7,17 @@ import { ColorModeContext } from 'contexts';
 import ProfileSection from './ProfileSection';
 
 const titleStyle = {
-  display: "flex",
-  width: "auto",
-  alignItems: "center",
-  justifyContent: "center",
-  flexDirection: "column",
-  gap: "24px",
-  padding: "24px",
-}
+  display: 'flex',
+  width: 'auto',
+  alignItems: 'center',
+  justifyContent: 'center',
+  flexDirection: 'column',
+  gap: '24px',
+  padding: '24px',
+};
 
 const TitleDiv = styled('div')`
-  color: ${({theme}) => theme.palette.primary.main};
+  color: ${({ theme }) => theme.palette.primary.main};
   display: flex;
   width: 100%;
   font-family: Inter;
@@ -26,17 +26,17 @@ const TitleDiv = styled('div')`
   line-height: 100%;
   align-items: center;
   justify-content: space-between;
-`
+`;
 
-interface MobileDrawerProps {
-  isDrawerOpen: boolean,
-  setDrawerOpen: React.Dispatch<React.SetStateAction<boolean>>,
+interface MobileDrawerProps {
+  isDrawerOpen: boolean;
+  setDrawerOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export default function MobileDrawer({isDrawerOpen, setDrawerOpen}:MobileDrawerProps) {
+export default function MobileDrawer({ isDrawerOpen, setDrawerOpen }: MobileDrawerProps) {
   const theme = useTheme();
   const colorMode = React.useContext(ColorModeContext);
-  
+
   return (
     <Drawer
       anchor="top"
@@ -44,19 +44,19 @@ export default function MobileDrawer({isDrawerOpen, setDrawerOpen}:MobileDrawerP
       onClose={() => setDrawerOpen(false)}
       sx={{
         '&.MuiDrawer-root': { zIndex: '1050' },
-        '&.MuiDrawer-root .MuiDrawer-paper': { marginTop: '78px', bgcolor: theme.palette.background.default, backgroundImage: "none" },
+        '&.MuiDrawer-root .MuiDrawer-paper': {
+          marginTop: '78px',
+          bgcolor: theme.palette.background.default,
+          backgroundImage: 'none',
+        },
       }}
     >
-      <Box
-        sx={titleStyle}
-        role="presentation"
-        onClick={() => {console.log("1")}}
-      >
+      <Box sx={titleStyle} role="presentation">
         <TitleDiv>
           Connect a wallet
           <ModeSwitch
             sx={{ m: 1 }}
-            defaultChecked={theme.palette.mode === "dark" ? true : false}
+            defaultChecked={theme.palette.mode === 'dark' ? true : false}
             onChange={(e) => colorMode.toggleColorMode()}
           />
         </TitleDiv>

@@ -1,5 +1,5 @@
-import { Balances } from "../src/components/Balances";
-import SEO from "../src/components/SEO";
+import { Balances } from '../src/components/Balances';
+import SEO from '../src/components/SEO';
 
 export default function Home() {
   return (

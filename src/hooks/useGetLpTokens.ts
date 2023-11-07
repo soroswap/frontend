@@ -1,19 +1,16 @@
 import { useSorobanReact } from '@soroban-react/core';
-import { LpTokensObj, getLpTokens } from 'functions/getLpTokens';
-import { useEffect, useState } from 'react';
+import { getLpTokens } from 'functions/getLpTokens';
+import useSWRImmutable from 'swr/immutable';
 
 const useGetLpTokens = () => {
   const sorobanContext = useSorobanReact();
 
-  const [lpTokens, setLpTokens] = useState<LpTokensObj[]>();
+  const { data, isLoading, error, mutate } = useSWRImmutable(
+    ['getLpTokens', sorobanContext],
+    ([key, sorobanContext]) => getLpTokens(sorobanContext),
+  );
 
-  useEffect(() => {
-    getLpTokens(sorobanContext).then((resp) => {
-      setLpTokens(resp);
-    });
-  }, [sorobanContext]);
-
-  return { lpTokens, sorobanContext };
+  return { lpTokens: data, sorobanContext, isLoading, isError: error, mutate };
 };
 
 export default useGetLpTokens;

@@ -246,6 +246,7 @@ export type InterfaceTrade = {
       }[];
     };
   }[];
+  [x: string]: any;
 };
 
 export enum QuoteState {

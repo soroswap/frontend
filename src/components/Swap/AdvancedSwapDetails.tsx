@@ -1,20 +1,17 @@
+import { getPriceImpactNew2 } from 'functions/getPriceImpact';
+import { BodySmall } from 'components/Text';
+import { formatTokenAmount, twoDecimalsPercentage } from 'helpers/format';
+import { InterfaceTrade } from 'state/routing/types';
+import { LoadingRows } from 'components/Loader/styled';
+import { MouseoverTooltip } from 'components/Tooltip';
+import { RowBetween, RowFixed } from 'components/Row';
+import { Separator } from 'components/SearchModal/styleds';
+import { useEffect, useState } from 'react';
 import { useSorobanReact } from '@soroban-react/core';
 import BigNumber from 'bignumber.js';
 import Column from 'components/Column';
-import { LoadingRows } from 'components/Loader/styled';
 import CurrencyLogo from 'components/Logo/CurrencyLogo';
-import { RowBetween, RowFixed } from 'components/Row';
-import { Separator } from 'components/SearchModal/styleds';
-import { BodySmall } from 'components/Text';
-import { MouseoverTooltip } from 'components/Tooltip';
-import { ReservesType } from 'functions/getExpectedAmount';
-import { getPairAddress } from 'functions/getPairAddress';
-import { getPriceImpactNew, getPriceImpactNew2 } from 'functions/getPriceImpact';
-import { formatTokenAmount, twoDecimalsPercentage } from 'helpers/format';
 import useGetReservesByPair from 'hooks/useGetReservesByPair';
-import { reservesBNWithTokens } from 'hooks/useReserves';
-import { useEffect, useState } from 'react';
-import { InterfaceTrade } from 'state/routing/types';
 
 interface AdvancedSwapDetailsProps {
   trade: InterfaceTrade | undefined;
@@ -82,7 +79,7 @@ export function AdvancedSwapDetails({
   //
   // })
 
-  const { pairAddress, reserves, currentBaseAddress, currentOtherAddress } = useGetReservesByPair({
+  const { reserves } = useGetReservesByPair({
     baseAddress: trade?.inputAmount?.currency?.address,
     otherAddress: trade?.outputAmount?.currency.address,
   });
