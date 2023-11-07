@@ -2,10 +2,10 @@ import { styled } from '@mui/material';
 import { useSorobanReact } from '@soroban-react/core';
 import BigNumber from 'bignumber.js';
 import { BodySmall } from 'components/Text';
-import { getExpectedAmount, getExpectedAmountNew } from 'functions/getExpectedAmount';
+import { getExpectedAmountNew } from 'functions/getExpectedAmount';
 import { formatTokenAmount } from 'helpers/format';
 import useGetReservesByPair from 'hooks/useGetReservesByPair';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { AlertCircle } from 'react-feather';
 import { InterfaceTrade } from 'state/routing/types';
 

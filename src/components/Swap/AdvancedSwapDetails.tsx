@@ -79,7 +79,7 @@ export function AdvancedSwapDetails({
   //
   // })
 
-  const { pairAddress, reserves, currentBaseAddress, currentOtherAddress } = useGetReservesByPair({
+  const { reserves } = useGetReservesByPair({
     baseAddress: trade?.inputAmount?.currency?.address,
     otherAddress: trade?.outputAmount?.currency.address,
   });
