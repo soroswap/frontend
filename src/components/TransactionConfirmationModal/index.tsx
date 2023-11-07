@@ -11,11 +11,12 @@
 // import { isL2ChainId } from 'utils/chains'
 // import { ExplorerDataType, getExplorerLink } from 'utils/getExplorerLink'
 
-import { Modal, styled, useTheme } from '@mui/material';
+import { Box, Modal, styled, useTheme } from '@mui/material';
 import { useSorobanReact } from '@soroban-react/core';
 import { ButtonLight, ButtonPrimary } from 'components/Buttons/Button';
 import { CloseButton } from 'components/Buttons/CloseButton';
 import { AutoColumn, ColumnCenter } from 'components/Column';
+import CopyTxHash from 'components/CopyTxHash/CopyTxHash';
 import Row, { RowBetween, RowFixed } from 'components/Row';
 import { CustomLink } from 'components/Swap/PendingModalContent';
 import {
@@ -232,9 +233,9 @@ function TransactionSubmittedContent({
             {inline ? 'Return' : 'Close'}
           </ButtonPrimary>
           {hash && (
-            <CustomLink href={href} target="_blank">
-              View on Explorer
-            </CustomLink>
+            <Box>
+              <CopyTxHash txHash={hash} />
+            </Box>
           )}
         </ConfirmationModalContentWrapper>
       </AutoColumn>

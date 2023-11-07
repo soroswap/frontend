@@ -1,29 +1,34 @@
 import { SorobanContextType, useSorobanReact } from '@soroban-react/core';
 import { RouterResponseType, RouterType } from 'interfaces/router';
-import useSWR from 'swr';
-// TODO: verify type of fetcher args
-const fetcher = (url: string) => fetch(url).then((resp) => resp.json());
+import { useEffect, useState } from 'react';
+import { fetchRouter } from 'services/router';
+import useSWRImmutable from 'swr/immutable';
 
 export const useRouterAddress = () => {
   const sorobanContext: SorobanContextType = useSorobanReact();
 
-  const { data } = useSWR(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/router`, fetcher);
+  const { data } = useSWRImmutable('router', fetchRouter);
 
-  let router: RouterType = {
+  const [router, setRouter] = useState<RouterType>({
     router_address: '',
     router_id: '',
-  };
+  });
 
-  const filtered = data?.filter(
-    (item: RouterResponseType) => item.network === sorobanContext?.activeChain?.name?.toLowerCase(),
-  );
+  useEffect(() => {
+    if (!data) return;
 
-  if (filtered?.length > 0) {
-    router = {
-      router_address: filtered[0].router_address,
-      router_id: filtered[0].router_id,
-    };
-  }
+    const filtered = data?.filter(
+      (item: RouterResponseType) =>
+        item.network === sorobanContext?.activeChain?.name?.toLowerCase(),
+    );
+
+    if (filtered?.length > 0) {
+      setRouter({
+        router_address: filtered[0].router_address,
+        router_id: filtered[0].router_id,
+      });
+    }
+  }, [data, sorobanContext]);
 
   return router;
 };

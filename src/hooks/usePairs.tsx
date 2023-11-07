@@ -1,20 +1,25 @@
-import { SorobanContextType } from '@soroban-react/core';
-import useSWR from 'swr';
-// TODO: verify type of fetcher args
-const fetcher = (url: string) => fetch(url).then((resp) => resp.json());
+import { useSorobanReact } from '@soroban-react/core';
+import { useEffect, useState } from 'react';
+import { fetchPairs } from 'services/pairs';
+import useSWRImmutable from 'swr/immutable';
 
-export const usePairs = (sorobanContext: SorobanContextType) => {
-  const { data } = useSWR(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/pairs`, fetcher);
+export const usePairs = () => {
+  const sorobanContext = useSorobanReact();
+  const { data } = useSWRImmutable('pairs', fetchPairs);
 
-  let pairs;
+  const [pairs, setPairs] = useState([]);
 
-  const filtered = data?.filter(
-    (item: any) => item.network === sorobanContext?.activeChain?.name?.toLowerCase(),
-  );
+  useEffect(() => {
+    if (!data || !sorobanContext) return;
 
-  if (filtered?.length > 0) {
-    pairs = filtered[0].pairs;
-  }
+    const filtered = data?.filter(
+      (item: any) => item.network === sorobanContext?.activeChain?.name?.toLowerCase(),
+    );
+
+    if (filtered?.length > 0) {
+      setPairs(filtered[0].pairs);
+    }
+  }, [data, sorobanContext]);
 
   return pairs;
 };

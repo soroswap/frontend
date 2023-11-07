@@ -3,11 +3,13 @@ import { isAddress } from 'helpers/address';
 import { useEffect, useMemo, useState } from 'react';
 import useSWR from 'swr';
 import { TokenMapType, TokenType, tokensResponse } from '../interfaces';
+import useSWRImmutable from 'swr/immutable';
+
 // TODO: verify type of fetcher args
 const fetcher = (url: string) => fetch(url).then((resp) => resp.json());
 
 export const useTokens = (sorobanContext: SorobanContextType) => {
-  const { data } = useSWR(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/tokens`, fetcher);
+  const { data } = useSWRImmutable(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/tokens`, fetcher);
 
   const [tokens, setTokens] = useState<TokenType[]>([]);
 

@@ -15,6 +15,7 @@ import {
   LogoContainer,
 } from './Logos';
 import { TradeSummary } from './TradeSummary';
+import CopyTxHash from 'components/CopyTxHash/CopyTxHash';
 
 export const PendingModalContainer = styled(ColumnCenter)`
   margin: 48px 0 8px;
@@ -187,14 +188,12 @@ function getContent(args: ContentArgs): PendingModalStep {
         label: `Proceed in your wallet`,
       };
     case ConfirmModalState.PENDING_CONFIRMATION: {
-      let labelText: string | null = null;
-      let href: string | null = null;
+      let label: React.ReactNode | null | string = null;
 
       if (swapConfirmed && swapResult) {
-        labelText = `View on Explorer`;
-        href = 'https://google.com'; //TODO: getExplorerLink(chainId, swapResult.response.hash, ExplorerDataType.TRANSACTION)
+        label = <CopyTxHash txHash="google.com" />;
       } else if (swapPending) {
-        labelText = `Proceed in your wallet`;
+        label = `Proceed in your wallet`;
       }
 
       return {
@@ -204,13 +203,7 @@ function getContent(args: ContentArgs): PendingModalStep {
           ? `Success`
           : `Waiting for confirmation`,
         subtitle: trade ? <TradeSummary trade={trade} /> : null,
-        label: href ? (
-          <CustomLink href={href} target="_blank">
-            {labelText}
-          </CustomLink>
-        ) : (
-          labelText
-        ),
+        label,
       };
     }
   }
