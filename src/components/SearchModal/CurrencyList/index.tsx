@@ -196,7 +196,7 @@ export default function CurrencyList({
   searchQuery: string;
   isAddressSearch: string | false;
   isLoading?: boolean;
-  tokenBalancesResponse?: tokenBalancesType;
+  tokenBalancesResponse?: tokenBalancesType | null;
 }) {
   const itemData: TokenType[] = useMemo(() => {
     if (otherListTokens && otherListTokens?.length > 0) {

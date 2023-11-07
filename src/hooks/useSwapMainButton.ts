@@ -4,19 +4,19 @@ import { AppContext } from 'contexts';
 import { formatTokenAmount } from 'helpers/format';
 import { useContext } from 'react';
 import { Field } from 'state/swap/actions';
+import { relevantTokensType } from './useBalances';
+import { ReservesType } from 'functions/getExpectedAmount';
+import BigNumber from 'bignumber.js';
 
 interface Props {
   currencies: any;
-  currencyBalances: {
-    [x: string]: {
-      balance: string;
-    };
-  };
+  currencyBalances: { INPUT: string | relevantTokensType; OUTPUT: string | relevantTokensType };
   formattedAmounts: {
     [x: string]: string;
   };
   routeNotFound: boolean;
   onSubmit: () => void;
+  reserves?: ReservesType | null;
 }
 
 const useSwapMainButton = ({
@@ -25,6 +25,7 @@ const useSwapMainButton = ({
   formattedAmounts,
   routeNotFound,
   onSubmit,
+  reserves,
 }: Props) => {
   const sorobanContext = useSorobanReact();
   const { ConnectWalletModal } = useContext(AppContext);
@@ -36,8 +37,10 @@ const useSwapMainButton = ({
     const currencyA = currencies[Field.INPUT];
     const currencyB = currencies[Field.OUTPUT];
 
-    const balanceA = formatTokenAmount(currencyBalances[Field.INPUT]?.balance) ?? 0;
-    const balanceB = formatTokenAmount(currencyBalances[Field.OUTPUT]?.balance) ?? 0;
+    const balanceA =
+      formatTokenAmount((currencyBalances[Field.INPUT] as relevantTokensType)?.balance) ?? 0;
+    const balanceB =
+      formatTokenAmount((currencyBalances[Field.OUTPUT] as relevantTokensType)?.balance) ?? 0;
 
     const inputA = formattedAmounts[Field.INPUT] ?? 0;
     const inputB = formattedAmounts[Field.OUTPUT] ?? 0;
@@ -47,6 +50,12 @@ const useSwapMainButton = ({
     const insufficientBalance =
       Number(inputA) > Number(balanceA) || Number(inputB) > Number(balanceB);
     const invalidAmount = Number(inputA) < 0 || Number(inputB) < 0;
+
+    const reserveA = formatTokenAmount(reserves?.reserve0 as BigNumber);
+    const reserveB = formatTokenAmount(reserves?.reserve1 as BigNumber);
+
+    const insufficientLiquidity =
+      Number(inputA) > Number(reserveA) || Number(inputB) > Number(reserveB);
 
     return {
       currencyA,
@@ -59,12 +68,18 @@ const useSwapMainButton = ({
       noAmountTyped,
       insufficientBalance,
       invalidAmount,
+      insufficientLiquidity,
     };
   };
 
   const getMainButtonText = () => {
-    const { invalidAmount, insufficientBalance, noAmountTyped, noCurrencySelected } =
-      getSwapValues();
+    const {
+      invalidAmount,
+      insufficientBalance,
+      noAmountTyped,
+      noCurrencySelected,
+      insufficientLiquidity,
+    } = getSwapValues();
 
     if (routeNotFound) return 'Route not found';
     if (!address) return 'Connect Wallet';
@@ -72,17 +87,28 @@ const useSwapMainButton = ({
     if (noAmountTyped) return 'Enter an amount';
     if (insufficientBalance) return 'Insufficient balance';
     if (invalidAmount) return 'Invalid amount';
+    if (insufficientLiquidity) return 'Insufficient liquidity';
 
     return 'Swap';
   };
 
   const isMainButtonDisabled = () => {
-    const { noCurrencySelected, noAmountTyped, insufficientBalance, invalidAmount } =
-      getSwapValues();
+    const {
+      noCurrencySelected,
+      noAmountTyped,
+      insufficientBalance,
+      invalidAmount,
+      insufficientLiquidity,
+    } = getSwapValues();
 
     return (
       !!address &&
-      (noCurrencySelected || noAmountTyped || routeNotFound || insufficientBalance || invalidAmount)
+      (noCurrencySelected ||
+        noAmountTyped ||
+        routeNotFound ||
+        insufficientBalance ||
+        invalidAmount ||
+        insufficientLiquidity)
     );
   };
 

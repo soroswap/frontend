@@ -1,36 +1,45 @@
-import React, { useEffect, useState } from 'react';
 import { useTokens } from './useTokens';
-import { useSorobanReact } from '@soroban-react/core';
-import { tokenBalances, tokenBalancesType } from './useBalances';
+import { SorobanContextType, useSorobanReact } from '@soroban-react/core';
+import { tokenBalances } from './useBalances';
+import { TokenType } from 'interfaces';
+import useSWRImmutable from 'swr/immutable';
+
+interface FetchBalancesProps {
+  address?: string;
+  tokens: TokenType[];
+  sorobanContext: SorobanContextType;
+}
+
+const fetchBalances = async ({ address, tokens, sorobanContext }: FetchBalancesProps) => {
+  if (!address || !tokens || !sorobanContext) return null;
+
+  const response = await tokenBalances(address, tokens, sorobanContext, true);
+
+  return response;
+};
 
 const useGetMyBalances = () => {
   const sorobanContext = useSorobanReact();
-  const tokens = useTokens(sorobanContext);
 
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [isError, setIsError] = useState<boolean>(false);
-  const [update, setUpdate] = useState<boolean>(false);
+  const { address } = sorobanContext;
+  const { tokens } = useTokens();
 
-  const [tokenBalancesResponse, setTokenBalancesResponse] = useState<
-    tokenBalancesType | undefined
-  >();
+  const { data, isLoading, mutate, error } = useSWRImmutable(
+    ['balance', address, tokens, sorobanContext],
+    ([key, address, tokens, sorobanContext]) => fetchBalances({ address, tokens, sorobanContext }),
+    {
+      revalidateOnFocus: false,
+    },
+  );
 
-  const refetch = () => {
-    setUpdate((prev) => !prev);
+  return {
+    sorobanContext,
+    tokens,
+    tokenBalancesResponse: data,
+    isError: error,
+    isLoading,
+    refetch: mutate,
   };
-
-  useEffect(() => {
-    if (sorobanContext.activeChain && sorobanContext.address && tokens.length > 0) {
-      tokenBalances(sorobanContext.address, tokens, sorobanContext, true)
-        .then((resp) => {
-          setTokenBalancesResponse(resp);
-        })
-        .catch(() => setIsError(true))
-        .finally(() => setIsLoading(false));
-    }
-  }, [sorobanContext, tokens, update]);
-
-  return { sorobanContext, tokens, tokenBalancesResponse, isError, isLoading, refetch };
 };
 
 export default useGetMyBalances;

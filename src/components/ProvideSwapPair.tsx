@@ -1,16 +1,14 @@
-import CardActions from "@mui/material/CardActions";
-import { SorobanContextType } from "@soroban-react/core";
-import BigNumber from "bignumber.js";
-import { useMemo } from "react";
-import { SwapButton } from "../components/Buttons/SwapButton";
-import { getPriceImpact } from "../functions/fromExactInputGetExpectedOutput";
-import { formatTokenAmount } from "../helpers/format";
-import { useTokens } from "../hooks";
-import { useReservesBigNumber } from "../hooks/useReserves";
-import { useTokensFromPair } from "../hooks/useTokensFromPair";
-import { TokenType } from "../interfaces";
-
-
+import CardActions from '@mui/material/CardActions';
+import { SorobanContextType } from '@soroban-react/core';
+import BigNumber from 'bignumber.js';
+import { useMemo } from 'react';
+import { SwapButton } from '../components/Buttons/SwapButton';
+import { getPriceImpact } from '../functions/fromExactInputGetExpectedOutput';
+import { formatTokenAmount } from '../helpers/format';
+import { useTokens } from '../hooks';
+import { useReservesBigNumber } from '../hooks/useReserves';
+import { useTokensFromPair } from '../hooks/useTokensFromPair';
+import { TokenType } from '../interfaces';
 
 export function ProvideSwapPair({
   sorobanContext,
@@ -28,21 +26,21 @@ export function ProvideSwapPair({
   pairAddress: string;
   inputTokenAmount: number;
   outputTokenAmount: number;
-  setToken0: (token: TokenType|null) => void;
-    setToken1: (token: TokenType|null) => void;
-    token0: TokenType|null;
-    token1: TokenType|null;
-    inputToken: TokenType;
-    outputToken: TokenType;
+  setToken0: (token: TokenType | null) => void;
+  setToken1: (token: TokenType | null) => void;
+  token0: TokenType | null;
+  token1: TokenType | null;
+  inputToken: TokenType;
+  outputToken: TokenType;
 }) {
-  const tokens = useTokens(sorobanContext);
+  const { tokens } = useTokens();
   const tokensFromPair = useTokensFromPair(pairAddress, sorobanContext);
 
   const reserves = useReservesBigNumber(pairAddress, sorobanContext);
   useMemo(() => {
-    setToken0(tokens.find(token => token.address === tokensFromPair?.token0)??null);
-    setToken1(tokens.find(token => token.address === tokensFromPair?.token1)??null);
-  }, [setToken0, setToken1, tokensFromPair, tokens])
+    setToken0(tokens.find((token) => token.address === tokensFromPair?.token0) ?? null);
+    setToken1(tokens.find((token) => token.address === tokensFromPair?.token1) ?? null);
+  }, [setToken0, setToken1, tokensFromPair, tokens]);
 
   return (
     <div>
@@ -55,14 +53,25 @@ export function ProvideSwapPair({
 
       <p>- token0: {token0?.name}</p>
       <p>- token1: {token1?.name}</p>
-      <p>- token0 reserves {formatTokenAmount(reserves.reserve0)} {token0?.name}</p>
-      <p>- token1 reserves {formatTokenAmount(reserves.reserve1)} {token1?.name}</p>
-      <p>- Price Impact: {twoDecimalsPercentage(getPriceImpact(
-        pairAddress, 
-        BigNumber(inputTokenAmount).shiftedBy(7), 
-        token0?.address === inputToken.address?reserves.reserve0:reserves.reserve1,
-        token1?.address === outputToken?.address?reserves.reserve1:reserves.reserve0,
-        sorobanContext).toString())}%</p>
+      <p>
+        - token0 reserves {formatTokenAmount(reserves.reserve0)} {token0?.name}
+      </p>
+      <p>
+        - token1 reserves {formatTokenAmount(reserves.reserve1)} {token1?.name}
+      </p>
+      <p>
+        - Price Impact:{' '}
+        {twoDecimalsPercentage(
+          getPriceImpact(
+            pairAddress,
+            BigNumber(inputTokenAmount).shiftedBy(7),
+            token0?.address === inputToken.address ? reserves.reserve0 : reserves.reserve1,
+            token1?.address === outputToken?.address ? reserves.reserve1 : reserves.reserve0,
+            sorobanContext,
+          ).toString(),
+        )}
+        %
+      </p>
       <p>..</p>
       <p>### IF YOU SWAP:</p>
 
@@ -78,9 +87,9 @@ export function ProvideSwapPair({
       <CardActions>
         <SwapButton
           pairAddress={pairAddress}
-          maxTokenA={BigNumber("1.1").multipliedBy(BigNumber(inputTokenAmount)).shiftedBy(7)}
+          maxTokenA={BigNumber('1.1').multipliedBy(BigNumber(inputTokenAmount)).shiftedBy(7)}
           amountOut={BigNumber(outputTokenAmount).shiftedBy(7)}
-          isBuy={inputToken.address==token1?.address}
+          isBuy={inputToken.address == token1?.address}
           sorobanContext={sorobanContext}
         />
       </CardActions>
@@ -88,7 +97,6 @@ export function ProvideSwapPair({
   );
 
   // amountOut={slippage.multipliedBy(BigNumber(outputTokenAmount)).shiftedBy(7)}
-
 }
 
 function twoDecimalsPercentage(value: string) {

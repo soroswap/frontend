@@ -23,7 +23,8 @@ const isObject = (val: any) => typeof val === 'object' && val !== null && !Array
 
 export function useRouterCallback() {
   const sorobanContext = useSorobanReact();
-  const { router_address } = useRouterAddress();
+  const { router } = useRouterAddress();
+  const router_address = router?.router_address;
 
   return useCallback(
     async (method: RouterMethod, args?: SorobanClient.xdr.ScVal[], signAndSend?: boolean) => {

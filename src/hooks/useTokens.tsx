@@ -1,13 +1,14 @@
 import { SorobanContextType, useSorobanReact } from '@soroban-react/core';
 import { isAddress } from 'helpers/address';
 import { useEffect, useMemo, useState } from 'react';
-import useSWR from 'swr';
 import { TokenMapType, TokenType, tokensResponse } from '../interfaces';
-// TODO: verify type of fetcher args
-const fetcher = (url: string) => fetch(url).then((resp) => resp.json());
+import useSWRImmutable from 'swr/immutable';
+import { fetchTokens } from 'services/tokens';
 
-export const useTokens = (sorobanContext: SorobanContextType) => {
-  const { data } = useSWR(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/tokens`, fetcher);
+export const useTokens = () => {
+  const sorobanContext = useSorobanReact();
+
+  const { data, mutate, isLoading, error } = useSWRImmutable('tokens', fetchTokens);
 
   const [tokens, setTokens] = useState<TokenType[]>([]);
 
@@ -24,13 +25,13 @@ export const useTokens = (sorobanContext: SorobanContextType) => {
     }
   }, [data, sorobanContext?.activeChain?.name, tokens]);
 
-  return tokens;
+  return { tokens, mutate, isLoading, isError: error, data };
 };
 
 // reduce token array into a map
 function useTokensAsMap(): TokenMapType {
   const sorobanContext = useSorobanReact();
-  const tokens = useTokens(sorobanContext);
+  const { tokens } = useTokens();
 
   return useMemo(() => {
     // reduce to just tokens
