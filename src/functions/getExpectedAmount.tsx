@@ -69,19 +69,30 @@ export async function getExpectedAmountNew(
 ) {
   if (!currencyIn || !currencyOut) return BigNumber('0');
 
+  reserves.token0 == currencyIn.address
+  let reserveIn: BigNumber | undefined, reserveOut: BigNumber | undefined;
+  
+  if (reserves.token0 == currencyIn.address) {
+    reserveIn = reserves.reserve0;
+    reserveOut = reserves.reserve1;
+  } else {
+    reserveIn = reserves.reserve1;
+    reserveOut = reserves.reserve0;
+  }
+
   try {
     let expectedOutput;
     if (tradeType === TradeType.EXACT_INPUT) {
       expectedOutput = fromExactInputGetExpectedOutput(
         amountIn,
-        reserves.reserve0,
-        reserves.reserve1,
+        reserveIn,
+        reserveOut,
       );
     } else {
       expectedOutput = fromExactOutputGetExpectedInput(
         amountIn,
-        reserves.reserve0,
-        reserves.reserve1,
+        reserveIn,
+        reserveOut,
       );
     }
 
