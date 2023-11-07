@@ -19,6 +19,7 @@ import SwapDetailsDropdown from 'components/Swap/SwapDetailsDropdown';
 import SwapHeader from './SwapHeader';
 import swapReducer, { SwapState, initialState as initialSwapState } from 'state/swap/reducer';
 import useSwapMainButton from 'hooks/useSwapMainButton';
+import useGetReservesByPair from 'hooks/useGetReservesByPair';
 
 const SwapSection = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -73,6 +74,20 @@ function getIsValidSwapQuote(
   return Boolean(!swapInputError && trade && tradeState === TradeState.VALID);
 }
 
+interface SwapStateProps {
+  showConfirm: boolean;
+  tradeToConfirm?: InterfaceTrade;
+  swapError?: Error;
+  swapResult?: any;
+}
+
+const INITIAL_SWAP_STATE = {
+  showConfirm: false,
+  tradeToConfirm: undefined,
+  swapError: undefined,
+  swapResult: undefined,
+};
+
 export function SwapComponent({
   prefilledState = {},
   disableTokenInputs = false,
@@ -84,17 +99,8 @@ export function SwapComponent({
   const [txError, setTxError] = useState<boolean>(false);
 
   // modal and loading
-  const [{ showConfirm, tradeToConfirm, swapError, swapResult }, setSwapState] = useState<{
-    showConfirm: boolean;
-    tradeToConfirm?: InterfaceTrade;
-    swapError?: Error;
-    swapResult?: any;
-  }>({
-    showConfirm: false,
-    tradeToConfirm: undefined,
-    swapError: undefined,
-    swapResult: undefined,
-  });
+  const [{ showConfirm, tradeToConfirm, swapError, swapResult }, setSwapState] =
+    useState<SwapStateProps>(INITIAL_SWAP_STATE);
 
   const [state, dispatch] = useReducer(swapReducer, { ...initialSwapState, ...prefilledState });
   const { typedValue, recipient, independentField } = state;
@@ -221,6 +227,11 @@ export function SwapComponent({
     // allowance.state === AllowanceState.ALLOWED ? allowance.permitSignature : undefined
   );
 
+  const { refetchReserves } = useGetReservesByPair({
+    baseAddress: trade?.inputAmount?.currency?.address,
+    otherAddress: trade?.outputAmount?.currency?.address,
+  });
+
   const handleSwap = () => {
     if (!swapCallback) {
       return;
@@ -235,6 +246,7 @@ export function SwapComponent({
     }));
     swapCallback()
       .then((result) => {
+        refetchReserves();
         setSwapState((currentState) => ({
           ...currentState,
           swapError: undefined,

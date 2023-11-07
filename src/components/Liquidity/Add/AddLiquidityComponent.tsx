@@ -188,7 +188,6 @@ export default function AddLiquidityComponent() {
         setTxHash(result as unknown as string);
       })
       .catch((error) => {
-        console.log({ error });
         setAttemptingTxn(false);
         setTxError(true);
       });
