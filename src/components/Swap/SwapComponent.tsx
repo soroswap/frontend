@@ -317,6 +317,7 @@ export function SwapComponent({
                 independentField === Field.OUTPUT ? <span>From (at most)</span> : <span>From</span>
               }
               // disabled={disableTokenInputs}
+
               value={formattedAmounts[Field.INPUT]}
               showMaxButton={showMaxButton}
               onUserInput={handleTypeInput}
