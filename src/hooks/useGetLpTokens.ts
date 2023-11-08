@@ -6,7 +6,7 @@ const useGetLpTokens = () => {
   const sorobanContext = useSorobanReact();
 
   const { data, isLoading, error, mutate } = useSWRImmutable(
-    ['getLpTokens', sorobanContext],
+    ['lp-tokens', sorobanContext],
     ([key, sorobanContext]) => getLpTokens(sorobanContext),
   );
 

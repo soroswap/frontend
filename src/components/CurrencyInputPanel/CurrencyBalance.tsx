@@ -1,11 +1,10 @@
-import { styled, useTheme } from "@mui/material"
-import { useSorobanReact } from "@soroban-react/core"
-import { RowFixed } from "components/Row"
-import { BodySmall } from "components/Text"
-import { formatTokenAmount } from "helpers/format"
-import { tokenBalance } from "hooks"
-import { TokenType } from "interfaces/tokens"
-import { useEffect, useState } from "react"
+import { styled, useTheme } from '@mui/material';
+import { RowFixed } from 'components/Row';
+import { BodySmall } from 'components/Text';
+
+import useGetMyBalances from 'hooks/useGetMyBalances';
+import { TokenType } from 'interfaces/tokens';
+import { useEffect, useState } from 'react';
 
 const StyledBalanceMax = styled('button')<{ disabled?: boolean }>`
   background-color: transparent;
@@ -25,15 +24,15 @@ const StyledBalanceMax = styled('button')<{ disabled?: boolean }>`
   :focus {
     outline: none;
   }
-`
+`;
 
 interface CurrencyBalanceProps {
-    address: string,
-    currency: TokenType
-    onMax: (maxValue: number) => void
-    hideBalance: any
-    showMaxButton: any
-  }
+  address: string;
+  currency: TokenType;
+  onMax: (maxValue: number) => void;
+  hideBalance: any;
+  showMaxButton: any;
+}
 
 export default function CurrencyBalance({
   currency,
@@ -42,33 +41,32 @@ export default function CurrencyBalance({
   hideBalance,
   showMaxButton,
 }: CurrencyBalanceProps) {
-  const sorobanContext = useSorobanReact();  
   const [balance, setBalance] = useState<string>();
 
-  useEffect(() => {
-    if (sorobanContext.activeChain && sorobanContext.address) {
-      tokenBalance(currency.address, address, sorobanContext).then((resp) => {
-        setBalance(formatTokenAmount(resp));
-      });
-    }
-  }, [address, currency.address, sorobanContext]);
+  const { tokenBalancesResponse } = useGetMyBalances();
 
-  const theme = useTheme()
-  
+  useEffect(() => {
+    if (!tokenBalancesResponse) return;
+
+    const token = tokenBalancesResponse.balances.find(
+      (token) => token.address === currency.address,
+    );
+
+    if (token) {
+      setBalance(token.balance as string);
+    }
+  }, [tokenBalancesResponse, currency]);
+
+  const theme = useTheme();
+
   return (
-      <RowFixed style={{ height: '17px' }}>
-        <BodySmall
-          color={theme.palette.secondary.main}
-        >
-          {!hideBalance && currency && balance ? (
-            `Balance: ${balance}`
-          ) : null}
-        </BodySmall>
-        {showMaxButton && Number(balance) > 0 ? (
-          <StyledBalanceMax onClick={() => onMax(parseInt(balance ?? ""))}>
-            Max
-          </StyledBalanceMax>
-        ) : null}
-      </RowFixed>
-    )
-  }
+    <RowFixed style={{ height: '17px' }}>
+      <BodySmall color={theme.palette.secondary.main}>
+        {!hideBalance && currency && balance ? `Balance: ${balance}` : null}
+      </BodySmall>
+      {showMaxButton && Number(balance) > 0 ? (
+        <StyledBalanceMax onClick={() => onMax(parseInt(balance ?? ''))}>Max</StyledBalanceMax>
+      ) : null}
+    </RowFixed>
+  );
+}

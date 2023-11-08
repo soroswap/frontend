@@ -17,9 +17,8 @@ import ConfirmSwapModal from 'components/Swap/ConfirmSwapModal';
 import SwapCurrencyInputPanel from '../CurrencyInputPanel/SwapCurrencyInputPanel';
 import SwapDetailsDropdown from 'components/Swap/SwapDetailsDropdown';
 import SwapHeader from './SwapHeader';
-import swapReducer, { SwapState, initialState as initialSwapState } from 'state/swap/reducer';
+import swapReducer, { initialState as initialSwapState } from 'state/swap/reducer';
 import useSwapMainButton from 'hooks/useSwapMainButton';
-import useGetReservesByPair from 'hooks/useGetReservesByPair';
 import { useRouter } from 'next/router';
 
 const SwapSection = styled('div')(({ theme }) => ({
@@ -242,11 +241,6 @@ export function SwapComponent({
     // allowance.state === AllowanceState.ALLOWED ? allowance.permitSignature : undefined
   );
 
-  const { refetchReserves } = useGetReservesByPair({
-    baseAddress: trade?.inputAmount?.currency?.address,
-    otherAddress: trade?.outputAmount?.currency?.address,
-  });
-
   const handleSwap = () => {
     if (!swapCallback) {
       return;
@@ -261,7 +255,6 @@ export function SwapComponent({
     }));
     swapCallback()
       .then((result) => {
-        refetchReserves();
         setSwapState((currentState) => ({
           ...currentState,
           swapError: undefined,

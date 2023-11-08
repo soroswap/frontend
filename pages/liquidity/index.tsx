@@ -159,7 +159,9 @@ export default function LiquidityPage() {
             + Add Liquidity
           </ButtonPrimary>
         ) : (
-          <ButtonLight onClick={() => setConnectWalletModalOpen(true)}>Connect Wallet</ButtonLight>
+          <ButtonPrimary onClick={() => setConnectWalletModalOpen(true)}>
+            Connect Wallet
+          </ButtonPrimary>
         )}
       </PageWrapper>
       <LiquidityPoolInfoModal

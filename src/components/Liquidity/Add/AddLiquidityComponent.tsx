@@ -29,12 +29,7 @@ import AddModalHeader from './AddModalHeader';
 import { useUserSlippageToleranceWithDefault } from 'state/user/hooks';
 import { DEFAULT_SLIPPAGE_INPUT_VALUE } from 'components/Settings/MaxSlippageSettings';
 import useLiquidityValidations from 'hooks/useLiquidityValidations';
-import getLpTokensAmount from 'functions/getLpTokensAmount';
-import { reservesBNWithTokens } from 'hooks/useReserves';
-import { getTotalShares } from 'functions/LiquidityPools';
-import useCalculateLp from 'hooks/useCalculateLp';
 import useCalculateLpToReceive from 'hooks/useCalculateLp';
-import useGetReservesByPair from 'hooks/useGetReservesByPair';
 
 export const PageWrapper = styled('main')`
   position: relative;
@@ -119,11 +114,6 @@ export default function AddLiquidityComponent() {
 
   const routerCallback = useRouterCallback();
 
-  const { refetchReserves } = useGetReservesByPair({
-    baseAddress: baseCurrency?.address,
-    otherAddress: currencyB?.address,
-  });
-
   const provideLiquidity = useCallback(() => {
     setAttemptingTxn(true);
     // TODO: check that amount0 corresponds to token0?
@@ -190,7 +180,6 @@ export default function AddLiquidityComponent() {
 
     routerCallback(RouterMethod.ADD_LIQUIDITY, args, true)
       .then((result) => {
-        refetchReserves();
         setAttemptingTxn(false);
         setTxHash(result as unknown as string);
       })
@@ -207,7 +196,6 @@ export default function AddLiquidityComponent() {
     formattedAmounts,
     dependentField,
     userSlippage,
-    refetchReserves,
   ]);
 
   const handleCurrencyASelect = useCallback(
@@ -252,7 +240,12 @@ export default function AddLiquidityComponent() {
     const { amount, percentage } = await getLpAmountAndPercentage();
 
     setAmountOfLpTokensToReceive(`${amount}`);
-    setLpPercentage(`${percentage.toFixed(2)}%`);
+
+    if (percentage < 0.001) {
+      setLpPercentage('<0.001%');
+    } else {
+      setLpPercentage(`${percentage.toFixed(3)}%`);
+    }
 
     setShowConfirm(true);
   };
