@@ -35,6 +35,12 @@ export function useRouterCallback() {
 
   return useCallback(
     async (method: RouterMethod, args?: SorobanClient.xdr.ScVal[], signAndSend?: boolean) => {
+      console.log("🚀 ~ file: useRouterCallback.tsx:34 ~ contractAddress:", router_address)
+      console.log("🚀 ~ file: useRouterCallback.tsx:36 ~ method:", method)
+      console.log("🚀 ~ file: useRouterCallback.tsx:38 ~ args:", args)
+      console.log("🚀 ~ file: useRouterCallback.tsx:40 ~ sorobanContext:", sorobanContext)
+      console.log("🚀 ~ file: useRouterCallback.tsx:42 ~ signAndSend:", signAndSend)
+      
       let result = await contractInvoke({
         contractAddress: router_address as string,
         method: method,
