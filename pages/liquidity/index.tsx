@@ -1,6 +1,6 @@
 import { Box, CircularProgress, styled, useMediaQuery, useTheme } from '@mui/material';
 import { useSorobanReact } from '@soroban-react/core';
-import { ButtonPrimary } from 'components/Buttons/Button';
+import { ButtonLight, ButtonPrimary } from 'components/Buttons/Button';
 import { AutoColumn } from 'components/Column';
 import LiquidityPoolInfoModal from 'components/Liquidity/LiquidityPoolInfoModal';
 import { LPPercentage } from 'components/Liquidity/styleds';
@@ -11,9 +11,10 @@ import SettingsTab from 'components/Settings';
 import { BodySmall, SubHeader } from 'components/Text';
 import { LpTokensObj } from 'functions/getLpTokens';
 import { useRouter } from 'next/router';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import SEO from '../../src/components/SEO';
 import useGetLpTokens from 'hooks/useGetLpTokens';
+import { AppContext } from 'contexts';
 
 const PageWrapper = styled(AutoColumn)`
   position: relative;
@@ -82,6 +83,8 @@ export default function LiquidityPage() {
   const router = useRouter();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const { ConnectWalletModal } = useContext(AppContext);
+  const { isConnectWalletModalOpen, setConnectWalletModalOpen } = ConnectWalletModal;
 
   const v2IsLoading = false;
   const noLiquidity = false;
@@ -151,7 +154,13 @@ export default function LiquidityPage() {
             </BodySmall>
           </LPTokensContainer>
         )}
-        <ButtonPrimary onClick={() => router.push('/liquidity/add')}>+ Add Liquidity</ButtonPrimary>
+        {address ? (
+          <ButtonPrimary onClick={() => router.push('/liquidity/add')}>
+            + Add Liquidity
+          </ButtonPrimary>
+        ) : (
+          <ButtonLight onClick={() => setConnectWalletModalOpen(true)}>Connect Wallet</ButtonLight>
+        )}
       </PageWrapper>
       <LiquidityPoolInfoModal
         selectedLP={selectedLP}

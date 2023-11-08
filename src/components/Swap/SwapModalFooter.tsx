@@ -188,7 +188,7 @@ export default function SwapModalFooter({
                 {trade.tradeType === TradeType.EXACT_INPUT ? (
                   <>Receive at least</>
                 ) : (
-                  <>Maximum sent</>
+                  <>Pay at Most</>
                 )}
               </Label>
             </MouseoverTooltip>

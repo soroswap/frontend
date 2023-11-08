@@ -36,9 +36,7 @@ export function useRouterCallback() {
         signAndSend: signAndSend,
       });
 
-      sorobanContext.connect();
-
-      const response = result as SorobanClient.SorobanRpc.GetSuccessfulTransactionResponse;
+      const response = result as SorobanClient.SorobanRpc.GetTransactionResponse;
 
       if (
         isObject(response) &&
