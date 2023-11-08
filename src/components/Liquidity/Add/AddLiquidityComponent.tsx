@@ -95,7 +95,7 @@ export default function AddLiquidityComponent() {
         : formatTokenAmount(parsedAmounts[dependentField]?.value ?? ''),
     };
   }, [dependentField, independentField, noLiquidity, otherTypedValue, parsedAmounts, typedValue]);
- 
+
   // // Modal and loading
   const [showConfirm, setShowConfirm] = useState<boolean>(false);
   const [attemptingTxn, setAttemptingTxn] = useState<boolean>(false); // clicked confirm
@@ -114,14 +114,7 @@ export default function AddLiquidityComponent() {
 
   const routerCallback = useRouterCallback();
 
-  const { refetchReserves } = useGetReservesByPair({
-    baseAddress: baseCurrency?.address,
-    otherAddress: currencyB?.address,
-  });
-  
-  
   const provideLiquidity = useCallback(() => {
-    
     setAttemptingTxn(true);
     // TODO: check that amount0 corresponds to token0?
     //TODO: Check all of this, is working weird but using the router, withdraw is not working
@@ -145,16 +138,16 @@ export default function AddLiquidityComponent() {
     /**
      * baseCurrency is allways the currency at the top
      * currencyB is allways the currency at bottom
-     * 
+     *
      * independentField
      *  is the currency that the user is typing
      *  can have CURRENCY_A or CURRENCY_B
-     * 
+     *
      * dependentField
      *  is the currency that the user is NOT typing (depend on the ohter)
      *  can have CURRENCY_A or CURRENCY_B
      */
-    
+
     // If ind == A means that the user is typing the currency on top
     if (independentField === Field.CURRENCY_A) {
       desired0BN = new BigNumber(formattedAmounts[independentField]).shiftedBy(7);
@@ -170,11 +163,17 @@ export default function AddLiquidityComponent() {
     const desiredBScVal = bigNumberToI128(desired1BN);
 
     // Here we are implementint the slippage: which will be in the "0.5" format when is 0.5%
-    const factor = (BigNumber(100).minus(userSlippage)).dividedBy(100);
+    const factor = BigNumber(100).minus(userSlippage).dividedBy(100);
     const min0BN = desired0BN.multipliedBy(factor).decimalPlaces(0); // we dont want to have decimals after applying the factor
-    console.log("🚀 ~ file: AddLiquidityComponent.tsx:180 ~ provideLiquidity ~ min0BN.toString():", min0BN.toString())
+    console.log(
+      '🚀 ~ file: AddLiquidityComponent.tsx:180 ~ provideLiquidity ~ min0BN.toString():',
+      min0BN.toString(),
+    );
     const min1BN = desired1BN.multipliedBy(factor).decimalPlaces(0);
-    console.log("🚀 ~ file: AddLiquidityComponent.tsx:182 ~ provideLiquidity ~ min1BN.toString():", min1BN.toString())
+    console.log(
+      '🚀 ~ file: AddLiquidityComponent.tsx:182 ~ provideLiquidity ~ min1BN.toString():',
+      min1BN.toString(),
+    );
 
     const minAScVal = bigNumberToI128(min0BN);
     const minBScVal = bigNumberToI128(min1BN);
