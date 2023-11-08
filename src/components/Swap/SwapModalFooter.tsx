@@ -16,6 +16,7 @@ import { Label } from './SwapModalHeaderAmount';
 import { SwapCallbackError, SwapShowAcceptChanges } from './styleds';
 import CurrencyLogo from 'components/Logo/CurrencyLogo';
 import useGetReservesByPair from 'hooks/useGetReservesByPair';
+import { getSwapAmounts } from 'hooks/useSwapCallback';
 
 const DetailsContainer = styled(Column)`
   padding: 0 8px;
@@ -115,6 +116,22 @@ export default function SwapModalFooter({
     reserves,
   ]);
 
+  const getSwapValues = () => {
+    if (!trade || !trade.tradeType) return { formattedAmount0: '0', formattedAmount1: '0' };
+
+    const { amount0, amount1 } = getSwapAmounts({
+      tradeType: trade.tradeType,
+      inputAmount: trade.inputAmount?.value as string,
+      outputAmount: trade.outputAmount?.value as string,
+      allowedSlippage: allowedSlippage,
+    });
+
+    const formattedAmount0 = formatTokenAmount(amount0);
+    const formattedAmount1 = formatTokenAmount(amount1);
+
+    return { formattedAmount0, formattedAmount1 };
+  };
+
   return (
     <>
       <DetailsContainer gap="md">
@@ -169,15 +186,14 @@ export default function SwapModalFooter({
             >
               <Label cursor="help">
                 {trade.tradeType === TradeType.EXACT_INPUT ? (
-                  <>Minimum received</>
+                  <>Receive at least</>
                 ) : (
                   <>Maximum sent</>
                 )}
               </Label>
             </MouseoverTooltip>
             <DetailRowValue style={{ display: 'flex', alignItems: 'center' }} component="div">
-              {formatTokenAmount(trade?.outputAmount?.value ?? '0')}{' '}
-              {trade?.outputAmount?.currency.symbol}
+              {getSwapValues().formattedAmount1} {trade?.outputAmount?.currency.symbol}
               <CurrencyLogo
                 currency={trade?.outputAmount?.currency}
                 size="16px"

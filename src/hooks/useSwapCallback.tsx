@@ -15,45 +15,15 @@ import { DEFAULT_SLIPPAGE_INPUT_VALUE } from 'components/Settings/MaxSlippageSet
 
 // Returns a function that will execute a swap, if the parameters are all valid
 // and the user has approved the slippage adjusted input amount for the trade
-export function useSwapCallback(
-  trade: InterfaceTrade | undefined, // trade to execute, required
-  // fiatValues: { amountIn?: number; amountOut?: number }, // usd values for amount in and out, logged for analytics
-  // allowedSlippage: Percent, // in bips
-  // permitSignature: PermitSignature | undefined
-) {
-  const { SnackbarContext } = useContext(AppContext);
-  const sorobanContext = useSorobanReact();
-  const { activeChain, address } = sorobanContext;
-  const routerCallback = useRouterCallback();
-  const allowedSlippage = useUserSlippageToleranceWithDefault(DEFAULT_SLIPPAGE_INPUT_VALUE);
 
-  const doSwap = async () => {
-    if (!trade) throw new Error('missing trade');
-    if (!address || !activeChain) throw new Error('wallet must be connected to swap');
+interface GetSwapAmountsProps {
+  tradeType: TradeType;
+  inputAmount: string;
+  outputAmount: string;
+  allowedSlippage: number;
+}
 
-    //Checks which method in the router to use
-    const routerMethod =
-      trade.tradeType == TradeType.EXACT_INPUT
-        ? RouterMethod.SWAP_EXACT_IN
-        : RouterMethod.SWAP_EXACT_OUT;
-
-    const factorLess = BigNumber(100).minus(allowedSlippage).dividedBy(100);
-    const factorMore = BigNumber(100).plus(allowedSlippage).dividedBy(100);
-
-    const amount0 =
-      routerMethod === RouterMethod.SWAP_EXACT_IN
-        ? BigNumber(trade.inputAmount?.value as string)
-        : BigNumber(trade.outputAmount?.value as string);
-    const amount1 =
-      routerMethod === RouterMethod.SWAP_EXACT_IN
-        ? BigNumber(trade.outputAmount?.value as string)
-            .multipliedBy(factorLess)
-            .decimalPlaces(0)
-        : BigNumber(trade.inputAmount?.value as string)
-            .multipliedBy(factorMore)
-            .decimalPlaces(0);
-
-    /**
+/**
      * If SWAP_EXACT_IN
      * amount0 becomes the amount_in (hence trade.inputAmount
      * amount1 becomes the amount_out_min (hence trade.outputAmount)
@@ -70,7 +40,7 @@ export function useSwapCallback(
 
      */
 
-    /**
+/**
      * If NOT SWAP_EXACT_IN (nad hence SWAP_EXACT_OUT)
      * amount0 becomes the amount_out (trade.outputAmount)
      * amount1 becomes the amount_in_max (trade.inputAmount)
@@ -84,6 +54,55 @@ export function useSwapCallback(
         deadline: u64,
     ) -> Vec<i128>;
      */
+
+export const getSwapAmounts = ({
+  tradeType,
+  inputAmount,
+  outputAmount,
+  allowedSlippage = 0.5,
+}: GetSwapAmountsProps) => {
+  const routerMethod =
+    tradeType == TradeType.EXACT_INPUT ? RouterMethod.SWAP_EXACT_IN : RouterMethod.SWAP_EXACT_OUT;
+
+  const factorLess = BigNumber(100).minus(allowedSlippage).dividedBy(100);
+  const factorMore = BigNumber(100).plus(allowedSlippage).dividedBy(100);
+
+  //amount_in , amount_out
+  const amount0 =
+    routerMethod === RouterMethod.SWAP_EXACT_IN ? BigNumber(inputAmount) : BigNumber(outputAmount);
+
+  //amount_out_min , amount_in_max
+  const amount1 =
+    routerMethod === RouterMethod.SWAP_EXACT_IN
+      ? BigNumber(outputAmount).multipliedBy(factorLess).decimalPlaces(0)
+      : BigNumber(inputAmount).multipliedBy(factorMore).decimalPlaces(0);
+
+  return { amount0, amount1, routerMethod };
+};
+
+export function useSwapCallback(
+  trade: InterfaceTrade | undefined, // trade to execute, required
+  // fiatValues: { amountIn?: number; amountOut?: number }, // usd values for amount in and out, logged for analytics
+  // allowedSlippage: Percent, // in bips
+  // permitSignature: PermitSignature | undefined
+) {
+  const { SnackbarContext } = useContext(AppContext);
+  const sorobanContext = useSorobanReact();
+  const { activeChain, address } = sorobanContext;
+  const routerCallback = useRouterCallback();
+  const allowedSlippage = useUserSlippageToleranceWithDefault(DEFAULT_SLIPPAGE_INPUT_VALUE);
+
+  const doSwap = async () => {
+    if (!trade) throw new Error('missing trade');
+    if (!address || !activeChain) throw new Error('wallet must be connected to swap');
+    if (!trade.tradeType) throw new Error('tradeType must be defined');
+
+    const { amount0, amount1, routerMethod } = getSwapAmounts({
+      tradeType: trade.tradeType,
+      inputAmount: trade.inputAmount?.value as string,
+      outputAmount: trade.outputAmount?.value as string,
+      allowedSlippage: allowedSlippage,
+    });
 
     const amount0ScVal = bigNumberToI128(amount0);
     const amount1ScVal = bigNumberToI128(amount1);

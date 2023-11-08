@@ -317,7 +317,7 @@ export function SwapComponent({
             onAcceptChanges={() => null} //handleAcceptChanges}
             onCurrencySelection={onCurrencySelection}
             swapResult={swapResult}
-            allowedSlippage={() => null} //allowedSlippage}
+            allowedSlippage={allowedSlippage} //allowedSlippage}
             onConfirm={handleSwap}
             allowance={() => null} //allowance}
             swapError={swapError}

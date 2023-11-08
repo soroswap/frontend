@@ -53,14 +53,17 @@ export function useMintTestToken() {
       for (const token of tokens) {
         try {
           onTokenMintedStart?.(token);
-          result = await contractInvoke({
+          result = (await contractInvoke({
             contractAddress: token.address,
             method: 'mint',
             args: [new SorobanClient.Address(account).toScVal(), amountScVal],
             sorobanContext,
             signAndSend: true,
             secretKey: admin_secret,
-          });
+          })) as SorobanClient.SorobanRpc.GetTransactionResponse;
+
+          if (result.status !== SorobanClient.SorobanRpc.GetTransactionStatus.SUCCESS) throw result;
+
           totalMinted++;
           onTokenMintedSuccess?.(token);
         } catch (error) {

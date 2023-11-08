@@ -236,7 +236,6 @@ export default function ConfirmSwapModal({
     onCurrencySelection,
     allowance,
   });
-
   const swapFailed = Boolean(swapError); // && !didUserReject(swapError)
 
   // const showAcceptChanges = Boolean(

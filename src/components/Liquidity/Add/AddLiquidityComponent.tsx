@@ -34,6 +34,7 @@ import { reservesBNWithTokens } from 'hooks/useReserves';
 import { getTotalShares } from 'functions/LiquidityPools';
 import useCalculateLp from 'hooks/useCalculateLp';
 import useCalculateLpToReceive from 'hooks/useCalculateLp';
+import useGetReservesByPair from 'hooks/useGetReservesByPair';
 
 export const PageWrapper = styled('main')`
   position: relative;
@@ -118,6 +119,11 @@ export default function AddLiquidityComponent() {
 
   const routerCallback = useRouterCallback();
 
+  const { refetchReserves } = useGetReservesByPair({
+    baseAddress: baseCurrency?.address,
+    otherAddress: currencyB?.address,
+  });
+
   const provideLiquidity = useCallback(() => {
     setAttemptingTxn(true);
     // TODO: check that amount0 corresponds to token0?
@@ -184,6 +190,7 @@ export default function AddLiquidityComponent() {
 
     routerCallback(RouterMethod.ADD_LIQUIDITY, args, true)
       .then((result) => {
+        refetchReserves();
         setAttemptingTxn(false);
         setTxHash(result as unknown as string);
       })
@@ -200,6 +207,7 @@ export default function AddLiquidityComponent() {
     formattedAmounts,
     dependentField,
     userSlippage,
+    refetchReserves,
   ]);
 
   const handleCurrencyASelect = useCallback(

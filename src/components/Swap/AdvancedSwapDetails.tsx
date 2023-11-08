@@ -158,10 +158,7 @@ export function AdvancedSwapDetails({
                 price changes while your transaction is pending.
               `}
           >
-            <BodySmall color="textSecondary">
-              {/* TODO: Get slippage and do (outputAmount * (1-slippage%)) */}
-              Expected output
-            </BodySmall>
+            <BodySmall color="textSecondary">Expected output</BodySmall>
           </MouseoverTooltip>
         </RowFixed>
         <TextWithLoadingPlaceholder syncing={syncing} width={65}>
