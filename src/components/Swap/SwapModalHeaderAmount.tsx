@@ -1,8 +1,8 @@
-import { styled, useTheme } from '@mui/material';
+import { Box, styled, useMediaQuery, useTheme } from '@mui/material';
 import Column from 'components/Column';
 import CurrencyLogo from 'components/Logo/CurrencyLogo';
 import Row from 'components/Row';
-import { BodySecondary, BodySmall, ResponsiveMediumText } from 'components/Text';
+import { BodySecondary, BodySmall, LabelSmall, ResponsiveMediumText } from 'components/Text';
 import { MouseoverTooltip } from 'components/Tooltip';
 import { formatTokenAmount } from 'helpers/format';
 import { TokenType } from 'interfaces';
@@ -62,20 +62,30 @@ export function SwapModalHeaderAmount({
   //   formattedAmount = ""//formatCurrencyAmount(amount, NumberType.SwapTradeAmount)
   // }
 
+  const isSmallDevice = useMediaQuery('(max-width: 400px)');
+
   return (
-    <CustomRow align="end" justify="space-between">
+    <CustomRow
+      align={isSmallDevice ? 'start' : 'end'}
+      justify="space-between"
+      flexDirection={isSmallDevice ? 'column' : 'row'}
+      gap="8px"
+    >
       <Column gap="4px" alignItems="flex-start">
         <BodySecondary component="div">
           <MouseoverTooltip title={tooltipText} disableInteractive={!tooltipText}>
             <Label cursor="help">{label}</Label>
           </MouseoverTooltip>
         </BodySecondary>
-        <CurrencyWrapper>
-          <CurrencyLogo currency={currency} size="24px" />
-          {currency?.symbol}
-        </CurrencyWrapper>
+        <Box alignItems="start" display="flex" flexDirection="column">
+          <CurrencyWrapper>
+            <CurrencyLogo currency={currency} size="24px" />
+            {currency?.symbol}
+          </CurrencyWrapper>
+          <Label>{currency?.name}</Label>
+        </Box>
       </Column>
-      <Column gap="4px" alignItems="flex-end">
+      <Column gap="4px" alignItems={isSmallDevice ? 'flex-start' : 'flex-end'}>
         <ResponsiveMediumText>{formattedAmount}</ResponsiveMediumText>
         {usdAmount !== undefined && (
           <BodySmall color={theme.palette.custom.textTertiary}>{usdAmount}</BodySmall>

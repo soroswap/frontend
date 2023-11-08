@@ -31,7 +31,11 @@ export function TradeSummary({
   return (
     <Column>
       <CustomRowTop>
-        <CurrencyLogo currency={trade?.inputAmount?.currency} size="16px" />
+        <CurrencyLogo
+          currency={trade?.inputAmount?.currency}
+          size="16px"
+          style={{ marginRight: '6px' }}
+        />
         <LabelSmall color="textPrimary">
           {`${formatTokenAmount(trade?.inputAmount?.value ?? '0')} ${trade?.inputAmount?.currency
             .symbol}`}
@@ -44,7 +48,11 @@ export function TradeSummary({
         </ArrowContainer>
       </ArrowWrapper>
       <CustomRowBottom>
-        <CurrencyLogo currency={trade?.outputAmount?.currency} size="16px" />
+        <CurrencyLogo
+          currency={trade?.outputAmount?.currency}
+          size="16px"
+          style={{ marginRight: '6px' }}
+        />
         <LabelSmall color="textPrimary">
           {`${formatTokenAmount(trade?.outputAmount?.value ?? '0')} ${trade?.outputAmount?.currency
             .symbol}`}{' '}
