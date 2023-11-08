@@ -1,4 +1,4 @@
-import { Typography, styled, useTheme } from '@mui/material';
+import { Box, CircularProgress, Typography, styled, useTheme } from '@mui/material';
 import Column from '../Column';
 import Row, { RowBetween } from '../Row';
 import { SubHeader } from 'components/Text';
@@ -243,6 +243,10 @@ export function CurrencySearch({
             )}
           </AutoSizer>
         </div>
+      ) : isLoading ? (
+        <Box justifyContent="center" display="flex" padding="20px">
+          <CircularProgress size="16px" />
+        </Box>
       ) : (
         <Column style={{ padding: '20px', height: '100%' }}>
           <Typography color={theme.palette.secondary.main} textAlign="center" mb="20px">

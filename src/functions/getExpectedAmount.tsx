@@ -69,9 +69,9 @@ export async function getExpectedAmountNew(
 ) {
   if (!currencyIn || !currencyOut) return BigNumber('0');
 
-  reserves.token0 == currencyIn.address
+  reserves.token0 == currencyIn.address;
   let reserveIn: BigNumber | undefined, reserveOut: BigNumber | undefined;
-  
+
   if (reserves.token0 == currencyIn.address) {
     reserveIn = reserves.reserve0;
     reserveOut = reserves.reserve1;
@@ -87,13 +87,10 @@ export async function getExpectedAmountNew(
         amountIn,
         reserveIn,
         reserveOut,
+        currencyIn.decimals ?? 7,
       );
     } else {
-      expectedOutput = fromExactOutputGetExpectedInput(
-        amountIn,
-        reserveIn,
-        reserveOut,
-      );
+      expectedOutput = fromExactOutputGetExpectedInput(amountIn, reserveIn, reserveOut);
     }
 
     return expectedOutput;

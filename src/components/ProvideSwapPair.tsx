@@ -3,7 +3,6 @@ import { SorobanContextType } from '@soroban-react/core';
 import BigNumber from 'bignumber.js';
 import { useMemo } from 'react';
 import { SwapButton } from '../components/Buttons/SwapButton';
-import { getPriceImpact } from '../functions/fromExactInputGetExpectedOutput';
 import { formatTokenAmount } from '../helpers/format';
 import { useTokens } from '../hooks';
 import { useReservesBigNumber } from '../hooks/useReserves';
@@ -59,19 +58,7 @@ export function ProvideSwapPair({
       <p>
         - token1 reserves {formatTokenAmount(reserves.reserve1)} {token1?.name}
       </p>
-      <p>
-        - Price Impact:{' '}
-        {twoDecimalsPercentage(
-          getPriceImpact(
-            pairAddress,
-            BigNumber(inputTokenAmount).shiftedBy(7),
-            token0?.address === inputToken.address ? reserves.reserve0 : reserves.reserve1,
-            token1?.address === outputToken?.address ? reserves.reserve1 : reserves.reserve0,
-            sorobanContext,
-          ).toString(),
-        )}
-        %
-      </p>
+      <p>- Price Impact: %</p>
       <p>..</p>
       <p>### IF YOU SWAP:</p>
 

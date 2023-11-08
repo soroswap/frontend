@@ -6,8 +6,8 @@ import Column from 'components/Column';
 import Row, { AutoRow, RowBetween, RowFixed } from 'components/Row';
 import { BodySmall, HeadlineSmall, SubHeaderSmall } from 'components/Text';
 import { MouseoverTooltip } from 'components/Tooltip';
-import { getExpectedAmount } from 'functions/getExpectedAmount';
-import { getPriceImpactNew } from 'functions/getPriceImpact';
+import { getExpectedAmount, getExpectedAmountNew } from 'functions/getExpectedAmount';
+import { getPriceImpactNew, getPriceImpactNew2 } from 'functions/getPriceImpact';
 import { formatTokenAmount, twoDecimalsPercentage } from 'helpers/format';
 import { ReactNode, useEffect, useMemo, useState } from 'react';
 import { AlertTriangle } from 'react-feather';
@@ -15,6 +15,7 @@ import { InterfaceTrade, TradeType } from 'state/routing/types';
 import { Label } from './SwapModalHeaderAmount';
 import { SwapCallbackError, SwapShowAcceptChanges } from './styleds';
 import CurrencyLogo from 'components/Logo/CurrencyLogo';
+import useGetReservesByPair from 'hooks/useGetReservesByPair';
 
 const DetailsContainer = styled(Column)`
   padding: 0 8px;
@@ -72,37 +73,46 @@ export default function SwapModalFooter({
   const label = `${trade?.inputAmount?.currency.symbol}`;
   const labelInverted = `${trade?.outputAmount?.currency.symbol}`;
 
+  const { reserves } = useGetReservesByPair({
+    baseAddress: trade?.inputAmount?.currency?.address,
+    otherAddress: trade?.outputAmount?.currency.address,
+  });
+
   const [expectedAmountOfOne, setExpectedAmountOfOne] = useState<string | number>();
 
   useEffect(() => {
-    getExpectedAmount(
+    if (!reserves) return;
+
+    getExpectedAmountNew(
       trade?.inputAmount?.currency,
       trade?.outputAmount?.currency,
       BigNumber(1).shiftedBy(7),
-      sorobanContext,
+      reserves,
     ).then((resp) => {
       setExpectedAmountOfOne(formatTokenAmount(resp));
     });
-  }, [sorobanContext, trade?.inputAmount?.currency, trade?.outputAmount?.currency]);
+  }, [reserves, trade?.inputAmount?.currency, trade?.outputAmount?.currency]);
 
   const [priceImpact, setPriceImpact] = useState<number>(0);
 
   useEffect(() => {
-    getPriceImpactNew(
+    if (!reserves) return;
+
+    getPriceImpactNew2(
       trade?.inputAmount?.currency,
       trade?.outputAmount?.currency,
       BigNumber(trade?.inputAmount?.value ?? '0'),
-      sorobanContext,
+      reserves,
       trade.tradeType,
     ).then((resp) => {
       setPriceImpact(twoDecimalsPercentage(resp.toString()));
     });
   }, [
-    sorobanContext,
     trade?.inputAmount?.currency,
     trade?.outputAmount?.currency,
     trade?.inputAmount?.value,
     trade.tradeType,
+    reserves,
   ]);
 
   return (

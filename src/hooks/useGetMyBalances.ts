@@ -22,14 +22,11 @@ const useGetMyBalances = () => {
   const sorobanContext = useSorobanReact();
 
   const { address } = sorobanContext;
-  const { tokens } = useTokens();
+  const { tokens, isLoading: isLoadingTokens } = useTokens();
 
   const { data, isLoading, mutate, error } = useSWRImmutable(
     ['balance', address, tokens, sorobanContext],
     ([key, address, tokens, sorobanContext]) => fetchBalances({ address, tokens, sorobanContext }),
-    {
-      revalidateOnFocus: false,
-    },
   );
 
   return {
@@ -37,7 +34,7 @@ const useGetMyBalances = () => {
     tokens,
     tokenBalancesResponse: data,
     isError: error,
-    isLoading,
+    isLoading: isLoading || isLoadingTokens,
     refetch: mutate,
   };
 };
