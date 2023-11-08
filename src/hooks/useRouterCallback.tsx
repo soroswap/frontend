@@ -1,4 +1,4 @@
-import { contractInvoke } from '@soroban-react/contracts';
+import { TxResponse, contractInvoke } from '@soroban-react/contracts';
 import { useSorobanReact } from '@soroban-react/core';
 import { useCallback } from 'react';
 import * as SorobanClient from 'soroban-client';
@@ -35,27 +35,25 @@ export function useRouterCallback() {
 
   return useCallback(
     async (method: RouterMethod, args?: SorobanClient.xdr.ScVal[], signAndSend?: boolean) => {
-      console.log("🚀 ~ file: useRouterCallback.tsx:34 ~ contractAddress:", router_address)
-      console.log("🚀 ~ file: useRouterCallback.tsx:36 ~ method:", method)
-      console.log("🚀 ~ file: useRouterCallback.tsx:38 ~ args:", args)
-      console.log("🚀 ~ file: useRouterCallback.tsx:40 ~ sorobanContext:", sorobanContext)
-      console.log("🚀 ~ file: useRouterCallback.tsx:42 ~ signAndSend:", signAndSend)
-      
-      let result = await contractInvoke({
+      console.log('🚀 ~ file: useRouterCallback.tsx:34 ~ contractAddress:', router_address);
+      console.log('🚀 ~ file: useRouterCallback.tsx:36 ~ method:', method);
+      console.log('🚀 ~ file: useRouterCallback.tsx:38 ~ args:', args);
+      console.log('🚀 ~ file: useRouterCallback.tsx:40 ~ sorobanContext:', sorobanContext);
+      console.log('🚀 ~ file: useRouterCallback.tsx:42 ~ signAndSend:', signAndSend);
+
+      let result = (await contractInvoke({
         contractAddress: router_address as string,
         method: method,
         args: args,
         sorobanContext,
         signAndSend: signAndSend,
-      });
-
-      const response = result as SorobanClient.SorobanRpc.GetTransactionResponse;
+      })) as TxResponse;
 
       if (
-        isObject(response) &&
-        response?.status !== SorobanClient.SorobanRpc.GetTransactionStatus.SUCCESS
+        isObject(result) &&
+        result?.status !== SorobanClient.SorobanRpc.GetTransactionStatus.SUCCESS
       )
-        throw response;
+        throw result;
 
       mutate((key: any) => revalidateKeysCondition(key), undefined, { revalidate: true });
 

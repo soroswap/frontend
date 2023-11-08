@@ -30,6 +30,7 @@ import { useUserSlippageToleranceWithDefault } from 'state/user/hooks';
 import { DEFAULT_SLIPPAGE_INPUT_VALUE } from 'components/Settings/MaxSlippageSettings';
 import useLiquidityValidations from 'hooks/useLiquidityValidations';
 import useCalculateLpToReceive from 'hooks/useCalculateLp';
+import { TxResponse } from '@soroban-react/contracts';
 
 export const PageWrapper = styled('main')`
   position: relative;
@@ -190,9 +191,9 @@ export default function AddLiquidityComponent() {
     ];
 
     routerCallback(RouterMethod.ADD_LIQUIDITY, args, true)
-      .then((result) => {
+      .then((result: TxResponse) => {
         setAttemptingTxn(false);
-        setTxHash(result as unknown as string);
+        setTxHash(result?.txHash);
       })
       .catch((error) => {
         setAttemptingTxn(false);

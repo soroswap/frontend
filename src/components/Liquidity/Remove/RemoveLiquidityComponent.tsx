@@ -27,6 +27,7 @@ import { useUserSlippageToleranceWithDefault } from 'state/user/hooks';
 import { opacify } from 'themes/utils';
 import { AddRemoveTabs } from '../AddRemoveHeader';
 import { DEFAULT_SLIPPAGE_INPUT_VALUE } from 'components/Settings/MaxSlippageSettings';
+import { TxResponse } from '@soroban-react/contracts';
 
 export const PageWrapper = styled('main')`
   position: relative;
@@ -204,9 +205,9 @@ export default function RemoveLiquidityComponent() {
     ];
 
     routerCallback(RouterMethod.REMOVE_LIQUIDITY, args, true)
-      .then((result) => {
+      .then((result: TxResponse) => {
         setAttemptingTxn(false);
-        setTxHash(result as unknown as string);
+        setTxHash(result?.txHash);
       })
       .catch((error) => {
         setTxError(true);

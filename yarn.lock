@@ -842,10 +842,10 @@
   dependencies:
     "@soroban-react/core" "^7.3.1"
 
-"@soroban-react/contracts@7.3.1":
-  version "7.3.1"
-  resolved "https://registry.yarnpkg.com/@soroban-react/contracts/-/contracts-7.3.1.tgz#7a7a500988930eef5e044b0eb14b30afd0a996fe"
-  integrity sha512-h6mWhZoaKbk5239ZmZ/CXHFktPCTHK05bROkT9fUGWEBkwkmfKozYeGz81Ueztu0BgXYxdeKa+QLfZr+Qt7YDw==
+"@soroban-react/contracts@7.3.2":
+  version "7.3.2"
+  resolved "https://registry.yarnpkg.com/@soroban-react/contracts/-/contracts-7.3.2.tgz#efd7396b5e1262f8fa8c9c4ff48ea46d2e254cb9"
+  integrity sha512-hZYoILktPgDc9jQeDNH02jp4HdLsee4yBN2eIULk+W/mDTfgGZV6IlL0lkjqB5UfNP680AINjzGfvOaIcIxqQw==
   dependencies:
     "@soroban-react/core" "^7.3.1"
     soroban-client "1.0.0-beta.4"

@@ -188,8 +188,6 @@ function TransactionSubmittedContent({
   //     .catch(() => setSuccess(false))
   // }, [connector, logoURL, token])
 
-  const href = 'https://google.com'; //TODO: getExplorerLink(chainId, swapResult.response.hash, ExplorerDataType.TRANSACTION)
-
   return (
     <Wrapper>
       <AutoColumn>

@@ -17,7 +17,7 @@
     "@next/font": "13.0.7",
     "@reduxjs/toolkit": "^1.9.5",
     "@soroban-react/chains": "7.3.1",
-    "@soroban-react/contracts": "7.3.1",
+    "@soroban-react/contracts": "7.3.2",
     "@soroban-react/core": "7.3.1",
     "@soroban-react/freighter": "7.1.1",
     "@soroban-react/types": "7.1.1",

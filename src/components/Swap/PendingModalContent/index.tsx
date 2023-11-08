@@ -16,6 +16,7 @@ import {
 } from './Logos';
 import { TradeSummary } from './TradeSummary';
 import CopyTxHash from 'components/CopyTxHash/CopyTxHash';
+import { TxResponse } from '@soroban-react/contracts';
 
 export const PendingModalContainer = styled(ColumnCenter)`
   margin: 48px 0 8px;
@@ -191,7 +192,7 @@ function getContent(args: ContentArgs): PendingModalStep {
       let label: React.ReactNode | null | string = null;
 
       if (swapConfirmed && swapResult) {
-        label = <CopyTxHash txHash="google.com" />;
+        label = <CopyTxHash txHash={(swapResult as TxResponse)?.txHash} />;
       } else if (swapPending) {
         label = `Proceed in your wallet`;
       }
