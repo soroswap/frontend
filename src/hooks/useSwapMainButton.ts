@@ -51,8 +51,15 @@ const useSwapMainButton = ({
       Number(inputA) > Number(balanceA) || Number(inputB) > Number(balanceB);
     const invalidAmount = Number(inputA) < 0 || Number(inputB) < 0;
 
-    const reserveA = formatTokenAmount(reserves?.reserve0 as BigNumber);
-    const reserveB = formatTokenAmount(reserves?.reserve1 as BigNumber);
+    let reserveA: string, reserveB: string;
+
+    if (reserves?.token0 === currencyA?.address) {
+      reserveA = formatTokenAmount(reserves?.reserve0 as BigNumber);
+      reserveB = formatTokenAmount(reserves?.reserve1 as BigNumber);
+    } else {
+      reserveA = formatTokenAmount(reserves?.reserve1 as BigNumber);
+      reserveB = formatTokenAmount(reserves?.reserve0 as BigNumber);
+    }
 
     const insufficientLiquidity =
       Number(inputA) > Number(reserveA) || Number(inputB) > Number(reserveB);
