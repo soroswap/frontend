@@ -1,27 +1,27 @@
-import { CssBaseline, ThemeProvider } from "@mui/material";
-import type { AppProps } from "next/app";
-import { useMemo, useState } from "react";
+import { CssBaseline, ThemeProvider } from '@mui/material';
+import type { AppProps } from 'next/app';
+import { useMemo, useState } from 'react';
 import { Provider } from 'react-redux';
-import MainLayout from "../src/components/Layout/MainLayout";
-import { AppContext, ColorModeContext, SnackbarIconType } from "../src/contexts";
-import MySorobanReactProvider from "../src/soroban/MySorobanReactProvider";
+import MainLayout from '../src/components/Layout/MainLayout';
+import { AppContext, ColorModeContext, SnackbarIconType } from '../src/contexts';
+import MySorobanReactProvider from '../src/soroban/MySorobanReactProvider';
 import store from '../src/state';
-import { theme } from "../src/themes";
-import "../styles/globals.css";
+import { theme } from '../src/themes';
+import '../styles/globals.css';
 
 export default function App({ Component, pageProps }: AppProps) {
-  const [isConnectWalletModal, setConnectWalletModal] = useState<boolean>(false)
+  const [isConnectWalletModal, setConnectWalletModal] = useState<boolean>(false);
 
   const [openSnackbar, setOpenSnackbar] = useState<boolean>(false);
-  const [snackbarMessage, setSnackbarMessage] = useState<string>("");
-  const [snackbarTitle, setSnackbarTitle] = useState<string>("Swapped");
-  const [snackbarType, setSnackbarType] = useState<SnackbarIconType>(SnackbarIconType.SWAP)
+  const [snackbarMessage, setSnackbarMessage] = useState<string>('');
+  const [snackbarTitle, setSnackbarTitle] = useState<string>('Swapped');
+  const [snackbarType, setSnackbarType] = useState<SnackbarIconType>(SnackbarIconType.SWAP);
 
-  const [mode, setMode] = useState<"light" | "dark">("dark");
+  const [mode, setMode] = useState<'light' | 'dark'>('dark');
   const colorMode = useMemo(
     () => ({
       toggleColorMode: () => {
-        setMode((prevMode) => (prevMode === "light" ? "dark" : "light"));
+        setMode((prevMode) => (prevMode === 'light' ? 'dark' : 'light'));
       },
     }),
     [],
@@ -30,7 +30,7 @@ export default function App({ Component, pageProps }: AppProps) {
   const appContextValues = {
     ConnectWalletModal: {
       isConnectWalletModalOpen: isConnectWalletModal,
-      setConnectWalletModalOpen: setConnectWalletModal
+      setConnectWalletModalOpen: setConnectWalletModal,
     },
     SnackbarContext: {
       openSnackbar,
@@ -40,9 +40,9 @@ export default function App({ Component, pageProps }: AppProps) {
       setOpenSnackbar,
       setSnackbarMessage,
       setSnackbarTitle,
-      setSnackbarType
+      setSnackbarType,
     },
-  }
+  };
 
   return (
     <Provider store={store}>
