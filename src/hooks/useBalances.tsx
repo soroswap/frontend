@@ -18,7 +18,7 @@ export type relevantTokensType = {
 
 export interface tokenBalancesType {
   balances: relevantTokensType[];
-  loading: boolean;
+  notFound?: boolean;
 }
 
 //TODO: create Liquidity Pool Balances
@@ -42,7 +42,7 @@ export async function tokenBalance(
 
     return scValToJs(tokenBalance as xdr.ScVal) as BigNumber;
   } catch (error) {
-    return 0; // or throw error;
+    throw error;
   }
 }
 
@@ -61,6 +61,17 @@ export async function tokenDecimals(tokenAddress: string, sorobanContext: Soroba
   }
 }
 
+const notFoundReturn = (token: TokenType) => {
+  return {
+    balance: 0,
+    usdValue: 0,
+    symbol: token.symbol,
+    address: token.address,
+    decimals: 0,
+    formatted: false,
+  };
+};
+
 export async function tokenBalances(
   userAddress: string,
   tokens: TokenType[] | TokenMapType | undefined,
@@ -69,34 +80,44 @@ export async function tokenBalances(
 ): Promise<tokenBalancesType | undefined> {
   if (!tokens || !sorobanContext) return;
 
+  let notFound = false;
+
   const balances = await Promise.all(
     Object.values(tokens).map(async (token) => {
-      const balanceResponse = await tokenBalance(token.address, userAddress, sorobanContext);
-      const decimalsResponse = await tokenDecimals(token.address, sorobanContext);
+      try {
+        //if not found, should skip and return 0 for all tokens
+        if (notFound) return notFoundReturn(token);
 
-      let balance: number | string | BigNumber;
-      if (formatted) {
-        balance = formatTokenAmount(BigNumber(balanceResponse), decimalsResponse);
-      } else {
-        balance = balanceResponse;
+        const balanceResponse = await tokenBalance(token.address, userAddress, sorobanContext);
+        const decimalsResponse = await tokenDecimals(token.address, sorobanContext);
+        let balance: number | string | BigNumber;
+        if (formatted) {
+          balance = formatTokenAmount(BigNumber(balanceResponse), decimalsResponse);
+        } else {
+          balance = balanceResponse;
+        }
+
+        return {
+          balance: balance,
+          usdValue: 0, //TODO: should get usd value
+          symbol: token.symbol,
+          address: token.address,
+          decimals: decimalsResponse,
+          formatted: formatted,
+        };
+      } catch (error: any) {
+        //la cuenta no esta fundeada
+        if (error?.code === 404) {
+          notFound = true;
+        }
+
+        return notFoundReturn(token);
       }
-
-      return {
-        balance: balance,
-        usdValue: 0, //TODO: should get usd value
-        symbol: token.symbol,
-        address: token.address,
-        decimals: decimalsResponse,
-        formatted: formatted,
-      };
     }),
   );
 
-  // Calculate the loading state
-  const loading = balances.some((balance) => balance.balance === null);
-
   return {
-    balances: balances,
-    loading: loading,
+    balances,
+    notFound,
   };
 }

@@ -60,6 +60,18 @@ export function Balances() {
     });
   };
 
+  const getButtonTxt = () => {
+    if (isMinting) return `Minting ${currentMintingToken?.symbol}`;
+    if (tokenBalancesResponse?.notFound) return `Fund wallet`;
+    return `Mint test tokens`;
+  };
+
+  const isButtonDisabled = () => {
+    if (isMinting) return true;
+    if (tokenBalancesResponse?.notFound) return true;
+    return false;
+  };
+
   return (
     <PageWrapper>
       <CardContent>
@@ -102,8 +114,12 @@ export function Balances() {
             </ButtonPrimary>
           </>
         ) : (
-          <ButtonPrimary onClick={handleMint} disabled={isMinting} style={{ marginTop: '24px' }}>
-            {isMinting ? `Minting ${currentMintingToken?.symbol}` : `Mint test tokens`}
+          <ButtonPrimary
+            onClick={handleMint}
+            disabled={isButtonDisabled()}
+            style={{ marginTop: '24px' }}
+          >
+            {getButtonTxt()}
           </ButtonPrimary>
         )}
       </CardContent>
