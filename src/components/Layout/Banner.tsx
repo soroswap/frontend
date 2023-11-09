@@ -1,4 +1,4 @@
-import { Box, Typography, useTheme } from '@mui/material';
+import { Box, Typography, useMediaQuery, useTheme } from '@mui/material';
 import Link from 'next/link';
 import { useState } from 'react';
 import { X } from 'react-feather';
@@ -8,6 +8,8 @@ const Banner = () => {
 
   const [show, setShow] = useState<boolean>(true);
 
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+
   const handleClose = () => {
     setShow(false);
   };
@@ -16,13 +18,19 @@ const Banner = () => {
 
   return (
     <Box
-      height="30px"
+      padding="4px"
       display="flex"
       alignItems="center"
       justifyContent="center"
+      flexDirection={isMobile ? 'column' : 'row'}
       sx={{ backgroundColor: theme.palette.customBackground.accentAction }}
     >
-      <Typography fontSize="14px" textAlign="center" color="white">
+      <Typography
+        fontSize="14px"
+        textAlign="center"
+        color="white"
+        width={isMobile ? '300px' : '100%'}
+      >
         Soroswap.Finance is currently working on Testnet. Click
         <Link
           href="https://google.com"
@@ -33,11 +41,18 @@ const Banner = () => {
         </Link>
         to learn more.
       </Typography>
+
       <X
         onClick={handleClose}
         size="18px"
         color="white"
-        style={{ position: 'absolute', right: 10, cursor: 'pointer' }}
+        style={{
+          position: isMobile ? 'initial' : 'absolute',
+          right: 10,
+          cursor: 'pointer',
+          marginTop: isMobile ? 10 : 0,
+          marginBottom: isMobile ? 5 : 0,
+        }}
       />
     </Box>
   );
