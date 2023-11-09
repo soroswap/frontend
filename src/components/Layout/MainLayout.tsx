@@ -19,7 +19,8 @@ const MainBackground = styled('main')<{ isMobile: boolean; showBanner: boolean }
   align-items: flex-start;
   width: 100vw;
   padding: ${({ isMobile }) => (isMobile ? '50px 20px 0 20px' : '65px 20px 0 20px')};
-  margin-top: ${({ isMobile, showBanner }) => (isMobile && !showBanner ? '78px' : '120px')};
+  margin-top: ${({ isMobile, showBanner }) =>
+    isMobile ? (showBanner ? '120px' : '78px') : showBanner ? '162px' : '120px'};
 `;
 
 export default function MainLayout({ children }: { children: React.ReactNode }) {

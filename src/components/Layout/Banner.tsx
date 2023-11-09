@@ -1,5 +1,4 @@
 import { Box, Typography, useMediaQuery, useTheme } from '@mui/material';
-import { useState } from 'react';
 import { X } from 'react-feather';
 import Link from 'next/link';
 
