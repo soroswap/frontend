@@ -85,8 +85,8 @@ export default function SwapModalFooter({
     if (!reserves) return;
 
     getExpectedAmountNew(
-      trade?.inputAmount?.currency,
       trade?.outputAmount?.currency,
+      trade?.inputAmount?.currency,
       BigNumber(1).shiftedBy(7),
       reserves,
     ).then((resp) => {

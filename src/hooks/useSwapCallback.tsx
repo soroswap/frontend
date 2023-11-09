@@ -12,6 +12,7 @@ import { RouterMethod, useRouterCallback } from './useRouterCallback';
 import { scValToJs } from 'helpers/convert';
 import { useUserSlippageToleranceWithDefault } from 'state/user/hooks';
 import { DEFAULT_SLIPPAGE_INPUT_VALUE } from 'components/Settings/MaxSlippageSettings';
+import { TxResponse } from '@soroban-react/contracts';
 
 // Returns a function that will execute a swap, if the parameters are all valid
 // and the user has approved the slippage adjusted input amount for the trade
@@ -80,6 +81,11 @@ export const getSwapAmounts = ({
   return { amount0, amount1, routerMethod };
 };
 
+export type SuccessfullSwapResponse = SorobanClient.SorobanRpc.GetSuccessfulTransactionResponse &
+  TxResponse & {
+    switchValues: string[];
+  };
+
 export function useSwapCallback(
   trade: InterfaceTrade | undefined, // trade to execute, required
   // fiatValues: { amountIn?: number; amountOut?: number }, // usd values for amount in and out, logged for analytics
@@ -92,7 +98,9 @@ export function useSwapCallback(
   const routerCallback = useRouterCallback();
   const allowedSlippage = useUserSlippageToleranceWithDefault(DEFAULT_SLIPPAGE_INPUT_VALUE);
 
-  const doSwap = async () => {
+  const doSwap = async (): Promise<
+    SuccessfullSwapResponse | SorobanClient.SorobanRpc.GetTransactionResponse
+  > => {
     if (!trade) throw new Error('missing trade');
     if (!address || !activeChain) throw new Error('wallet must be connected to swap');
     if (!trade.tradeType) throw new Error('tradeType must be defined');
@@ -144,9 +152,9 @@ export function useSwapCallback(
         routerMethod,
         args,
         true,
-      )) as SorobanClient.SorobanRpc.GetSuccessfulTransactionResponse;
+      )) as SorobanClient.SorobanRpc.GetTransactionResponse;
 
-      if (!result.returnValue) return result;
+      if (result.status !== SorobanClient.SorobanRpc.GetTransactionStatus.SUCCESS) throw result;
 
       const switchValues: string[] = scValToJs(result.returnValue!);
 
@@ -158,7 +166,7 @@ export function useSwapCallback(
 
       sendNotification(notificationMessage, 'Swapped', SnackbarIconType.SWAP, SnackbarContext);
 
-      return result;
+      return { ...result, switchValues };
     } catch (error) {
       throw error;
     }

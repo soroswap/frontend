@@ -30,17 +30,16 @@ const StyledPriceContainer = styled('button')`
 `;
 
 export default function TradePrice({ trade }: TradePriceProps) {
-  const sorobanContext = useSorobanReact();
-  const [showInverted, setShowInverted] = useState<boolean>(false);
+  const [showInverted, setShowInverted] = useState<boolean>(true);
   const [expectedAmountOfOne, setExpectedAmountOfOne] = useState<string | number>('0');
 
   const label = showInverted
-    ? `${trade?.outputAmount?.currency.symbol}`
-    : `${trade?.inputAmount?.currency.symbol} `;
-  const mainCurrency = showInverted ? trade?.inputAmount?.currency : trade?.outputAmount?.currency;
-  const otherCurrency = !showInverted
-    ? trade?.inputAmount?.currency
-    : trade?.outputAmount?.currency;
+    ? trade?.inputAmount?.currency.symbol
+    : trade?.outputAmount?.currency.symbol;
+
+  const mainCurrency = showInverted ? trade?.outputAmount?.currency : trade?.inputAmount?.currency;
+  const otherCurrency = showInverted ? trade?.inputAmount?.currency : trade?.outputAmount?.currency;
+
   const flipPrice = useCallback(
     () => setShowInverted(!showInverted),
     [setShowInverted, showInverted],
@@ -61,7 +60,7 @@ export default function TradePrice({ trade }: TradePriceProps) {
     }
   }, [reserves, mainCurrency, otherCurrency]);
 
-  const text = `${'1 ' + mainCurrency?.symbol + ' = ' + expectedAmountOfOne ?? '-'} ${label}`;
+  const text = `${'1 ' + label + ' = ' + expectedAmountOfOne ?? '-'} ${mainCurrency?.symbol}`;
 
   return (
     <StyledPriceContainer

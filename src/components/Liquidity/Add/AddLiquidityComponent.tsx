@@ -13,11 +13,11 @@ import { AppContext } from 'contexts';
 import { getCurrentTimePlusOneHour } from 'functions/getCurrentTimePlusOneHour';
 import { formatTokenAmount } from 'helpers/format';
 import { bigNumberToI128, bigNumberToU64 } from 'helpers/utils';
-import { useToken } from 'hooks';
+import { useTokens } from 'hooks';
 import { RouterMethod, useRouterCallback } from 'hooks/useRouterCallback';
 import { TokenType } from 'interfaces';
 import { useRouter } from 'next/router';
-import { useCallback, useContext, useMemo, useState } from 'react';
+import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { Plus } from 'react-feather';
 import * as SorobanClient from 'soroban-client';
 import { Field } from 'state/mint/actions';
@@ -61,25 +61,57 @@ export const PageWrapper = styled('main')`
 
 type TokensType = [string, string];
 
-export default function AddLiquidityComponent() {
+interface AddLiquidityComponentProps {
+  paramTokenA?: string;
+  paramTokenB?: string;
+}
+
+export default function AddLiquidityComponent({
+  paramTokenA,
+  paramTokenB,
+}: AddLiquidityComponentProps) {
   const theme = useTheme();
   const userSlippage = useUserSlippageToleranceWithDefault(DEFAULT_SLIPPAGE_INPUT_VALUE);
   const { ConnectWalletModal } = useContext(AppContext);
   const { isConnectWalletModalOpen, setConnectWalletModalOpen } = ConnectWalletModal;
 
   const router = useRouter();
-  const { tokens } = router.query as { tokens: TokensType };
 
-  const [currencyIdA, currencyIdB] = Array.isArray(tokens) ? tokens : ['', ''];
+  const { tokens } = useTokens();
+
+  const [currencyIdA, setCurrencyIdA] = useState<string | undefined>(undefined);
+  const [currencyIdB, setCurrencyIdB] = useState<string | undefined>(undefined);
+  const [baseCurrency, setBaseCurrency] = useState<TokenType | undefined>(undefined);
+  const [currencyB, setCurrencyB] = useState<TokenType | undefined>(undefined);
+
+  useEffect(() => {
+    if (paramTokenA) {
+      const tokenA = tokens.find((item) => item.symbol === paramTokenA);
+      if (tokenA) {
+        setBaseCurrency(tokenA);
+        setCurrencyIdA(tokenA.address);
+      } else {
+        setBaseCurrency(undefined);
+        setCurrencyIdA(undefined);
+      }
+    }
+    if (paramTokenB) {
+      const tokenB = tokens.find((item) => item.symbol === paramTokenB);
+      if (tokenB) {
+        setCurrencyB(tokenB);
+        setCurrencyIdB(tokenB.address);
+      } else {
+        setCurrencyB(undefined);
+        setCurrencyIdB(undefined);
+      }
+    }
+  }, [paramTokenA, paramTokenB, tokens]);
 
   const sorobanContext = useSorobanReact();
 
   const [amountOfLpTokensToReceive, setAmountOfLpTokensToReceive] = useState<string>('');
   const [lpPercentage, setLpPercentage] = useState<string>('');
   const [totalShares, setTotalShares] = useState<string>('');
-
-  const baseCurrency = useToken(currencyIdA);
-  const currencyB = useToken(currencyIdB);
 
   const derivedMintInfo = useDerivedMintInfo(baseCurrency ?? undefined, currencyB ?? undefined);
   const { dependentField, currencies, parsedAmounts, noLiquidity, pairAddress } = derivedMintInfo;
@@ -210,29 +242,25 @@ export default function AddLiquidityComponent() {
     userSlippage,
   ]);
 
-  const handleCurrencyASelect = useCallback(
-    (currencyA: TokenType) => {
-      const newCurrencyIdA = currencyA.address;
-      if (currencyIdB === undefined) {
-        router.push(`/liquidity/add/${newCurrencyIdA}`);
-      } else {
-        router.push(`/liquidity/add/${newCurrencyIdA}/${currencyIdB}`);
-      }
-    },
-    [currencyIdB, router],
-  );
+  const handleCurrencyASelect = (currencyA: TokenType) => {
+    const newCurrencyIdA = currencyA.symbol;
 
-  const handleCurrencyBSelect = useCallback(
-    (currencyB: TokenType) => {
-      const newCurrencyIdB = currencyB.address;
-      if (currencyIdA === undefined) {
-        router.push(`/liquidity/add/${newCurrencyIdB}`);
-      } else {
-        router.push(`/liquidity/add/${currencyIdA}/${newCurrencyIdB}`);
-      }
-    },
-    [currencyIdA, router],
-  );
+    if (newCurrencyIdA === paramTokenB) {
+      router.push(`/liquidity/add/${newCurrencyIdA}/${paramTokenA}`);
+    } else {
+      router.push(`/liquidity/add/${newCurrencyIdA}/${paramTokenB}`);
+    }
+  };
+
+  const handleCurrencyBSelect = (currencyB: TokenType) => {
+    const newCurrencyIdB = currencyB.symbol;
+
+    if (newCurrencyIdB === paramTokenA) {
+      router.push(`/liquidity/add/${paramTokenB}/${newCurrencyIdB}`);
+    } else {
+      router.push(`/liquidity/add/${paramTokenA}/${newCurrencyIdB}`);
+    }
+  };
 
   const pendingText = (
     <BodySmall>
@@ -329,6 +357,7 @@ export default function AddLiquidityComponent() {
             showMaxButton
             currency={currencies[Field.CURRENCY_A] ?? null}
             transparent
+            otherCurrency={currencies[Field.CURRENCY_B] ?? null}
 
             // showCommonBases
           />
@@ -344,6 +373,7 @@ export default function AddLiquidityComponent() {
             onCurrencySelect={handleCurrencyBSelect}
             showMaxButton
             currency={currencies[Field.CURRENCY_B] ?? null}
+            otherCurrency={currencies[Field.CURRENCY_A] ?? null}
             // showCommonBases
           />
           {!sorobanContext.address ? (

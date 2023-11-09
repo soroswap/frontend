@@ -7,7 +7,7 @@ export default function SwapPage() {
 
   const { tokens } = router.query;
 
-  const [tokenA, tokenB] = (tokens ?? []) as string[];
+  const [tokenA, tokenB] = (tokens ?? ['null', 'null']) as string[];
 
   return (
     <>

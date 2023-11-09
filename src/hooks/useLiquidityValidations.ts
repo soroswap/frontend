@@ -11,8 +11,8 @@ interface useLiquidityValidationsProps {
   formattedAmounts: {
     [x: string]: string;
   };
-  currencyIdA: string;
-  currencyIdB: string;
+  currencyIdA?: string;
+  currencyIdB?: string;
   pairAddress?: string;
 }
 

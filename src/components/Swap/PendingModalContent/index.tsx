@@ -16,7 +16,7 @@ import {
 } from './Logos';
 import { TradeSummary } from './TradeSummary';
 import CopyTxHash from 'components/CopyTxHash/CopyTxHash';
-import { TxResponse } from '@soroban-react/contracts';
+import { SuccessfullSwapResponse } from 'hooks/useSwapCallback';
 
 export const PendingModalContainer = styled(ColumnCenter)`
   margin: 48px 0 8px;
@@ -130,7 +130,7 @@ interface ContentArgs {
   wrapPending: boolean;
   tokenApprovalPending: boolean;
   revocationPending: boolean;
-  swapResult?: any; //SwapResult
+  swapResult?: SuccessfullSwapResponse; //SwapResult
   chainId?: number;
   order?: any; //UniswapXOrderDetails
 }
@@ -192,7 +192,7 @@ function getContent(args: ContentArgs): PendingModalStep {
       let label: React.ReactNode | null | string = null;
 
       if (swapConfirmed && swapResult) {
-        label = <CopyTxHash txHash={(swapResult as TxResponse)?.txHash} />;
+        label = <CopyTxHash txHash={swapResult?.txHash} />;
       } else if (swapPending) {
         label = `Proceed in your wallet`;
       }
@@ -203,7 +203,7 @@ function getContent(args: ContentArgs): PendingModalStep {
           : swapConfirmed
           ? `Success`
           : `Waiting for confirmation`,
-        subtitle: trade ? <TradeSummary trade={trade} /> : null,
+        subtitle: trade ? <TradeSummary trade={trade} swapResult={swapResult} /> : null,
         label,
       };
     }
