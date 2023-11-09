@@ -10,7 +10,7 @@ import Header from './Header';
 import MobileDrawer from './MobileDrawer';
 import Banner from './Banner';
 
-const MainBackground = styled('main')<{ isMobile: boolean }>`
+const MainBackground = styled('main')<{ isMobile: boolean; showBanner: boolean }>`
   background-image: url(${background1.src});
   background-size: cover;
   height: ${({ isMobile }) => (isMobile ? 'calc(100vh - 78px)' : 'calc(100vh - 120px)')};
@@ -19,13 +19,15 @@ const MainBackground = styled('main')<{ isMobile: boolean }>`
   align-items: flex-start;
   width: 100vw;
   padding: ${({ isMobile }) => (isMobile ? '50px 20px 0 20px' : '65px 20px 0 20px')};
-  margin-top: ${({ isMobile }) => (isMobile ? '78px' : '120px')};
+  margin-top: ${({ isMobile, showBanner }) => (isMobile && !showBanner ? '78px' : '120px')};
 `;
 
 export default function MainLayout({ children }: { children: React.ReactNode }) {
   const theme = useTheme();
   const [isDrawerOpen, setDrawerOpen] = useState<boolean>(false);
   const isMobile = useMediaQuery(theme.breakpoints.down(1220));
+
+  const [showBanner, setShowBanner] = useState<boolean>(true);
 
   return (
     <>
@@ -38,7 +40,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
           bgcolor: theme.palette.background.default,
         }}
       >
-        <Banner />
+        <Banner show={showBanner} setShow={setShowBanner} />
 
         <Toolbar>
           <Header isDrawerOpen={isDrawerOpen} setDrawerOpen={setDrawerOpen} />
@@ -50,7 +52,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
 
       <MobileDrawer isDrawerOpen={isDrawerOpen} setDrawerOpen={setDrawerOpen} />
 
-      <MainBackground isMobile={isMobile} theme={theme}>
+      <MainBackground isMobile={isMobile} theme={theme} showBanner={showBanner}>
         {children}
       </MainBackground>
     </>
