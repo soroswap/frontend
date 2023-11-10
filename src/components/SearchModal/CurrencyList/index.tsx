@@ -5,7 +5,7 @@ import Loader from 'components/Icons/LoadingSpinner';
 import CurrencyLogo from 'components/Logo/CurrencyLogo';
 import Row, { RowFixed, RowFlat } from 'components/Row';
 import { formatTokenAmount } from 'helpers/format';
-import { tokenBalance, tokenBalancesType } from 'hooks';
+import { tokenBalance, tokenBalancesType, useTokens } from 'hooks';
 import { CSSProperties, MutableRefObject, useCallback, useEffect, useMemo, useState } from 'react';
 import { Check } from 'react-feather';
 import { FixedSizeList } from 'react-window';
@@ -13,6 +13,7 @@ import { TokenType } from '../../../interfaces';
 import { LoadingRows, MenuItem } from '../styleds';
 import StyledRow from '../../Row';
 import BigNumber from 'bignumber.js';
+import useGetMyBalances from 'hooks/useGetMyBalances';
 
 function currencyKey(currency: TokenType): string {
   return currency.address ? currency.address : 'ETHER';
@@ -64,8 +65,6 @@ export function CurrencyRow({
   otherSelected,
   style,
   showCurrencyAmount,
-  eventProperties,
-  currentBalance,
 }: {
   currency: TokenType;
   onSelect: (hasWarning: boolean) => void;
@@ -80,17 +79,25 @@ export function CurrencyRow({
 
   const [balance, setBalance] = useState<string>();
 
+  const { tokenBalancesResponse } = useGetMyBalances();
+
   useEffect(() => {
     if (sorobanContext.activeChain && sorobanContext.address) {
-      if (currentBalance) {
-        setBalance(currentBalance as string);
+      const token = tokenBalancesResponse?.balances?.find(
+        (tokenBalance) => tokenBalance.address === currency.address,
+      );
+      if (token) {
+        setBalance(token.balance.toString());
       } else {
-        tokenBalance(currency.address, sorobanContext.address, sorobanContext).then((resp) => {
-          setBalance(formatTokenAmount(resp));
-        });
+        setBalance('0');
       }
     }
-  }, [currency.address, sorobanContext, currentBalance]);
+  }, [
+    sorobanContext.activeChain,
+    sorobanContext.address,
+    currency.address,
+    tokenBalancesResponse?.balances,
+  ]);
 
   const warning = false;
   const isBlockedToken = false;

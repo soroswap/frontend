@@ -1,4 +1,5 @@
 import { TxResponse, contractInvoke } from '@soroban-react/contracts';
+
 import { useSorobanReact } from '@soroban-react/core';
 import { useCallback } from 'react';
 import * as SorobanClient from 'soroban-client';
@@ -21,11 +22,6 @@ export enum RouterMethod {
 // and the user has approved the slippage adjusted input amount for the trade
 
 const isObject = (val: any) => typeof val === 'object' && val !== null && !Array.isArray(val);
-
-//refetch balance, lptokens and reserves after router tx success
-const revalidateKeysCondition = (key: any) =>
-  Array.isArray(key) &&
-  (key.includes('balance') || key.includes('lp-tokens') || key.includes('reserves'));
 
 export function useRouterCallback() {
   const sorobanContext = useSorobanReact();
@@ -55,10 +51,8 @@ export function useRouterCallback() {
       )
         throw result;
 
-      mutate((key: any) => revalidateKeysCondition(key), undefined, { revalidate: true });
-
       return result;
     },
-    [router_address, sorobanContext, mutate],
+    [router_address, sorobanContext],
   );
 }
