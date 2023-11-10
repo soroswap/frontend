@@ -278,15 +278,20 @@ export function SwapComponent({
   const priceImpactSeverity = 2; //IF is < 2 it shows Swap anyway button in red
   const showPriceImpactWarning = false;
 
-  const { getMainButtonText, isMainButtonDisabled, handleMainButtonClick, MainButton } =
-    useSwapMainButton({
-      currencies,
-      currencyBalances,
-      formattedAmounts,
-      routeNotFound,
-      onSubmit: handleContinueToReview,
-      reserves,
-    });
+  const {
+    getMainButtonText,
+    isMainButtonDisabled,
+    handleMainButtonClick,
+    MainButton,
+    getSwapValues,
+  } = useSwapMainButton({
+    currencies,
+    currencyBalances,
+    formattedAmounts,
+    routeNotFound,
+    onSubmit: handleContinueToReview,
+    reserves,
+  });
 
   return (
     <>
@@ -337,7 +342,6 @@ export function SwapComponent({
                 independentField === Field.OUTPUT ? <span>From (at most)</span> : <span>From</span>
               }
               // disabled={disableTokenInputs}
-
               value={formattedAmounts[Field.INPUT]}
               showMaxButton={showMaxButton}
               onUserInput={handleTypeInput}
