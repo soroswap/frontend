@@ -1,13 +1,13 @@
+import { Box } from '@mui/material';
 import { Clipboard } from 'react-feather';
 import { LabelSmall } from 'components/Text';
 import { SnackbarIconType } from 'contexts';
+import { testnet, public_chain } from '@soroban-react/chains';
+import { useEffect, useState } from 'react';
+import { useSorobanReact } from '@soroban-react/core';
 import CopyToClipboard from 'react-copy-to-clipboard';
 import Row from 'components/Row';
 import useNotification from 'hooks/useNotification';
-import { useSorobanReact } from '@soroban-react/core';
-import { testnet, public_chain } from '@soroban-react/chains';
-import { useEffect, useState } from 'react';
-import { Box } from '@mui/material';
 
 const getExplorerUrl = ({ chain, txHash }: { chain: string; txHash: string }) => {
   return `https://stellar.expert/explorer/${chain}/tx/${txHash}`;
@@ -28,7 +28,7 @@ const CopyTxHash = ({ txHash }: { txHash: string }) => {
     if (!activeChain) return;
 
     if (activeChain.name === testnet.name || activeChain.name === public_chain.name) {
-      setExplorerLink(getExplorerUrl({ chain: activeChain.name as string, txHash }));
+      setExplorerLink(getExplorerUrl({ chain: activeChain.name?.toLowerCase() as string, txHash }));
     }
   }, [sorobanContext, txHash]);
 

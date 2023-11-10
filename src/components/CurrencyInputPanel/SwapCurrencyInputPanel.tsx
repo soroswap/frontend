@@ -181,6 +181,7 @@ interface SwapCurrencyInputPanelProps {
   locked?: boolean;
   loading?: boolean;
   disabled?: boolean;
+  disableInput?: boolean;
 }
 
 export default function SwapCurrencyInputPanel({
@@ -203,6 +204,7 @@ export default function SwapCurrencyInputPanel({
   locked = false,
   loading = false,
   disabled = false,
+  disableInput = false,
   ...rest
 }: SwapCurrencyInputPanelProps) {
   const [modalOpen, setModalOpen] = useState(false);
@@ -259,9 +261,10 @@ export default function SwapCurrencyInputPanel({
           {!hideInput && (
             <StyledNumericalInput
               className="token-amount-input"
+              style={{ color: disableInput ? 'gray' : 'initial' }}
               value={value}
               onUserInput={onUserInput}
-              disabled={!chainAllowed || disabled}
+              disabled={!chainAllowed || disabled || disableInput}
               $loading={loading}
             />
           )}

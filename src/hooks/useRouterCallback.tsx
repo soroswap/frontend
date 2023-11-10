@@ -1,4 +1,5 @@
 import { TxResponse, contractInvoke } from '@soroban-react/contracts';
+
 import { useSorobanReact } from '@soroban-react/core';
 import { useCallback } from 'react';
 import * as SorobanClient from 'soroban-client';
@@ -47,6 +48,7 @@ export function useRouterCallback() {
         args: args,
         sorobanContext,
         signAndSend: signAndSend,
+        reconnectAfterTx: false,
       })) as TxResponse;
 
       if (
