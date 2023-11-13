@@ -2,6 +2,7 @@ import useGetMyBalances from './useGetMyBalances';
 import useGetLpTokens from './useGetLpTokens';
 import { Field } from 'state/mint/actions';
 import { TokenType } from 'interfaces';
+import useGetNativeTokenBalance from './useGetNativeTokenBalance';
 
 interface useLiquidityValidationsProps {
   currencies: {
@@ -26,6 +27,8 @@ const useLiquidityValidations = ({
   const { tokenBalancesResponse } = useGetMyBalances();
 
   const { lpTokens } = useGetLpTokens();
+
+  const { data } = useGetNativeTokenBalance();
 
   const hasEnoughBalance = () => {
     const currentCurrencyAValue = formattedAmounts[Field.CURRENCY_A];
@@ -75,11 +78,18 @@ const useLiquidityValidations = ({
   };
 
   const getSupplyButtonText = () => {
+    if (!data?.validAccount) return 'Fund account';
     if (!hasSelectedTokens()) return 'Select tokens';
     if (!hasValidInputValues()) return 'Enter an amount';
     if (!hasEnoughBalance()) return 'Insufficient balance';
     if (!getPairInfo().exists) return 'Create';
     return 'Supply';
+  };
+
+  const isButtonDisabled = () => {
+    return (
+      !hasValidInputValues() || !hasEnoughBalance() || !hasSelectedTokens() || !data?.validAccount
+    );
   };
 
   const getModalTitleText = () => {
@@ -98,6 +108,7 @@ const useLiquidityValidations = ({
     getSupplyButtonText,
     getPairInfo,
     getModalTitleText,
+    isButtonDisabled,
   };
 };
 

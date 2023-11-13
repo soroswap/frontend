@@ -291,13 +291,7 @@ export default function AddLiquidityComponent({
     setShowConfirm(true);
   };
 
-  const {
-    hasEnoughBalance,
-    hasSelectedTokens,
-    hasValidInputValues,
-    getSupplyButtonText,
-    getModalTitleText,
-  } = useLiquidityValidations({
+  const { isButtonDisabled, getSupplyButtonText, getModalTitleText } = useLiquidityValidations({
     currencies,
     currencyIdA,
     currencyIdB,
@@ -385,7 +379,7 @@ export default function AddLiquidityComponent({
             <AutoColumn gap="md">
               <ButtonError
                 onClick={handleClickMainButton}
-                disabled={!hasValidInputValues() || !hasEnoughBalance() || !hasSelectedTokens()}
+                disabled={isButtonDisabled()}
                 error={false}
               >
                 <ButtonText fontSize={20} fontWeight={600}>

@@ -7,6 +7,7 @@ import { Field } from 'state/swap/actions';
 import { relevantTokensType } from './useBalances';
 import { ReservesType } from 'functions/getExpectedAmount';
 import BigNumber from 'bignumber.js';
+import useGetNativeTokenBalance from './useGetNativeTokenBalance';
 
 interface Props {
   currencies: any;
@@ -30,6 +31,7 @@ const useSwapMainButton = ({
   const sorobanContext = useSorobanReact();
   const { ConnectWalletModal } = useContext(AppContext);
   const { isConnectWalletModalOpen, setConnectWalletModalOpen } = ConnectWalletModal;
+  const { data } = useGetNativeTokenBalance();
 
   const { address } = sorobanContext;
 
@@ -88,14 +90,14 @@ const useSwapMainButton = ({
       insufficientLiquidity,
       noLiquidity,
     } = getSwapValues();
-
     if (routeNotFound) return 'Route not found';
     if (!address) return 'Connect Wallet';
     if (noCurrencySelected) return 'Select a token';
+    if (!data?.validAccount) return 'Fund wallet';
+    if (insufficientLiquidity || noLiquidity) return 'Insufficient liquidity';
     if (noAmountTyped) return 'Enter an amount';
     if (insufficientBalance) return 'Insufficient balance';
     if (invalidAmount) return 'Invalid amount';
-    if (insufficientLiquidity || noLiquidity) return 'Insufficient liquidity';
 
     return 'Swap';
   };
@@ -118,7 +120,8 @@ const useSwapMainButton = ({
         insufficientBalance ||
         invalidAmount ||
         insufficientLiquidity ||
-        noLiquidity)
+        noLiquidity ||
+        !data?.validAccount)
     );
   };
 

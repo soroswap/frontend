@@ -84,6 +84,7 @@ interface SwapDetailsInlineProps {
   syncing: boolean;
   loading: boolean;
   allowedSlippage: number;
+  noLiquidity?: boolean;
 }
 
 export default function SwapDetailsDropdown({
@@ -91,6 +92,7 @@ export default function SwapDetailsDropdown({
   syncing,
   loading,
   allowedSlippage,
+  noLiquidity,
 }: SwapDetailsInlineProps) {
   const theme = useTheme();
   const [showDetails, setShowDetails] = useState(false);
@@ -100,7 +102,7 @@ export default function SwapDetailsDropdown({
       <StyledHeaderRow
         data-testid="swap-details-header-row"
         onClick={() => setShowDetails(!showDetails)}
-        disabled={!trade}
+        disabled={!trade || !!noLiquidity}
         open={showDetails}
       >
         <RowFixed>
@@ -111,13 +113,19 @@ export default function SwapDetailsDropdown({
               </StyledPollingDot>
             </StyledPolling>
           )}
-          {trade ? (
-            <LoadingOpacityContainer $loading={syncing} data-testid="trade-price-container">
-              <TradePrice trade={trade} />
-            </LoadingOpacityContainer>
-          ) : loading || syncing ? (
+          {noLiquidity ? (
             <SubHeaderSmall>Fetching best price...</SubHeaderSmall>
-          ) : null}
+          ) : (
+            <>
+              {trade ? (
+                <LoadingOpacityContainer $loading={syncing} data-testid="trade-price-container">
+                  <TradePrice trade={trade} />
+                </LoadingOpacityContainer>
+              ) : loading || syncing ? (
+                <SubHeaderSmall>Fetching best price...</SubHeaderSmall>
+              ) : null}
+            </>
+          )}
         </RowFixed>
         <RowFixed>
           {/* {!showDetails && <GasEstimateTooltip trade={trade} loading={syncing || loading} />} */}
@@ -127,7 +135,7 @@ export default function SwapDetailsDropdown({
           />
         </RowFixed>
       </StyledHeaderRow>
-      {trade && (
+      {!noLiquidity && trade && (
         <AnimatedDropdown open={showDetails}>
           <SwapDetailsWrapper data-testid="advanced-swap-details">
             <AdvancedSwapDetails
