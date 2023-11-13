@@ -1,0 +1,16 @@
+{
+  "nativeTokens": [
+    {
+      "address": "CDMLFMKMMD7MWZP3FKUBZPVHTUEDLSX4BYGYKH4GCESXYHS3IHQ4EIG4",
+      "network": "standalone"
+    },
+    {
+      "address": "CB64D3G7SM2RTH6JSGG34DDTFTQ5CFDKVDZJZSODMCX4NJ2HV2KN7OHT",
+      "network": "futurenet"
+    },
+    {
+      "address": "CDLZFC3SYJYDZT7K67VZ75HPJVIEUVNIXF47ZG2FB2RMQQVU2HHGCYSC",
+      "network": "testnet"
+    }
+  ]
+}

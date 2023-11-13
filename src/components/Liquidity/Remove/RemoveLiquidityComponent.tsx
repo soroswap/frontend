@@ -323,7 +323,7 @@ export default function RemoveLiquidityComponent() {
           hash={txHash}
           txError={txError}
         />
-        <AutoColumn gap="20px">
+        <AutoColumn gap="8px">
           <Container transparent>
             {typedValue}%
             <CustomSlider

@@ -15,6 +15,7 @@ import { useContext, useState } from 'react';
 import SEO from '../../src/components/SEO';
 import useGetLpTokens from 'hooks/useGetLpTokens';
 import { AppContext } from 'contexts';
+import useGetNativeTokenBalance from 'hooks/useGetNativeTokenBalance';
 
 const PageWrapper = styled(AutoColumn)`
   position: relative;

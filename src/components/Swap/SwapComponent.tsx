@@ -20,6 +20,7 @@ import SwapHeader from './SwapHeader';
 import swapReducer, { initialState as initialSwapState } from 'state/swap/reducer';
 import useSwapMainButton from 'hooks/useSwapMainButton';
 import { useRouter } from 'next/router';
+import useGetReservesByPair from 'hooks/useGetReservesByPair';
 
 const SwapSection = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -112,7 +113,7 @@ export function SwapComponent({
   const dependentField: Field = independentField === Field.INPUT ? Field.OUTPUT : Field.INPUT;
 
   const {
-    trade: { state: tradeState, trade, reserves },
+    trade: { state: tradeState, trade },
     allowedSlippage,
     currencyBalances,
     parsedAmount,
@@ -278,6 +279,11 @@ export function SwapComponent({
   const priceImpactSeverity = 2; //IF is < 2 it shows Swap anyway button in red
   const showPriceImpactWarning = false;
 
+  const { reserves } = useGetReservesByPair({
+    baseAddress: currencies[Field.INPUT]?.address,
+    otherAddress: currencies[Field.OUTPUT]?.address,
+  });
+
   const {
     getMainButtonText,
     isMainButtonDisabled,
@@ -354,6 +360,7 @@ export function SwapComponent({
               loading={independentField === Field.OUTPUT && routeIsSyncing}
               currency={currencies[Field.INPUT] ?? null}
               id={'swap-input'}
+              disableInput={getSwapValues().noLiquidity}
             />
           </SwapSection>
           <ArrowWrapper clickable={true}>
@@ -393,11 +400,13 @@ export function SwapComponent({
                 //showCommonBases
                 //id={InterfaceSectionName.CURRENCY_OUTPUT_PANEL}
                 loading={independentField === Field.INPUT && routeIsSyncing}
+                disableInput={getSwapValues().noLiquidity}
               />
             </OutputSwapSection>
           </div>
           {showDetailsDropdown && (
             <SwapDetailsDropdown
+              noLiquidity={getSwapValues().noLiquidity}
               trade={trade}
               syncing={routeIsSyncing}
               loading={routeIsLoading}

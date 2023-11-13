@@ -261,7 +261,7 @@ export default function SwapCurrencyInputPanel({
           {!hideInput && (
             <StyledNumericalInput
               className="token-amount-input"
-              style={{ color: disableInput ? 'gray' : 'initial' }}
+              style={{ opacity: disableInput ? '0.4' : '1' }}
               value={value}
               onUserInput={onUserInput}
               disabled={!chainAllowed || disabled || disableInput}

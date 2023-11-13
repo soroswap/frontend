@@ -15,6 +15,7 @@ export function isAddress(value: any): string | false {
 }
 
 export function shortenAddress(address: string, chars = 4): string {
+  if (!address) return '';
   const parsed = isAddress(address);
   if (!parsed) {
     throw Error(`Invalid 'address' parameter '${address}'.`);
