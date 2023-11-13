@@ -94,8 +94,9 @@ const useLiquidityValidations = ({
 
   const getModalTitleText = () => {
     const pairInfo = getPairInfo();
+
     if (pairInfo.exists) {
-      if (Number(pairInfo.balance ?? 0) === 0) return 'You are the first to add liquidity';
+      if (Number(pairInfo.balance) === 0) return 'You are the first to add liquidity';
       return 'Add liquidity';
     }
     return 'You are creating a pool';
