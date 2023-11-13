@@ -15,13 +15,7 @@ export default function ProfileSection() {
   const { isConnectWalletModalOpen, setConnectWalletModalOpen } = ConnectWalletModal;
 
   const handleClick = () => {
-    if (sorobanContext.activeChain) {
-      //HERE WALLET IS CONNECTED
-      //TODO: Disconnect function not working
-      sorobanContext.disconnect();
-    } else {
-      setConnectWalletModalOpen(true);
-    }
+    setConnectWalletModalOpen(true);
   };
 
   return (
@@ -55,7 +49,7 @@ export default function ProfileSection() {
           },
         }}
         label={
-          sorobanContext.activeChain ? (
+          sorobanContext.address ? (
             <div>{shortenAddress(sorobanContext.address ?? '')}</div>
           ) : (
             <div>Connect wallet</div>

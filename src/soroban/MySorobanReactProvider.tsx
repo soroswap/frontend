@@ -3,7 +3,6 @@ import { SorobanReactProvider } from '@soroban-react/core';
 import { freighter } from '@soroban-react/freighter';
 import { ChainMetadata, Connector } from '@soroban-react/types';
 import useMounted from 'hooks/useMounted';
-import React from 'react';
 
 const chains: ChainMetadata[] = [testnet, sandbox, standalone, futurenet];
 const connectors: Connector[] = [freighter()];
