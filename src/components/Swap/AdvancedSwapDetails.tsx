@@ -95,7 +95,7 @@ export function AdvancedSwapDetails({
         reserves,
         trade?.tradeType,
       ).then((resp) => {
-        setPriceImpact(twoDecimalsPercentage(resp.toString()));
+        setPriceImpact(twoDecimalsPercentage(BigNumber(resp).absoluteValue().toString()));
       });
     }
   }, [
@@ -136,7 +136,7 @@ export function AdvancedSwapDetails({
             <BodySmall color="textSecondary">Price Impact</BodySmall>
           </MouseoverTooltip>
           <TextWithLoadingPlaceholder syncing={syncing} width={50}>
-            <BodySmall>{priceImpact}%</BodySmall>
+            <BodySmall>~{priceImpact}%</BodySmall>
           </TextWithLoadingPlaceholder>
         </RowBetween>
       )}
