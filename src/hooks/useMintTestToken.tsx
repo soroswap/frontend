@@ -60,6 +60,7 @@ export function useMintTestToken() {
             sorobanContext,
             signAndSend: true,
             secretKey: admin_secret,
+            reconnectAfterTx: false,
           })) as SorobanClient.SorobanRpc.GetTransactionResponse;
 
           if (result.status !== SorobanClient.SorobanRpc.GetTransactionStatus.SUCCESS) throw result;
