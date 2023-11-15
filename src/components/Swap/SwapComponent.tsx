@@ -348,7 +348,7 @@ export function SwapComponent({
                 independentField === Field.OUTPUT ? <span>From (at most)</span> : <span>From</span>
               }
               // disabled={disableTokenInputs}
-              value={formattedAmounts[Field.INPUT]}
+              value={getSwapValues().insufficientLiquidity ? '0' : formattedAmounts[Field.INPUT]}
               showMaxButton={showMaxButton}
               onUserInput={handleTypeInput}
               onMax={(maxBalance) => handleTypeInput(maxBalance.toString())}
@@ -360,7 +360,7 @@ export function SwapComponent({
               loading={independentField === Field.OUTPUT && routeIsSyncing}
               currency={currencies[Field.INPUT] ?? null}
               id={'swap-input'}
-              disableInput={getSwapValues().noLiquidity}
+              disableInput={getSwapValues().noLiquidity || getSwapValues().insufficientLiquidity}
             />
           </SwapSection>
           <ArrowWrapper clickable={true}>
@@ -404,7 +404,7 @@ export function SwapComponent({
               />
             </OutputSwapSection>
           </div>
-          {showDetailsDropdown && (
+          {showDetailsDropdown && !getSwapValues().insufficientLiquidity && (
             <SwapDetailsDropdown
               noLiquidity={getSwapValues().noLiquidity}
               trade={trade}
