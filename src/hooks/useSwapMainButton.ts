@@ -61,7 +61,7 @@ const useSwapMainButton = ({
       reserveB = formatTokenAmount(reserves?.reserve0 as BigNumber);
     }
 
-    const insufficientLiquidity = Number(inputB) > Number(reserveB);
+    const insufficientLiquidity = Number(inputB) >= Number(reserveB);
 
     const noLiquidity = reserves && Number(reserveB) === 0;
 
