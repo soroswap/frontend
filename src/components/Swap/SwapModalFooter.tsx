@@ -17,6 +17,7 @@ import { SwapCallbackError, SwapShowAcceptChanges } from './styleds';
 import CurrencyLogo from 'components/Logo/CurrencyLogo';
 import useGetReservesByPair from 'hooks/useGetReservesByPair';
 import { getSwapAmounts } from 'hooks/useSwapCallback';
+import { getExpectedAmountOfOne } from './TradePrice';
 
 const DetailsContainer = styled(Column)`
   padding: 0 8px;
@@ -62,7 +63,6 @@ export default function SwapModalFooter({
   showAcceptChanges: boolean;
   onAcceptChanges: () => void;
 }) {
-  const sorobanContext = useSorobanReact();
   const theme = useTheme();
   // const transactionDeadlineSecondsSinceEpoch = useTransactionDeadline()?.toNumber() // in seconds since epoch
   // const isAutoSlippage = useUserSlippageTolerance()[0] === 'auto'
@@ -78,21 +78,6 @@ export default function SwapModalFooter({
     baseAddress: trade?.inputAmount?.currency?.address,
     otherAddress: trade?.outputAmount?.currency.address,
   });
-
-  const [expectedAmountOfOne, setExpectedAmountOfOne] = useState<string | number>();
-
-  useEffect(() => {
-    if (!reserves) return;
-
-    getExpectedAmountNew(
-      trade?.outputAmount?.currency,
-      trade?.inputAmount?.currency,
-      BigNumber(1).shiftedBy(7),
-      reserves,
-    ).then((resp) => {
-      setExpectedAmountOfOne(formatTokenAmount(resp));
-    });
-  }, [reserves, trade?.inputAmount?.currency, trade?.outputAmount?.currency]);
 
   const [priceImpact, setPriceImpact] = useState<number>(0);
 
@@ -139,7 +124,7 @@ export default function SwapModalFooter({
           <Row align="flex-start" justify="space-between" gap="sm">
             <Label>Exchange rate</Label>
             <DetailRowValue>{`1 ${label} = ${
-              expectedAmountOfOne ?? '-'
+              getExpectedAmountOfOne(trade, true) ?? '-'
             } ${labelInverted}`}</DetailRowValue>
           </Row>
         </BodySmall>
