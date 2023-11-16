@@ -113,7 +113,8 @@ const ErrorContent = ({
           <Box display="flex" alignItems="center" gap="8px" marginBottom="12px">
             <Subtitle>{errorMessage}</Subtitle>
           </Box>
-          <Subtitle>Please make sure you are connected to Testnet network</Subtitle>
+          <Subtitle>Please make sure you are connected to Stellar Testnet network </Subtitle>
+          <Subtitle>and that you allow use experimental APIs in Freighter</Subtitle>
           <ButtonPrimary onClick={handleClick} style={{ marginTop: 32 }}>
             Try again
           </ButtonPrimary>
