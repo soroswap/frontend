@@ -1,4 +1,4 @@
-import { Switch, SwitchProps, useMediaQuery } from '@mui/material';
+import { Box, Switch, SwitchProps, useMediaQuery } from '@mui/material';
 import { styled, useTheme } from '@mui/material/styles';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -10,7 +10,7 @@ import soroswapLogoPurpleWhite from '../../assets/svg/SoroswapPurpleWhite.svg';
 import darkModeMoon from '../../assets/svg/darkModeMoon.svg';
 import lightModeSun from '../../assets/svg/lightModeSun.svg';
 import { ColorModeContext } from '../../contexts';
-import ProfileSection from './ProfileSection';
+import ProfileSection, { ActiveChainHeaderChip } from './ProfileSection';
 
 const MainBox = styled('div')<{ isMobile: boolean }>`
   display: flex;
@@ -179,7 +179,7 @@ export default function Header({ isDrawerOpen, setDrawerOpen }: HeaderProps) {
         {!isMobile ? (
           <>
             <NavBar>
-              <NavItem href={'/'} active={pathname === '/'}>
+              <NavItem href={'/balance'} active={pathname.includes('/balance')}>
                 Balance
               </NavItem>
               <NavItem href={'/swap'} active={pathname.includes('/swap')}>
@@ -203,15 +203,18 @@ export default function Header({ isDrawerOpen, setDrawerOpen }: HeaderProps) {
           </>
         ) : (
           <>
-            <Menu
-              onClick={() => setDrawerOpen(!isDrawerOpen)}
-              width={24}
-              height={24}
-              color={theme.palette.custom.borderColor}
-            />
+            <Box display="flex" alignItems="center" gap="18px">
+              <ActiveChainHeaderChip isMobile={isMobile} />
+              <Menu
+                onClick={() => setDrawerOpen(!isDrawerOpen)}
+                width={24}
+                height={24}
+                color={theme.palette.custom.borderColor}
+              />
+            </Box>
             <NavBarContainer>
               <NavBarMobile>
-                <NavItemMobile href={'/'} active={pathname === '/'}>
+                <NavItemMobile href={'/balance'} active={pathname.includes('/balance')}>
                   Balance
                 </NavItemMobile>
                 <NavItemMobile href={'/swap'} active={pathname.includes('/swap')}>

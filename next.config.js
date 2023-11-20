@@ -13,4 +13,13 @@ module.exports = {
     TOKEN_ID_1: '', //fs.readFileSync('../.soroban/token_id_1').toString().trim(),
     TOKEN_ID_2: '', //fs.readFileSync('../.soroban/token_id_2').toString().trim(),
   },
+  async redirects() {
+    return [
+      {
+        source: '/',
+        destination: '/swap',
+        permanent: true,
+      },
+    ];
+  },
 };

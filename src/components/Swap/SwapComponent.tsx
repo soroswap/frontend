@@ -360,7 +360,11 @@ export function SwapComponent({
               loading={independentField === Field.OUTPUT && routeIsSyncing}
               currency={currencies[Field.INPUT] ?? null}
               id={'swap-input'}
-              disableInput={getSwapValues().noLiquidity || getSwapValues().insufficientLiquidity}
+              disableInput={
+                getSwapValues().noLiquidity ||
+                getSwapValues().insufficientLiquidity ||
+                getSwapValues().noCurrencySelected
+              }
             />
           </SwapSection>
           <ArrowWrapper clickable={true}>
@@ -400,7 +404,7 @@ export function SwapComponent({
                 //showCommonBases
                 //id={InterfaceSectionName.CURRENCY_OUTPUT_PANEL}
                 loading={independentField === Field.INPUT && routeIsSyncing}
-                disableInput={getSwapValues().noLiquidity}
+                disableInput={getSwapValues().noLiquidity || getSwapValues().noCurrencySelected}
               />
             </OutputSwapSection>
           </div>

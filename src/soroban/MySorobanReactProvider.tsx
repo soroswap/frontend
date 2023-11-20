@@ -14,6 +14,7 @@ export default function MySorobanReactProvider({ children }: { children: React.R
   const mounted = useMounted();
 
   if (!mounted) return null;
+
   return (
     <SorobanReactProvider
       chains={chains}
