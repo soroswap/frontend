@@ -10,9 +10,11 @@ interface Props {
 
 const useGetPairAddress = ({ addressA, addressB }: Props) => {
   const sorobanContext = useSorobanReact();
+
   const { data, error, isLoading, mutate } = useSWRImmutable(
-    ['pair', addressA, addressB],
-    ([key, addressA, addressB]) => getPairAddress(addressA, addressB, sorobanContext),
+    ['pair', addressA, addressB, sorobanContext],
+    ([key, addressA, addressB, sorobanContext]) =>
+      getPairAddress(addressA, addressB, sorobanContext),
   );
 
   return { data, isError: error, isLoading, mutate };
