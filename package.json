@@ -16,7 +16,7 @@
     "@mui/material": "^5.10.17",
     "@next/font": "13.0.7",
     "@reduxjs/toolkit": "^1.9.5",
-    "@soroban-react/chains": "7.3.6",
+    "@soroban-react/chains": "7.3.7",
     "@soroban-react/contracts": "7.3.6",
     "@soroban-react/core": "7.3.6",
     "@soroban-react/freighter": "7.3.6",
