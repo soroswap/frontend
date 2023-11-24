@@ -36,7 +36,7 @@ export default function LiquidityPoolInfoModal({
   if (!selectedLP) return null;
 
   const handleAddClick = () => {
-    router.push(`/liquidity/add/${selectedLP.token_0?.address}/${selectedLP.token_1?.address}`);
+    router.push(`/liquidity/add/${selectedLP.token_0?.symbol}/${selectedLP.token_1?.symbol}`);
   };
 
   const handleRemoveClick = () => {
