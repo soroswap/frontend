@@ -19,9 +19,19 @@ module.exports = {
     '^.+\\.(png|jpg|jpeg|gif|webp|avif|ico|bmp|svg)$': `<rootDir>/__mocks__/fileMock.js`,
 
     // Handle module aliases
-    '^@/components/(.*)$': '<rootDir>/components/$1',
+    '^components/(.*)$': '<rootDir>/src/components/$1',
+    '^themes/(.*)$': '<rootDir>/src/themes/$1',
+    '^state/(.*)$': '<rootDir>/src/state/$1',
+    '^helpers/(.*)$': '<rootDir>/src/helpers/$1',
+    '^services/(.*)$': '<rootDir>/src/services/$1',
+    '^lib/(.*)$': '<rootDir>/src/lib/$1',
+    '^functions/(.*)$': '<rootDir>/src/functions/$1',
+    '^assets/(.*)$': '<rootDir>/src/assets/$1',
+    '^hooks': '<rootDir>/src/hooks',
+    '^contexts': '<rootDir>/src/contexts',
 
     '^@/pages/(.*)$': '<rootDir>/pages/$1',
+
   },
   setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
   testPathIgnorePatterns: ['<rootDir>/node_modules/', '<rootDir>/.next/'],
@@ -34,5 +44,5 @@ module.exports = {
     '/node_modules/',
     '^.+\\.module\\.(css|sass|scss)$',
   ],
-  testEnvironment: 'jest-environment-jsdom',
+  testEnvironment: 'node',
 }
