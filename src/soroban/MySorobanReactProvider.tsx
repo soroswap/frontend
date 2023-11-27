@@ -6,7 +6,8 @@ import useMounted from 'hooks/useMounted';
 
 const chains: ChainMetadata[] =
   process.env.NODE_ENV === 'production' ? [testnet] : [sandbox, standalone, futurenet, testnet];
-const activeChain: WalletChain = process.env.NODE_ENV === 'production' ? testnet : standalone;
+// const activeChain: WalletChain = process.env.NODE_ENV === 'production' ? testnet : standalone;
+const activeChain: WalletChain = testnet;
 
 const connectors: Connector[] = [freighter()];
 
