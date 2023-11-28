@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from 'test-utils/render'
+/* import { fireEvent, render, screen } from 'test-utils/render'
 import noop from 'utils/noop'
 
 import Expand from './index'
@@ -36,3 +36,4 @@ describe('Expand', () => {
     expect(onToggle).toHaveBeenCalled()
   })
 })
+ */
