@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "test": "vitest --config ./vitest.config.ts",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
@@ -58,6 +59,9 @@
   "devDependencies": {
     "@lingui/macro": "^4.3.0",
     "@testing-library/webdriverio": "^3.2.1",
+    "@testing-library/react": "^14.1.2",
+    "@types/jest": "^29.5.10",
+    "@types/node": "^18.11.15",
     "@types/react-copy-to-clipboard": "^5.0.7",
     "@wdio/cli": "^8.26.1",
     "@wdio/local-runner": "^8.26.1",
@@ -66,5 +70,9 @@
     "prettier": "3.0.0",
     "ts-node": "^10.9.2",
     "wdio-wait-for": "^3.0.9"
+    "jsdom": "^23.0.0",
+    "prettier": "3.0.0",
+    "vite-tsconfig-paths": "^4.2.1",
+    "vitest": "^0.34.6"
   }
 }
