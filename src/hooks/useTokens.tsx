@@ -1,9 +1,10 @@
 import { SorobanContextType, useSorobanReact } from '@soroban-react/core';
 import { isAddress } from 'helpers/address';
+import { getTokenDecimals, getTokenName, getTokenSymbol } from 'helpers/soroban';
 import { useEffect, useMemo, useState } from 'react';
-import { TokenMapType, TokenType, tokensResponse } from '../interfaces';
-import useSWRImmutable from 'swr/immutable';
 import { fetchTokens } from 'services/tokens';
+import useSWRImmutable from 'swr/immutable';
+import { TokenMapType, TokenType, tokensResponse } from '../interfaces';
 
 export const useTokens = () => {
   const sorobanContext = useSorobanReact();
@@ -126,49 +127,42 @@ export function useTokenFromMapOrNetwork(
 
 /**
  * Returns a Token from the tokenAddress.
- * Returns null if token is loading or null was passed.
+ * Returns null if null was passed.
  * Returns undefined if tokenAddress is invalid or token does not exist.
  */
 export function useTokenFromActiveNetwork(
   tokenAddress: string | undefined,
-): TokenType | null | undefined {
-  //This is from uniswap interface
-  //TODO: Make it work with useContractValue
-  return null;
-  // const { chainId } = useWeb3React()
+): TokenType | null {
+  const sorobanContext = useSorobanReact()
+  const [token, setToken] = useState<TokenType | null>(null); // Initialize tokenName state
 
-  // const formattedAddress = isAddress(tokenAddress)
-  // const tokenContract = useTokenContract(formattedAddress ? formattedAddress : undefined, false)
-  // const tokenContractBytes32 = useBytes32TokenContract(formattedAddress ? formattedAddress : undefined, false)
+  useEffect(() => {
+    async function fetchTokenInfo() {
+      if (tokenAddress) {
+        const formattedAddress = isAddress(tokenAddress)
+        console.log("🚀 « formattedAddress:", formattedAddress)
 
-  // // TODO (WEB-1709): reduce this to one RPC call instead of 5
-  // // TODO: Fix redux-multicall so that these values do not reload.
-  // const tokenName = useSingleCallResult(tokenContract, 'name', undefined, NEVER_RELOAD)
-  // const tokenNameBytes32 = useSingleCallResult(tokenContractBytes32, 'name', undefined, NEVER_RELOAD)
-  // const symbol = useSingleCallResult(tokenContract, 'symbol', undefined, NEVER_RELOAD)
-  // const symbolBytes32 = useSingleCallResult(tokenContractBytes32, 'symbol', undefined, NEVER_RELOAD)
-  // const decimals = useSingleCallResult(tokenContract, 'decimals', undefined, NEVER_RELOAD)
+        if (formattedAddress) {
+          try {
+            const name = await getTokenName(formattedAddress, sorobanContext)
+            const symbol = await getTokenSymbol(formattedAddress, sorobanContext)
+            const decimals = await getTokenDecimals(formattedAddress, sorobanContext)
 
-  // const isLoading = useMemo(
-  //   () => decimals.loading || symbol.loading || tokenName.loading,
-  //   [decimals.loading, symbol.loading, tokenName.loading]
-  // )
-  // const parsedDecimals = useMemo(() => decimals?.result?.[0] ?? DEFAULT_ERC20_DECIMALS, [decimals.result])
+            setToken({address: formattedAddress, name, symbol, decimals})
+          } catch (error) {
+            setToken(null)
+          }
 
-  // const parsedSymbol = useMemo(
-  //   () => parseStringOrBytes32(symbol.result?.[0], symbolBytes32.result?.[0], UNKNOWN_TOKEN_SYMBOL),
-  //   [symbol.result, symbolBytes32.result]
-  // )
-  // const parsedName = useMemo(
-  //   () => parseStringOrBytes32(tokenName.result?.[0], tokenNameBytes32.result?.[0], UNKNOWN_TOKEN_NAME),
-  //   [tokenName.result, tokenNameBytes32.result]
-  // )
+        } else {
+          setToken(null)
+        }
+      } else {
+        setToken(null)
+      }
+    }
 
-  // return useMemo(() => {
-  //   // If the token is on another chain, we cannot fetch it on-chain, and it is invalid.
-  //   if (typeof tokenAddress !== 'string' || !isSupportedChain(chainId) || !formattedAddress) return undefined
-  //   if (isLoading || !chainId) return null
+    fetchTokenInfo()
+  }, [tokenAddress, sorobanContext])
 
-  //   return new Token(chainId, formattedAddress, parsedDecimals, parsedSymbol, parsedName)
-  // }, [chainId, tokenAddress, formattedAddress, isLoading, parsedDecimals, parsedSymbol, parsedName])
+  return token
 }
