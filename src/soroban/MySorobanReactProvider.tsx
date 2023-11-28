@@ -1,3 +1,4 @@
+import React from 'react';
 import { futurenet, sandbox, standalone, testnet } from '@soroban-react/chains';
 import { SorobanReactProvider } from '@soroban-react/core';
 import { freighter } from '@soroban-react/freighter';
