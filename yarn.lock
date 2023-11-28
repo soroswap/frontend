@@ -827,10 +827,10 @@
   resolved "https://registry.yarnpkg.com/@sinclair/typebox/-/typebox-0.27.8.tgz#6667fac16c436b5434a387a34dedb013198f6e6e"
   integrity sha512-+Fj43pSMwJs4KRrH/938Uf+uAELIgVBmQzg/q1YG10djyfA3TnrU8N8XzqCh/okZdszqBQTZf96idMfE5lnwTA==
 
-"@soroban-react/chains@7.3.6":
-  version "7.3.6"
-  resolved "https://registry.yarnpkg.com/@soroban-react/chains/-/chains-7.3.6.tgz#574e2bc6e38fceec9d38456265d81f2efbcf2709"
-  integrity sha512-2fWMD1dx4b7fcKYMkVVsbHw5ysLLBZH6dc9OgdPHUnfpMrfGRiWuWSN71RHMj9kLWyG2klh1EmDy+XmSGUXd7w==
+"@soroban-react/chains@7.3.7":
+  version "7.3.7"
+  resolved "https://registry.yarnpkg.com/@soroban-react/chains/-/chains-7.3.7.tgz#f0183a072728e515d359031437f1275ac7a9282e"
+  integrity sha512-Byr/ZvN8qEvzfFLgYjMa2bR6BuCLOD5LD+r2zQ/EPae1um3VrPObOBijAHGy6tHxxtbLSE4jVnwt2hiV4+FuYg==
   dependencies:
     "@soroban-react/types" "^7.3.6"
     soroban-client "1.0.0-beta.4"
