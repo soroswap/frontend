@@ -178,14 +178,14 @@ export default function Header({ isDrawerOpen, setDrawerOpen }: HeaderProps) {
         />
         {!isMobile ? (
           <>
-            <NavBar>
-              <NavItem href={'/balance'} active={pathname.includes('/balance')}>
+            <NavBar data-testid="nav">
+              <NavItem href={'/balance'} active={pathname.includes('/balance')} data-testid='nav-link'>
                 Balance
               </NavItem>
-              <NavItem href={'/swap'} active={pathname.includes('/swap')}>
+              <NavItem href={'/swap'} active={pathname.includes('/swap')} data-testid='nav-link'>
                 Swap
               </NavItem>
-              <NavItem href={'/liquidity'} active={pathname.includes('/liquidity')}>
+              <NavItem href={'/liquidity'} active={pathname.includes('/liquidity')} data-testid='nav-link'>
                 Liquidity
               </NavItem>
               {/* <NavItem href={'/mint'} active={pathname.includes('/mint')}>
