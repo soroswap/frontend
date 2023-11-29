@@ -1,4 +1,3 @@
-import React from 'react';
 import { Box, CircularProgress, Typography, styled } from '@mui/material';
 import CardContent from '@mui/material/CardContent';
 import { AppContext } from 'contexts';

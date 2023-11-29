@@ -1,4 +1,3 @@
-import React from 'react';
 import { Balances } from '../src/components/Balances';
 import SEO from '../src/components/SEO';
 
