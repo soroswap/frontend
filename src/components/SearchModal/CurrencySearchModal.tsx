@@ -1,8 +1,8 @@
-import { memo, useCallback, useEffect, useState } from 'react';
-import { TokenType } from '../../interfaces';
-import useLast from '../../hooks/useLast';
-import { CurrencySearch } from './CurrencySearch';
 import { Modal } from '@mui/material';
+import { memo, useCallback, useEffect, useState } from 'react';
+import useLast from '../../hooks/useLast';
+import { TokenType } from '../../interfaces';
+import { CurrencySearch } from './CurrencySearch';
 
 interface CurrencySearchModalProps {
   isOpen: boolean;

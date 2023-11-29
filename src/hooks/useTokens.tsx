@@ -140,7 +140,6 @@ export function useTokenFromActiveNetwork(
     async function fetchTokenInfo() {
       if (tokenAddress) {
         const formattedAddress = isAddress(tokenAddress)
-        console.log("🚀 « formattedAddress:", formattedAddress)
 
         if (formattedAddress) {
           try {
@@ -148,7 +147,11 @@ export function useTokenFromActiveNetwork(
             const symbol = await getTokenSymbol(formattedAddress, sorobanContext)
             const decimals = await getTokenDecimals(formattedAddress, sorobanContext)
 
-            setToken({address: formattedAddress, name, symbol, decimals})
+            if (!name || !symbol) {
+              setToken(null)
+            } else {
+              setToken({address: formattedAddress, name, symbol, decimals})
+            }
           } catch (error) {
             setToken(null)
           }

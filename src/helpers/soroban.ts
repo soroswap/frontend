@@ -266,7 +266,7 @@ import { scValToJs } from './convert';
 export const getTokenSymbol = async (
   tokenId: string,
   sorobanContext: SorobanContextType,
-): Promise<string> => {
+): Promise<string | null> => {
   try {
     let result = await contractInvoke({
       contractAddress: tokenId as string,
@@ -277,7 +277,7 @@ export const getTokenSymbol = async (
 
     return scValToJs(result as xdr.ScVal);
   } catch (error) {
-    return '';
+    return null;
   }
 };
 
@@ -285,7 +285,7 @@ export const getTokenSymbol = async (
 export const getTokenName = async (
   tokenId: string,
   sorobanContext: SorobanContextType,
-): Promise<string> => {
+): Promise<string | null> => {
   try {
     let result = await contractInvoke({
       contractAddress: tokenId as string,
@@ -296,7 +296,7 @@ export const getTokenName = async (
 
     return scValToJs(result as xdr.ScVal);
   } catch (error) {
-    return '';
+    return null;
   }
 };
 
