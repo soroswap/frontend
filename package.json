@@ -63,15 +63,22 @@
     "@types/jest": "^29.5.10",
     "@types/node": "^18.11.15",
     "@types/react-copy-to-clipboard": "^5.0.7",
+    "@vitejs/plugin-react": "^4.2.0",
     "@wdio/cli": "^8.26.1",
     "@wdio/local-runner": "^8.26.1",
     "@wdio/mocha-framework": "^8.24.12",
     "@wdio/spec-reporter": "^8.24.12",
     "prettier": "3.0.0",
     "ts-node": "^10.9.2",
-    "wdio-wait-for": "^3.0.9"
+    "wdio-wait-for": "^3.0.9",
     "jsdom": "^23.0.0",
+    "next-router-mock": "^0.9.10",
     "prettier": "3.0.0",
+    "ts-node": "^10.9.2",
+    "wdio-wait-for": "^3.0.9",
+    "@vitejs/plugin-react": "^4.2.0",
+    "jsdom": "^23.0.0",
+    "next-router-mock": "^0.9.10",
     "vite-tsconfig-paths": "^4.2.1",
     "vitest": "^0.34.6"
   }
