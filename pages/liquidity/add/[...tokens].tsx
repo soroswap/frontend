@@ -12,7 +12,7 @@ export default function AddLiquidityPage() {
   return (
     <>
       <SEO title="Add - Soroswap" description="Soroswap Add" />
-      <AddLiquidityComponent paramTokenA={tokenA} paramTokenB={tokenB} />
+      <AddLiquidityComponent currencyIdA={tokenA} currencyIdB={tokenB} />
     </>
   );
 }

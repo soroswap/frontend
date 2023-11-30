@@ -122,7 +122,7 @@ export function useTokenFromMapOrNetwork(
     token ? undefined : address ? address : undefined,
   );
 
-  return tokenFromNetwork ?? token;
+  return token ?? tokenFromNetwork;
 }
 
 /**
