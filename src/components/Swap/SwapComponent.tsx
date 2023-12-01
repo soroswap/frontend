@@ -1,26 +1,25 @@
-import { ArrowDown } from 'react-feather';
-import { ArrowWrapper, SwapWrapper } from './styleds';
-import { AutoColumn } from 'components/Column';
-import { ButtonText } from 'components/Text';
-import { Field } from 'state/swap/actions';
-import { formatTokenAmount } from 'helpers/format';
-import { InterfaceTrade, TradeState } from 'state/routing/types';
 import { Modal, styled } from '@mui/material';
-import { opacify } from 'themes/utils';
-import { ReactNode, useCallback, useEffect, useMemo, useReducer, useState } from 'react';
-import { relevantTokensType, useTokens } from 'hooks';
-import { TokenType } from 'interfaces';
-import { TransactionFailedContent } from 'components/TransactionConfirmationModal';
-import { useDerivedSwapInfo, useSwapActionHandlers } from 'state/swap/hooks';
-import { useSwapCallback } from 'hooks/useSwapCallback';
+import { AutoColumn } from 'components/Column';
 import ConfirmSwapModal from 'components/Swap/ConfirmSwapModal';
-import SwapCurrencyInputPanel from '../CurrencyInputPanel/SwapCurrencyInputPanel';
 import SwapDetailsDropdown from 'components/Swap/SwapDetailsDropdown';
-import SwapHeader from './SwapHeader';
-import swapReducer, { initialState as initialSwapState } from 'state/swap/reducer';
-import useSwapMainButton from 'hooks/useSwapMainButton';
-import { useRouter } from 'next/router';
+import { ButtonText } from 'components/Text';
+import { TransactionFailedContent } from 'components/TransactionConfirmationModal';
+import { formatTokenAmount } from 'helpers/format';
+import { relevantTokensType } from 'hooks';
 import useGetReservesByPair from 'hooks/useGetReservesByPair';
+import { useSwapCallback } from 'hooks/useSwapCallback';
+import useSwapMainButton from 'hooks/useSwapMainButton';
+import { TokenType } from 'interfaces';
+import { ReactNode, useCallback, useMemo, useReducer, useState } from 'react';
+import { ArrowDown } from 'react-feather';
+import { InterfaceTrade, TradeState } from 'state/routing/types';
+import { Field } from 'state/swap/actions';
+import { useDerivedSwapInfo, useSwapActionHandlers } from 'state/swap/hooks';
+import swapReducer, { SwapState, initialState as initialSwapState } from 'state/swap/reducer';
+import { opacify } from 'themes/utils';
+import SwapCurrencyInputPanel from '../CurrencyInputPanel/SwapCurrencyInputPanel';
+import SwapHeader from './SwapHeader';
+import { ArrowWrapper, SwapWrapper } from './styleds';
 
 const SwapSection = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -90,14 +89,13 @@ const INITIAL_SWAP_STATE = {
 };
 
 export function SwapComponent({
+  prefilledState = {},
   disableTokenInputs = false,
-  paramTokenA,
-  paramTokenB,
 }: {
+  prefilledState?: Partial<SwapState>;
   disableTokenInputs?: boolean;
-  paramTokenA?: string;
-  paramTokenB?: string;
 }) {
+  console.log("🚀 « prefilledState:", prefilledState)
   const [showPriceImpactModal, setShowPriceImpactModal] = useState<boolean>(false);
   const [txError, setTxError] = useState<boolean>(false);
 
@@ -105,7 +103,7 @@ export function SwapComponent({
   const [{ showConfirm, tradeToConfirm, swapError, swapResult }, setSwapState] =
     useState<SwapStateProps>(INITIAL_SWAP_STATE);
 
-  const [state, dispatch] = useReducer(swapReducer, initialSwapState);
+  const [state, dispatch] = useReducer(swapReducer, { ...initialSwapState, ...prefilledState });
   const { typedValue, recipient, independentField } = state;
 
   const { onSwitchTokens, onCurrencySelection, onUserInput, onChangeRecipient } =
@@ -160,31 +158,19 @@ export function SwapComponent({
     [currencyBalances],
   );
 
-  const { tokens } = useTokens();
-  const router = useRouter();
+  const handleInputSelect = useCallback(
+    (inputCurrency: TokenType) => {
+      onCurrencySelection(Field.INPUT, inputCurrency);
+    },
+    [onCurrencySelection],
+  );
 
-  const handleInputSelect = (inputCurrency: TokenType) => {
-    router.push(`/swap/${inputCurrency.symbol}/${paramTokenB}`);
-  };
-
-  const handleOutputSelect = (outputCurrency: TokenType) => {
-    router.push(`/swap/${paramTokenA}/${outputCurrency.symbol}`);
-  };
-
-  useEffect(() => {
-    if (paramTokenA) {
-      const tokenA = tokens.find((token) => token.symbol === paramTokenA);
-      if (tokenA) {
-        onCurrencySelection(Field.INPUT, tokenA);
-      }
-    }
-    if (paramTokenB) {
-      const tokenB = tokens.find((token) => token.symbol === paramTokenB);
-      if (tokenB) {
-        onCurrencySelection(Field.OUTPUT, tokenB);
-      }
-    }
-  }, [paramTokenA, paramTokenB, tokens, onCurrencySelection]);
+  const handleOutputSelect = useCallback(
+    (outputCurrency: TokenType) => {
+      onCurrencySelection(Field.OUTPUT, outputCurrency);
+    },
+    [onCurrencySelection],
+  );
 
   const handleTypeInput = useCallback(
     (value: string) => {
