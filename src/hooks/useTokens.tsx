@@ -15,16 +15,15 @@ export const useTokens = () => {
 
   useEffect(() => {
     if (data && data.length > 0) {
-      //TODO: Hardcode one activeChain for default tokens
       const filtered = data?.filter(
-        (item: tokensResponse) => item.network === sorobanContext?.activeChain?.name?.toLowerCase(),
+        (item: tokensResponse) => item.network === (sorobanContext?.activeChain?.id) ,
       );
 
       if (filtered?.length > 0) {
         setTokens(filtered[0].tokens);
       }
     }
-  }, [data, sorobanContext?.activeChain?.name, tokens]);
+  }, [data, sorobanContext?.activeChain?.id, tokens]);
 
   return { tokens, mutate, isLoading, isError: error, data };
 };

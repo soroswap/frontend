@@ -1,20 +1,16 @@
+import { useSorobanReact } from '@soroban-react/core';
 import SEO from 'components/SEO';
 import { SwapComponent } from 'components/Swap/SwapComponent';
-import { useTokens } from 'hooks';
-import { useEffect, useState } from 'react';
+import { xlmTokenList } from 'constants/xlmToken';
 import { Field } from 'state/swap/actions';
 
 export default function SwapPage() {
-  const { tokens } = useTokens();
-  const [xlmAddress, setXlmToken] = useState<string | null>(null)
+  const { activeChain } = useSorobanReact()
 
-  useEffect(() => {
-    const xlm = tokens.find((token) => token.symbol === 'XLM')
-    setXlmToken(xlm?.address ?? null)
-  }, [tokens])
+  const xlmToken = xlmTokenList.find((tList) => tList.network == (activeChain?.id))?.tokens[0].address
 
   const prefilledState = {
-    [Field.INPUT]: { currencyId: "CCJQN2YS425VTF55YRSL4GMDI4J2X6IOSWQ4SFRN3OJH4V7DFP6XLXUP"},
+    [Field.INPUT]: { currencyId: xlmToken},
     [Field.OUTPUT]: { currencyId: null },
   };
 

@@ -8,12 +8,22 @@ export default function SwapPage() {
 
   const { tokens } = router.query;
 
-  const [paramTokenA, paramTokenB] = (tokens ?? ['null', 'null']) as string[];
+  const [paramTokenA, paramTokenB] = (tokens ?? [null, null]) as string[];
 
   const prefilledState = {
     [Field.INPUT]: { currencyId: paramTokenA },
     [Field.OUTPUT]: { currencyId: paramTokenB },
   };
+
+  if (!tokens) {
+    //TODO: Fix loading screen to be a loader (there should be one already in the components)
+    return (
+      <>
+        <SEO title="Loading..." description="Soroswap Swap" />
+        <div>Loading...</div>
+      </>
+    )
+  }
 
   return (
     <>
