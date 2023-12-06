@@ -12,7 +12,7 @@ export default function AddLiquidityPage() {
     if (!tokens) return;
 
     const xlm = tokens.find((token) => token.symbol === 'XLM');
-    if (xlm) router.push(`/liquidity/add/${xlm.symbol}`);
+    if (xlm) router.push(`/liquidity/add/${xlm.address}`);
   }, [tokens, router]);
 
   return (

@@ -1,10 +1,12 @@
 import { styled, useTheme } from '@mui/material';
+import { TxResponse } from '@soroban-react/contracts';
 import { useSorobanReact } from '@soroban-react/core';
 import BigNumber from 'bignumber.js';
 import { ButtonError, ButtonLight } from 'components/Buttons/Button';
 import { DarkGrayCard } from 'components/Card';
 import { AutoColumn, ColumnCenter } from 'components/Column';
 import CurrencyInputPanel from 'components/CurrencyInputPanel';
+import { DEFAULT_SLIPPAGE_INPUT_VALUE } from 'components/Settings/MaxSlippageSettings';
 import { BodySmall, ButtonText } from 'components/Text';
 import TransactionConfirmationModal, {
   ConfirmationModalContent,
@@ -13,24 +15,22 @@ import { AppContext } from 'contexts';
 import { getCurrentTimePlusOneHour } from 'functions/getCurrentTimePlusOneHour';
 import { formatTokenAmount } from 'helpers/format';
 import { bigNumberToI128, bigNumberToU64 } from 'helpers/utils';
-import { useTokens } from 'hooks';
+import { useToken } from 'hooks';
+import useCalculateLpToReceive from 'hooks/useCalculateLp';
+import useLiquidityValidations from 'hooks/useLiquidityValidations';
 import { RouterMethod, useRouterCallback } from 'hooks/useRouterCallback';
 import { TokenType } from 'interfaces';
 import { useRouter } from 'next/router';
-import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { useCallback, useContext, useMemo, useState } from 'react';
 import { Plus } from 'react-feather';
 import * as SorobanClient from 'soroban-client';
 import { Field } from 'state/mint/actions';
 import { useDerivedMintInfo, useMintActionHandlers, useMintState } from 'state/mint/hooks';
+import { useUserSlippageToleranceWithDefault } from 'state/user/hooks';
 import { opacify } from 'themes/utils';
 import { AddRemoveTabs } from '../AddRemoveHeader';
 import AddModalFooter from './AddModalFooter';
 import AddModalHeader from './AddModalHeader';
-import { useUserSlippageToleranceWithDefault } from 'state/user/hooks';
-import { DEFAULT_SLIPPAGE_INPUT_VALUE } from 'components/Settings/MaxSlippageSettings';
-import useLiquidityValidations from 'hooks/useLiquidityValidations';
-import useCalculateLpToReceive from 'hooks/useCalculateLp';
-import { TxResponse } from '@soroban-react/contracts';
 
 export const PageWrapper = styled('main')`
   position: relative;
@@ -62,13 +62,13 @@ export const PageWrapper = styled('main')`
 type TokensType = [string, string];
 
 interface AddLiquidityComponentProps {
-  paramTokenA?: string;
-  paramTokenB?: string;
+  currencyIdA?: string;
+  currencyIdB?: string;
 }
 
 export default function AddLiquidityComponent({
-  paramTokenA,
-  paramTokenB,
+  currencyIdA,
+  currencyIdB,
 }: AddLiquidityComponentProps) {
   const theme = useTheme();
   const userSlippage = useUserSlippageToleranceWithDefault(DEFAULT_SLIPPAGE_INPUT_VALUE);
@@ -77,41 +77,44 @@ export default function AddLiquidityComponent({
 
   const router = useRouter();
 
-  const { tokens } = useTokens();
+  // const { tokens } = useTokens();
 
-  const [currencyIdA, setCurrencyIdA] = useState<string | undefined>(undefined);
-  const [currencyIdB, setCurrencyIdB] = useState<string | undefined>(undefined);
-  const [baseCurrency, setBaseCurrency] = useState<TokenType | undefined>(undefined);
-  const [currencyB, setCurrencyB] = useState<TokenType | undefined>(undefined);
+  // const [currencyIdA, setCurrencyIdA] = useState<string | undefined>(undefined);
+  // const [currencyIdB, setCurrencyIdB] = useState<string | undefined>(undefined);
+  // const [baseCurrency, setBaseCurrency] = useState<TokenType | undefined>(undefined);
+  // const [currencyB, setCurrencyB] = useState<TokenType | undefined>(undefined);
 
-  useEffect(() => {
-    if (paramTokenA) {
-      const tokenA = tokens.find((item) => item.symbol === paramTokenA);
-      if (tokenA) {
-        setBaseCurrency(tokenA);
-        setCurrencyIdA(tokenA.address);
-      } else {
-        setBaseCurrency(undefined);
-        setCurrencyIdA(undefined);
-      }
-    }
-    if (paramTokenB) {
-      const tokenB = tokens.find((item) => item.symbol === paramTokenB);
-      if (tokenB) {
-        setCurrencyB(tokenB);
-        setCurrencyIdB(tokenB.address);
-      } else {
-        setCurrencyB(undefined);
-        setCurrencyIdB(undefined);
-      }
-    }
-  }, [paramTokenA, paramTokenB, tokens]);
+  // useEffect(() => {
+  //   if (currencyIdA) {
+  //     const tokenA = tokens.find((item) => item.symbol === currencyIdA);
+  //     if (tokenA) {
+  //       setBaseCurrency(tokenA);
+  //       setCurrencyIdA(tokenA.address);
+  //     } else {
+  //       setBaseCurrency(undefined);
+  //       setCurrencyIdA(undefined);
+  //     }
+  //   }
+  //   if (currencyIdB) {
+  //     const tokenB = tokens.find((item) => item.symbol === currencyIdB);
+  //     if (tokenB) {
+  //       setCurrencyB(tokenB);
+  //       setCurrencyIdB(tokenB.address);
+  //     } else {
+  //       setCurrencyB(undefined);
+  //       setCurrencyIdB(undefined);
+  //     }
+  //   }
+  // }, [currencyIdA, currencyIdB, tokens]);
 
   const sorobanContext = useSorobanReact();
 
   const [amountOfLpTokensToReceive, setAmountOfLpTokensToReceive] = useState<string>('');
   const [lpPercentage, setLpPercentage] = useState<string>('');
   const [totalShares, setTotalShares] = useState<string>('');
+
+  const baseCurrency = useToken(currencyIdA);
+  const currencyB = useToken(currencyIdB);
 
   const derivedMintInfo = useDerivedMintInfo(baseCurrency ?? undefined, currencyB ?? undefined);
   const { dependentField, currencies, parsedAmounts, noLiquidity, pairAddress } = derivedMintInfo;
@@ -243,25 +246,29 @@ export default function AddLiquidityComponent({
     userSlippage,
   ]);
 
-  const handleCurrencyASelect = (currencyA: TokenType) => {
-    const newCurrencyIdA = currencyA.symbol;
+  const handleCurrencyASelect = useCallback(
+    (currencyA: TokenType) => {
+      const newCurrencyIdA = currencyA.address;
+      if (currencyIdB === undefined) {
+        router.push(`/liquidity/add/${newCurrencyIdA}`);
+      } else {
+        router.push(`/liquidity/add/${newCurrencyIdA}/${currencyIdB}`);
+      }
+    },
+    [currencyIdB, router],
+  );
 
-    if (newCurrencyIdA === paramTokenB) {
-      router.push(`/liquidity/add/${newCurrencyIdA}/${paramTokenA}`);
-    } else {
-      router.push(`/liquidity/add/${newCurrencyIdA}/${paramTokenB}`);
-    }
-  };
-
-  const handleCurrencyBSelect = (currencyB: TokenType) => {
-    const newCurrencyIdB = currencyB.symbol;
-
-    if (newCurrencyIdB === paramTokenA) {
-      router.push(`/liquidity/add/${paramTokenB}/${newCurrencyIdB}`);
-    } else {
-      router.push(`/liquidity/add/${paramTokenA}/${newCurrencyIdB}`);
-    }
-  };
+  const handleCurrencyBSelect = useCallback(
+    (currencyB: TokenType) => {
+      const newCurrencyIdB = currencyB.address;
+      if (currencyIdA === undefined) {
+        router.push(`/liquidity/add/${newCurrencyIdB}`);
+      } else {
+        router.push(`/liquidity/add/${currencyIdA}/${newCurrencyIdB}`);
+      }
+    },
+    [currencyIdA, router],
+  );
 
   const pendingText = (
     <BodySmall>

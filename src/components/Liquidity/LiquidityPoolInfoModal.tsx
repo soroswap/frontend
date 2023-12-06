@@ -1,4 +1,5 @@
 import { Modal, styled, useMediaQuery, useTheme } from '@mui/material';
+import BigNumber from 'bignumber.js';
 import { ButtonOutlined, ButtonPrimary } from 'components/Buttons/Button';
 import { CloseButton } from 'components/Buttons/CloseButton';
 import Column from 'components/Column';
@@ -10,7 +11,6 @@ import { LpTokensObj } from 'functions/getLpTokens';
 import { formatTokenAmount } from 'helpers/format';
 import { useRouter } from 'next/router';
 import { LPPercentage } from './styleds';
-import BigNumber from 'bignumber.js';
 
 const ContentWrapper = styled('div')<{ isMobile: boolean }>`
   display: flex;
@@ -36,7 +36,7 @@ export default function LiquidityPoolInfoModal({
   if (!selectedLP) return null;
 
   const handleAddClick = () => {
-    router.push(`/liquidity/add/${selectedLP.token_0?.symbol}/${selectedLP.token_1?.symbol}`);
+    router.push(`/liquidity/add/${selectedLP.token_0?.address}/${selectedLP.token_1?.address}`);
   };
 
   const handleRemoveClick = () => {

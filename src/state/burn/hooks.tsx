@@ -36,7 +36,7 @@ export function useDerivedBurnInfo(
   useEffect(() => {
     if (address) {
       getPairInfo(currencyA, currencyB, sorobanContext).then((resp) => {
-        setPair(resp);
+        setPair(resp as PairInfo);
       });
     }
   }, [sorobanContext, address, currencyA, currencyB]);
