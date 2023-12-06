@@ -1,7 +1,8 @@
 import { Provider } from 'react-redux';
 import { ThemeProvider } from "@mui/material";
 import {screen, render} from '@testing-library/react'
-import { expect, test, it, describe } from 'vitest'
+import { expect, test, describe} from 'vitest'
+
 
 import MySorobanReactProvider from "soroban/MySorobanReactProvider";
 import store from '../../src/state'

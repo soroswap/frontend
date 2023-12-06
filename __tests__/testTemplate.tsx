@@ -2,7 +2,9 @@
 import { Provider } from 'react-redux';
 import { ThemeProvider } from "@mui/material";
 import {screen, render} from '@testing-library/react'
-import { expect, test, it, describe } from 'vitest'
+import { expect, test, describe } from 'vitest'
+
+import prettier from 'prettier'
 
 //import import components and required files to test
 import MySorobanReactProvider from "soroban/MySorobanReactProvider";
@@ -24,6 +26,11 @@ describe('Swap Page GUI', ()=>{
         </Provider>
     )
     //write tests
+    test('print formatted document body on console', async () => {
+        const html = document.body.outerHTML;
+        const formattedHTML = await prettier.format(html, { parser: 'html' });
+        console.log(formattedHTML);
+    })
     test('The container panel exists', ()=>{
         //select an element by testID
         const panel = screen.getByTestId('Swap__panel')
