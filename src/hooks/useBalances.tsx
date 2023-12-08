@@ -42,7 +42,8 @@ export async function tokenBalance(
 
     return scValToJs(tokenBalance as xdr.ScVal) as BigNumber;
   } catch (error) {
-    throw error;
+    // console.log("Token address doesnt exist", error);
+    return null
   }
 }
 
@@ -89,6 +90,7 @@ export async function tokenBalances(
         if (notFound) return notFoundReturn(token);
 
         const balanceResponse = await tokenBalance(token.address, userAddress, sorobanContext);
+        if (!balanceResponse) return notFoundReturn(token);
         const decimalsResponse = await tokenDecimals(token.address, sorobanContext);
         let balance: number | string | BigNumber;
         if (formatted) {

@@ -1,8 +1,11 @@
 import { styled, useTheme } from '@mui/material';
+import { useSorobanReact } from '@soroban-react/core';
+import BigNumber from 'bignumber.js';
 import { RowFixed } from 'components/Row';
 import { BodySmall } from 'components/Text';
+import { formatTokenAmount } from 'helpers/format';
+import { tokenBalance } from 'hooks';
 
-import useGetMyBalances from 'hooks/useGetMyBalances';
 import { TokenType } from 'interfaces/tokens';
 import { useEffect, useState } from 'react';
 
@@ -41,21 +44,16 @@ export default function CurrencyBalance({
   hideBalance,
   showMaxButton,
 }: CurrencyBalanceProps) {
+  const sorobanContext = useSorobanReact()
   const [balance, setBalance] = useState<string>();
 
-  const { tokenBalancesResponse } = useGetMyBalances();
-
   useEffect(() => {
-    if (!tokenBalancesResponse) return;
-
-    const token = tokenBalancesResponse.balances.find(
-      (token) => token.address === currency.address,
-    );
-
-    if (token) {
-      setBalance(token.balance as string);
+    if (sorobanContext.activeChain && sorobanContext.address) {
+      tokenBalance(currency.address, address, sorobanContext).then((resp) => {
+        setBalance(formatTokenAmount(resp as BigNumber));
+      });
     }
-  }, [tokenBalancesResponse, currency]);
+  }, [address, currency.address, sorobanContext]);
 
   const theme = useTheme();
 
