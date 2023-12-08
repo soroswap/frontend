@@ -1,7 +1,11 @@
-import useGetMyBalances from './useGetMyBalances';
-import useGetLpTokens from './useGetLpTokens';
-import { Field } from 'state/mint/actions';
+import { useSorobanReact } from '@soroban-react/core';
+import BigNumber from 'bignumber.js';
+import { formatTokenAmount } from 'helpers/format';
 import { TokenType } from 'interfaces';
+import { useEffect, useState } from 'react';
+import { Field } from 'state/mint/actions';
+import { tokenBalance } from './useBalances';
+import useGetLpTokens from './useGetLpTokens';
 import useGetNativeTokenBalance from './useGetNativeTokenBalance';
 
 interface useLiquidityValidationsProps {
@@ -24,23 +28,27 @@ const useLiquidityValidations = ({
   currencyIdB,
   pairAddress,
 }: useLiquidityValidationsProps) => {
-  const { tokenBalancesResponse } = useGetMyBalances();
-
+  const sorobanContext = useSorobanReact();
+  const { address } = sorobanContext;
   const { lpTokens } = useGetLpTokens();
 
   const { data } = useGetNativeTokenBalance();
+  const [myCurrencyABalance, setMyCurrencyABalance] = useState<string>();
+  const [myCurrencyBBalance, setMyCurrencyBBalance] = useState<string>();
+
+  useEffect(() => {
+    if (!sorobanContext.address) return;
+    tokenBalance(currencyIdA as string, address as string, sorobanContext).then((resp) => {
+      setMyCurrencyABalance(formatTokenAmount(resp as BigNumber));
+    });
+    tokenBalance(currencyIdB as string, address as string, sorobanContext).then((resp) => {
+      setMyCurrencyBBalance(formatTokenAmount(resp as BigNumber));
+    });
+  }, [address, currencyIdA, currencyIdB, sorobanContext]);
 
   const hasEnoughBalance = () => {
     const currentCurrencyAValue = formattedAmounts[Field.CURRENCY_A];
     const currentCurrencyBValue = formattedAmounts[Field.CURRENCY_B];
-
-    const myCurrencyABalance =
-      tokenBalancesResponse?.balances.find((balance) => balance.address === currencyIdA)?.balance ??
-      0;
-
-    const myCurrencyBBalance =
-      tokenBalancesResponse?.balances.find((balance) => balance.address === currencyIdB)?.balance ??
-      0;
 
     if (Number(currentCurrencyAValue) > Number(myCurrencyABalance)) {
       return false;
