@@ -183,3 +183,24 @@ export function bigNumberToU64(value: BigNumber): SorobanClient.xdr.ScVal {
 
   return xdr.ScVal.scvU64(new xdr.Uint64([hi, lo]));
 }
+
+export function bigNumberToU32(value: BigNumber): SorobanClient.xdr.ScVal {
+  if (value.isNegative() || value.isGreaterThan(new BigNumber(2).pow(32).minus(1))) {
+    throw new Error('BigNumber is out of u32 range');
+  }
+
+  const b: bigint = BigInt(value.toFixed(0));
+  const buf = bigintToBuf(b);
+
+  if (buf.length > 4) {
+    throw new Error('BigNumber overflows u32');
+  }
+
+  let padded = Buffer.alloc(4);
+  buf.copy(padded, padded.length - buf.length);
+
+  const num = bigNumberFromBytes(false, ...padded).toNumber();
+
+  return xdr.ScVal.scvU32(num);
+}
+

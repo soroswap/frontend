@@ -1,6 +1,6 @@
-import { Box, CircularProgress, styled, useMediaQuery, useTheme } from '@mui/material';
+import { CircularProgress, styled, useMediaQuery, useTheme } from '@mui/material';
 import { useSorobanReact } from '@soroban-react/core';
-import { ButtonLight, ButtonPrimary } from 'components/Buttons/Button';
+import { ButtonPrimary } from 'components/Buttons/Button';
 import { AutoColumn } from 'components/Column';
 import LiquidityPoolInfoModal from 'components/Liquidity/LiquidityPoolInfoModal';
 import { LPPercentage } from 'components/Liquidity/styleds';
@@ -9,13 +9,12 @@ import { Dots } from 'components/Pool/styleds';
 import { AutoRow } from 'components/Row';
 import SettingsTab from 'components/Settings';
 import { BodySmall, SubHeader } from 'components/Text';
+import { AppContext } from 'contexts';
 import { LpTokensObj } from 'functions/getLpTokens';
+import useGetLpTokens from 'hooks/useGetLpTokens';
 import { useRouter } from 'next/router';
 import { useContext, useState } from 'react';
 import SEO from '../../src/components/SEO';
-import useGetLpTokens from 'hooks/useGetLpTokens';
-import { AppContext } from 'contexts';
-import useGetNativeTokenBalance from 'hooks/useGetNativeTokenBalance';
 
 const PageWrapper = styled(AutoColumn)`
   position: relative;
@@ -92,6 +91,7 @@ export default function LiquidityPage() {
   const isCreate = false;
 
   const { lpTokens, isLoading } = useGetLpTokens();
+  // console.log("🚀 « lpTokens:", lpTokens)
 
   const [isModalOpen, setModalOpen] = useState<boolean>(false);
   const [selectedLP, setSelectedLP] = useState<LpTokensObj>();
