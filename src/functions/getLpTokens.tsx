@@ -1,10 +1,10 @@
 import { SorobanContextType } from '@soroban-react/core';
 import BigNumber from 'bignumber.js';
 import { getToken, tokenBalance } from 'hooks';
-import { TokenType } from 'interfaces';
-import { getPairs } from './getPairs';
-import { getTotalLpShares } from './getTotalLpShares';
 import { reservesBigNumber } from 'hooks/useReserves';
+import { TokenType } from 'interfaces';
+import { getPairsFromFactory } from './getPairs';
+import { getTotalLpShares } from './getTotalLpShares';
 
 export type LpTokensObj = {
   token_0: TokenType | undefined;
@@ -19,7 +19,8 @@ export type LpTokensObj = {
 export async function getLpTokens(sorobanContext: SorobanContextType) {
   if (!sorobanContext.activeChain) return;
 
-  const pairs = await getPairs(sorobanContext);
+  // const pairs = await getPairs(sorobanContext); // This one uses pairs from the API
+  const pairs = await getPairsFromFactory(sorobanContext); // This one uses pairs from factory
 
   const results: LpTokensObj[] = [];
 
