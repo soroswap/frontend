@@ -1,13 +1,14 @@
 import { Box, CircularProgress, Typography, styled } from '@mui/material';
 import CardContent from '@mui/material/CardContent';
+import { AppContext } from 'contexts';
+import useGetMyBalances from 'hooks/useGetMyBalances';
 import { useMintTestToken } from 'hooks/useMintTestToken';
+import { TokenType } from 'interfaces';
+import { useContext, useState } from 'react';
 import { ButtonPrimary } from './Buttons/Button';
 import { AutoColumn } from './Column';
-import useGetMyBalances from 'hooks/useGetMyBalances';
-import { useContext, useState } from 'react';
-import { TokenType } from 'interfaces';
 import CurrencyLogo from './Logo/CurrencyLogo';
-import { AppContext } from 'contexts';
+import { MintCustomToken } from './MintCustomToken';
 
 const PageWrapper = styled(AutoColumn)`
   position: relative;
@@ -127,6 +128,9 @@ export function Balances() {
           </ButtonPrimary>
         )}
       </CardContent>
+      {sorobanContext.address && (
+        <MintCustomToken />
+      )}
     </PageWrapper>
   );
 }
