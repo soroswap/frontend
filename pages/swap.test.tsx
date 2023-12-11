@@ -5,9 +5,9 @@ import { expect, test, describe} from 'vitest'
 
 
 import MySorobanReactProvider from "soroban/MySorobanReactProvider";
-import store from '../../src/state'
-import { theme } from '../../src/themes';
-import { SwapComponent } from '../../src/components/Swap/SwapComponent';
+import store from '../src/state'
+import { theme } from '../src/themes';
+import { SwapComponent } from '../src/components/Swap/SwapComponent';
 
 describe('Swap Page GUI', ()=>{
     render(

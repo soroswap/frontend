@@ -4,8 +4,8 @@ import {screen, render} from '@testing-library/react'
 import { expect, test, it, describe } from 'vitest'
 
 import MySorobanReactProvider from "soroban/MySorobanReactProvider";
-import store from '../../src/state'
-import { theme } from '../../src/themes';
+import store from '../src/state'
+import { theme } from '../src/themes';
 import { Balances } from "components/Balances";
 
 describe('Balance Page GUI', ()=>{

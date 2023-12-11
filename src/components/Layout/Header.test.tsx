@@ -3,7 +3,7 @@ import {screen, render} from '@testing-library/react'
 import { expect, test, it, describe } from 'vitest'
 
 import MySorobanReactProvider from "soroban/MySorobanReactProvider";
-import { theme } from '../../src/themes';
+import { theme } from '../../themes';
 import Header from 'components/Layout/Header';
 
 describe('Header component', ()=>{
