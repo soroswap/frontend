@@ -10,7 +10,7 @@
     "start": "next start",
     "lint": "next lint",
     "format": "prettier --write \"src/**/*.ts\" \"pages/**/*.ts\"",
-    "wdio": "exec wdio run ./wdio.conf.ts --watch"
+    "wdio": "wdio run ./wdio.conf.ts"
   },
   "dependencies": {
     "@emotion/react": "^11.10.5",
