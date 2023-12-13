@@ -1,10 +1,9 @@
 import { Box, CircularProgress, Typography, styled, useTheme } from '@mui/material';
-import Column from '../Column';
-import Row, { RowBetween } from '../Row';
 import { SubHeader } from 'components/Text';
 import { isAddress } from 'helpers/address';
 import { useDefaultActiveTokens, useToken } from 'hooks';
 import useDebounce from 'hooks/useDebounce';
+import useGetMyBalances from 'hooks/useGetMyBalances';
 import { TokenType } from 'interfaces';
 import { getTokenFilter } from 'lib/hooks/useTokenList/filtering';
 import { useSortTokensByQuery } from 'lib/hooks/useTokenList/sorting';
@@ -21,9 +20,10 @@ import {
 import AutoSizer from 'react-virtualized-auto-sizer';
 import { FixedSizeList } from 'react-window';
 import { CloseButton } from '../../components/Buttons/CloseButton';
+import Column from '../Column';
+import Row, { RowBetween } from '../Row';
 import CurrencyList, { CurrencyRow, formatAnalyticsEventProperties } from './CurrencyList';
 import { PaddedColumn, SearchInput, Separator } from './styleds';
-import useGetMyBalances from 'hooks/useGetMyBalances';
 
 const ContentWrapper = styled(Column)<{ modalheight?: number }>`
   overflow: hidden;
@@ -200,11 +200,6 @@ export function CurrencySearch({
       {searchToken && !searchTokenIsAdded && !isLoading ? (
         <Column style={{ padding: '20px 0', height: '100%' }}>
           <CurrencyRow
-            currentBalance={
-              tokenBalancesResponse?.balances?.find(
-                (tokenBalance) => tokenBalance.address === searchToken.address,
-              )?.balance
-            }
             currency={searchToken}
             isSelected={Boolean(searchToken && selectedCurrency && selectedCurrency == searchToken)}
             onSelect={(hasWarning: boolean) =>
@@ -228,7 +223,6 @@ export function CurrencySearch({
           <AutoSizer disableWidth>
             {({ height }: { height: number }) => (
               <CurrencyList
-                tokenBalancesResponse={tokenBalancesResponse}
                 height={height}
                 currencies={searchCurrencies}
                 onCurrencySelect={handleCurrencySelect}

@@ -1,10 +1,10 @@
 import { SorobanContextType } from '@soroban-react/core';
 import BigNumber from 'bignumber.js';
 import { getToken, tokenBalance } from 'hooks';
-import { TokenType } from 'interfaces';
-import { getPairs } from './getPairs';
-import { getTotalLpShares } from './getTotalLpShares';
 import { reservesBigNumber } from 'hooks/useReserves';
+import { TokenType } from 'interfaces';
+import { getPairsFromFactory } from './getPairs';
+import { getTotalLpShares } from './getTotalLpShares';
 
 export type LpTokensObj = {
   token_0: TokenType | undefined;
@@ -19,7 +19,8 @@ export type LpTokensObj = {
 export async function getLpTokens(sorobanContext: SorobanContextType) {
   if (!sorobanContext.activeChain) return;
 
-  const pairs = await getPairs(sorobanContext);
+  // const pairs = await getPairs(sorobanContext); // This one uses pairs from the API
+  const pairs = await getPairsFromFactory(sorobanContext); // This one uses pairs from factory
 
   const results: LpTokensObj[] = [];
 
@@ -36,11 +37,13 @@ export async function getLpTokens(sorobanContext: SorobanContextType) {
       const totalShares = await getTotalLpShares(element.pair_address, sorobanContext);
       const reservesResponse = await reservesBigNumber(element.pair_address, sorobanContext);
 
-      const lpPercentage = BigNumber(pairLpTokens)
+      const lpPercentage = BigNumber(pairLpTokens as BigNumber)
         .dividedBy(totalShares)
         .multipliedBy(100)
         .decimalPlaces(7)
         .toString();
+      
+      if(!token_0 || !token_1) return
 
       const toReturn = {
         token_0,
@@ -52,7 +55,7 @@ export async function getLpTokens(sorobanContext: SorobanContextType) {
         reserve1: reservesResponse?.reserve1,
       };
 
-      results.push(toReturn);
+      results.push(toReturn as LpTokensObj);
     }
   }
 
