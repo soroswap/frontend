@@ -5,12 +5,12 @@ import SwapDetailsDropdown from 'components/Swap/SwapDetailsDropdown';
 import { ButtonText } from 'components/Text';
 import { TransactionFailedContent } from 'components/TransactionConfirmationModal';
 import { formatTokenAmount } from 'helpers/format';
-import { relevantTokensType } from 'hooks';
+import { relevantTokensType, useToken } from 'hooks';
 import useGetReservesByPair from 'hooks/useGetReservesByPair';
 import { useSwapCallback } from 'hooks/useSwapCallback';
 import useSwapMainButton from 'hooks/useSwapMainButton';
 import { TokenType } from 'interfaces';
-import { ReactNode, useCallback, useMemo, useReducer, useState } from 'react';
+import { ReactNode, useCallback, useEffect, useMemo, useReducer, useState } from 'react';
 import { ArrowDown } from 'react-feather';
 import { InterfaceTrade, TradeState } from 'state/routing/types';
 import { Field } from 'state/swap/actions';
@@ -95,9 +95,10 @@ export function SwapComponent({
   prefilledState?: Partial<SwapState>;
   disableTokenInputs?: boolean;
 }) {
-  // console.log("🚀 « prefilledState:", prefilledState)
   const [showPriceImpactModal, setShowPriceImpactModal] = useState<boolean>(false);
   const [txError, setTxError] = useState<boolean>(false);
+
+  const prefilledToken = useToken(prefilledState.INPUT?.currencyId)
 
   // modal and loading
   const [{ showConfirm, tradeToConfirm, swapError, swapResult }, setSwapState] =
@@ -109,6 +110,12 @@ export function SwapComponent({
   const { onSwitchTokens, onCurrencySelection, onUserInput, onChangeRecipient } =
     useSwapActionHandlers(dispatch);
   const dependentField: Field = independentField === Field.INPUT ? Field.OUTPUT : Field.INPUT;
+
+  useEffect(() => {
+    if (prefilledToken) {
+      onCurrencySelection(Field.INPUT, prefilledToken);
+    }
+  }, [onCurrencySelection, prefilledToken])
 
   const {
     trade: { state: tradeState, trade },

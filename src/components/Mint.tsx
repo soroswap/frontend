@@ -110,7 +110,7 @@ export function MintTokens({
   useEffect(() => {
     if (sorobanContext.activeChain && sorobanContext.address) {
       tokenBalance(inputToken.address, sorobanContext.address, sorobanContext).then((resp) => {
-        setBalance(formatTokenAmount(resp));
+        setBalance(formatTokenAmount(resp as BigNumber));
       });
     }
   }, [inputToken.address, sorobanContext]);

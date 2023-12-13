@@ -70,44 +70,34 @@ export function useToken(tokenAddress?: string | null) {
   return useTokenFromMapOrNetwork(tokens, tokenAddress);
 }
 
+//TODO: getToken should do it similar to useToken which gets the token from the API or from the activeNetwork if not found in the API
 export async function getToken(
   sorobanContext: SorobanContextType,
   tokenAddress?: string | undefined,
 ): Promise<TokenType | undefined> {
   if (!tokenAddress || tokenAddress === '' || !sorobanContext.activeChain) return undefined;
 
-  const backendURL = `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/tokens`;
+  let name, symbol, decimals, logo
 
-  // fetch token list from url
   try {
-    const response = await fetch(backendURL);
-    if (!response.ok) {
-      return undefined;
+    const formattedAddress = isAddress(tokenAddress)
+    if(!formattedAddress) return
+    name = await getTokenName(formattedAddress, sorobanContext)
+    symbol = await getTokenSymbol(formattedAddress, sorobanContext)
+    decimals = await getTokenDecimals(formattedAddress, sorobanContext)
+    logo = await getTokenLogo(formattedAddress, sorobanContext)
+
+    const token: TokenType = {
+      address: formattedAddress,
+      name: name as string,
+      symbol: symbol as string,
+      decimals,
+      logoURI: logo
     }
-
-    const tokenData = await response.json();
-
-    // Find the object that matches the activeChain
-    const activeChainTokens = tokenData.find(
-      (chain: { network: string }) =>
-        chain.network.toLowerCase() === sorobanContext.activeChain?.name?.toLowerCase(),
-    );
-    if (!activeChainTokens) return undefined;
-
-    // Find the token that matches the tokenAddress
-    const token = activeChainTokens.tokens.find(
-      (tkn: TokenType) => tkn.address.toLowerCase() === tokenAddress.toLowerCase(),
-    );
-    if (!token) return undefined;
-
-    // Set decimals to 7 if not present
-    if (token.decimals === undefined) {
-      token.decimals = 7;
-    }
-
-    return token;
+    
+    return token
   } catch (error) {
-    return undefined;
+    console.log("🚀 « error:", error)
   }
 }
 
@@ -167,4 +157,36 @@ export function useTokenFromActiveNetwork(
   }, [tokenAddress, sorobanContext])
 
   return token
+}
+
+export const getTokenLogo = async (address: string, sorobanContext: SorobanContextType) => {
+  const backendURL = `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/tokens`;
+
+  // fetch token list from url
+  try {
+    const response = await fetch(backendURL);
+    if (!response.ok) {
+      return undefined;
+    }
+
+    const tokenData = await response.json();
+
+    // Find the object that matches the activeChain
+    const activeChainTokens = tokenData.find(
+      (chain: { network: string }) =>
+        chain.network.toLowerCase() === sorobanContext.activeChain?.name?.toLowerCase(),
+    );
+    if (!activeChainTokens) return undefined;
+
+    // Find the token that matches the tokenAddress
+    const token: TokenType = activeChainTokens.tokens.find(
+      (tkn: TokenType) => tkn.address.toLowerCase() === address.toLowerCase(),
+    );
+    if (!token) return undefined;
+
+    return token.logoURI;
+  } catch (error) {
+    return undefined;
+  }
+  return ''
 }

@@ -37,11 +37,13 @@ export async function getLpTokens(sorobanContext: SorobanContextType) {
       const totalShares = await getTotalLpShares(element.pair_address, sorobanContext);
       const reservesResponse = await reservesBigNumber(element.pair_address, sorobanContext);
 
-      const lpPercentage = BigNumber(pairLpTokens)
+      const lpPercentage = BigNumber(pairLpTokens as BigNumber)
         .dividedBy(totalShares)
         .multipliedBy(100)
         .decimalPlaces(7)
         .toString();
+      
+      if(!token_0 || !token_1) return
 
       const toReturn = {
         token_0,
@@ -53,7 +55,7 @@ export async function getLpTokens(sorobanContext: SorobanContextType) {
         reserve1: reservesResponse?.reserve1,
       };
 
-      results.push(toReturn);
+      results.push(toReturn as LpTokensObj);
     }
   }
 
