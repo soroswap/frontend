@@ -112,7 +112,7 @@ export const getPairsInfo = async (
             pairAddresses[i],
             sorobanContext.address ?? '',
             sorobanContext,
-          ),
+          ) ?? '0',
           totalSupply,
         };
 
