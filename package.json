@@ -9,7 +9,7 @@
     "start": "next start",
     "lint": "next lint",
     "format": "prettier --write \"src/**/*.ts\" \"pages/**/*.ts\"",
-    "wdio": "wdio run ./wdio.conf.ts"
+    "wdio": "exec wdio run ./wdio.conf.ts --watch"
   },
   "dependencies": {
     "@emotion/react": "^11.10.5",
@@ -58,7 +58,7 @@
   "devDependencies": {
     "@lingui/macro": "^4.3.0",
     "@testing-library/webdriverio": "^3.2.1",
-    "@types/node": "^18.11.15",
+    "@types/node": "^20.10.4",
     "@types/react-copy-to-clipboard": "^5.0.7",
     "@wdio/cli": "^8.26.1",
     "@wdio/local-runner": "^8.26.1",
