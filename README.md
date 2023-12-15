@@ -135,6 +135,49 @@ The tests are written using Vitest & testing-library.
 For more information on Vitest, please see the Vitest documentation: https://vitest.dev/. 
 
 For more information on Testing Library, please see the Testing Library documentation: https://testing-library.com/docs/react-testing-library/intro/
+**4. Configure Freigther wallet:**
+
+1. Start the test browser for the first time:**
+```
+yarn wdio
+```
+> [!IMPORTANT]
+>(This will take a moment and all tests will fail. This is normal because the wallet is not yet configured and the application is not running yet.)
+
+2. Create a wallet or import an existing one:
+
+In a new tab, go to: 
+> chrome-extension://bcacfldlkkdogcmkkibnjlakofdplcbk/index.html#
+
+and create/import a wallet, configure a password, and save it in the file ./test/specs/e2e.test.ts within the variable "walletPassword".
+
+3. Configure the network for testing:
+ >[!TIP]
+ >To configure the network, you can review step 6 of "[🛠 Setting Up Soroswap 🛠](#-setting-up-soroswap-)" and configure the network of your choice.
+ 
+4. Fund the wallet with firendbot
+
+**5. Run the development instance:**
+
+In the terminal opened in step 1 (Which runs the development container), run the command:
+```
+yarn dev
+```
+
+**6. Restart the tests:**
+1.  Press  **Ctrl**+**C**  in the tests terminal to kill the test process.
+ >[!TIP]
+ >If after shutting down wdio your terminal seems to be stucked, press intro to refresh it
+
+2.  Run the following command to restart the tests:
+```
+yarn wdio
+```
+
+**7. Evaluate the test results:**
+
+After the tests have been executed, you will find the output in the terminal detailing which tests passed and which did not, as well as the reason for the failure in these.
+
 
 ## 🔧🧪 E2E - Integration test environment setup 🔧🧪
 **1. Set up the development environment:**
