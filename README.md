@@ -129,11 +129,7 @@ git checkout feature/wdio
 ```
 yarn install
 ```
-**4. Create a folder named "user_data" in the "test" directory:**
-```
-mkdir test/user_data
-```
-**5. Configure Freigther wallet:**
+**4. Configure Freigther wallet:**
 
 1. Start the test browser for the first time:**
 ```
@@ -149,25 +145,30 @@ In a new tab, go to:
 
 and create/import a wallet, configure a password, and save it in the file ./test/specs/e2e.test.ts within the variable "walletPassword".
 
- 3. Configure the network for testing:
+3. Configure the network for testing:
  >[!TIP]
  >To configure the network, you can review step 6 of "[🛠 Setting Up Soroswap 🛠](#-setting-up-soroswap-)" and configure the network of your choice.
  
-**6. Run the development instance:**
+4. Fund the wallet with firendbot
+
+**5. Run the development instance:**
 
 In the terminal opened in step 1 (Which runs the development container), run the command:
 ```
 yarn dev
 ```
 
-**7. Restart the tests:**
+**6. Restart the tests:**
 1.  Press  **Ctrl**+**C**  in the tests terminal to kill the test process.
+ >[!TIP]
+ >If after shutting down wdio your terminal seems to be stucked, press intro to refresh it
+
 2.  Run the following command to restart the tests:
 ```
 yarn wdio
 ```
 
-**8. Evaluate the test results:**
+**7. Evaluate the test results:**
 
 After the tests have been executed, you will find the output in the terminal detailing which tests passed and which did not, as well as the reason for the failure in these.
 
