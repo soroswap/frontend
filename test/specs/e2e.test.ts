@@ -33,7 +33,7 @@ describe('Soroswap flow', () => {
         await $("//div[@class='css-10uqy76']//span[@class='token-symbol-container css-wz6nvd'][normalize-space()='Select a token']").click() //Select the second "Select a token" input
         await $('aria/EURoCoin').click()
         await $("//div[@class='css-ri2dy']//input[@placeholder='0']").setValue("5000")  //Set the first number input value to 5000
-        //await $("//*[@id=\"add-liquidity-input-tokenb\"]/div/div[1]/input").setValue("5000") //Set the second number input
+        await $("//*[@id=\"add-liquidity-input-tokenb\"]/div/div[1]/input").setValue("5000") //Set the second number input
         await $('button=Supply').click()
         await $('button=Add liquidity').click()
         await browser.pause(1500)
