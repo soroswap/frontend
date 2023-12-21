@@ -89,6 +89,23 @@ export function MintCustomToken() {
     return `Mint custom token`;
   };
 
+  // const handleTrustline = () => {
+  //   console.log("Setting Trustline")
+  //   const formattedAddress = isAddress(tokenAddress)
+  //   if (!formattedAddress && !sorobanContext.activeChain) return
+    
+  //   setTrustline({
+  //     tokenSymbol: "JORK",
+  //     tokenAdmin: "GC5OK5PYCWJXYFUPDATZIV3MM2YBLMLESTEU4UAEBZXOUAUVMYEW7DR3",
+  //     account: sorobanContext.address ?? "",
+  //     sorobanContext,
+  //   }).then((resp) => {
+  //     console.log(resp)
+  //   }).catch((e) => {
+  //     console.log(e)
+  //   })
+  // }
+
   const isButtonDisabled = () => {
     if (isMinting) return true;
     return false;
@@ -119,6 +136,13 @@ export function MintCustomToken() {
       >
         {getButtonTxt()}
       </ButtonPrimary>
+      {/* <ButtonPrimary
+        onClick={handleTrustline}
+        disabled={isButtonDisabled()}
+        style={{ marginTop: '24px' }}
+      >
+        Set Trustline
+      </ButtonPrimary> */}
     </CardContent>
   );
 }
