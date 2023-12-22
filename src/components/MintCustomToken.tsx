@@ -1,14 +1,14 @@
 import { Box, CircularProgress, Typography } from '@mui/material';
 import CardContent from '@mui/material/CardContent';
-import { contractInvoke } from '@soroban-react/contracts';
+import { contractInvoke, setTrustline } from '@soroban-react/contracts';
 import { useSorobanReact } from '@soroban-react/core';
 import BigNumber from 'bignumber.js';
 import { AppContext, SnackbarIconType } from 'contexts';
 import { sendNotification } from 'functions/sendNotification';
-import { shortenAddress } from 'helpers/address';
+import { isAddress, shortenAddress } from 'helpers/address';
 import { bigNumberToI128 } from 'helpers/utils';
-import { useKeys } from 'hooks';
-import { useContext, useState } from 'react';
+import { getToken, useKeys } from 'hooks';
+import { useContext, useEffect, useState } from 'react';
 import * as SorobanClient from 'soroban-client';
 import { ButtonPrimary } from './Buttons/Button';
 import { TextInput } from './Inputs/TextInput';
@@ -23,11 +23,15 @@ export function MintCustomToken() {
   const [tokenAddress, setTokenAddress] = useState<string>('');
   const [tokenAmount, setTokenAmount] = useState<number>();
   const [isMinting, setIsMinting] = useState(false);
+  const [buttonText, setButtonText] = useState<string>('Mint custom token');
+  const [needToSetTrustline, setNeedToSetTrustline] = useState<boolean>(false)
+  const [tokenSymbol, setTokenSymbol] = useState<string>('')
+  const [tokenAdmin, setTokenAdmin] = useState<string>('')
 
   const handleMint = async () => {
     setIsMinting(true);
 
-    const amount = new BigNumber(tokenAmount as number).shiftedBy(7);
+    const amount = new BigNumber(tokenAmount ?? 0).shiftedBy(7);
     const amountScVal = bigNumberToI128(amount);
 
     let adminSource, walletSource;
@@ -79,37 +83,60 @@ export function MintCustomToken() {
     }
   };
 
-  const getButtonTxt = () => {
-    if (isMinting)
-      return (
-        <Box display="flex" alignItems="center" gap="6px">
-          Minting {shortenAddress(tokenAddress)} <CircularProgress size="18px" />
-        </Box>
-      );
-    return `Mint custom token`;
-  };
+  const requiresTrustline = async (
+    account?: any,
+    asset?: any
+  ): Promise<boolean> => {
+    // no trustline required for unloaded account or asset
+    return true
+  }
 
-  // const handleTrustline = () => {
-  //   console.log("Setting Trustline")
-  //   const formattedAddress = isAddress(tokenAddress)
-  //   if (!formattedAddress && !sorobanContext.activeChain) return
-    
-  //   setTrustline({
-  //     tokenSymbol: "JORK",
-  //     tokenAdmin: "GC5OK5PYCWJXYFUPDATZIV3MM2YBLMLESTEU4UAEBZXOUAUVMYEW7DR3",
-  //     account: sorobanContext.address ?? "",
-  //     sorobanContext,
-  //   }).then((resp) => {
-  //     console.log(resp)
-  //   }).catch((e) => {
-  //     console.log(e)
-  //   })
-  // }
+  const handleSetTrustline = () => {
+    console.log("SETTING TRUSTLINE")
+    setTrustline({
+      tokenSymbol: tokenSymbol,
+      tokenAdmin: "GC5OK5PYCWJXYFUPDATZIV3MM2YBLMLESTEU4UAEBZXOUAUVMYEW7DR3",
+      sorobanContext
+    }).then((resp) => {
+      setNeedToSetTrustline(false)
+      setButtonText("Mint custom token")
+    }).catch((error: any) => {
+      console.log("Error setting trustline",error)
+    })
+  }
 
-  const isButtonDisabled = () => {
-    if (isMinting) return true;
-    return false;
-  };
+  const handleSubmit = () => {
+    if (needToSetTrustline) {
+      handleSetTrustline()
+    } else {
+      if (isAddress(tokenAddress)) {
+        handleMint()
+      } else {
+        console.log("type token address first")
+      }
+    }
+  }
+
+  useEffect(() => {
+    if (isAddress(tokenAddress)) {
+      getToken(sorobanContext, tokenAddress).then((resp) => {
+        setTokenSymbol(resp?.symbol as string)
+      })
+
+      requiresTrustline().then((resp: boolean) => {
+        setButtonText("Set Trustline")
+        setNeedToSetTrustline(resp)
+      })
+    } else {
+      setButtonText("Mint custom token")
+      setNeedToSetTrustline(false)
+    }
+    if (isMinting) {
+      setButtonText(`Minting ${shortenAddress(tokenAddress)}`)
+      setNeedToSetTrustline(false)
+    }
+  }, [isMinting, sorobanContext, tokenAddress])
+
   return (
     <CardContent>
       <Typography gutterBottom variant="h5" component="div">
@@ -130,19 +157,17 @@ export function MintCustomToken() {
         onChange={(e) => setTokenAmount(Number(e.target.value))}
       />
       <ButtonPrimary
-        onClick={handleMint}
-        disabled={isButtonDisabled()}
+        onClick={handleSubmit}
+        disabled={isMinting}
         style={{ marginTop: '24px' }}
       >
-        {getButtonTxt()}
+        <Box display="flex" alignItems="center" gap="6px">
+          {buttonText}
+          {isMinting && (
+            <CircularProgress size="18px" />
+          )}
+        </Box>
       </ButtonPrimary>
-      {/* <ButtonPrimary
-        onClick={handleTrustline}
-        disabled={isButtonDisabled()}
-        style={{ marginTop: '24px' }}
-      >
-        Set Trustline
-      </ButtonPrimary> */}
     </CardContent>
   );
 }
