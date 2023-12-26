@@ -2,12 +2,14 @@
   "name": "soroswap-frontend",
   "version": "0.1.1",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "format": "prettier --write \"src/**/*.ts\" \"pages/**/*.ts\""
+    "format": "prettier --write \"src/**/*.ts\" \"pages/**/*.ts\"",
+    "wdio": "exec wdio run ./wdio.conf.ts --watch"
   },
   "dependencies": {
     "@emotion/react": "^11.10.5",
@@ -55,8 +57,14 @@
   },
   "devDependencies": {
     "@lingui/macro": "^4.3.0",
-    "@types/node": "^18.11.15",
+    "@testing-library/webdriverio": "^3.2.1",
     "@types/react-copy-to-clipboard": "^5.0.7",
-    "prettier": "3.0.0"
+    "@wdio/cli": "^8.26.1",
+    "@wdio/local-runner": "^8.26.1",
+    "@wdio/mocha-framework": "^8.24.12",
+    "@wdio/spec-reporter": "^8.24.12",
+    "prettier": "3.0.0",
+    "ts-node": "^10.9.2",
+    "wdio-wait-for": "^3.0.9"
   }
 }

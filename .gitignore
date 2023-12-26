@@ -106,3 +106,6 @@ dist
 
 # TernJS port file
 .tern-port
+
+#wdio browser data
+test/user_data/**
