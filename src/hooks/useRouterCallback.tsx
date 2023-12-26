@@ -2,8 +2,7 @@ import { TxResponse, contractInvoke } from '@soroban-react/contracts';
 
 import { useSorobanReact } from '@soroban-react/core';
 import { useCallback } from 'react';
-import * as SorobanClient from 'soroban-client';
-import { useRouterAddress } from './useRouterAddress';
+import * as StellarSdk from 'stellar-sdk';import { useRouterAddress } from './useRouterAddress';
 import { useSWRConfig } from 'swr';
 
 export enum RouterMethod {
@@ -35,7 +34,7 @@ export function useRouterCallback() {
   const { mutate } = useSWRConfig();
 
   return useCallback(
-    async (method: RouterMethod, args?: SorobanClient.xdr.ScVal[], signAndSend?: boolean) => {
+    async (method: RouterMethod, args?: StellarSdk.xdr.ScVal[], signAndSend?: boolean) => {
       console.log('🚀 ~ file: useRouterCallback.tsx:34 ~ contractAddress:', router_address);
       console.log('🚀 ~ file: useRouterCallback.tsx:36 ~ method:', method);
       console.log('🚀 ~ file: useRouterCallback.tsx:38 ~ args:', args);
@@ -53,7 +52,7 @@ export function useRouterCallback() {
 
       if (
         isObject(result) &&
-        result?.status !== SorobanClient.SorobanRpc.GetTransactionStatus.SUCCESS
+        result?.status !== StellarSdk.SorobanRpc.GetTransactionStatus.SUCCESS
       )
         throw result;
 

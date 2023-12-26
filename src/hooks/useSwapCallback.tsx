@@ -6,8 +6,7 @@ import { sendNotification } from 'functions/sendNotification';
 import { formatTokenAmount } from 'helpers/format';
 import { bigNumberToI128, bigNumberToU64 } from 'helpers/utils';
 import { useContext } from 'react';
-import * as SorobanClient from 'soroban-client';
-import { InterfaceTrade, TradeType } from 'state/routing/types';
+import * as StellarSdk from 'stellar-sdk';import { InterfaceTrade, TradeType } from 'state/routing/types';
 import { RouterMethod, useRouterCallback } from './useRouterCallback';
 import { scValToJs } from 'helpers/convert';
 import { useUserSlippageToleranceWithDefault } from 'state/user/hooks';
@@ -81,7 +80,7 @@ export const getSwapAmounts = ({
   return { amount0, amount1, routerMethod };
 };
 
-export type SuccessfullSwapResponse = SorobanClient.SorobanRpc.GetSuccessfulTransactionResponse &
+export type SuccessfullSwapResponse = StellarSdk.SorobanRpc.GetSuccessfulTransactionResponse &
   TxResponse & {
     switchValues: string[];
   };
@@ -99,7 +98,7 @@ export function useSwapCallback(
   const allowedSlippage = useUserSlippageToleranceWithDefault(DEFAULT_SLIPPAGE_INPUT_VALUE);
 
   const doSwap = async (): Promise<
-    SuccessfullSwapResponse | SorobanClient.SorobanRpc.GetTransactionResponse
+    SuccessfullSwapResponse | StellarSdk.SorobanRpc.GetTransactionResponse
   > => {
     if (!trade) throw new Error('missing trade');
     if (!address || !activeChain) throw new Error('wallet must be connected to swap');
@@ -133,17 +132,17 @@ export function useSwapCallback(
     //     deadline: u64,
     // ) -> Vec<i128>;
     const pathAddresses = [
-      new SorobanClient.Address(trade.inputAmount?.currency.address as string),
-      new SorobanClient.Address(trade.outputAmount?.currency.address as string),
+      new StellarSdk.Address(trade.inputAmount?.currency.address as string),
+      new StellarSdk.Address(trade.outputAmount?.currency.address as string),
     ];
 
-    const pathScVal = SorobanClient.nativeToScVal(pathAddresses);
+    const pathScVal = StellarSdk.nativeToScVal(pathAddresses);
 
     const args = [
       amount0ScVal,
       amount1ScVal,
       pathScVal, // path
-      new SorobanClient.Address(address!).toScVal(),
+      new StellarSdk.Address(address!).toScVal(),
       bigNumberToU64(BigNumber(getCurrentTimePlusOneHour())),
     ];
 
@@ -152,9 +151,9 @@ export function useSwapCallback(
         routerMethod,
         args,
         true,
-      )) as SorobanClient.SorobanRpc.GetTransactionResponse;
+      )) as StellarSdk.SorobanRpc.GetTransactionResponse;
 
-      if (result.status !== SorobanClient.SorobanRpc.GetTransactionStatus.SUCCESS) throw result;
+      if (result.status !== StellarSdk.SorobanRpc.GetTransactionStatus.SUCCESS) throw result;
 
       const switchValues: string[] = scValToJs(result.returnValue!);
 

@@ -1,10 +1,9 @@
 import BigNumber from 'bignumber.js';
-import * as SorobanClient from 'soroban-client';
-import { I128 } from './xdr';
+import * as StellarSdk from 'stellar-sdk';import { I128 } from './xdr';
 
-let xdr = SorobanClient.xdr;
+let xdr = StellarSdk.xdr;
 
-export function scvalToBigNumber(scval: SorobanClient.xdr.ScVal | undefined): BigNumber {
+export function scvalToBigNumber(scval: StellarSdk.xdr.ScVal | undefined): BigNumber {
   switch (scval?.switch()) {
     case undefined: {
       return BigNumber(0);
@@ -69,7 +68,7 @@ function bigNumberFromBytes(signed: boolean, ...bytes: (string | number | bigint
   return BigNumber(b.toString()).multipliedBy(sign);
 }
 
-export function bigNumberToI128(value: BigNumber): SorobanClient.xdr.ScVal {
+export function bigNumberToI128(value: BigNumber): StellarSdk.xdr.ScVal {
   const b: bigint = BigInt(value.toFixed(0));
   const buf = bigintToBuf(b);
   if (buf.length > 16) {
@@ -127,7 +126,7 @@ function bigintToBuf(bn: bigint): Buffer {
   return Buffer.from(u8);
 }
 
-export function xdrUint64ToNumber(value: SorobanClient.xdr.Uint64): number {
+export function xdrUint64ToNumber(value: StellarSdk.xdr.Uint64): number {
   let b = 0;
   b |= value.high;
   b <<= 8;
@@ -135,12 +134,12 @@ export function xdrUint64ToNumber(value: SorobanClient.xdr.Uint64): number {
   return b;
 }
 
-export function scvalToString(value: SorobanClient.xdr.ScVal): string | undefined {
+export function scvalToString(value: StellarSdk.xdr.ScVal): string | undefined {
   return value.bytes().toString();
 }
 
 // XDR -> String
-export const decodei128ScVal = (value: SorobanClient.xdr.ScVal) => {
+export const decodei128ScVal = (value: StellarSdk.xdr.ScVal) => {
   try {
     return new I128([
       BigInt(value.i128().lo().low),
@@ -153,15 +152,15 @@ export const decodei128ScVal = (value: SorobanClient.xdr.ScVal) => {
   }
 };
 
-export function accountToScVal(account: string): SorobanClient.xdr.ScVal {
-  return new SorobanClient.Address(account).toScVal();
+export function accountToScVal(account: string): StellarSdk.xdr.ScVal {
+  return new StellarSdk.Address(account).toScVal();
 }
 
 export function contractAddressToScVal(contractAddress: string): any {
-  return SorobanClient.Address.contract(Buffer.from(contractAddress, 'hex')).toScVal();
+  return StellarSdk.Address.contract(Buffer.from(contractAddress, 'hex')).toScVal();
 }
 
-export function bigNumberToU64(value: BigNumber): SorobanClient.xdr.ScVal {
+export function bigNumberToU64(value: BigNumber): StellarSdk.xdr.ScVal {
   if (value.isNegative() || value.isGreaterThan(new BigNumber(2).pow(64).minus(1))) {
     throw new Error('BigNumber is out of u64 range');
   }
@@ -184,7 +183,7 @@ export function bigNumberToU64(value: BigNumber): SorobanClient.xdr.ScVal {
   return xdr.ScVal.scvU64(new xdr.Uint64([hi, lo]));
 }
 
-export function bigNumberToU32(value: BigNumber): SorobanClient.xdr.ScVal {
+export function bigNumberToU32(value: BigNumber): StellarSdk.xdr.ScVal {
   if (value.isNegative() || value.isGreaterThan(new BigNumber(2).pow(32).minus(1))) {
     throw new Error('BigNumber is out of u32 range');
   }

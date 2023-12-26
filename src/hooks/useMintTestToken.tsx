@@ -7,8 +7,7 @@ import { bigNumberToI128 } from 'helpers/utils';
 import { useKeys, useTokens } from 'hooks';
 import { TokenType } from 'interfaces';
 import { useCallback, useContext } from 'react';
-import * as SorobanClient from 'soroban-client';
-
+import * as StellarSdk from 'stellar-sdk';
 interface MintTestTokenProps {
   onTokenMintedStart?: (token: TokenType) => void;
   onTokenMintedSuccess?: (token: TokenType) => void;
@@ -56,14 +55,14 @@ export function useMintTestToken() {
           result = (await contractInvoke({
             contractAddress: token.address,
             method: 'mint',
-            args: [new SorobanClient.Address(account).toScVal(), amountScVal],
+            args: [new StellarSdk.Address(account).toScVal(), amountScVal],
             sorobanContext,
             signAndSend: true,
             secretKey: admin_secret,
             reconnectAfterTx: false,
-          })) as SorobanClient.SorobanRpc.GetTransactionResponse;
+          })) as StellarSdk.SorobanRpc.GetTransactionResponse;
 
-          if (result.status !== SorobanClient.SorobanRpc.GetTransactionStatus.SUCCESS) throw result;
+          if (result.status !== StellarSdk.SorobanRpc.GetTransactionStatus.SUCCESS) throw result;
 
           totalMinted++;
           onTokenMintedSuccess?.(token);
