@@ -8,7 +8,7 @@ export default defineConfig({
     test: {
         passWithNoTests: true,
         environment: 'jsdom',
-        setupFiles:['vitestSetup.ts']
-      },
-      // ... Specify options here.
+        setupFiles:['vitestSetup.ts'],
+    },
+    // ... Specify options here.
 })
