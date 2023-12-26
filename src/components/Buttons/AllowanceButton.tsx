@@ -3,8 +3,7 @@ import { contractTransaction, useSendTransaction } from '@soroban-react/contract
 import { SorobanContextType } from '@soroban-react/core';
 import BigNumber from 'bignumber.js';
 import { useState } from 'react';
-import * as SorobanClient from 'soroban-client';
-import { bigNumberToI128 } from '../../helpers/utils';
+import * as StellarSdk from 'stellar-sdk';import { bigNumberToI128 } from '../../helpers/utils';
 
 interface AllowanceButtonProps {
   tokenAddress: string;
@@ -53,8 +52,8 @@ export function AllowanceButton({
         contractAddress: tokenAddress,
         method: 'increase_allowance',
         args: [
-          new SorobanClient.Address(account!).toScVal(),
-          new SorobanClient.Address(spenderAddress).toScVal(),
+          new StellarSdk.Address(account!).toScVal(),
+          new StellarSdk.Address(spenderAddress).toScVal(),
           amountScVal,
         ],
       });

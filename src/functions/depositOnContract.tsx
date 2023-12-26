@@ -2,8 +2,7 @@ import { contractInvoke } from '@soroban-react/contracts';
 import { SorobanContextType } from '@soroban-react/core';
 import BigNumber from 'bignumber.js';
 import { bigNumberToI128 } from 'helpers/utils';
-import * as SorobanClient from 'soroban-client';
-
+import * as StellarSdk from 'stellar-sdk';
 interface DepositOnContractProps {
   sorobanContext: SorobanContextType;
   pairAddress: string | undefined;
@@ -42,7 +41,7 @@ export default async function depositOnContract({
       contractAddress: pairAddress ? pairAddress : '',
       method: 'deposit',
       args: [
-        new SorobanClient.Address(account!).toScVal(),
+        new StellarSdk.Address(account!).toScVal(),
         desiredAScVal,
         minAScVal,
         desiredBScVal,

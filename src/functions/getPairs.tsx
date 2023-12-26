@@ -8,7 +8,7 @@ import { tokenBalance } from 'hooks';
 import { reservesBNWithTokens } from 'hooks/useReserves';
 import { TokenType } from 'interfaces';
 import { FactoryResponseType } from 'interfaces/factory';
-import { xdr } from 'soroban-client';
+import { xdr } from 'stellar-sdk';
 import { getFactory } from './getFactory';
 import { getPairAddress } from './getPairAddress';
 import { getTotalLpShares } from './getTotalLpShares';

@@ -3,8 +3,7 @@ import { contractTransaction, useSendTransaction } from '@soroban-react/contract
 import { SorobanContextType } from '@soroban-react/core';
 import BigNumber from 'bignumber.js';
 import { useState } from 'react';
-import * as SorobanClient from 'soroban-client';
-import { bigNumberToI128 } from '../../helpers/utils';
+import * as StellarSdk from 'stellar-sdk';import { bigNumberToI128 } from '../../helpers/utils';
 
 interface SwapButtonProps {
   pairAddress: string;
@@ -25,7 +24,7 @@ export function SwapButton({
   const networkPassphrase = sorobanContext.activeChain?.networkPassphrase ?? '';
   const server = sorobanContext.server;
   const account = sorobanContext.address;
-  let xdr = SorobanClient.xdr;
+  let xdr = StellarSdk.xdr;
   const { sendTransaction } = useSendTransaction();
 
   const swapTokens = async () => {
@@ -63,7 +62,7 @@ export function SwapButton({
         contractAddress: pairAddress,
         method: 'swap',
         args: [
-          new SorobanClient.Address(account!).toScVal(),
+          new StellarSdk.Address(account!).toScVal(),
           xdr.ScVal.scvBool(isBuy),
           amountOutScVal,
           amountInScVal,

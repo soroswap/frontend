@@ -2,8 +2,7 @@ import { contractInvoke, useContractValue } from '@soroban-react/contracts';
 import { SorobanContextType } from '@soroban-react/core';
 import BigNumber from 'bignumber.js';
 import { scValToJs } from 'helpers/convert';
-import * as SorobanClient from 'soroban-client';
-import { xdr } from 'soroban-client';
+import * as StellarSdk from 'stellar-sdk';import { xdr } from 'stellar-sdk';
 import { bigNumberToI128, scvalToBigNumber } from '../helpers/utils';
 
 export function useReservesScVal(pairAddress: string, sorobanContext: SorobanContextType) {
@@ -16,8 +15,8 @@ export function useReservesScVal(pairAddress: string, sorobanContext: SorobanCon
   });
   let values: any = reserves_scval.result?.value();
   let scValZero = bigNumberToI128(BigNumber(0));
-  let reserve0ScVal: SorobanClient.xdr.ScVal = values ? values[0] ?? scValZero : scValZero;
-  let reserve1ScVal: SorobanClient.xdr.ScVal = values ? values[1] ?? scValZero : scValZero;
+  let reserve0ScVal: StellarSdk.xdr.ScVal = values ? values[0] ?? scValZero : scValZero;
+  let reserve1ScVal: StellarSdk.xdr.ScVal = values ? values[1] ?? scValZero : scValZero;
   return {
     reserve0ScVal,
     reserve1ScVal,
