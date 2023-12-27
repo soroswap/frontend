@@ -1,10 +1,11 @@
 import { SorobanContextType } from '@soroban-react/core';
 import BigNumber from 'bignumber.js';
-import { getToken, tokenBalance } from 'hooks';
+import { tokenBalance } from 'hooks';
 import { reservesBigNumber } from 'hooks/useReserves';
 import { TokenType } from 'interfaces';
 import { getPairsFromFactory } from './getPairs';
 import { getTotalLpShares } from './getTotalLpShares';
+import { getToken } from 'hooks/tokens/utils';
 
 export type LpTokensObj = {
   token_0: TokenType | undefined;
@@ -42,8 +43,8 @@ export async function getLpTokens(sorobanContext: SorobanContextType) {
         .multipliedBy(100)
         .decimalPlaces(7)
         .toString();
-      
-      if(!token_0 || !token_1) return
+
+      if (!token_0 || !token_1) return;
 
       const toReturn = {
         token_0,

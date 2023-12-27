@@ -4,10 +4,11 @@ import BigNumber from 'bignumber.js';
 import { AppContext, SnackbarIconType } from 'contexts';
 import { sendNotification } from 'functions/sendNotification';
 import { bigNumberToI128 } from 'helpers/utils';
-import { useKeys, useTokens } from 'hooks';
+import { useKeys } from 'hooks';
 import { TokenType } from 'interfaces';
 import { useCallback, useContext } from 'react';
 import * as StellarSdk from 'stellar-sdk';
+import { useApiTokens } from './tokens/useApiTokens';
 interface MintTestTokenProps {
   onTokenMintedStart?: (token: TokenType) => void;
   onTokenMintedSuccess?: (token: TokenType) => void;
@@ -17,7 +18,7 @@ interface MintTestTokenProps {
 export function useMintTestToken() {
   const sorobanContext = useSorobanReact();
   const { admin_public, admin_secret } = useKeys(sorobanContext);
-  const { tokens } = useTokens();
+  const { tokens } = useApiTokens();
   const { SnackbarContext } = useContext(AppContext);
 
   return useCallback(
@@ -60,9 +61,10 @@ export function useMintTestToken() {
             signAndSend: true,
             secretKey: admin_secret,
             reconnectAfterTx: false,
-          })) as StellarSdk.SorobanRpc.GetTransactionResponse;
+          })) as StellarSdk.SorobanRpc.Api.GetTransactionResponse;
 
-          if (result.status !== StellarSdk.SorobanRpc.GetTransactionStatus.SUCCESS) throw result;
+          if (result.status !== StellarSdk.SorobanRpc.Api.GetTransactionStatus.SUCCESS)
+            throw result;
 
           totalMinted++;
           onTokenMintedSuccess?.(token);

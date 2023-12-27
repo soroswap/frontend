@@ -1,7 +1,7 @@
 import { useSorobanReact } from '@soroban-react/core';
 import BigNumber from 'bignumber.js';
 import { isAddress } from 'helpers/address';
-import { relevantTokensType, tokenBalances, useToken } from 'hooks';
+import { relevantTokensType, tokenBalances } from 'hooks';
 import { useBestTrade } from 'hooks/useBestTrade';
 import { TokenType } from 'interfaces';
 import tryParseCurrencyAmount from 'lib/utils/tryParseCurrencyAmount';
@@ -12,6 +12,7 @@ import { TradeType } from 'state/routing/types';
 import { useUserSlippageToleranceWithDefault } from 'state/user/hooks';
 import { Field, selectCurrency, setRecipient, switchCurrencies, typeInput } from './actions';
 import { SwapState } from './reducer';
+import { useToken } from 'hooks/tokens/useToken';
 
 export function useSwapActionHandlers(dispatch: React.Dispatch<AnyAction>): {
   onCurrencySelection: (field: Field, currency: TokenType) => void;
@@ -85,9 +86,9 @@ export function useDerivedSwapInfo(state: SwapState) {
     recipient,
   } = state;
 
-  const inputCurrency = useToken(inputCurrencyId);
+  const { token: inputCurrency } = useToken(inputCurrencyId!);
   //
-  const outputCurrency = useToken(outputCurrencyId);
+  const { token: outputCurrency } = useToken(outputCurrencyId!);
   const recipientLookup = { address: '' }; //TODO: Use ENS useENS(recipient ?? undefined)
   //
   const to: string | null | undefined = account; //recipient === null ? account : recipientLookup.address) ?? null
