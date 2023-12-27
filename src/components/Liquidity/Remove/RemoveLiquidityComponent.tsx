@@ -20,8 +20,7 @@ import { RouterMethod, useRouterCallback } from 'hooks/useRouterCallback';
 import { useRouter } from 'next/router';
 import { useCallback, useContext, useEffect, useState } from 'react';
 import { Plus } from 'react-feather';
-import * as SorobanClient from 'soroban-client';
-import { Field } from 'state/burn/actions';
+import * as StellarSdk from 'stellar-sdk';import { Field } from 'state/burn/actions';
 import { useBurnActionHandlers, useBurnState, useDerivedBurnInfo } from 'state/burn/hooks';
 import { useUserSlippageToleranceWithDefault } from 'state/user/hooks';
 import { opacify } from 'themes/utils';
@@ -195,12 +194,12 @@ export default function RemoveLiquidityComponent() {
     const minBScVal = bigNumberToI128(minBBN);
 
     const args = [
-      new SorobanClient.Address(currencyA?.address as string).toScVal(),
-      new SorobanClient.Address(currencyB?.address as string).toScVal(),
+      new StellarSdk.Address(currencyA?.address as string).toScVal(),
+      new StellarSdk.Address(currencyB?.address as string).toScVal(),
       bigNumberToI128(parsedAmounts.LIQUIDITY as BigNumber),
       minAScVal,
       minBScVal,
-      new SorobanClient.Address(sorobanContext.address as string).toScVal(),
+      new StellarSdk.Address(sorobanContext.address as string).toScVal(),
       bigNumberToU64(BigNumber(getCurrentTimePlusOneHour())),
     ];
 

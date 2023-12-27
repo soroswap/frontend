@@ -7,9 +7,9 @@ import { AppContext, SnackbarIconType } from 'contexts';
 import { sendNotification } from 'functions/sendNotification';
 import { isAddress, shortenAddress } from 'helpers/address';
 import { bigNumberToI128 } from 'helpers/utils';
-import { getToken, useKeys } from 'hooks';
-import { useContext, useEffect, useState } from 'react';
-import * as SorobanClient from 'soroban-client';
+import { useKeys } from 'hooks';
+import { useContext, useState } from 'react';
+import * as StellarSdk from 'stellar-sdk';
 import { ButtonPrimary } from './Buttons/Button';
 import { TextInput } from './Inputs/TextInput';
 import { BodySmall } from './Text';
@@ -56,7 +56,7 @@ export function MintCustomToken() {
       let result = await contractInvoke({
         contractAddress: tokenAddress,
         method: 'mint',
-        args: [new SorobanClient.Address(address).toScVal(), amountScVal],
+        args: [new StellarSdk.Address(address).toScVal(), amountScVal],
         sorobanContext,
         signAndSend: true,
         secretKey: admin_secret,

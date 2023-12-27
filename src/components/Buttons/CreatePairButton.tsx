@@ -2,8 +2,7 @@ import { Button } from '@mui/material';
 import { contractTransaction, useSendTransaction } from '@soroban-react/contracts';
 import { SorobanContextType } from '@soroban-react/core';
 import { useState } from 'react';
-import * as SorobanClient from 'soroban-client';
-import { accountToScVal } from '../../helpers/utils';
+import * as StellarSdk from 'stellar-sdk';import { accountToScVal } from '../../helpers/utils';
 import { useFactory } from '../../hooks';
 import { TokenType } from '../../interfaces';
 
@@ -23,7 +22,7 @@ export function CreatePairButton({ token0, token1, sorobanContext }: CreatePairP
   const addressScVal1 = accountToScVal(token1.address);
   const params = [addressScVal0, addressScVal1];
 
-  let xdr = SorobanClient.xdr;
+  let xdr = StellarSdk.xdr;
   const { sendTransaction } = useSendTransaction();
 
   const createPair = async () => {

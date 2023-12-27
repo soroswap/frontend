@@ -1,13 +1,12 @@
 // TODO: None of these functions are being used
 // import BigNumber from 'bignumber.js';
-// import * as SorobanClient from 'soroban-client';
-// import { ERRORS } from './error';
+// import * as StellarSdk from 'stellar-sdk';// import { ERRORS } from './error';
 // import { stroopToXlm } from './format';
 // import { I128 } from './xdr';
 
 import { contractInvoke } from '@soroban-react/contracts';
 import { SorobanContextType } from '@soroban-react/core';
-import { xdr } from 'soroban-client';
+import { xdr } from 'stellar-sdk';
 import { scValToJs } from './convert';
 
 // // TODO: once soroban supports estimated fees, we can fetch this
@@ -15,7 +14,7 @@ import { scValToJs } from './convert';
 // export const baseFeeXlm = stroopToXlm(BASE_FEE).toString();
 
 // export const SendTxStatus: {
-//   [index: string]: SorobanClient.SorobanRpc.SendTransactionStatus;
+//   [index: string]: StellarSdk.SorobanRpc.SendTransactionStatus;
 // } = {
 //   Pending: 'PENDING',
 //   Duplicate: 'DUPLICATE',
@@ -24,7 +23,7 @@ import { scValToJs } from './convert';
 // };
 
 // export const GetTxStatus: {
-//   [index: string]: SorobanClient.SorobanRpc.GetTransactionStatus;
+//   [index: string]: StellarSdk.SorobanRpc.GetTransactionStatus;
 // } = {
 //   Success: 'SUCCESS',
 //   NotFound: 'NOT_FOUND',
@@ -40,13 +39,13 @@ import { scValToJs } from './convert';
 // // The following 3 decoders can be used to turn an XDR string to a native type
 // // XDR -> String
 // export const decodeBytesN = (xdr: string) => {
-//   const val = SorobanClient.xdr.ScVal.fromXDR(xdr, 'base64');
+//   const val = StellarSdk.xdr.ScVal.fromXDR(xdr, 'base64');
 //   return val.bytes().toString();
 // };
 
 // // XDR -> String
 // export const decodei128 = (xdr: string) => {
-//   const value = SorobanClient.xdr.ScVal.fromXDR(xdr, 'base64');
+//   const value = StellarSdk.xdr.ScVal.fromXDR(xdr, 'base64');
 //   try {
 //     return new I128([
 //       BigInt(value.i128().lo().low),
@@ -62,7 +61,7 @@ import { scValToJs } from './convert';
 
 // // XDR -> Number
 // export const decodeu32 = (xdr: string) => {
-//   const val = SorobanClient.xdr.ScVal.fromXDR(xdr, 'base64');
+//   const val = StellarSdk.xdr.ScVal.fromXDR(xdr, 'base64');
 //   return val.u32();
 // };
 
@@ -115,10 +114,10 @@ import { scValToJs } from './convert';
 // };
 
 // // Can be used whenever you need an Address argument for a contract method
-// export const accountToScVal = (account: string) => new SorobanClient.Address(account).toScVal();
+// export const accountToScVal = (account: string) => new StellarSdk.Address(account).toScVal();
 
 // // Can be used whenever you need an i128 argument for a contract method
-// // export const numberToI128 = (value: number): SorobanClient.xdr.ScVal => {
+// // export const numberToI128 = (value: number): StellarSdk.xdr.ScVal => {
 // //   const bigValue = BigNumber(value);
 // //   const b: bigint = BigInt(bigValue.toFixed(0));
 // //   const buf = bigintToBuf(b);
@@ -141,17 +140,17 @@ import { scValToJs } from './convert';
 // //     padded[0] |= 0x80;
 // //   }
 
-// //   const hi = new SorobanClient.xdr.Int64(
+// //   const hi = new StellarSdk.xdr.Int64(
 // //     bigNumberFromBytes(false, ...padded.slice(4, 8)).toNumber(),
 // //     bigNumberFromBytes(false, ...padded.slice(0, 4)).toNumber(),
 // //   );
-// //   const lo = new SorobanClient.xdr.Uint64(
+// //   const lo = new StellarSdk.xdr.Uint64(
 // //     bigNumberFromBytes(false, ...padded.slice(12, 16)).toNumber(),
 // //     bigNumberFromBytes(false, ...padded.slice(8, 12)).toNumber(),
 // //   );
 
-// //   return SorobanClient.xdr.ScVal.scvI128(
-// //     new SorobanClient.xdr.Int128Parts({ lo, hi }),
+// //   return StellarSdk.xdr.ScVal.scvI128(
+// //     new StellarSdk.xdr.Int128Parts({ lo, hi }),
 // //   );
 // // };
 
@@ -191,7 +190,7 @@ import { scValToJs } from './convert';
 
 // // Get a server configfured for a specific network
 // // export const getServer = (networkDetails: NetworkDetails) =>
-// //   new SorobanClient.Server(RPC_URLS[networkDetails.network], {
+// //   new StellarSdk.Server(RPC_URLS[networkDetails.network], {
 // //     allowHttp: networkDetails.networkUrl.startsWith("http://"),
 // //   });
 
@@ -199,11 +198,11 @@ import { scValToJs } from './convert';
 // export const getTxBuilder = async (
 //   pubKey: string,
 //   fee: string,
-//   server: SorobanClient.Server,
+//   server: StellarSdk.Server,
 //   networkPassphrase: string,
 // ) => {
 //   const source = await server.getAccount(pubKey);
-//   return new SorobanClient.TransactionBuilder(source, {
+//   return new StellarSdk.TransactionBuilder(source, {
 //     fee,
 //     networkPassphrase,
 //   });
@@ -212,12 +211,12 @@ import { scValToJs } from './convert';
 // //  Can be used whenever we need to perform a "read-only" operation
 // //  Used in getTokenSymbol, getTokenName, getTokenDecimals, and getTokenBalance
 // export const simulateTx = async <ArgType>(
-//   tx: SorobanClient.Transaction<
-//     SorobanClient.Memo<SorobanClient.MemoType>,
-//     SorobanClient.Operation[]
+//   tx: StellarSdk.Transaction<
+//     StellarSdk.Memo<StellarSdk.MemoType>,
+//     StellarSdk.Operation[]
 //   >,
 //   decoder: (xdr: string) => ArgType,
-//   server: SorobanClient.Server,
+//   server: StellarSdk.Server,
 // ) => {
 //   const { results } = await server.simulateTransaction(tx);
 //   if (!results || results.length !== 1) {
@@ -232,9 +231,9 @@ import { scValToJs } from './convert';
 // export const submitTx = async (
 //   signedXDR: string,
 //   networkPassphrase: string,
-//   server: SorobanClient.Server,
+//   server: StellarSdk.Server,
 // ) => {
-//   const tx = SorobanClient.TransactionBuilder.fromXDR(signedXDR, networkPassphrase);
+//   const tx = StellarSdk.TransactionBuilder.fromXDR(signedXDR, networkPassphrase);
 
 //   const sendResponse = await server.sendTransaction(tx);
 
@@ -322,14 +321,14 @@ export const getTokenDecimals = async (
 // export const getTokenBalance = async (
 //   address: string,
 //   tokenId: string,
-//   txBuilder: SorobanClient.TransactionBuilder,
-//   server: SorobanClient.Server,
+//   txBuilder: StellarSdk.TransactionBuilder,
+//   server: StellarSdk.Server,
 // ) => {
 //   const params = [accountToScVal(address)];
-//   const contract = new SorobanClient.Contract(tokenId);
+//   const contract = new StellarSdk.Contract(tokenId);
 //   const tx = txBuilder
 //     .addOperation(contract.call('balance', ...params))
-//     .setTimeout(SorobanClient.TimeoutInfinite)
+//     .setTimeout(StellarSdk.TimeoutInfinite)
 //     .build();
 
 //   const result = await simulateTx<string>(tx, decoders.i128, server);
@@ -344,11 +343,11 @@ export const getTokenDecimals = async (
 //   to: string,
 //   pubKey: string,
 //   memo: string,
-//   txBuilder: SorobanClient.TransactionBuilder,
-//   server: SorobanClient.Server,
+//   txBuilder: StellarSdk.TransactionBuilder,
+//   server: StellarSdk.Server,
 //   networkPassphrase: string,
 // ) => {
-//   const contract = new SorobanClient.Contract(tokenId);
+//   const contract = new StellarSdk.Contract(tokenId);
 //   const tx = txBuilder
 //     .addOperation(
 //       contract.call(
@@ -360,10 +359,10 @@ export const getTokenDecimals = async (
 //         ],
 //       ),
 //     )
-//     .setTimeout(SorobanClient.TimeoutInfinite);
+//     .setTimeout(StellarSdk.TimeoutInfinite);
 
 //   if (memo.length > 0) {
-//     tx.addMemo(SorobanClient.Memo.text(memo));
+//     tx.addMemo(StellarSdk.Memo.text(memo));
 //   }
 
 //   const preparedTransaction = await server.prepareTransaction(tx.build(), networkPassphrase);
@@ -377,10 +376,10 @@ export const getTokenDecimals = async (
 //   to: string,
 //   pubKey: string,
 //   memo: string,
-//   txBuilder: SorobanClient.TransactionBuilder,
-//   server: SorobanClient.Server,
+//   txBuilder: StellarSdk.TransactionBuilder,
+//   server: StellarSdk.Server,
 // ) => {
-//   const contract = new SorobanClient.Contract(tokenId);
+//   const contract = new StellarSdk.Contract(tokenId);
 //   const tx = txBuilder
 //     .addOperation(
 //       contract.call(
@@ -392,10 +391,10 @@ export const getTokenDecimals = async (
 //         ],
 //       ),
 //     )
-//     .setTimeout(SorobanClient.TimeoutInfinite);
+//     .setTimeout(StellarSdk.TimeoutInfinite);
 
 //   if (memo.length > 0) {
-//     tx.addMemo(SorobanClient.Memo.text(memo));
+//     tx.addMemo(StellarSdk.Memo.text(memo));
 //   }
 
 //   const raw = tx.build();

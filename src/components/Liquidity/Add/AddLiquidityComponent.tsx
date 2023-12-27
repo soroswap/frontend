@@ -23,8 +23,7 @@ import { TokenType } from 'interfaces';
 import { useRouter } from 'next/router';
 import { useCallback, useContext, useMemo, useState } from 'react';
 import { Plus } from 'react-feather';
-import * as SorobanClient from 'soroban-client';
-import { Field } from 'state/mint/actions';
+import * as StellarSdk from 'stellar-sdk';import { Field } from 'state/mint/actions';
 import { useDerivedMintInfo, useMintActionHandlers, useMintState } from 'state/mint/hooks';
 import { useUserSlippageToleranceWithDefault } from 'state/user/hooks';
 import { opacify } from 'themes/utils';
@@ -215,13 +214,13 @@ export default function AddLiquidityComponent({
     const minBScVal = bigNumberToI128(min1BN);
 
     const args = [
-      new SorobanClient.Address(baseCurrency?.address ?? '').toScVal(),
-      new SorobanClient.Address(currencyB?.address ?? '').toScVal(),
+      new StellarSdk.Address(baseCurrency?.address ?? '').toScVal(),
+      new StellarSdk.Address(currencyB?.address ?? '').toScVal(),
       desiredAScVal,
       desiredBScVal,
       minAScVal,
       minBScVal,
-      new SorobanClient.Address(sorobanContext.address ?? '').toScVal(),
+      new StellarSdk.Address(sorobanContext.address ?? '').toScVal(),
       bigNumberToU64(BigNumber(getCurrentTimePlusOneHour())),
     ];
 
