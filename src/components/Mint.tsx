@@ -15,12 +15,12 @@ import BigNumber from 'bignumber.js';
 import { formatTokenAmount } from 'helpers/format';
 import { tokenBalance } from 'hooks';
 import { MintButton } from '../components/Buttons/MintButton';
-import { useTokens } from '../hooks/useTokens';
 import { TokenType } from '../interfaces';
+import { useApiTokens } from 'hooks/tokens/useApiTokens';
 
 export function Mint() {
   const sorobanContext: SorobanContextType = useSorobanReact();
-  const { tokens: tokensList } = useTokens();
+  const { tokens: tokensList } = useApiTokens();
 
   const [inputToken, setInputToken] = useState<TokenType>();
   const [mintTokenId, setMintTokenId] = useState<string>('');

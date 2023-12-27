@@ -1,24 +1,10 @@
-// import { t, Trans } from '@lingui/macro'
-// import { ChainId, Currency } from '@uniswap/sdk-core'
-// import { useWeb3React } from '@web3-react/core'
-// import Badge from 'components/Badge'
-// import { getChainInfo } from 'constants/chainInfo'
-// import { SupportedL2ChainId } from 'constants/chains'
-// import useCurrencyLogoURIs from 'lib/hooks/useCurrencyLogoURIs'
-// import { ReactNode, useCallback, useState } from 'react'
-// import { AlertCircle, ArrowUpCircle, CheckCircle } from 'react-feather'
-// import { useIsTransactionConfirmed, useTransaction } from 'state/transactions/hooks'
-// import { isL2ChainId } from 'utils/chains'
-// import { ExplorerDataType, getExplorerLink } from 'utils/getExplorerLink'
-
-import { Box, Modal, styled, useTheme } from '@mui/material';
+import { Box, Modal, useTheme } from '@mui/material';
 import { useSorobanReact } from '@soroban-react/core';
 import { ButtonLight, ButtonPrimary } from 'components/Buttons/Button';
 import { CloseButton } from 'components/Buttons/CloseButton';
-import { AutoColumn, ColumnCenter } from 'components/Column';
+import { AutoColumn } from 'components/Column';
 import CopyTxHash from 'components/CopyTxHash/CopyTxHash';
 import Row, { RowBetween, RowFixed } from 'components/Row';
-import { CustomLink } from 'components/Swap/PendingModalContent';
 import {
   AnimatedEntranceConfirmationIcon,
   LoadingIndicatorOverlay,
@@ -27,63 +13,13 @@ import { HeadlineMedium, SubHeader, SubHeaderLarge, SubHeaderSmall } from 'compo
 import { TokenType } from 'interfaces';
 import { ReactNode, useState } from 'react';
 import { CheckCircle, XCircle } from 'react-feather';
-
-// import Circle from '../../assets/images/blue-loader.svg'
-// import { ExternalLink, ThemedText } from '../../theme'
-// import { CloseIcon, CustomLightSpinner } from '../../theme'
-// import { TransactionSummary } from '../AccountDetails/TransactionSummary'
-// import { ButtonLight, ButtonPrimary } from '../Button'
-// import { AutoColumn, ColumnCenter } from '../Column'
-// import Modal from '../Modal'
-// import Row, { RowBetween, RowFixed } from '../Row'
-// import AnimatedConfirmation from './AnimatedConfirmation'
-
-const Wrapper = styled('div')`
-  overflow: hidden;
-  border-radius: 20px;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: calc(100% - 40px);
-  max-width: 420px;
-  padding: 32px;
-  background: ${({ theme }) => `linear-gradient(${theme.palette.customBackground.bg1}, ${
-    theme.palette.customBackground.bg1
-  }) padding-box,
-              linear-gradient(150deg, rgba(136,102,221,1) 0%, rgba(${
-                theme.palette.mode == 'dark' ? '33,29,50,1' : '255,255,255,1'
-              }) 35%, rgba(${
-                theme.palette.mode == 'dark' ? '33,29,50,1' : '255,255,255,1'
-              }) 65%, rgba(136,102,221,1) 100%) border-box`};
-  border: 1px solid transparent;
-`;
-
-const BottomSection = styled(AutoColumn)`
-  border-bottom-left-radius: 20px;
-  border-bottom-right-radius: 20px;
-`;
-
-const CustomWrapper = styled(AutoColumn)`
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-`;
-
-const ConfirmedIcon = styled(ColumnCenter)<{ inline?: boolean }>`
-  padding: ${({ inline }) => (inline ? '20px 0' : '32px 0;')};
-  position: relative;
-`;
-
-const StyledLogo = styled('img')`
-  height: 16px;
-  width: 16px;
-  margin-left: 6px;
-`;
-
-const ConfirmationModalContentWrapper = styled(AutoColumn)`
-  padding-bottom: 12px;
-`;
+import {
+  BottomSection,
+  ConfirmationModalContentWrapper,
+  ConfirmedIcon,
+  CustomWrapper,
+  Wrapper,
+} from './ModalStyles';
 
 export const TransactionFailedContent = ({ onDismiss }: { onDismiss: () => void }) => {
   const theme = useTheme();
@@ -296,7 +232,6 @@ export default function TransactionConfirmationModal({
   const { activeChain } = sorobanContext;
   if (!activeChain) return null;
 
-  // confirmation screen
   return (
     <Modal
       open={isOpen}
