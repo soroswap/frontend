@@ -2,7 +2,8 @@ import { TxResponse, contractInvoke } from '@soroban-react/contracts';
 
 import { useSorobanReact } from '@soroban-react/core';
 import { useCallback } from 'react';
-import * as StellarSdk from 'stellar-sdk';import { useRouterAddress } from './useRouterAddress';
+import * as StellarSdk from 'stellar-sdk';
+import { useRouterAddress } from './useRouterAddress';
 import { useSWRConfig } from 'swr';
 
 export enum RouterMethod {
@@ -52,7 +53,7 @@ export function useRouterCallback() {
 
       if (
         isObject(result) &&
-        result?.status !== StellarSdk.SorobanRpc.GetTransactionStatus.SUCCESS
+        result?.status !== StellarSdk.SorobanRpc.Api.GetTransactionStatus.SUCCESS
       )
         throw result;
 
