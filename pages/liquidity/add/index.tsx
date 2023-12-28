@@ -1,11 +1,11 @@
 import AddLiquidityComponent from 'components/Liquidity/Add/AddLiquidityComponent';
 import SEO from 'components/SEO';
-import { useTokens } from 'hooks';
+import { useApiTokens } from 'hooks/tokens/useApiTokens';
 import { useRouter } from 'next/router';
 import { useEffect } from 'react';
 
 export default function AddLiquidityPage() {
-  const { tokens } = useTokens();
+  const { tokens } = useApiTokens();
   const router = useRouter();
 
   useEffect(() => {

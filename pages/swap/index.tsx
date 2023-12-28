@@ -15,14 +15,14 @@ export default function SwapPage() {
   });
 
   useEffect(() => {
-    const newXlmToken = xlmTokenList.find((tList) => tList.network === (activeChain?.id))?.tokens[0].address ?? null;
+    const newXlmToken =
+      xlmTokenList.find((tList) => tList.network === activeChain?.id)?.tokens[0].address ?? null;
     setXlmToken(newXlmToken);
 
     const newPrefilledState = {
       [Field.INPUT]: { currencyId: newXlmToken },
       [Field.OUTPUT]: { currencyId: null },
     };
-
     setPrefilledState(newPrefilledState);
   }, [activeChain, xlmToken]);
 

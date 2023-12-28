@@ -15,12 +15,13 @@ import { getCurrentTimePlusOneHour } from 'functions/getCurrentTimePlusOneHour';
 import { getExpectedAmount } from 'functions/getExpectedAmount';
 import { formatTokenAmount } from 'helpers/format';
 import { bigNumberToI128, bigNumberToU64 } from 'helpers/utils';
-import { useToken } from 'hooks';
+import { useToken } from 'hooks/tokens/useToken';
 import { RouterMethod, useRouterCallback } from 'hooks/useRouterCallback';
 import { useRouter } from 'next/router';
 import { useCallback, useContext, useEffect, useState } from 'react';
 import { Plus } from 'react-feather';
-import * as StellarSdk from 'stellar-sdk';import { Field } from 'state/burn/actions';
+import * as StellarSdk from 'stellar-sdk';
+import { Field } from 'state/burn/actions';
 import { useBurnActionHandlers, useBurnState, useDerivedBurnInfo } from 'state/burn/hooks';
 import { useUserSlippageToleranceWithDefault } from 'state/user/hooks';
 import { opacify } from 'themes/utils';
@@ -106,8 +107,8 @@ export default function RemoveLiquidityComponent() {
   const { tokens } = router.query as { tokens: TokensType };
   const [currencyIdA, currencyIdB] = Array.isArray(tokens) ? tokens : ['', ''];
 
-  const currencyA = useToken(currencyIdA);
-  const currencyB = useToken(currencyIdB);
+  const { token: currencyA } = useToken(currencyIdA);
+  const { token: currencyB } = useToken(currencyIdB);
 
   // Burn State
   const { independentField, typedValue } = useBurnState();
