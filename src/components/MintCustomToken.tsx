@@ -7,7 +7,9 @@ import { AppContext, SnackbarIconType } from 'contexts';
 import { sendNotification } from 'functions/sendNotification';
 import { isAddress, shortenAddress } from 'helpers/address';
 import { bigNumberToI128 } from 'helpers/utils';
-import { getToken, useKeys } from 'hooks';
+import { useKeys } from 'hooks';
+import { useAllTokens } from 'hooks/tokens/useAllTokens';
+import { findToken } from 'hooks/tokens/useToken';
 import { useContext, useEffect, useState } from 'react';
 import * as StellarSdk from 'stellar-sdk';
 import { ButtonPrimary } from './Buttons/Button';
@@ -19,6 +21,7 @@ export function MintCustomToken() {
   const { server, address} = sorobanContext
   const { admin_public, admin_secret } = useKeys(sorobanContext);
   const { SnackbarContext } = useContext(AppContext);
+  const { tokensAsMap } = useAllTokens();
 
   const [tokenAddress, setTokenAddress] = useState<string>('');
   const [tokenAmount, setTokenAmount] = useState<number>();
@@ -118,7 +121,7 @@ export function MintCustomToken() {
 
   useEffect(() => {
     if (isAddress(tokenAddress)) {
-      getToken(sorobanContext, tokenAddress).then((resp) => {
+      findToken(tokenAddress, tokensAsMap, sorobanContext).then((resp) => {
         setTokenSymbol(resp?.symbol as string)
       })
 
@@ -134,7 +137,7 @@ export function MintCustomToken() {
       setButtonText(`Minting ${shortenAddress(tokenAddress)}`)
       setNeedToSetTrustline(false)
     }
-  }, [isMinting, sorobanContext, tokenAddress])
+  }, [isMinting, sorobanContext, tokenAddress, tokensAsMap])
 
   return (
     <CardContent>
