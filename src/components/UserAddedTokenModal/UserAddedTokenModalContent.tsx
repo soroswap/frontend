@@ -3,9 +3,8 @@ import { ButtonPrimary } from 'components/Buttons/Button';
 import { CloseButton } from 'components/Buttons/CloseButton';
 import { AutoColumn } from 'components/Column';
 import { RowBetween } from 'components/Row';
-import { LoadingIndicatorOverlay } from 'components/Swap/PendingModalContent/Logos';
-import { SubHeader, SubHeaderLarge, SubHeaderSmall } from 'components/Text';
-import { ConfirmedIcon, Wrapper } from 'components/TransactionConfirmationModal/ModalStyles';
+import { SubHeaderLarge, SubHeaderSmall } from 'components/Text';
+import { Wrapper } from 'components/TransactionConfirmationModal/ModalStyles';
 import { AlertTriangle } from 'react-feather';
 
 interface Props {
