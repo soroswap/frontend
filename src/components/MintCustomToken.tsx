@@ -7,8 +7,8 @@ import { AppContext, SnackbarIconType } from 'contexts';
 import { sendNotification } from 'functions/sendNotification';
 import { isAddress, shortenAddress } from 'helpers/address';
 import { bigNumberToI128 } from 'helpers/utils';
-import { useKeys } from 'hooks';
-import { useContext, useState } from 'react';
+import { getToken, useKeys } from 'hooks';
+import { useContext, useEffect, useState } from 'react';
 import * as StellarSdk from 'stellar-sdk';
 import { ButtonPrimary } from './Buttons/Button';
 import { TextInput } from './Inputs/TextInput';
@@ -26,7 +26,6 @@ export function MintCustomToken() {
   const [buttonText, setButtonText] = useState<string>('Mint custom token');
   const [needToSetTrustline, setNeedToSetTrustline] = useState<boolean>(false)
   const [tokenSymbol, setTokenSymbol] = useState<string>('')
-  const [tokenAdmin, setTokenAdmin] = useState<string>('')
 
   const handleMint = async () => {
     setIsMinting(true);
@@ -95,7 +94,7 @@ export function MintCustomToken() {
     console.log("SETTING TRUSTLINE")
     setTrustline({
       tokenSymbol: tokenSymbol,
-      tokenAdmin: "GC5OK5PYCWJXYFUPDATZIV3MM2YBLMLESTEU4UAEBZXOUAUVMYEW7DR3",
+      tokenAdmin: admin_public,
       sorobanContext
     }).then((resp) => {
       setNeedToSetTrustline(false)
