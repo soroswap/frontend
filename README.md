@@ -111,6 +111,40 @@ For Futurenet network
 
 You have successfully set up Soroswap on your local machine! Start swapping, pooling, and exploring the possibilities of decentralized finance (DeFi) on the Soroban network.
 
+## 🧪🔨 Testing 🧪🔨
+To execute the tests, you must first start the development container. To do this, run the following command from your host machine:
+
+```bash
+bash docker/run.sh
+```
+Once the development container is running, you can install the dependencies for the tests by running the following command:
+
+```bash
+## 🧪🔨 Testing 🧪🔨
+To execute the tests, you must first start the development container. To do this, run the following command from your host machine:
+
+```bash
+bash docker/run.sh
+```
+Once the development container is running, you can install the dependencies for the tests by running the following command:
+
+```bash
+yarn install
+```
+
+Finally, to run the tests, run the following command from within the development container:
+
+```bash
+yarn test
+```
+This will run all of the unit and integration tests for the project.
+
+The tests are written using Vitest & testing-library.
+
+For more information on Vitest, please see the Vitest documentation: https://vitest.dev/. 
+
+For more information on Testing Library, please see the Testing Library documentation: https://testing-library.com/docs/react-testing-library/intro/
+
 ## 🔧🧪 E2E - Integration test environment setup 🔧🧪
 **1. Set up the development environment:**
 >[!TIP]

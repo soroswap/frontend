@@ -5,7 +5,7 @@ import SwapDetailsDropdown from 'components/Swap/SwapDetailsDropdown';
 import { ButtonText } from 'components/Text';
 import { TransactionFailedContent } from 'components/TransactionConfirmationModal';
 import { formatTokenAmount } from 'helpers/format';
-import { relevantTokensType, useToken } from 'hooks';
+import { relevantTokensType } from 'hooks';
 import useGetReservesByPair from 'hooks/useGetReservesByPair';
 import { useSwapCallback } from 'hooks/useSwapCallback';
 import useSwapMainButton from 'hooks/useSwapMainButton';
@@ -20,6 +20,7 @@ import { opacify } from 'themes/utils';
 import SwapCurrencyInputPanel from '../CurrencyInputPanel/SwapCurrencyInputPanel';
 import SwapHeader from './SwapHeader';
 import { ArrowWrapper, SwapWrapper } from './styleds';
+import { useToken } from 'hooks/tokens/useToken';
 
 const SwapSection = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -98,7 +99,7 @@ export function SwapComponent({
   const [showPriceImpactModal, setShowPriceImpactModal] = useState<boolean>(false);
   const [txError, setTxError] = useState<boolean>(false);
 
-  const prefilledToken = useToken(prefilledState.INPUT?.currencyId)
+  const { token: prefilledToken } = useToken(prefilledState.INPUT?.currencyId!);
 
   // modal and loading
   const [{ showConfirm, tradeToConfirm, swapError, swapResult }, setSwapState] =
@@ -115,7 +116,7 @@ export function SwapComponent({
     if (prefilledToken) {
       onCurrencySelection(Field.INPUT, prefilledToken);
     }
-  }, [onCurrencySelection, prefilledToken])
+  }, [onCurrencySelection, prefilledToken]);
 
   const {
     trade: { state: tradeState, trade },
@@ -337,6 +338,7 @@ export function SwapComponent({
         <div style={{ display: 'relative' }}>
           <SwapSection>
             <SwapCurrencyInputPanel
+              data-testid='Swap__panel'
               label={
                 independentField === Field.OUTPUT ? <span>From (at most)</span> : <span>From</span>
               }

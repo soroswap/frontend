@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "test": "vitest --config ./vitest.config.ts",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
@@ -19,7 +20,7 @@
     "@next/font": "13.0.7",
     "@reduxjs/toolkit": "^1.9.5",
     "@soroban-react/chains": "8.0.1",
-    "@soroban-react/contracts": "8.0.0",
+    "@soroban-react/contracts": "8.0.2",
     "@soroban-react/core": "8.0.0",
     "@soroban-react/freighter": "8.0.0",
     "@soroban-react/types": "8.0.0",
@@ -57,14 +58,24 @@
   },
   "devDependencies": {
     "@lingui/macro": "^4.3.0",
+    "@testing-library/react": "^14.1.2",
+    "@testing-library/user-event": "^14.5.1",
     "@testing-library/webdriverio": "^3.2.1",
+    "@types/jest": "^29.5.10",
+    "@types/node": "^18.11.15",
     "@types/react-copy-to-clipboard": "^5.0.7",
+    "@vitejs/plugin-react": "^4.2.0",
     "@wdio/cli": "^8.26.1",
     "@wdio/local-runner": "^8.26.1",
     "@wdio/mocha-framework": "^8.24.12",
     "@wdio/spec-reporter": "^8.24.12",
     "prettier": "3.0.0",
     "ts-node": "^10.9.2",
-    "wdio-wait-for": "^3.0.9"
+    "wdio-wait-for": "^3.0.9",
+    "jsdom": "^23.0.0",
+    "msw": "^2.0.9",
+    "next-router-mock": "^0.9.11",
+    "vite-tsconfig-paths": "^4.2.1",
+    "vitest": "^0.34.6"
   }
 }

@@ -16,7 +16,7 @@
     "jsx": "preserve",
     "incremental": true,
     "downlevelIteration": true,
-    "types": ["node", "@wdio/globals/types"]
+    "types": ["node", "@wdio/globals/types", "vitest/importMeta"]
   
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
