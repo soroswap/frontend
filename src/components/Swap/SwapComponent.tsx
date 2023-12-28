@@ -338,6 +338,7 @@ export function SwapComponent({
         <div style={{ display: 'relative' }}>
           <SwapSection>
             <SwapCurrencyInputPanel
+              data-testid='Swap__panel'
               label={
                 independentField === Field.OUTPUT ? <span>From (at most)</span> : <span>From</span>
               }
