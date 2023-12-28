@@ -5,7 +5,7 @@ import { TokenMapType } from 'interfaces';
 import { useAllTokens } from './useAllTokens';
 import useSWRImmutable from 'swr/immutable';
 
-const findToken = async (
+export const findToken = async (
   tokenAddress: string | undefined,
   tokensAsMap: TokenMapType,
   sorobanContext: SorobanContextType,
@@ -21,6 +21,8 @@ const findToken = async (
 
   const token = await getToken(sorobanContext, formattedAddress);
 
+  if (!token?.name || !token?.symbol) return undefined;
+
   return token;
 };
 
@@ -31,8 +33,9 @@ export function useToken(tokenAddress: string | undefined) {
   const { tokensAsMap } = useAllTokens();
 
   const { data, isLoading, error } = useSWRImmutable(
-    ['token', tokenAddress],
-    ([key, tokenAddress]) => findToken(tokenAddress, tokensAsMap, sorobanContext),
+    ['token', tokenAddress, tokensAsMap, sorobanContext],
+    ([key, tokenAddress, tokensAsMap, sorobanContext]) =>
+      findToken(tokenAddress, tokensAsMap, sorobanContext),
   );
 
   return {

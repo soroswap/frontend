@@ -15,8 +15,8 @@ import { TextInput } from './Inputs/TextInput';
 import { BodySmall } from './Text';
 
 export function MintCustomToken() {
-  const sorobanContext = useSorobanReact()
-  const { server, address} = sorobanContext
+  const sorobanContext = useSorobanReact();
+  const { server, address } = sorobanContext;
   const { admin_public, admin_secret } = useKeys(sorobanContext);
   const { SnackbarContext } = useContext(AppContext);
 
@@ -48,7 +48,6 @@ export function MintCustomToken() {
     }
 
     try {
-
       let result = await contractInvoke({
         contractAddress: tokenAddress,
         method: 'mint',
@@ -57,7 +56,7 @@ export function MintCustomToken() {
         signAndSend: true,
         secretKey: admin_secret,
       });
-      console.log("🚀 « result:", result)
+      console.log('🚀 « result:', result);
 
       if (result) {
         setIsMinting(false);
@@ -67,8 +66,8 @@ export function MintCustomToken() {
           SnackbarIconType.MINT,
           SnackbarContext,
         );
-        setTokenAddress('')
-        setTokenAmount(0)
+        setTokenAddress('');
+        setTokenAmount(0);
       }
 
       //This will connect again the wallet to fetch its data
@@ -92,22 +91,33 @@ export function MintCustomToken() {
     if (isMinting) return true;
     return false;
   };
+
+  const getTokensApiUrl = () => {
+    const base = process.env.NEXT_PUBLIC_BACKEND_URL ?? 'https://api.soroswap.finance';
+
+    return `${base}/api/random_tokens`;
+  };
   return (
     <CardContent>
       <Typography gutterBottom variant="h5" component="div">
-        {"Mint custom token"}
-        <BodySmall>This tokens can be found in the <a href='https://api.soroswap.finance/api/random_tokens' style={{color: '#8866DD'}} target='_blank' rel='noreferrer'>api</a></BodySmall>
+        {'Mint custom token'}
+        <BodySmall>
+          This tokens can be found in the{' '}
+          <a href={getTokensApiUrl()} style={{ color: '#8866DD' }} target="_blank" rel="noreferrer">
+            api
+          </a>
+        </BodySmall>
       </Typography>
 
       <TextInput
-        placeholder='Token address'
+        placeholder="Token address"
         value={tokenAddress}
         onChange={(e) => setTokenAddress(e.target.value)}
       />
 
       <TextInput
-        placeholder='Amount'
-        type='number'
+        placeholder="Amount"
+        type="number"
         value={tokenAmount}
         onChange={(e) => setTokenAmount(Number(e.target.value))}
       />
