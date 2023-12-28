@@ -913,10 +913,10 @@
   dependencies:
     "@soroban-react/core" "^8.0.0"
 
-"@soroban-react/contracts@8.0.0":
-  version "8.0.0"
-  resolved "https://registry.yarnpkg.com/@soroban-react/contracts/-/contracts-8.0.0.tgz#584c627127164d534b9cd2db876aa8c3efa1a16a"
-  integrity sha512-Z/rbex5McIPvfYRd7cetCsd0A7QivKvHHUPb5JIwnZHB74n3eD9/TjAj8d63hPVkwQnS7GKEzmjY4AEL28fsog==
+"@soroban-react/contracts@8.0.2":
+  version "8.0.2"
+  resolved "https://registry.yarnpkg.com/@soroban-react/contracts/-/contracts-8.0.2.tgz#b8a30d5dcc11b2d6004d6cea066162f6e13c8fb2"
+  integrity sha512-i9HCTGo0hgEwhAhPr5p0YNfIlRAESkTaDECSQEuQYdd7doTL1bN7iMcdkej1ATea8nZcw/7MJMDoDekq0Hs9Lw==
   dependencies:
     "@soroban-react/core" "^8.0.0"
     stellar-sdk "11.1.0"
@@ -6913,7 +6913,6 @@ workerpool@6.2.1:
   integrity sha512-ILEIE97kDZvF9Wb9f6h5aXK4swSlKGUcOEGiIYb2OOu/IrDU9iwj0fD//SsA6E5ibwJxpEvhullJY4Sl4GcpAw==
 
 "wrap-ansi-cjs@npm:wrap-ansi@^7.0.0", wrap-ansi@^7.0.0:
-  name wrap-ansi-cjs
   version "7.0.0"
   resolved "https://registry.yarnpkg.com/wrap-ansi/-/wrap-ansi-7.0.0.tgz#67e145cff510a6a6984bdf1152911d69d2eb9e43"
   integrity sha512-YVGIj2kamLSTxw6NsZjoBxfSwsn0ycdesmc4p+Q21c5zPuZ1pl+NfxVdxPtdHvmNVOQ6XSYG4AUtyt/Fi7D16Q==
@@ -6959,9 +6958,9 @@ ws@8.13.0:
   integrity sha512-x9vcZYTrFPC7aSIbj7sRCYo7L/Xb8Iy+pW0ng0wt2vCJv7M9HOMy0UoN3rr+IFC7hb7vXoqS+P9ktyLLLhO+LA==
 
 ws@^8.8.0:
-  version "8.15.1"
-  resolved "https://registry.yarnpkg.com/ws/-/ws-8.15.1.tgz#271ba33a45ca0cc477940f7f200cd7fba7ee1997"
-  integrity sha512-W5OZiCjXEmk0yZ66ZN82beM5Sz7l7coYxpRkzS+p9PP+ToQry8szKh+61eNktr7EA9DOwvFGhfC605jDHbP6QQ==
+  version "8.16.0"
+  resolved "https://registry.yarnpkg.com/ws/-/ws-8.16.0.tgz#d1cd774f36fbc07165066a60e40323eab6446fd4"
+  integrity sha512-HS0c//TP7Ina87TfiPUz1rQzMhHrl/SG2guqRcTOIUYD2q8uhUdNHZYJUaQ8aTGPzCh+c6oawMKW35nFl1dxyQ==
 
 y18n@^5.0.5:
   version "5.0.8"
