@@ -60,9 +60,9 @@ export function useMintTestToken() {
             signAndSend: true,
             secretKey: admin_secret,
             reconnectAfterTx: false,
-          })) as StellarSdk.SorobanRpc.GetTransactionResponse;
+          })) as StellarSdk.SorobanRpc.Api.GetTransactionResponse;
 
-          if (result.status !== StellarSdk.SorobanRpc.GetTransactionStatus.SUCCESS) throw result;
+          if (result.status !== StellarSdk.SorobanRpc.Api.GetTransactionStatus.SUCCESS) throw result;
 
           totalMinted++;
           onTokenMintedSuccess?.(token);
