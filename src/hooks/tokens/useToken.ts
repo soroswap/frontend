@@ -5,7 +5,7 @@ import { TokenMapType } from 'interfaces';
 import { useAllTokens } from './useAllTokens';
 import useSWRImmutable from 'swr/immutable';
 
-const findToken = async (
+export const findToken = async (
   tokenAddress: string | undefined,
   tokensAsMap: TokenMapType,
   sorobanContext: SorobanContextType,
