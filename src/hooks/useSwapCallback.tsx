@@ -80,7 +80,7 @@ export const getSwapAmounts = ({
   return { amount0, amount1, routerMethod };
 };
 
-export type SuccessfullSwapResponse = StellarSdk.SorobanRpc.GetSuccessfulTransactionResponse &
+export type SuccessfullSwapResponse = StellarSdk.SorobanRpc.Api.GetSuccessfulTransactionResponse &
   TxResponse & {
     switchValues: string[];
   };
