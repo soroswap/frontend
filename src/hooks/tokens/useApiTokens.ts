@@ -8,7 +8,11 @@ import useSWRImmutable from 'swr/immutable';
 //Returns tokens from the API
 export const useApiTokens = () => {
   const sorobanContext = useSorobanReact();
-  const { data, mutate, isLoading, error } = useSWRImmutable('tokens', fetchTokens);
+  const { data, mutate, isLoading, error } = useSWRImmutable(
+    ['tokens', sorobanContext?.activeChain?.id],
+    fetchTokens,
+  );
+
   const [tokens, setTokens] = useState<TokenType[]>([]);
   const [tokensAsMap, setTokensAsMap] = useState<TokenMapType>({});
 

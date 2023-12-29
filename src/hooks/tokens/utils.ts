@@ -14,14 +14,16 @@ export const tokensToMap = (tokens: TokenType[]) => {
 
 //Adds a token to the userAddedTokens localStorage
 export const addUserToken = (token: TokenType, sorobanContext: SorobanContextType) => {
+  if (!token) return;
+
   const activeChain = sorobanContext.activeChain?.name?.toLowerCase();
 
   const userAddedTokensStr = localStorage.getItem(`userAddedTokens`) || '[]';
-  const userAddedTokens = JSON.parse(userAddedTokensStr);
+  const userAddedTokens = JSON.parse(userAddedTokensStr) ?? [];
 
   //get tokens added in the current network
-  const findNetwork = userAddedTokens.find(
-    ({ network }: tokensResponse) => network === activeChain,
+  const findNetwork = userAddedTokens?.find(
+    (item: tokensResponse) => item?.network === activeChain,
   );
 
   let newUserAddedTokens = [];

@@ -13,10 +13,10 @@ export const useUserAddedTokens = () => {
 
   useEffect(() => {
     const userAddedTokensStr = localStorage.getItem(`userAddedTokens`) || '[]';
-    const userAddedTokens = JSON.parse(userAddedTokensStr) as tokensResponse[];
+    const userAddedTokens = (JSON.parse(userAddedTokensStr) ?? []) as tokensResponse[];
     const activeChain = sorobanContext.activeChain?.name?.toLowerCase();
     const tokensFromActiveChain =
-      userAddedTokens.find(({ network }: tokensResponse) => network === activeChain)?.tokens ?? [];
+      userAddedTokens?.find((item: tokensResponse) => item?.network === activeChain)?.tokens ?? [];
     const tokensAsMap = tokensToMap(tokensFromActiveChain);
 
     setUserAddedTokens(userAddedTokens);
