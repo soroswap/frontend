@@ -53,9 +53,9 @@ const useSwapMainButton = ({
 
     const insufficientBalanceToken =
       Number(inputA) > Number(balanceA)
-        ? currencyA.symbol
+        ? currencyA?.symbol
         : Number(inputB) > Number(balanceB)
-        ? currencyB.symbol
+        ? currencyB?.symbol
         : '';
 
     const invalidAmount = Number(inputA) < 0 || Number(inputB) < 0;
@@ -99,7 +99,6 @@ const useSwapMainButton = ({
       noLiquidity,
       insufficientBalanceToken,
     } = getSwapValues();
-    if (routeNotFound) return 'Route not found';
     if (!address) return 'Connect Wallet';
     if (noCurrencySelected) return 'Select a token';
     if (insufficientLiquidity || noLiquidity) return 'Insufficient liquidity';
@@ -107,6 +106,7 @@ const useSwapMainButton = ({
     if (noAmountTyped) return 'Enter an amount';
     if (insufficientBalance) return 'Insufficient ' + insufficientBalanceToken + ' balance';
     if (invalidAmount) return 'Invalid amount';
+    if (routeNotFound) return 'Route not found';
 
     return 'Swap';
   };

@@ -21,6 +21,7 @@ import SwapCurrencyInputPanel from '../CurrencyInputPanel/SwapCurrencyInputPanel
 import SwapHeader from './SwapHeader';
 import { ArrowWrapper, SwapWrapper } from './styleds';
 import { useToken } from 'hooks/tokens/useToken';
+import { useSorobanReact } from '@soroban-react/core';
 
 const SwapSection = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -96,6 +97,7 @@ export function SwapComponent({
   prefilledState?: Partial<SwapState>;
   disableTokenInputs?: boolean;
 }) {
+  const sorobanContext = useSorobanReact();
   const [showPriceImpactModal, setShowPriceImpactModal] = useState<boolean>(false);
   const [txError, setTxError] = useState<boolean>(false);
 
@@ -343,7 +345,11 @@ export function SwapComponent({
                 independentField === Field.OUTPUT ? <span>From (at most)</span> : <span>From</span>
               }
               // disabled={disableTokenInputs}
-              value={getSwapValues().insufficientLiquidity ? '0' : formattedAmounts[Field.INPUT]}
+              value={
+                sorobanContext?.address && getSwapValues().insufficientLiquidity
+                  ? '0'
+                  : formattedAmounts[Field.INPUT]
+              }
               showMaxButton={showMaxButton}
               onUserInput={handleTypeInput}
               onMax={(maxBalance) => handleTypeInput(maxBalance.toString())}
@@ -355,11 +361,7 @@ export function SwapComponent({
               loading={independentField === Field.OUTPUT && routeIsSyncing}
               currency={currencies[Field.INPUT] ?? null}
               id={'swap-input'}
-              disableInput={
-                getSwapValues().noLiquidity ||
-                getSwapValues().insufficientLiquidity ||
-                getSwapValues().noCurrencySelected
-              }
+              disableInput={getSwapValues().noLiquidity || getSwapValues().noCurrencySelected}
             />
           </SwapSection>
           <ArrowWrapper clickable={true}>
