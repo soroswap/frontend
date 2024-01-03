@@ -10,6 +10,7 @@ export enum SnackbarIconType {
   SWAP,
   ADD_LIQUIDITY,
   REMOVE_LIQUIDITY,
+  ERROR,
 }
 
 export type SnackbarContextType = {

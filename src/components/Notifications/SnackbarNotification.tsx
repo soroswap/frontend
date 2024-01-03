@@ -7,14 +7,16 @@ import Image from 'next/image';
 import Column from 'components/Column';
 import React, { useContext } from 'react';
 import { AppContext, SnackbarIconType } from 'contexts';
-import { MinusCircle, Plus, PlusCircle } from 'react-feather';
+import { AlertTriangle, MinusCircle, Plus, PlusCircle, Triangle } from 'react-feather';
 
-const CustomSnackbarContent = styled(SnackbarContent)`
+const CustomSnackbarContent = styled(SnackbarContent)<{ error?: boolean }>`
   border-radius: 16px;
-  background: ${({
-    theme,
-  }) => `linear-gradient(${theme.palette.customBackground.bg1}, ${theme.palette.customBackground.bg1}) padding-box,
-              linear-gradient(90deg, rgba(180,239,175,0.5) 0%, rgba(255,255,255,0) 35%, rgba(255,255,255,0) 65%, rgba(180,239,175,0.5) 100%) border-box`};
+  background: ${({ error, theme }) =>
+    error
+      ? `linear-gradient(${theme.palette.customBackground.bg1}, ${theme.palette.customBackground.bg1}) padding-box,
+  linear-gradient(90deg, rgba(255,100,100,0.5) 0%, rgba(255,255,255,0) 35%, rgba(255,255,255,0) 65%, rgba(255,100,100,0.5) 100%) border-box`
+      : `linear-gradient(${theme.palette.customBackground.bg1}, ${theme.palette.customBackground.bg1}) padding-box,
+  linear-gradient(90deg, rgba(180,239,175,0.5) 0%, rgba(255,255,255,0) 35%, rgba(255,255,255,0) 65%, rgba(180,239,175,0.5) 100%) border-box`};
   border: 1px solid transparent;
   box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
   backdrop-filter: blur(50px);
@@ -32,8 +34,9 @@ const MessageWrapper = styled('div')`
   gap: 16px;
 `;
 
-const SubtitleText = styled('span')`
-  color: ${({ theme }) => theme.palette.custom.textQuaternary};
+const SubtitleText = styled('span')<{ error?: boolean }>`
+  color: ${({ error, theme }) =>
+    error ? theme.palette.error.main : theme.palette.custom.textQuaternary};
   font-weight: 400;
   font-size: 14px;
 `;
@@ -65,7 +68,8 @@ export default function SnackbarNotification() {
         return <PlusCircle width={32} height={32} />;
       case SnackbarIconType.REMOVE_LIQUIDITY:
         return <MinusCircle width={32} height={32} />;
-
+      case SnackbarIconType.ERROR:
+        return <AlertTriangle width={32} height={32} />;
       default:
         return (
           <Image
@@ -84,7 +88,9 @@ export default function SnackbarNotification() {
         {Icon()}
         <Column>
           <div>{snackbarTitle}</div>
-          <SubtitleText>{snackbarMessage}</SubtitleText>
+          <SubtitleText error={snackbarType === SnackbarIconType.ERROR}>
+            {snackbarMessage}
+          </SubtitleText>
         </Column>
       </MessageWrapper>
     </React.Fragment>
@@ -98,7 +104,7 @@ export default function SnackbarNotification() {
         onClose={handleClose}
         autoHideDuration={5000}
       >
-        <CustomSnackbarContent message={message} />
+        <CustomSnackbarContent message={message} error={snackbarType === SnackbarIconType.ERROR} />
       </Snackbar>
     </Box>
   );

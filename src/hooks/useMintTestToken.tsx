@@ -1,7 +1,7 @@
 import { contractInvoke } from '@soroban-react/contracts';
 import { useSorobanReact } from '@soroban-react/core';
 import BigNumber from 'bignumber.js';
-import { AppContext, SnackbarIconType } from 'contexts';
+import { SnackbarIconType } from 'contexts';
 import { sendNotification } from 'functions/sendNotification';
 import { bigNumberToI128 } from 'helpers/utils';
 import { useKeys } from 'hooks';
@@ -9,6 +9,7 @@ import { TokenType } from 'interfaces';
 import { useCallback, useContext } from 'react';
 import * as StellarSdk from 'stellar-sdk';
 import { useApiTokens } from './tokens/useApiTokens';
+import useNotification from './useNotification';
 interface MintTestTokenProps {
   onTokenMintedStart?: (token: TokenType) => void;
   onTokenMintedSuccess?: (token: TokenType) => void;
@@ -19,7 +20,7 @@ export function useMintTestToken() {
   const sorobanContext = useSorobanReact();
   const { admin_public, admin_secret } = useKeys(sorobanContext);
   const { tokens } = useApiTokens();
-  const { SnackbarContext } = useContext(AppContext);
+  const { notify } = useNotification();
 
   return useCallback(
     async ({
@@ -63,7 +64,8 @@ export function useMintTestToken() {
             reconnectAfterTx: false,
           })) as StellarSdk.SorobanRpc.Api.GetTransactionResponse;
 
-          if (result.status !== StellarSdk.SorobanRpc.Api.GetTransactionStatus.SUCCESS) throw result;
+          if (result.status !== StellarSdk.SorobanRpc.Api.GetTransactionStatus.SUCCESS)
+            throw result;
 
           totalMinted++;
           onTokenMintedSuccess?.(token);
@@ -72,15 +74,22 @@ export function useMintTestToken() {
         }
       }
 
-      sendNotification(
-        `Minted ${totalMinted} test tokens successfully`,
-        'Minted',
-        SnackbarIconType.MINT,
-        SnackbarContext,
-      );
+      if (totalMinted > 0) {
+        notify({
+          message: `Minted test tokens successfully`,
+          title: 'Mint',
+          type: SnackbarIconType.MINT,
+        });
+      } else {
+        notify({
+          message: `Minted test tokens failed`,
+          title: 'Error',
+          type: SnackbarIconType.ERROR,
+        });
+      }
 
       sorobanContext.connect();
     },
-    [SnackbarContext, admin_public, admin_secret, sorobanContext, tokens],
+    [admin_public, admin_secret, sorobanContext, tokens, notify],
   );
 }
