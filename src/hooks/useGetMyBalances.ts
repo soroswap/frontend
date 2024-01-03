@@ -1,10 +1,9 @@
 import { SorobanContextType, useSorobanReact } from '@soroban-react/core';
 import { TokenType } from 'interfaces';
 import useSWRImmutable from 'swr/immutable';
-import { tokenBalances } from './useBalances';
 import { useApiTokens } from './tokens/useApiTokens';
+import { tokenBalances } from './useBalances';
 
-//TODO: NOT IN USE
 interface FetchBalancesProps {
   address?: string;
   tokens: TokenType[];
