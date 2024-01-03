@@ -6,6 +6,7 @@ import BigNumber from 'bignumber.js';
 import { AppContext, SnackbarIconType } from 'contexts';
 import { sendNotification } from 'functions/sendNotification';
 import { isAddress, shortenAddress } from 'helpers/address';
+import { requiresTrustline } from 'helpers/stellar';
 import { bigNumberToI128 } from 'helpers/utils';
 import { useKeys } from 'hooks';
 import { useAllTokens } from 'hooks/tokens/useAllTokens';
@@ -84,14 +85,6 @@ export function MintCustomToken() {
     }
   };
 
-  const requiresTrustline = async (
-    account?: any,
-    asset?: any
-  ): Promise<boolean> => {
-    // no trustline required for unloaded account or asset
-    return true
-  }
-
   const handleSetTrustline = () => {
     console.log("SETTING TRUSTLINE")
     setTrustline({
@@ -119,29 +112,32 @@ export function MintCustomToken() {
   }
 
   useEffect(() => {
-    if (isAddress(tokenAddress)) {
-      findToken(tokenAddress, tokensAsMap, sorobanContext).then((resp) => {
-        setTokenSymbol(resp?.symbol as string)
-      })
-
-      requiresTrustline().then((resp: boolean) => {
-        setButtonText("Set Trustline")
-        setNeedToSetTrustline(resp)
-      })
-    } else {
-      setButtonText("Mint custom token")
-      setNeedToSetTrustline(false)
-    }
-    if (isMinting) {
-      setButtonText(`Minting ${shortenAddress(tokenAddress)}`)
-      setNeedToSetTrustline(false)
-    }
-  }, [isMinting, sorobanContext, tokenAddress, tokensAsMap])
-
-  const isButtonDisabled = () => {
-    if (isMinting) return true;
-    return false;
-  };
+    const updateTokenInfo = async () => {
+      if (isAddress(tokenAddress)) {
+        const tokenInfo = await findToken(tokenAddress, tokensAsMap, sorobanContext);
+        setTokenSymbol(tokenInfo?.symbol as string);
+  
+        const requiresTrust = await requiresTrustline(tokenAddress, sorobanContext);
+        if (requiresTrust) {
+          setButtonText("Set Trustline");
+          setNeedToSetTrustline(true);
+        } else {
+          setButtonText("Mint custom token");
+          setNeedToSetTrustline(false);
+        }
+      } else {
+        setButtonText("Mint custom token");
+        setNeedToSetTrustline(false);
+      }
+  
+      if (isMinting) {
+        setButtonText(`Minting ${shortenAddress(tokenAddress)}`);
+        setNeedToSetTrustline(false);
+      }
+    };
+  
+    updateTokenInfo();
+  }, [isMinting, sorobanContext, tokenAddress, tokensAsMap]);
 
   const getTokensApiUrl = () => {
     const base = process.env.NEXT_PUBLIC_BACKEND_URL ?? 'https://api.soroswap.finance';
