@@ -5,6 +5,7 @@ import { RowFixed } from 'components/Row';
 import { BodySmall } from 'components/Text';
 import { formatTokenAmount } from 'helpers/format';
 import { tokenBalance } from 'hooks';
+import useGetMyBalances from 'hooks/useGetMyBalances';
 
 import { TokenType } from 'interfaces/tokens';
 import { useEffect, useState } from 'react';
@@ -32,7 +33,7 @@ const StyledBalanceMax = styled('button')<{ disabled?: boolean }>`
 interface CurrencyBalanceProps {
   address: string;
   currency: TokenType;
-  onMax: (maxValue: number) => void;
+  onMax: (maxValue: string) => void;
   hideBalance: any;
   showMaxButton: any;
 }
@@ -44,26 +45,18 @@ export default function CurrencyBalance({
   hideBalance,
   showMaxButton,
 }: CurrencyBalanceProps) {
-  const sorobanContext = useSorobanReact()
-  const [balance, setBalance] = useState<string>();
-
-  useEffect(() => {
-    if (sorobanContext.activeChain && sorobanContext.address) {
-      tokenBalance(currency.address, address, sorobanContext).then((resp) => {
-        setBalance(formatTokenAmount(resp as BigNumber));
-      });
-    }
-  }, [address, currency.address, sorobanContext]);
+  const { tokenBalancesResponse } = useGetMyBalances();
+  const balance = tokenBalancesResponse?.balances?.find((b) => b?.address === currency?.address)
+    ?.balance;
 
   const theme = useTheme();
-
   return (
     <RowFixed style={{ height: '17px' }}>
       <BodySmall color={theme.palette.secondary.main}>
         {!hideBalance && currency && balance ? `Balance: ${balance}` : null}
       </BodySmall>
-      {showMaxButton && Number(balance) > 0 ? (
-        <StyledBalanceMax onClick={() => onMax(parseInt(balance ?? ''))}>Max</StyledBalanceMax>
+      {showMaxButton && balance ? (
+        <StyledBalanceMax onClick={() => onMax(balance as string)}>Max</StyledBalanceMax>
       ) : null}
     </RowFixed>
   );

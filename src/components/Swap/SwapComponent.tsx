@@ -259,6 +259,7 @@ export function SwapComponent({
         }));
       })
       .catch((error) => {
+        console.log(error);
         setTxError(true);
         setSwapState((currentState) => ({
           ...currentState,
