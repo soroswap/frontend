@@ -24,9 +24,11 @@ export enum RouterMethod {
 const isObject = (val: any) => typeof val === 'object' && val !== null && !Array.isArray(val);
 
 //refetch balance, lptokens and reserves after router tx success
-const revalidateKeysCondition = (key: any) =>
-  Array.isArray(key) &&
-  (key.includes('balance') || key.includes('lp-tokens') || key.includes('reserves'));
+const revalidateKeysCondition = (key: any) => {
+  const revalidateKeys = new Set(['balance', 'lp-tokens', 'reserves']);
+
+  return Array.isArray(key) && key.some((k) => revalidateKeys.has(k));
+};
 
 export function useRouterCallback() {
   const sorobanContext = useSorobanReact();
@@ -50,7 +52,7 @@ export function useRouterCallback() {
         signAndSend: signAndSend,
         reconnectAfterTx: false,
       })) as TxResponse;
-      console.log("🚀 ~ file: useRouterCallback.tsx:45 ~ result:", result)
+      console.log('🚀 ~ file: useRouterCallback.tsx:45 ~ result:', result);
 
       if (
         isObject(result) &&

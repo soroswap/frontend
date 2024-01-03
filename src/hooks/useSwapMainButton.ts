@@ -48,15 +48,10 @@ const useSwapMainButton = ({
     const inputB = formattedAmounts[Field.OUTPUT] ?? 0;
     const noCurrencySelected = !currencyA || !currencyB;
     const noAmountTyped = !inputA || !inputB;
-    const insufficientBalance =
-      Number(inputA) > Number(balanceA) || Number(inputB) > Number(balanceB);
+    const insufficientBalance = Number(inputA) > Number(balanceA);
 
     const insufficientBalanceToken =
-      Number(inputA) > Number(balanceA)
-        ? currencyA?.symbol
-        : Number(inputB) > Number(balanceB)
-        ? currencyB?.symbol
-        : '';
+      Number(inputA) > Number(balanceA) ? currencyA?.symbol : undefined;
 
     const invalidAmount = Number(inputA) < 0 || Number(inputB) < 0;
 

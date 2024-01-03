@@ -29,11 +29,11 @@ export const addUserToken = (token: TokenType, sorobanContext: SorobanContextTyp
   let newUserAddedTokens = [];
 
   if (findNetwork) {
-    newUserAddedTokens = userAddedTokens.map(({ tokens, network }: tokensResponse) => {
-      if (network === activeChain) {
+    newUserAddedTokens = userAddedTokens.map((item: tokensResponse) => {
+      if (item?.network === activeChain) {
         return {
-          network,
-          tokens: [...tokens, token],
+          network: item?.network,
+          tokens: [...(item?.tokens ?? []), token],
         };
       }
     });

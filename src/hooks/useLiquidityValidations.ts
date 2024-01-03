@@ -49,7 +49,6 @@ const useLiquidityValidations = ({
   const hasEnoughBalance = () => {
     const currentCurrencyAValue = formattedAmounts[Field.CURRENCY_A];
     const currentCurrencyBValue = formattedAmounts[Field.CURRENCY_B];
-
     if (Number(currentCurrencyAValue) > Number(myCurrencyABalance)) {
       return false;
     }
