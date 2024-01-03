@@ -2,18 +2,19 @@ import { styled, useTheme } from '@mui/material';
 import BigNumber from 'bignumber.js';
 import { ButtonError } from 'components/Buttons/Button';
 import Column from 'components/Column';
+import CurrencyLogo from 'components/Logo/CurrencyLogo';
 import Row, { AutoRow } from 'components/Row';
+import { DEFAULT_SLIPPAGE_INPUT_VALUE } from 'components/Settings/MaxSlippageSettings';
 import { SwapCallbackError } from 'components/Swap/styleds';
 import { BodySmall, HeadlineSmall } from 'components/Text';
 import { MouseoverTooltip } from 'components/Tooltip';
+import { isClassicStellarAsset } from 'helpers/address';
 import { TokenType } from 'interfaces';
 import { useMemo, useState } from 'react';
 import { AlertTriangle } from 'react-feather';
 import { Field } from 'state/mint/actions';
-import { Label } from './AddModalHeader';
 import { useUserSlippageToleranceWithDefault } from 'state/user/hooks';
-import { DEFAULT_SLIPPAGE_INPUT_VALUE } from 'components/Settings/MaxSlippageSettings';
-import CurrencyLogo from 'components/Logo/CurrencyLogo';
+import { Label } from './AddModalHeader';
 
 const DetailsContainer = styled(Column)`
   padding: 0 8px;
@@ -99,7 +100,7 @@ export default function AddModalFooter({
       <DetailsContainer gap="md">
         <BodySmall component="div">
           <Row align="flex-start" justify="space-between" gap="sm">
-            <Label>{currencyA?.name} to deposit</Label>
+            <Label>{isClassicStellarAsset(currencyA?.name!) ? currencyA?.symbol : currencyA?.name} to deposit</Label>
             <DetailRowValue style={{ display: 'flex', alignItems: 'center' }}>
               {`${formattedAmounts.CURRENCY_A} ${currencyA?.symbol}`}{' '}
               <CurrencyLogo currency={currencyA} size="16px" style={{ marginLeft: '6px' }} />
@@ -108,7 +109,7 @@ export default function AddModalFooter({
         </BodySmall>
         <BodySmall component="div">
           <Row align="flex-start" justify="space-between" gap="sm">
-            <Label>{currencyB?.name} to deposit</Label>
+            <Label>{isClassicStellarAsset(currencyB?.name!) ? currencyB?.symbol : currencyB?.name} to deposit</Label>
             <DetailRowValue style={{ display: 'flex', alignItems: 'center' }}>
               {`${formattedAmounts.CURRENCY_B} ${currencyB?.symbol}`}{' '}
               <CurrencyLogo currency={currencyB} size="16px" style={{ marginLeft: '6px' }} />
