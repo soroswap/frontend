@@ -202,8 +202,8 @@ export default function CurrencyList({
 
       const currency = row;
 
-      const isSelected = Boolean(currency && selectedCurrency && selectedCurrency == currency);
-      const otherSelected = Boolean(currency && otherCurrency && otherCurrency == currency);
+      const isSelected = Boolean(currency && selectedCurrency && selectedCurrency.address == currency.address);
+      const otherSelected = Boolean(currency && otherCurrency && otherCurrency.address == currency.address);
       const handleSelect = (hasWarning: boolean) =>
         currency && onCurrencySelect(currency, hasWarning);
 
