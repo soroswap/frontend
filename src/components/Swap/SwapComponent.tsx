@@ -1,11 +1,16 @@
 import { Modal, styled } from '@mui/material';
+import { setTrustline } from '@soroban-react/contracts';
+import { useSorobanReact } from '@soroban-react/core';
 import { AutoColumn } from 'components/Column';
 import ConfirmSwapModal from 'components/Swap/ConfirmSwapModal';
 import SwapDetailsDropdown from 'components/Swap/SwapDetailsDropdown';
 import { ButtonText } from 'components/Text';
 import { TransactionFailedContent } from 'components/TransactionConfirmationModal';
+import { getClassicStellarAsset } from 'helpers/address';
 import { formatTokenAmount } from 'helpers/format';
+import { requiresTrustline } from 'helpers/stellar';
 import { relevantTokensType } from 'hooks';
+import { useToken } from 'hooks/tokens/useToken';
 import useGetReservesByPair from 'hooks/useGetReservesByPair';
 import { useSwapCallback } from 'hooks/useSwapCallback';
 import useSwapMainButton from 'hooks/useSwapMainButton';
@@ -20,8 +25,6 @@ import { opacify } from 'themes/utils';
 import SwapCurrencyInputPanel from '../CurrencyInputPanel/SwapCurrencyInputPanel';
 import SwapHeader from './SwapHeader';
 import { ArrowWrapper, SwapWrapper } from './styleds';
-import { useToken } from 'hooks/tokens/useToken';
-import { useSorobanReact } from '@soroban-react/core';
 
 const SwapSection = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -100,6 +103,8 @@ export function SwapComponent({
   const sorobanContext = useSorobanReact();
   const [showPriceImpactModal, setShowPriceImpactModal] = useState<boolean>(false);
   const [txError, setTxError] = useState<boolean>(false);
+  
+  const [needTrustline, setNeedTrustline] = useState<boolean>(true);
 
   const { token: prefilledToken } = useToken(prefilledState.INPUT?.currencyId!);
 
@@ -235,7 +240,6 @@ export function SwapComponent({
     trade,
     // swapFiatValues,
     // allowedSlippage,
-    // allowance.state === AllowanceState.ALLOWED ? allowance.permitSignature : undefined
   );
 
   const handleSwap = () => {
@@ -268,6 +272,24 @@ export function SwapComponent({
       });
   };
 
+  const handleTrustline = () => {
+    const asset = getClassicStellarAsset(trade?.outputAmount?.currency.name!)
+    if (!asset) return
+    
+    setTrustline({ tokenSymbol: asset.assetCode, tokenAdmin: asset.issuer, sorobanContext })
+      .then((result) => {
+        setNeedTrustline(false)
+      })
+      .catch((error) => {
+        // console.log(error);
+        setTxError(true);
+        setSwapState((currentState) => ({
+          ...currentState,
+          showConfirm: false,
+        }));
+      });      
+  };
+
   const showDetailsDropdown = Boolean(
     userHasSpecifiedInputOutput && (trade || routeIsLoading || routeIsSyncing),
   );
@@ -296,6 +318,22 @@ export function SwapComponent({
     reserves,
   });
 
+  useEffect(() => {
+    const checkTrustline = async () => {
+      if (!trade) return
+      
+      const needTrustline = await requiresTrustline(trade?.outputAmount?.currency.address!, sorobanContext)
+      
+      if (needTrustline) {
+        setNeedTrustline(true)
+      } else {
+        setNeedTrustline(false)
+      }
+    }
+
+    checkTrustline();
+  }, [sorobanContext, trade])
+
   return (
     <>
       <SwapWrapper>
@@ -320,7 +358,8 @@ export function SwapComponent({
             swapResult={swapResult}
             allowedSlippage={allowedSlippage} //allowedSlippage}
             onConfirm={handleSwap}
-            allowance={() => null} //allowance}
+            onSetTrustline={handleTrustline}
+            trustline={needTrustline}
             swapError={swapError}
             onDismiss={handleConfirmDismiss}
             swapQuoteReceivedDate={new Date()} //swapQuoteReceivedDate}

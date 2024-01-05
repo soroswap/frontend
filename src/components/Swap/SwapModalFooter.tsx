@@ -1,23 +1,21 @@
 import { styled, useTheme } from '@mui/material';
-import { useSorobanReact } from '@soroban-react/core';
 import BigNumber from 'bignumber.js';
 import { ButtonError, SmallButtonPrimary } from 'components/Buttons/Button';
 import Column from 'components/Column';
+import CurrencyLogo from 'components/Logo/CurrencyLogo';
 import Row, { AutoRow, RowBetween, RowFixed } from 'components/Row';
 import { BodySmall, HeadlineSmall, SubHeaderSmall } from 'components/Text';
 import { MouseoverTooltip } from 'components/Tooltip';
-import { getExpectedAmount, getExpectedAmountNew } from 'functions/getExpectedAmount';
-import { getPriceImpactNew, getPriceImpactNew2 } from 'functions/getPriceImpact';
+import { getPriceImpactNew2 } from 'functions/getPriceImpact';
 import { formatTokenAmount, twoDecimalsPercentage } from 'helpers/format';
-import { ReactNode, useEffect, useMemo, useState } from 'react';
+import useGetReservesByPair from 'hooks/useGetReservesByPair';
+import { getSwapAmounts } from 'hooks/useSwapCallback';
+import { ReactNode, useEffect, useState } from 'react';
 import { AlertTriangle } from 'react-feather';
 import { InterfaceTrade, TradeType } from 'state/routing/types';
 import { Label } from './SwapModalHeaderAmount';
-import { SwapCallbackError, SwapShowAcceptChanges } from './styleds';
-import CurrencyLogo from 'components/Logo/CurrencyLogo';
-import useGetReservesByPair from 'hooks/useGetReservesByPair';
-import { getSwapAmounts } from 'hooks/useSwapCallback';
 import { getExpectedAmountOfOne } from './TradePrice';
+import { SwapCallbackError, SwapShowAcceptChanges } from './styleds';
 
 const DetailsContainer = styled(Column)`
   padding: 0 8px;
@@ -50,6 +48,7 @@ export default function SwapModalFooter({
   fiatValueOutput,
   showAcceptChanges,
   onAcceptChanges,
+  trustline,
 }: {
   trade: InterfaceTrade;
   swapResult?: any; //SwapResult
@@ -61,7 +60,8 @@ export default function SwapModalFooter({
   fiatValueInput: { data?: number; isLoading: boolean };
   fiatValueOutput: { data?: number; isLoading: boolean };
   showAcceptChanges: boolean;
-  onAcceptChanges: () => void;
+    onAcceptChanges: () => void;
+  trustline: boolean
 }) {
   const theme = useTheme();
   // const transactionDeadlineSecondsSinceEpoch = useTransactionDeadline()?.toNumber() // in seconds since epoch
@@ -93,13 +93,9 @@ export default function SwapModalFooter({
     ).then((resp) => {
       setPriceImpact(twoDecimalsPercentage(resp.toString()));
     });
-  }, [
-    trade?.inputAmount?.currency,
-    trade?.outputAmount?.currency,
-    trade?.inputAmount?.value,
-    trade.tradeType,
-    reserves,
-  ]);
+
+
+  }, [trade?.inputAmount?.currency, trade.outputAmount?.currency, trade?.inputAmount?.value, trade.tradeType, reserves]);
 
   const getSwapValues = () => {
     if (!trade || !trade.tradeType) return { formattedAmount0: '0', formattedAmount1: '0' };
@@ -210,7 +206,7 @@ export default function SwapModalFooter({
             id={'CONFIRM_SWAP_BUTTON'}
           >
             <HeadlineSmall color={theme.palette.custom.accentTextLightPrimary}>
-              Confirm swap
+              {trustline ? `Set ${trade.outputAmount?.currency.symbol} trustline` : 'Confirm swap'}
             </HeadlineSmall>
           </ConfirmButton>
           {swapErrorMessage ? <SwapCallbackError error={swapErrorMessage} /> : null}

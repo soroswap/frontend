@@ -5,6 +5,7 @@ import Column, { AutoColumn } from 'components/Column';
 import Loader from 'components/Icons/LoadingSpinner';
 import CurrencyLogo from 'components/Logo/CurrencyLogo';
 import Row, { RowFixed } from 'components/Row';
+import { isClassicStellarAsset } from 'helpers/address';
 import { formatTokenAmount } from 'helpers/format';
 import { tokenBalance } from 'hooks';
 import { CSSProperties, MutableRefObject, useCallback, useEffect, useMemo, useState } from 'react';
@@ -109,7 +110,7 @@ export function CurrencyRow({
       </Column>
       <AutoColumn style={{ opacity: isBlockedToken ? blockedTokenOpacity : '1' }}>
         <Row>
-          <CurrencyName title={currency.name}>{currency.name}</CurrencyName>
+          <CurrencyName title={currency.name}>{isClassicStellarAsset(currency.name) ? currency.symbol : currency.name }</CurrencyName>
         </Row>
         <Typography ml="0px" fontSize="12px" fontWeight={300}>
           {currency.symbol}

@@ -1,6 +1,11 @@
 import { Box, CircularProgress, Modal, Typography, styled, useTheme } from '@mui/material';
+import { useSorobanReact } from '@soroban-react/core';
 import { SubHeader } from 'components/Text';
+import UserAddedTokenModalContent from 'components/UserAddedTokenModal/UserAddedTokenModalContent';
 import { isAddress } from 'helpers/address';
+import { useAllTokens } from 'hooks/tokens/useAllTokens';
+import { useToken } from 'hooks/tokens/useToken';
+import { addUserToken } from 'hooks/tokens/utils';
 import useDebounce from 'hooks/useDebounce';
 import useGetMyBalances from 'hooks/useGetMyBalances';
 import { TokenType } from 'interfaces';
@@ -23,11 +28,6 @@ import Column from '../Column';
 import Row, { RowBetween } from '../Row';
 import CurrencyList, { CurrencyRow, formatAnalyticsEventProperties } from './CurrencyList';
 import { PaddedColumn, SearchInput, Separator } from './styleds';
-import UserAddedTokenModalContent from 'components/UserAddedTokenModal/UserAddedTokenModalContent';
-import { useSorobanReact } from '@soroban-react/core';
-import { useToken } from 'hooks/tokens/useToken';
-import { useAllTokens } from 'hooks/tokens/useAllTokens';
-import { addUserToken } from 'hooks/tokens/utils';
 
 const ContentWrapper = styled(Column)<{ modalheight?: number }>`
   overflow: hidden;
