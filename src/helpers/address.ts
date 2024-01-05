@@ -29,3 +29,19 @@ export function isClassicStellarAsset(value: string): boolean {
   const [assetCode, issuer] = parts;
   return isValidSymbol(assetCode) && isAddress(issuer) !== false;
 }
+
+//Receives the name of the token must be SYMBOL:ISSUER
+export function getClassicStellarAsset(value: string) {
+  if (!value) return false;
+  const parts = value.split(':');
+  if (parts.length !== 2) {
+    return false;
+  }
+
+  const [assetCode, issuer] = parts;
+
+  return {
+    assetCode,
+    issuer,
+  };
+}

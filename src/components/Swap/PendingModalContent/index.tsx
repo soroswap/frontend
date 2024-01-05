@@ -1,7 +1,9 @@
 import { css, keyframes, styled, useTheme } from '@mui/material';
 import Column, { ColumnCenter } from 'components/Column';
+import CopyTxHash from 'components/CopyTxHash/CopyTxHash';
 import Row from 'components/Row';
 import { LabelSmall, SubHeaderLarge } from 'components/Text';
+import { SuccessfullSwapResponse } from 'hooks/useSwapCallback';
 import { TokenType } from 'interfaces';
 import Link from 'next/link';
 import { ReactNode, useRef } from 'react';
@@ -15,8 +17,6 @@ import {
   LogoContainer,
 } from './Logos';
 import { TradeSummary } from './TradeSummary';
-import CopyTxHash from 'components/CopyTxHash/CopyTxHash';
-import { SuccessfullSwapResponse } from 'hooks/useSwapCallback';
 
 export const PendingModalContainer = styled(ColumnCenter)`
   margin: 48px 0 8px;
@@ -95,7 +95,7 @@ const StepTitleAnimationContainer = styled(Column, {
 // This component is used for all steps after ConfirmModalState.REVIEWING
 export type PendingConfirmModalState = Extract<
   ConfirmModalState,
-  | ConfirmModalState.APPROVING_TOKEN
+  | ConfirmModalState.SETTING_TRUSTLINE
   | ConfirmModalState.PERMITTING
   | ConfirmModalState.PENDING_CONFIRMATION
   | ConfirmModalState.WRAPPING
@@ -165,11 +165,11 @@ function getContent(args: ContentArgs): PendingModalStep {
         subtitle: `USDT requires resetting approval when spending limits are too low.`,
         label: revocationPending ? `Pending...` : `Proceed in your wallet`,
       };
-    case ConfirmModalState.APPROVING_TOKEN:
+    case ConfirmModalState.SETTING_TRUSTLINE:
       return {
-        title: `Enable spending ${approvalCurrency?.symbol ?? 'this token'} on Uniswap`,
+        title: `Setting trustline for ${approvalCurrency?.symbol ?? 'this token'}`,
         subtitle: (
-          <CustomLink href="https://support.uniswap.org/hc/en-us/articles/8120520483085">
+          <CustomLink href="https://support.uniswap.org/hc/en-us/articles/8120520483085" target='_blank'>
             Why is this required?
           </CustomLink>
         ),
@@ -266,11 +266,10 @@ export function PendingModalContent({
   return (
     <PendingModalContainer gap="24px">
       <LogoContainer>
-        {currentStep === ConfirmModalState.APPROVING_TOKEN && <>dd</>}
         {currentStep !== ConfirmModalState.PENDING_CONFIRMATION && trade && trade.inputAmount && (
           <CurrencyLoader
-            currency={trade.inputAmount.currency}
-            asBadge={currentStep === ConfirmModalState.APPROVING_TOKEN}
+            currency={trade.outputAmount?.currency}
+            asBadge={currentStep === ConfirmModalState.SETTING_TRUSTLINE}
           />
         )}
         {currentStep === ConfirmModalState.PENDING_CONFIRMATION && showSuccess && (
@@ -291,7 +290,7 @@ export function PendingModalContent({
             {steps?.map((step) => {
               const { title, subtitle } = getContent({
                 step,
-                approvalCurrency: trade?.inputAmount?.currency,
+                approvalCurrency: trade?.outputAmount?.currency,
                 swapConfirmed,
                 swapPending,
                 wrapPending,
