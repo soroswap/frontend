@@ -1,18 +1,18 @@
+import { TxResponse } from '@soroban-react/contracts';
 import { useSorobanReact } from '@soroban-react/core';
 import BigNumber from 'bignumber.js';
+import { DEFAULT_SLIPPAGE_INPUT_VALUE } from 'components/Settings/MaxSlippageSettings';
 import { AppContext, SnackbarIconType } from 'contexts';
 import { getCurrentTimePlusOneHour } from 'functions/getCurrentTimePlusOneHour';
 import { sendNotification } from 'functions/sendNotification';
+import { scValToJs } from 'helpers/convert';
 import { formatTokenAmount } from 'helpers/format';
 import { bigNumberToI128, bigNumberToU64 } from 'helpers/utils';
 import { useContext } from 'react';
-import * as StellarSdk from 'stellar-sdk';
 import { InterfaceTrade, TradeType } from 'state/routing/types';
-import { RouterMethod, useRouterCallback } from './useRouterCallback';
-import { scValToJs } from 'helpers/convert';
 import { useUserSlippageToleranceWithDefault } from 'state/user/hooks';
-import { DEFAULT_SLIPPAGE_INPUT_VALUE } from 'components/Settings/MaxSlippageSettings';
-import { TxResponse } from '@soroban-react/contracts';
+import * as StellarSdk from 'stellar-sdk';
+import { RouterMethod, useRouterCallback } from './useRouterCallback';
 
 // Returns a function that will execute a swap, if the parameters are all valid
 // and the user has approved the slippage adjusted input amount for the trade
@@ -98,7 +98,7 @@ export function useSwapCallback(
   const routerCallback = useRouterCallback();
   const allowedSlippage = useUserSlippageToleranceWithDefault(DEFAULT_SLIPPAGE_INPUT_VALUE);
 
-  const doSwap = async (): Promise<
+  const doSwap = async (simulation?: boolean): Promise<
     SuccessfullSwapResponse | StellarSdk.SorobanRpc.Api.GetTransactionResponse
   > => {
     if (!trade) throw new Error('missing trade');
@@ -151,8 +151,11 @@ export function useSwapCallback(
       const result = (await routerCallback(
         routerMethod,
         args,
-        true,
+        !simulation,
       )) as StellarSdk.SorobanRpc.Api.GetTransactionResponse;
+
+      //if it is a simulation should return the result
+      if(simulation) return result
 
       if (result.status !== StellarSdk.SorobanRpc.Api.GetTransactionStatus.SUCCESS) throw result;
 
