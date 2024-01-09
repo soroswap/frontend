@@ -1,4 +1,5 @@
 import { SorobanContextType, useSorobanReact } from '@soroban-react/core';
+import { getClassicAssetSorobanAddress } from 'functions/getClassicAssetSorobanAddress';
 import { isAddress } from 'helpers/address';
 import { TokenMapType } from 'interfaces';
 import useSWRImmutable from 'swr/immutable';
@@ -30,12 +31,18 @@ export const findToken = async (
 export function useToken(tokenAddress: string | undefined) {
   const sorobanContext = useSorobanReact();
 
+  const classicAssetSearch = getClassicAssetSorobanAddress(tokenAddress!, sorobanContext);
+
   const { tokensAsMap } = useAllTokens();
 
   const { data, isLoading, error } = useSWRImmutable(
     ['token', tokenAddress, tokensAsMap, sorobanContext],
     ([key, tokenAddress, tokensAsMap, sorobanContext]) =>
-      findToken(tokenAddress, tokensAsMap, sorobanContext),
+      findToken(
+        classicAssetSearch ? classicAssetSearch : tokenAddress,
+        tokensAsMap,
+        sorobanContext,
+      ),
   );
 
   return {
