@@ -1,7 +1,11 @@
-import { Box, CircularProgress, Typography, styled, useTheme } from '@mui/material';
+import { Box, CircularProgress, Modal, Typography, styled, useTheme } from '@mui/material';
+import { useSorobanReact } from '@soroban-react/core';
 import { SubHeader } from 'components/Text';
+import UserAddedTokenModalContent from 'components/UserAddedTokenModal/UserAddedTokenModalContent';
 import { isAddress } from 'helpers/address';
-import { useDefaultActiveTokens, useToken } from 'hooks';
+import { useAllTokens } from 'hooks/tokens/useAllTokens';
+import { useToken } from 'hooks/tokens/useToken';
+import { addUserToken } from 'hooks/tokens/utils';
 import useDebounce from 'hooks/useDebounce';
 import useGetMyBalances from 'hooks/useGetMyBalances';
 import { TokenType } from 'interfaces';
@@ -70,6 +74,7 @@ export function CurrencySearch({
   isOpen,
   onlyShowCurrenciesWithBalance,
 }: CurrencySearchProps) {
+  const sorobanContext = useSorobanReact();
   const theme = useTheme();
 
   const [tokenLoaderTimerElapsed, setTokenLoaderTimerElapsed] = useState(false);
@@ -80,8 +85,10 @@ export function CurrencySearch({
   const [searchQuery, setSearchQuery] = useState<string>('');
   const debouncedQuery = useDebounce(searchQuery, 200);
   const isAddressSearch = isAddress(debouncedQuery);
-  const searchToken = useToken(debouncedQuery);
-  const searchTokenIsAdded = false; //useIsUserAddedToken(searchToken)
+  const { token: searchToken } = useToken(debouncedQuery);
+  const { tokensAsMap: allTokens } = useAllTokens();
+
+  const [showUserAddedTokenModal, setShowUserAddedTokenModal] = useState(false);
 
   //This sends and event when a token is searched to google analytics
   // useEffect(() => {
@@ -96,7 +103,7 @@ export function CurrencySearch({
 
   const { tokenBalancesResponse, isLoading } = useGetMyBalances();
 
-  const defaultTokens = useDefaultActiveTokens();
+  const { tokensAsMap: defaultTokens } = useAllTokens();
 
   const filteredTokens: TokenType[] = useMemo(() => {
     const getTokensSortedByBalance = () => {
@@ -120,12 +127,21 @@ export function CurrencySearch({
 
   const searchCurrencies = useSortTokensByQuery(debouncedQuery, filteredTokens);
 
+  const handleConfirmAddUserToken = () => {
+    addUserToken(searchToken!, sorobanContext);
+    onCurrencySelect(searchToken!);
+  };
+
   const handleCurrencySelect = useCallback(
     (currency: TokenType, hasWarning?: boolean) => {
-      onCurrencySelect(currency, hasWarning);
-      if (!hasWarning) onDismiss();
+      if (!allTokens[currency.address]) {
+        setShowUserAddedTokenModal(true);
+      } else {
+        onCurrencySelect(currency, hasWarning);
+        if (!hasWarning) onDismiss();
+      }
     },
-    [onDismiss, onCurrencySelect],
+    [onDismiss, onCurrencySelect, allTokens],
   );
 
   // clear the input on open
@@ -137,7 +153,6 @@ export function CurrencySearch({
   const inputRef = useRef<HTMLInputElement>();
   const handleInput = useCallback((event: ChangeEvent<HTMLInputElement>) => {
     const input = event.target.value;
-
     setSearchQuery(input);
     fixedList.current?.scrollTo(0);
   }, []);
@@ -167,87 +182,99 @@ export function CurrencySearch({
   }, []);
 
   return (
-    <ContentWrapper modalheight={80}>
-      <PaddedColumn gap="16px">
-        <RowBetween>
-          <SubHeader fontWeight={500}>Select a token</SubHeader>
-          <CloseButton onClick={onDismiss} />
-        </RowBetween>
-        <Row>
-          <SearchInput
-            type="text"
-            id="token-search-input"
-            data-testid="token-search-input"
-            placeholder={`Search name or paste address`}
-            autoComplete="off"
-            value={searchQuery}
-            ref={inputRef as RefObject<HTMLInputElement>}
-            onChange={handleInput}
-            onKeyDown={handleEnter}
+    <>
+      <Modal open={showUserAddedTokenModal} onClose={() => setShowUserAddedTokenModal(false)}>
+        <div>
+          <UserAddedTokenModalContent
+            onDismiss={() => setShowUserAddedTokenModal(false)}
+            onConfirm={handleConfirmAddUserToken}
           />
-        </Row>
-        {/* {showCommonBases && (
-          <CommonBases
-            chainId={chainId}
-            onSelect={handleCurrencySelect}
-            selectedCurrency={selectedCurrency}
-            searchQuery={searchQuery}
-            isAddressSearch={isAddressSearch}
-          />
-        )} */}
-      </PaddedColumn>
-      <Separator />
-      {searchToken && !searchTokenIsAdded && !isLoading ? (
-        <Column style={{ padding: '20px 0', height: '100%' }}>
-          <CurrencyRow
-            currency={searchToken}
-            isSelected={Boolean(searchToken && selectedCurrency && selectedCurrency == searchToken)}
-            onSelect={(hasWarning: boolean) =>
-              searchToken && handleCurrencySelect(searchToken, hasWarning)
-            }
-            otherSelected={Boolean(
-              searchToken && otherSelectedCurrency && otherSelectedCurrency == searchToken,
-            )}
-            showCurrencyAmount={showCurrencyAmount}
-            eventProperties={formatAnalyticsEventProperties(
-              searchToken,
-              0,
-              [searchToken],
-              searchQuery,
-              isAddressSearch,
-            )}
-          />
-        </Column>
-      ) : searchCurrencies?.length > 0 && !isLoading ? (
-        <div style={{ flex: '1' }}>
-          <AutoSizer disableWidth>
-            {({ height }: { height: number }) => (
-              <CurrencyList
-                height={height}
-                currencies={searchCurrencies}
-                onCurrencySelect={handleCurrencySelect}
-                otherCurrency={otherSelectedCurrency}
-                selectedCurrency={selectedCurrency}
-                fixedListRef={fixedList}
-                showCurrencyAmount={showCurrencyAmount}
-                searchQuery={searchQuery}
-                isAddressSearch={isAddressSearch}
-                isLoading={isLoading}
-              />
-            )}
-          </AutoSizer>
         </div>
-      ) : isLoading ? (
-        <Box justifyContent="center" display="flex" padding="20px">
-          <CircularProgress size="16px" />
-        </Box>
-      ) : (
-        <Column style={{ padding: '20px', height: '100%' }}>
-          <Typography color={theme.palette.secondary.main} textAlign="center" mb="20px">
-            No results found.
-          </Typography>
-        </Column>
-      )}
-    </ContentWrapper>
+      </Modal>
+      <ContentWrapper modalheight={80}>
+        <PaddedColumn gap="16px">
+          <RowBetween>
+            <SubHeader fontWeight={500}>Select a token</SubHeader>
+            <CloseButton onClick={onDismiss} />
+          </RowBetween>
+          <Row>
+            <SearchInput
+              type="text"
+              id="token-search-input"
+              data-testid="token-search-input"
+              placeholder={`Search name or paste address`}
+              autoComplete="off"
+              value={searchQuery}
+              ref={inputRef as RefObject<HTMLInputElement>}
+              onChange={handleInput}
+              onKeyDown={handleEnter}
+            />
+          </Row>
+          {/* {showCommonBases && (
+        <CommonBases
+          chainId={chainId}
+          onSelect={handleCurrencySelect}
+          selectedCurrency={selectedCurrency}
+          searchQuery={searchQuery}
+          isAddressSearch={isAddressSearch}
+        />
+      )} */}
+        </PaddedColumn>
+        <Separator />
+        {searchToken && !isLoading ? (
+          <Column style={{ padding: '20px 0', height: '100%' }}>
+            <CurrencyRow
+              currency={searchToken}
+              isSelected={Boolean(
+                searchToken && selectedCurrency && selectedCurrency == searchToken,
+              )}
+              onSelect={(hasWarning: boolean) =>
+                searchToken && handleCurrencySelect(searchToken, hasWarning)
+              }
+              otherSelected={Boolean(
+                searchToken && otherSelectedCurrency && otherSelectedCurrency == searchToken,
+              )}
+              showCurrencyAmount={showCurrencyAmount}
+              eventProperties={formatAnalyticsEventProperties(
+                searchToken,
+                0,
+                [searchToken],
+                searchQuery,
+                isAddressSearch,
+              )}
+            />
+          </Column>
+        ) : searchCurrencies?.length > 0 && !isLoading ? (
+          <div style={{ flex: '1' }}>
+            <AutoSizer disableWidth>
+              {({ height }: { height: number }) => (
+                <CurrencyList
+                  height={height}
+                  currencies={searchCurrencies}
+                  onCurrencySelect={handleCurrencySelect}
+                  otherCurrency={otherSelectedCurrency}
+                  selectedCurrency={selectedCurrency}
+                  fixedListRef={fixedList}
+                  showCurrencyAmount={showCurrencyAmount}
+                  searchQuery={searchQuery}
+                  isAddressSearch={isAddressSearch}
+                  isLoading={isLoading}
+                />
+              )}
+            </AutoSizer>
+          </div>
+        ) : isLoading ? (
+          <Box justifyContent="center" display="flex" padding="20px">
+            <CircularProgress size="16px" />
+          </Box>
+        ) : (
+          <Column style={{ padding: '20px', height: '100%' }}>
+            <Typography color={theme.palette.secondary.main} textAlign="center" mb="20px">
+              No results found.
+            </Typography>
+          </Column>
+        )}
+      </ContentWrapper>
+    </>
   );
 }

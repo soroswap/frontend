@@ -2,7 +2,7 @@ import { contractInvoke } from '@soroban-react/contracts';
 import { SorobanContextType } from '@soroban-react/core';
 import BigNumber from 'bignumber.js';
 import { scValToJs } from 'helpers/convert';
-import { xdr } from 'soroban-client';
+import { xdr } from 'stellar-sdk';
 import { formatTokenAmount } from '../helpers/format';
 import { accountToScVal } from '../helpers/utils';
 import { TokenMapType, TokenType } from '../interfaces';
@@ -12,6 +12,7 @@ export type relevantTokensType = {
   usdValue: number;
   symbol: string;
   address: string;
+  name: string;
   decimals: number;
   formatted: boolean | undefined;
 };
@@ -68,6 +69,7 @@ const notFoundReturn = (token: TokenType) => {
     usdValue: 0,
     symbol: token.symbol,
     address: token.address,
+    name: token.name,
     decimals: 0,
     formatted: false,
   };
@@ -104,6 +106,7 @@ export async function tokenBalances(
           usdValue: 0, //TODO: should get usd value
           symbol: token.symbol,
           address: token.address,
+          name: token.name,
           decimals: decimalsResponse,
           formatted: formatted,
         };

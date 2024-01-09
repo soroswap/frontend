@@ -111,25 +111,50 @@ For Futurenet network
 
 You have successfully set up Soroswap on your local machine! Start swapping, pooling, and exploring the possibilities of decentralized finance (DeFi) on the Soroban network.
 
+## 🧪🔨 Testing 🧪🔨
+To execute the tests, you must first start the development container. To do this, run the following command from your host machine:
+
+```bash
+bash docker/run.sh
+```
+Once the development container is running, you can install the dependencies for the tests by running the following command:
+
+```bash
+## 🧪🔨 Testing 🧪🔨
+To execute the tests, you must first start the development container. To do this, run the following command from your host machine:
+
+```bash
+bash docker/run.sh
+```
+Once the development container is running, you can install the dependencies for the tests by running the following command:
+
+```bash
+yarn install
+```
+
+Finally, to run the tests, run the following command from within the development container:
+
+```bash
+yarn test
+```
+This will run all of the unit and integration tests for the project.
+
+The tests are written using Vitest & testing-library.
+
+For more information on Vitest, please see the Vitest documentation: https://vitest.dev/. 
+
+For more information on Testing Library, please see the Testing Library documentation: https://testing-library.com/docs/react-testing-library/intro/
+
 ## 🔧🧪 E2E - Integration test environment setup 🔧🧪
 **1. Set up the development environment:**
 >[!TIP]
 >Instructions can be found in the "[🛠 Setting Up Soroswap 🛠](#-setting-up-soroswap-)" section from step 1 to 4, located at the beginning of the document.
 
-**2. Switch to the test branch:**
- - 2.1. In a new terminal, navigate to the project folder:
-```
-cd frontend
-```
-- 2.2. Switch to the branch:
-```
-git checkout feature/wdio
-```
-**3. Install the new dependencies:**
+**2. Install the new dependencies:**
 ```
 yarn install
 ```
-**4. Configure Freigther wallet:**
+**3. Configure Freigther wallet:**
 
 1. Start the test browser for the first time:**
 ```
@@ -151,14 +176,14 @@ and create/import a wallet, configure a password, and save it in the file ./test
  
 4. Fund the wallet with firendbot
 
-**5. Run the development instance:**
+**4. Run the development instance:**
 
 In the terminal opened in step 1 (Which runs the development container), run the command:
 ```
 yarn dev
 ```
 
-**6. Restart the tests:**
+**5. Restart the tests:**
 1.  Press  **Ctrl**+**C**  in the tests terminal to kill the test process.
  >[!TIP]
  >If after shutting down wdio your terminal seems to be stucked, press intro to refresh it
@@ -168,7 +193,7 @@ yarn dev
 yarn wdio
 ```
 
-**7. Evaluate the test results:**
+**6. Evaluate the test results:**
 
 After the tests have been executed, you will find the output in the terminal detailing which tests passed and which did not, as well as the reason for the failure in these.
 

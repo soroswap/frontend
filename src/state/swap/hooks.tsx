@@ -1,7 +1,8 @@
 import { useSorobanReact } from '@soroban-react/core';
 import BigNumber from 'bignumber.js';
 import { isAddress } from 'helpers/address';
-import { relevantTokensType, tokenBalances, useToken } from 'hooks';
+import { relevantTokensType, tokenBalances } from 'hooks';
+import { useToken } from 'hooks/tokens/useToken';
 import { useBestTrade } from 'hooks/useBestTrade';
 import { TokenType } from 'interfaces';
 import tryParseCurrencyAmount from 'lib/utils/tryParseCurrencyAmount';
@@ -85,9 +86,9 @@ export function useDerivedSwapInfo(state: SwapState) {
     recipient,
   } = state;
 
-  const inputCurrency = useToken(inputCurrencyId);
+  const { token: inputCurrency } = useToken(inputCurrencyId!);
   //
-  const outputCurrency = useToken(outputCurrencyId);
+  const { token: outputCurrency } = useToken(outputCurrencyId!);
   const recipientLookup = { address: '' }; //TODO: Use ENS useENS(recipient ?? undefined)
   //
   const to: string | null | undefined = account; //recipient === null ? account : recipientLookup.address) ?? null
@@ -171,7 +172,7 @@ export function useDerivedSwapInfo(state: SwapState) {
       inputError = inputError ?? 'Enter an amount';
     }
 
-    const formattedTo = isAddress(to);
+    const formattedTo = isAddress(to!);
     if (!to || !formattedTo) {
       inputError = inputError ?? 'Enter a recipient';
     }

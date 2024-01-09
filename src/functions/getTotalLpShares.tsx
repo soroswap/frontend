@@ -2,7 +2,7 @@ import { contractInvoke } from '@soroban-react/contracts';
 import { SorobanContextType } from '@soroban-react/core';
 import BigNumber from 'bignumber.js';
 import { scValToJs } from 'helpers/convert';
-import { xdr } from 'soroban-client';
+import { xdr } from 'stellar-sdk';
 
 export async function getTotalLpShares(pairAddress: string, sorobanContext: SorobanContextType) {
   try {

@@ -1,3 +1,4 @@
+export {}
 const walletUrl = 'chrome-extension://bcacfldlkkdogcmkkibnjlakofdplcbk/index.html#/unlock-account'
 const walletPassword = 'Password'
 const appUrl = 'http://localhost:3000/swap'

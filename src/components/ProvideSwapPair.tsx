@@ -4,10 +4,10 @@ import BigNumber from 'bignumber.js';
 import { useMemo } from 'react';
 import { SwapButton } from '../components/Buttons/SwapButton';
 import { formatTokenAmount } from '../helpers/format';
-import { useTokens } from '../hooks';
 import { useReservesBigNumber } from '../hooks/useReserves';
 import { useTokensFromPair } from '../hooks/useTokensFromPair';
 import { TokenType } from '../interfaces';
+import { useApiTokens } from 'hooks/tokens/useApiTokens';
 
 export function ProvideSwapPair({
   sorobanContext,
@@ -32,7 +32,7 @@ export function ProvideSwapPair({
   inputToken: TokenType;
   outputToken: TokenType;
 }) {
-  const { tokens } = useTokens();
+  const { tokens } = useApiTokens();
   const tokensFromPair = useTokensFromPair(pairAddress, sorobanContext);
 
   const reserves = useReservesBigNumber(pairAddress, sorobanContext);

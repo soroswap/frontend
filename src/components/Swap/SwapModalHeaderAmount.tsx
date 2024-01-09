@@ -2,8 +2,9 @@ import { Box, styled, useMediaQuery, useTheme } from '@mui/material';
 import Column from 'components/Column';
 import CurrencyLogo from 'components/Logo/CurrencyLogo';
 import Row from 'components/Row';
-import { BodySecondary, BodySmall, LabelSmall, ResponsiveMediumText } from 'components/Text';
+import { BodySecondary, BodySmall, ResponsiveMediumText } from 'components/Text';
 import { MouseoverTooltip } from 'components/Tooltip';
+import { isClassicStellarAsset } from 'helpers/address';
 import { formatTokenAmount } from 'helpers/format';
 import { TokenType } from 'interfaces';
 import { ReactNode } from 'react';
@@ -82,7 +83,7 @@ export function SwapModalHeaderAmount({
             <CurrencyLogo currency={currency} size="24px" />
             {currency?.symbol}
           </CurrencyWrapper>
-          <Label>{currency?.name}</Label>
+          <Label>{isClassicStellarAsset(currency?.name!) ? currency?.symbol : currency?.name}</Label>
         </Box>
       </Column>
       <Column gap="4px" alignItems={isSmallDevice ? 'flex-start' : 'flex-end'}>

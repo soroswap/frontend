@@ -7,8 +7,7 @@ import BigNumber from 'bignumber.js';
 import { AppContext, SnackbarIconType } from 'contexts';
 import { sendNotification } from 'functions/sendNotification';
 import { TokenType } from 'interfaces';
-import * as SorobanClient from 'soroban-client';
-import { bigNumberToI128 } from '../../helpers/utils';
+import * as StellarSdk from 'stellar-sdk';import { bigNumberToI128 } from '../../helpers/utils';
 import { useKeys } from '../../hooks';
 import { scValToJs } from 'helpers/convert';
 
@@ -58,7 +57,7 @@ export function MintButton({ sorobanContext, token, amountToMint }: MintButtonPr
       //   networkPassphrase,
       //   contractAddress: tokenId,
       //   method: "mint",
-      //   args: [new SorobanClient.Address(account).toScVal(), amountScVal],
+      //   args: [new StellarSdk.Address(account).toScVal(), amountScVal],
       // });
       // //Sends the transactions to the blockchain
       // let result = await sendTransaction(tx, options);
@@ -66,7 +65,7 @@ export function MintButton({ sorobanContext, token, amountToMint }: MintButtonPr
       let result = await contractInvoke({
         contractAddress: token.address,
         method: 'mint',
-        args: [new SorobanClient.Address(account).toScVal(), amountScVal],
+        args: [new StellarSdk.Address(account).toScVal(), amountScVal],
         sorobanContext,
         signAndSend: true,
         secretKey: admin_secret,

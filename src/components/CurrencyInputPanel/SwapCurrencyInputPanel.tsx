@@ -163,7 +163,7 @@ const StyledNumericalInput = styled(NumericalInput)<{ $loading: boolean }>`
 interface SwapCurrencyInputPanelProps {
   value: any;
   onUserInput: (value: string) => void;
-  onMax: (maxValue: number) => void;
+  onMax: (maxValue: string) => void;
   showMaxButton: boolean;
   label?: ReactNode;
   onCurrencySelect: (currency: TokenType) => void;
@@ -247,6 +247,7 @@ export default function SwapCurrencyInputPanel({
                 <StyledTokenName
                   className="token-symbol-container"
                   active={Boolean(currency && currency.symbol)}
+                  data-testid="Swap__Panel__Selector"
                 >
                   {(currency && currency.symbol && currency.symbol.length > 20
                     ? currency.symbol.slice(0, 4) +

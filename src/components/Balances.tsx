@@ -1,6 +1,7 @@
-import { Box, CircularProgress, Typography, styled } from '@mui/material';
+import { Box, CircularProgress, Tooltip, Typography, styled } from '@mui/material';
 import CardContent from '@mui/material/CardContent';
 import { AppContext } from 'contexts';
+import { isClassicStellarAsset } from 'helpers/address';
 import useGetMyBalances from 'hooks/useGetMyBalances';
 import { useMintTestToken } from 'hooks/useMintTestToken';
 import { TokenType } from 'interfaces';
@@ -86,23 +87,27 @@ export function Balances() {
         {sorobanContext.address && tokens.length > 0 && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
             {isLoading && <CircularProgress size="24px" />}
-            {tokenBalancesResponse?.balances?.map((tokenBalance) => (
-              <div key={tokenBalance.address} style={{ display: 'flex', alignItems: 'center' }}>
-                <CurrencyLogo
-                  currency={tokens.find((token) => token.address === tokenBalance.address)}
-                  size={'16px'}
-                  style={{ marginRight: '8px' }}
-                />
-                {currentMintingToken?.address === tokenBalance.address ? (
-                  <CircularProgress size="12px" />
-                ) : (
-                  <p>
-                    {tokenBalance.symbol} :{' '}
-                    {Number(tokenBalance.balance).toLocaleString('en') as string}
-                  </p>
-                )}
-              </div>
-            ))}
+            {tokenBalancesResponse?.balances?.map((tokenBalance) => {
+              const typeOfAsset = isClassicStellarAsset(tokenBalance.name) ? "Stellar Classic Asset" : "Soroban Token" 
+              return (
+                <Tooltip key={tokenBalance.address} title={typeOfAsset} placement="left">
+                  <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <CurrencyLogo
+                      currency={tokens.find((token) => token.address === tokenBalance.address)}
+                      size={'16px'}
+                      style={{ marginRight: '8px' }}
+                    />
+                    {currentMintingToken?.address === tokenBalance.address ? (
+                      <CircularProgress size="12px" />
+                    ) : (
+                      <p>
+                        {tokenBalance.symbol} :{' '}
+                        {Number(tokenBalance.balance).toLocaleString('en') as string}
+                      </p>
+                    )}
+                  </div>
+                </Tooltip>
+            )})}
           </div>
         )}
 

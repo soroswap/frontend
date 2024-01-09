@@ -2,8 +2,7 @@ import { contractInvoke } from '@soroban-react/contracts';
 import { SorobanContextType } from '@soroban-react/core';
 import BigNumber from 'bignumber.js';
 import { bigNumberToI128 } from 'helpers/utils';
-import * as SorobanClient from 'soroban-client';
-
+import * as StellarSdk from 'stellar-sdk';
 interface WithdrawOnContractProps {
   sorobanContext: SorobanContextType;
   pairAddress: string | undefined;
@@ -40,7 +39,7 @@ export default async function withdrawOnContract({
     result = await contractInvoke({
       contractAddress: pairAddress,
       method: 'withdraw',
-      args: [new SorobanClient.Address(account!).toScVal(), shareAmountScVal, minAScVal, minBScVal],
+      args: [new StellarSdk.Address(account!).toScVal(), shareAmountScVal, minAScVal, minBScVal],
       sorobanContext,
       signAndSend: true,
     });

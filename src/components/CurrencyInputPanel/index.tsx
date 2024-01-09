@@ -175,7 +175,7 @@ const StyledNumericalInput = styled(NumericalInput)<{ $loading: boolean }>`
 interface CurrencyInputPanelProps {
   value: string;
   onUserInput: (value: string) => void;
-  onMax: (maxValue: number) => void;
+  onMax: (maxValue: string) => void;
   showMaxButton: boolean;
   label?: ReactNode;
   onCurrencySelect: (currency: TokenType) => void;

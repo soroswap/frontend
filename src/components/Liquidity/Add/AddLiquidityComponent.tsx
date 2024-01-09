@@ -15,7 +15,6 @@ import { AppContext } from 'contexts';
 import { getCurrentTimePlusOneHour } from 'functions/getCurrentTimePlusOneHour';
 import { formatTokenAmount } from 'helpers/format';
 import { bigNumberToI128, bigNumberToU64 } from 'helpers/utils';
-import { useToken } from 'hooks';
 import useCalculateLpToReceive from 'hooks/useCalculateLp';
 import useLiquidityValidations from 'hooks/useLiquidityValidations';
 import { RouterMethod, useRouterCallback } from 'hooks/useRouterCallback';
@@ -23,7 +22,7 @@ import { TokenType } from 'interfaces';
 import { useRouter } from 'next/router';
 import { useCallback, useContext, useMemo, useState } from 'react';
 import { Plus } from 'react-feather';
-import * as SorobanClient from 'soroban-client';
+import * as StellarSdk from 'stellar-sdk';
 import { Field } from 'state/mint/actions';
 import { useDerivedMintInfo, useMintActionHandlers, useMintState } from 'state/mint/hooks';
 import { useUserSlippageToleranceWithDefault } from 'state/user/hooks';
@@ -31,6 +30,7 @@ import { opacify } from 'themes/utils';
 import { AddRemoveTabs } from '../AddRemoveHeader';
 import AddModalFooter from './AddModalFooter';
 import AddModalHeader from './AddModalHeader';
+import { useToken } from 'hooks/tokens/useToken';
 
 export const PageWrapper = styled('main')`
   position: relative;
@@ -113,8 +113,8 @@ export default function AddLiquidityComponent({
   const [lpPercentage, setLpPercentage] = useState<string>('');
   const [totalShares, setTotalShares] = useState<string>('');
 
-  const baseCurrency = useToken(currencyIdA);
-  const currencyB = useToken(currencyIdB);
+  const { token: baseCurrency } = useToken(currencyIdA);
+  const { token: currencyB } = useToken(currencyIdB);
 
   const derivedMintInfo = useDerivedMintInfo(baseCurrency ?? undefined, currencyB ?? undefined);
   const { dependentField, currencies, parsedAmounts, noLiquidity, pairAddress } = derivedMintInfo;
@@ -215,13 +215,13 @@ export default function AddLiquidityComponent({
     const minBScVal = bigNumberToI128(min1BN);
 
     const args = [
-      new SorobanClient.Address(baseCurrency?.address ?? '').toScVal(),
-      new SorobanClient.Address(currencyB?.address ?? '').toScVal(),
+      new StellarSdk.Address(baseCurrency?.address ?? '').toScVal(),
+      new StellarSdk.Address(currencyB?.address ?? '').toScVal(),
       desiredAScVal,
       desiredBScVal,
       minAScVal,
       minBScVal,
-      new SorobanClient.Address(sorobanContext.address ?? '').toScVal(),
+      new StellarSdk.Address(sorobanContext.address ?? '').toScVal(),
       bigNumberToU64(BigNumber(getCurrentTimePlusOneHour())),
     ];
 

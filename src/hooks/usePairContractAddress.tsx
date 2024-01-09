@@ -1,8 +1,7 @@
 import { useContractValue } from '@soroban-react/contracts';
 import { SorobanContextType } from '@soroban-react/core';
 import { useMemo } from 'react';
-import * as SorobanClient from 'soroban-client';
-import { accountToScVal } from '../helpers/utils';
+import * as StellarSdk from 'stellar-sdk';import { accountToScVal } from '../helpers/utils';
 import { useFactory } from './useFactory';
 
 export function usePairContractAddress(
@@ -28,7 +27,7 @@ export function usePairContractAddress(
   });
   const pairAddress = useMemo(() => {
     if (pairAddress_scval.result) {
-      return SorobanClient.Address.fromScVal(pairAddress_scval.result).toString();
+      return StellarSdk.Address.fromScVal(pairAddress_scval.result).toString();
     } else return undefined;
   }, [pairAddress_scval]);
 

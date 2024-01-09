@@ -1,7 +1,7 @@
 import { contractInvoke } from '@soroban-react/contracts';
 import { SorobanContextType } from '@soroban-react/core';
 import { addressToScVal, scValToJs } from 'helpers/convert';
-import { xdr } from 'soroban-client';
+import { xdr } from 'stellar-sdk';
 import { getFactory } from './getFactory';
 
 export async function getPairAddress(
