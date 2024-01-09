@@ -319,12 +319,29 @@ export function SwapComponent({
   });
 
   useEffect(() => {
+    const checkRequiresTrustlineAdjust = async () => {
+      if (!swapCallback) {
+        return;
+      }
+      
+      try {
+        const simulatedTransaction = await swapCallback(true)
+        if (simulatedTransaction) {
+          return false
+        }
+      } catch (error) {
+        return true
+      }
+  
+    };
+
     const checkTrustline = async () => {
       if (!trade) return
       
       const needTrustline = await requiresTrustline(trade?.outputAmount?.currency.address!, sorobanContext)
+      const requiresTrustlineAdjust = await checkRequiresTrustlineAdjust()
       
-      if (needTrustline) {
+      if (needTrustline || requiresTrustlineAdjust) {
         setNeedTrustline(true)
       } else {
         setNeedTrustline(false)
@@ -332,7 +349,7 @@ export function SwapComponent({
     }
 
     checkTrustline();
-  }, [sorobanContext, trade])
+  }, [sorobanContext, swapCallback, trade])
 
   return (
     <>

@@ -3,8 +3,8 @@ import { TxResponse, contractInvoke } from '@soroban-react/contracts';
 import { useSorobanReact } from '@soroban-react/core';
 import { useCallback } from 'react';
 import * as StellarSdk from 'stellar-sdk';
-import { useRouterAddress } from './useRouterAddress';
 import { useSWRConfig } from 'swr';
+import { useRouterAddress } from './useRouterAddress';
 
 export enum RouterMethod {
   ADD_LIQUIDITY = 'add_liquidity',
@@ -38,11 +38,6 @@ export function useRouterCallback() {
 
   return useCallback(
     async (method: RouterMethod, args?: StellarSdk.xdr.ScVal[], signAndSend?: boolean) => {
-      console.log('🚀 ~ file: useRouterCallback.tsx:34 ~ contractAddress:', router_address);
-      console.log('🚀 ~ file: useRouterCallback.tsx:36 ~ method:', method);
-      console.log('🚀 ~ file: useRouterCallback.tsx:38 ~ args:', args);
-      console.log('🚀 ~ file: useRouterCallback.tsx:40 ~ sorobanContext:', sorobanContext);
-      console.log('🚀 ~ file: useRouterCallback.tsx:42 ~ signAndSend:', signAndSend);
 
       let result = (await contractInvoke({
         contractAddress: router_address as string,
@@ -52,7 +47,9 @@ export function useRouterCallback() {
         signAndSend: signAndSend,
         reconnectAfterTx: false,
       })) as TxResponse;
-      console.log('🚀 ~ file: useRouterCallback.tsx:45 ~ result:', result);
+
+      //If is only a simulation return the result
+      if(!signAndSend) return result
 
       if (
         isObject(result) &&
