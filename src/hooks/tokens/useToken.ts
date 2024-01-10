@@ -13,7 +13,9 @@ export const findToken = async (
 ) => {
   if (!tokenAddress || tokenAddress === '') return undefined;
 
-  const formattedAddress = isAddress(tokenAddress);
+  const classicAssetSearch = getClassicAssetSorobanAddress(tokenAddress!, sorobanContext);
+
+  const formattedAddress = isAddress(classicAssetSearch ? classicAssetSearch : tokenAddress);
   if (!formattedAddress) return undefined;
 
   const fromMap = tokensAsMap[formattedAddress];
@@ -31,18 +33,12 @@ export const findToken = async (
 export function useToken(tokenAddress: string | undefined) {
   const sorobanContext = useSorobanReact();
 
-  const classicAssetSearch = getClassicAssetSorobanAddress(tokenAddress!, sorobanContext);
-
   const { tokensAsMap } = useAllTokens();
 
   const { data, isLoading, error } = useSWRImmutable(
     ['token', tokenAddress, tokensAsMap, sorobanContext],
     ([key, tokenAddress, tokensAsMap, sorobanContext]) =>
-      findToken(
-        classicAssetSearch ? classicAssetSearch : tokenAddress,
-        tokensAsMap,
-        sorobanContext,
-      ),
+      findToken(tokenAddress, tokensAsMap, sorobanContext),
   );
 
   return {
