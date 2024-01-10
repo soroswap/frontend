@@ -1,4 +1,5 @@
 import { SorobanContextType, useSorobanReact } from '@soroban-react/core';
+import { getClassicAssetSorobanAddress } from 'functions/getClassicAssetSorobanAddress';
 import { isAddress } from 'helpers/address';
 import { TokenMapType } from 'interfaces';
 import useSWRImmutable from 'swr/immutable';
@@ -12,7 +13,9 @@ export const findToken = async (
 ) => {
   if (!tokenAddress || tokenAddress === '') return undefined;
 
-  const formattedAddress = isAddress(tokenAddress);
+  const classicAssetSearch = getClassicAssetSorobanAddress(tokenAddress!, sorobanContext);
+
+  const formattedAddress = isAddress(classicAssetSearch ? classicAssetSearch : tokenAddress);
   if (!formattedAddress) return undefined;
 
   const fromMap = tokensAsMap[formattedAddress];

@@ -40,6 +40,8 @@ export function getClassicStellarAsset(value: string) {
 
   const [assetCode, issuer] = parts;
 
+  if (!isAddress(issuer)) return false;
+
   return {
     assetCode,
     issuer,
