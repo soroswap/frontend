@@ -1,5 +1,5 @@
 import { SorobanContextType } from '@soroban-react/core';
-import { isAddress } from 'helpers/address';
+import { getClassicStellarAsset, isAddress } from 'helpers/address';
 import { getTokenDecimals, getTokenName, getTokenSymbol } from 'helpers/soroban';
 import { TokenMapType, TokenType, tokensResponse } from 'interfaces';
 
@@ -111,3 +111,29 @@ export const getTokenLogo = async (address: string, sorobanContext: SorobanConte
   }
   return '';
 };
+
+//Checks if the stellar asset is wrapped
+export async function isClassicStellarAsset(value: string, sorobanContext: SorobanContextType) {
+  if (!value) return false;
+
+  const { serverHorizon } = sorobanContext;
+  const classicAsset = getClassicStellarAsset(value);
+
+  try {
+    if (!classicAsset) throw new Error('Invalid asset format');
+    const assets = await serverHorizon
+      ?.assets()
+      .forCode(classicAsset.assetCode)
+      .forIssuer(classicAsset.issuer)
+      .call();
+
+    if (assets?.records && assets.records.length > 0) {
+      return true;
+    } else {
+      throw new Error('Asset not found');
+    }
+  } catch (error) {
+    console.error('Error checking asset:', error);
+    return false;
+  }
+}

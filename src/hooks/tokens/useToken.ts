@@ -1,10 +1,10 @@
 import { SorobanContextType, useSorobanReact } from '@soroban-react/core';
 import { getClassicAssetSorobanAddress } from 'functions/getClassicAssetSorobanAddress';
-import { isAddress } from 'helpers/address';
-import { TokenMapType } from 'interfaces';
+import { getClassicStellarAsset, isAddress } from 'helpers/address';
+import { TokenMapType, TokenType } from 'interfaces';
 import useSWRImmutable from 'swr/immutable';
 import { useAllTokens } from './useAllTokens';
-import { getToken } from './utils';
+import { getToken, isClassicStellarAsset } from './utils';
 
 export const findToken = async (
   tokenAddress: string | undefined,
@@ -13,7 +13,8 @@ export const findToken = async (
 ) => {
   if (!tokenAddress || tokenAddress === '') return undefined;
 
-  const classicAssetSearch = getClassicAssetSorobanAddress(tokenAddress!, sorobanContext);
+  const classicAssetSearch = await getClassicAssetSorobanAddress(tokenAddress!, sorobanContext);
+  console.log('classicAssetSearch', classicAssetSearch);
 
   const formattedAddress = isAddress(classicAssetSearch ? classicAssetSearch : tokenAddress);
   if (!formattedAddress) return undefined;
@@ -41,9 +42,40 @@ export function useToken(tokenAddress: string | undefined) {
       findToken(tokenAddress, tokensAsMap, sorobanContext),
   );
 
+  const {
+    data: isStellarClassicAsset,
+    isLoading: isStellarClassicAssetLoading,
+    error: isStellarClassicAssetError,
+  } = useSWRImmutable(
+    ['isStellarClassicAsset', tokenAddress, sorobanContext],
+    ([key, tokenAddress, sorobanContext]) => isClassicStellarAsset(tokenAddress!, sorobanContext),
+  );
+  const bothLoading = isLoading || isStellarClassicAssetLoading;
+  const needsWrapping = !data && isStellarClassicAsset;
+
+  let newTokenData: TokenType | undefined = undefined;
+
+  if (needsWrapping) {
+    const sorobanAddress = getClassicAssetSorobanAddress(tokenAddress!, sorobanContext);
+    const stellarAsset = getClassicStellarAsset(tokenAddress!);
+    if (sorobanAddress || (stellarAsset && typeof sorobanAddress === 'string')) {
+      if (stellarAsset && typeof stellarAsset !== 'boolean') {
+        newTokenData = {
+          address: sorobanAddress,
+          name: stellarAsset.asset,
+          symbol: stellarAsset.assetCode,
+          decimals: 7,
+          logoURI: '',
+        };
+      }
+    }
+  }
+
+  //if not data and AssetExists return isWrapped: false
   return {
-    token: data,
-    isLoading,
+    token: data ?? newTokenData,
+    needsWrapping,
+    isLoading: bothLoading,
     isError: error,
   };
 }

@@ -1,7 +1,7 @@
 import { Box, CircularProgress, Tooltip, Typography, styled } from '@mui/material';
 import CardContent from '@mui/material/CardContent';
 import { AppContext } from 'contexts';
-import { isClassicStellarAsset } from 'helpers/address';
+import { isClassicStellarAssetFormat } from 'helpers/address';
 import useGetMyBalances from 'hooks/useGetMyBalances';
 import { useMintTestToken } from 'hooks/useMintTestToken';
 import { TokenType } from 'interfaces';
@@ -88,7 +88,7 @@ export function Balances() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
             {isLoading && <CircularProgress size="24px" />}
             {tokenBalancesResponse?.balances?.map((tokenBalance) => {
-              const typeOfAsset = isClassicStellarAsset(tokenBalance.name) ? "Stellar Classic Asset" : "Soroban Token" 
+              const typeOfAsset = isClassicStellarAssetFormat(tokenBalance.name) ? "Stellar Classic Asset" : "Soroban Token" 
               return (
                 <Tooltip key={tokenBalance.address} title={typeOfAsset} placement="left">
                   <div style={{ display: 'flex', alignItems: 'center' }}>
