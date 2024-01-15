@@ -1331,10 +1331,10 @@
   dependencies:
     "@soroban-react/core" "^8.0.0"
 
-"@soroban-react/contracts@8.0.2":
-  version "8.0.2"
-  resolved "https://registry.yarnpkg.com/@soroban-react/contracts/-/contracts-8.0.2.tgz#b8a30d5dcc11b2d6004d6cea066162f6e13c8fb2"
-  integrity sha512-i9HCTGo0hgEwhAhPr5p0YNfIlRAESkTaDECSQEuQYdd7doTL1bN7iMcdkej1ATea8nZcw/7MJMDoDekq0Hs9Lw==
+"@soroban-react/contracts@^8.1.1":
+  version "8.1.1"
+  resolved "https://registry.yarnpkg.com/@soroban-react/contracts/-/contracts-8.1.1.tgz#768892c4485770cb7e4ce0a8009a0c72c66ce649"
+  integrity sha512-5MJ0Hl6OGy5xnDWoictLHs5cCeAi68fAYiZPKiNyXn79KJU9re5F45mZ0q0RGaQgx7PCD+zIePGhyc5o4LypTw==
   dependencies:
     "@soroban-react/core" "^8.0.0"
     stellar-sdk "11.1.0"

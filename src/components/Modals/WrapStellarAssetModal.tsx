@@ -1,14 +1,17 @@
-import { Box, Modal, useTheme } from '@mui/material';
+import { Box, CircularProgress, Modal, useTheme } from '@mui/material';
+import { wrapStellarAsset } from '@soroban-react/contracts';
 import { useSorobanReact } from '@soroban-react/core';
 import { ButtonPrimary } from 'components/Buttons/Button';
 import { CloseButton } from 'components/Buttons/CloseButton';
 import { AutoColumn } from 'components/Column';
 import { RowBetween } from 'components/Row';
+import { LoadingIndicatorOverlay, LogoContainer } from 'components/Swap/PendingModalContent/Logos';
 import { SubHeaderLarge, SubHeaderSmall } from 'components/Text';
 import { Wrapper } from 'components/TransactionConfirmationModal/ModalStyles';
-import { wrapClassicStellarAsset } from 'helpers/stellar';
+import { getClassicStellarAsset } from 'helpers/address';
 import { TokenType } from 'interfaces';
 import Link from 'next/link';
+import { useState } from 'react';
 import { AlertTriangle } from 'react-feather';
 
 interface Props {
@@ -19,20 +22,29 @@ interface Props {
 }
 
 const WrapStellarAssetModal = ({ isOpen, asset, onDismiss, onSuccess }: Props) => {
+  const [isWrapping, setIsWrapping] = useState<boolean>(false);
   const theme = useTheme();
   const sorobanContext = useSorobanReact();
 
   const handleConfirm = () => {
     console.log("TRYING TO WRAP")
-    wrapClassicStellarAsset(asset, sorobanContext)
+    const stellarAsset = getClassicStellarAsset(asset?.name!);
+    if (!stellarAsset) return;
+    setIsWrapping(true);
+
+    wrapStellarAsset({
+      code: stellarAsset.assetCode,
+      issuer: stellarAsset.issuer,
+      sorobanContext
+    })
       .then((result: any) => {
-        console.log(result)
+        if (!result) throw new Error("No result");
+        setIsWrapping(false);
         onSuccess();
       })
       .catch((error) => {
-        console.log("ERROR WRAPPING", error)
-      })
-      
+        setIsWrapping(false);
+      })      
   }
   return (
     <Modal open={isOpen} onClose={onDismiss}>    
@@ -43,19 +55,41 @@ const WrapStellarAssetModal = ({ isOpen, asset, onDismiss, onSuccess }: Props) =
             <CloseButton onClick={onDismiss} />
           </RowBetween>
           <Box display="flex" justifyContent="center">
-            <AlertTriangle size="64px" stroke={theme.palette.customBackground.accentWarning} />
+            {isWrapping ? (
+              <LogoContainer>
+                <LoadingIndicatorOverlay />
+              </LogoContainer>
+            ) : ( 
+              <AlertTriangle size="64px" stroke={theme.palette.customBackground.accentWarning} />
+            )}
           </Box>
           <AutoColumn gap="12px" justify="center">
             <SubHeaderLarge color="textPrimary" textAlign="center">
-              Wrap Required
+              {isWrapping ? "Wrapping" : "Wrap Required"}
             </SubHeaderLarge>
-            <SubHeaderSmall color="textSecondary" textAlign="center" marginBottom="12px">
-              This token isn&apos;t yet wrapped for the Soroban network. Wrap it now for full trading capabilities.
-              {' '}
-              <Link href={'https://docs.soroswap.finance'} target='_blank' style={{ color: '#8866DD' }}>Learn more</Link>
-            </SubHeaderSmall>
+            {isWrapping ? (
+              <SubHeaderSmall color="textSecondary" textAlign="center" marginBottom="12px">
+                Confirm transaction in your wallet
+              </SubHeaderSmall>
+            ): (    
+              <SubHeaderSmall color="textSecondary" textAlign="center" marginBottom="12px">
+                This token isn&apos;t yet wrapped for the Soroban network. Wrap it now for full trading capabilities.
+                {' '}
+                {/* //TODO: Add learn more link */}
+                <Link href={'https://docs.soroswap.finance'} target='_blank' style={{ color: '#8866DD' }}>Learn more</Link>
+              </SubHeaderSmall>
+            )}
           </AutoColumn>
-          <ButtonPrimary onClick={handleConfirm}>Wrap {asset?.symbol}</ButtonPrimary>
+          <ButtonPrimary
+            onClick={handleConfirm}
+            disabled={isWrapping}
+            style={{ gap: "1rem"}}
+          >
+            {isWrapping ? `Wrapping ${asset?.symbol}` : `Wrap ${asset?.symbol}`}
+            {isWrapping && (
+              <CircularProgress size="18px" />
+            )}
+          </ButtonPrimary>
         </AutoColumn>
       </Wrapper>
     </Modal>
