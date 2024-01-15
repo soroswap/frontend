@@ -94,6 +94,7 @@ export function MintCustomToken() {
       sorobanContext
     }).then((resp) => {
       setNeedToSetTrustline(false)
+      sendNotification(`for ${tokenSymbol}`, "Trustline set", SnackbarIconType.MINT, SnackbarContext)
       setButtonText("Mint custom token")
     }).catch((error: any) => {
       console.log("Error setting trustline",error)

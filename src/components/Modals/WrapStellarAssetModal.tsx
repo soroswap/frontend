@@ -8,10 +8,12 @@ import { RowBetween } from 'components/Row';
 import { LoadingIndicatorOverlay, LogoContainer } from 'components/Swap/PendingModalContent/Logos';
 import { SubHeaderLarge, SubHeaderSmall } from 'components/Text';
 import { Wrapper } from 'components/TransactionConfirmationModal/ModalStyles';
+import { AppContext, SnackbarIconType } from 'contexts';
+import { sendNotification } from 'functions/sendNotification';
 import { getClassicStellarAsset } from 'helpers/address';
 import { TokenType } from 'interfaces';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import { AlertTriangle } from 'react-feather';
 
 interface Props {
@@ -25,6 +27,7 @@ const WrapStellarAssetModal = ({ isOpen, asset, onDismiss, onSuccess }: Props) =
   const [isWrapping, setIsWrapping] = useState<boolean>(false);
   const theme = useTheme();
   const sorobanContext = useSorobanReact();
+  const { SnackbarContext } = useContext(AppContext);
 
   const handleConfirm = () => {
     console.log("TRYING TO WRAP")
@@ -40,6 +43,7 @@ const WrapStellarAssetModal = ({ isOpen, asset, onDismiss, onSuccess }: Props) =
       .then((result: any) => {
         if (!result) throw new Error("No result");
         setIsWrapping(false);
+        sendNotification(`${asset?.symbol} wrapped successfully`, "Token wrapped", SnackbarIconType.MINT, SnackbarContext)
         onSuccess();
       })
       .catch((error) => {
