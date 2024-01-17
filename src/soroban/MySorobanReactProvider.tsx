@@ -4,11 +4,21 @@ import { freighter } from '@soroban-react/freighter';
 import { ChainMetadata, Connector, WalletChain } from '@soroban-react/types';
 import useMounted from 'hooks/useMounted';
 
-const chains: ChainMetadata[] =
+// Set allowed chains:
+  const chains: ChainMetadata[] =
   process.env.NODE_ENV === 'production' ? [testnet] : [sandbox, standalone, futurenet, testnet];
-// const activeChain: WalletChain = process.env.NODE_ENV === 'production' ? testnet : standalone;
-const activeChain: WalletChain = testnet;
+  
+  // Set chain by default:
+  // Helper function
+  const findWalletChainByName = (name: string): WalletChain | undefined => {
+    return chains.find(chain => chain.id === name);
+  };
 
+  // Get the active chain based on the environment variable or default to testnet
+  const activeChainName = process.env.NEXT_PUBLIC_DEFAULT_NETWORK || 'testnet';
+  const activeChain: WalletChain = findWalletChainByName(activeChainName) || testnet;
+
+// Set allowed connectors
 const connectors: Connector[] = [freighter()];
 
 export default function MySorobanReactProvider({ children }: { children: React.ReactNode }) {
