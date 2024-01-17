@@ -1,7 +1,7 @@
 import { SorobanContextType, useSorobanReact } from '@soroban-react/core';
 import { TokenType } from 'interfaces';
 import useSWRImmutable from 'swr/immutable';
-import { useApiTokens } from './tokens/useApiTokens';
+import { useAllTokens } from './tokens/useAllTokens';
 import { tokenBalances } from './useBalances';
 
 interface FetchBalancesProps {
@@ -22,7 +22,7 @@ const useGetMyBalances = () => {
   const sorobanContext = useSorobanReact();
 
   const { address } = sorobanContext;
-  const { tokens, isLoading: isLoadingTokens } = useApiTokens();
+  const { tokens, isLoading: isLoadingTokens } = useAllTokens();
 
   const { data, isLoading, mutate, error } = useSWRImmutable(
     ['balance', address, tokens, sorobanContext],

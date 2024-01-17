@@ -1,5 +1,6 @@
 import { Box, CircularProgress, Modal, Typography, styled, useTheme } from '@mui/material';
 import { useSorobanReact } from '@soroban-react/core';
+import WrapStellarAssetModal from 'components/Modals/WrapStellarAssetModal';
 import { SubHeader } from 'components/Text';
 import UserAddedTokenModalContent from 'components/UserAddedTokenModal/UserAddedTokenModalContent';
 import { isAddress } from 'helpers/address';
@@ -85,10 +86,11 @@ export function CurrencySearch({
   const [searchQuery, setSearchQuery] = useState<string>('');
   const debouncedQuery = useDebounce(searchQuery, 200);
   const isAddressSearch = isAddress(debouncedQuery);
-  const { token: searchToken } = useToken(debouncedQuery);
+  const { token: searchToken, needsWrapping } = useToken(debouncedQuery);
   const { tokensAsMap: allTokens } = useAllTokens();
 
-  const [showUserAddedTokenModal, setShowUserAddedTokenModal] = useState(false);
+  const [showUserAddedTokenModal, setShowUserAddedTokenModal] = useState<boolean>(false);
+  const [showWrapStellarAssetModal, setShowWrapStellarAssetModal] = useState<boolean>(false);
 
   //This sends and event when a token is searched to google analytics
   // useEffect(() => {
@@ -132,16 +134,23 @@ export function CurrencySearch({
     onCurrencySelect(searchToken!);
   };
 
+  const handleSuccessStellarAssetWrap = () => {
+    setShowWrapStellarAssetModal(false);
+    setShowUserAddedTokenModal(true);
+  };
+
   const handleCurrencySelect = useCallback(
     (currency: TokenType, hasWarning?: boolean) => {
-      if (!allTokens[currency.address]) {
+      if (needsWrapping) {
+        setShowWrapStellarAssetModal(true);
+      } else if (!allTokens[currency.address]) {
         setShowUserAddedTokenModal(true);
       } else {
         onCurrencySelect(currency, hasWarning);
         if (!hasWarning) onDismiss();
       }
     },
-    [onDismiss, onCurrencySelect, allTokens],
+    [needsWrapping, allTokens, onCurrencySelect, onDismiss],
   );
 
   // clear the input on open
@@ -191,6 +200,12 @@ export function CurrencySearch({
           />
         </div>
       </Modal>
+      <WrapStellarAssetModal
+        isOpen={showWrapStellarAssetModal}
+        asset={searchToken}
+        onDismiss={() => setShowWrapStellarAssetModal(false)}
+        onSuccess={handleSuccessStellarAssetWrap}
+      />
       <ContentWrapper modalheight={80}>
         <PaddedColumn gap="16px">
           <RowBetween>

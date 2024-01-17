@@ -4,6 +4,7 @@ import { contractInvoke, setTrustline } from '@soroban-react/contracts';
 import { useSorobanReact } from '@soroban-react/core';
 import BigNumber from 'bignumber.js';
 import { AppContext, SnackbarIconType } from 'contexts';
+import { getClassicAssetSorobanAddress } from 'functions/getClassicAssetSorobanAddress';
 import { sendNotification } from 'functions/sendNotification';
 import { isAddress, shortenAddress } from 'helpers/address';
 import { requiresTrustline } from 'helpers/stellar';
@@ -93,6 +94,7 @@ export function MintCustomToken() {
       sorobanContext
     }).then((resp) => {
       setNeedToSetTrustline(false)
+      sendNotification(`for ${tokenSymbol}`, "Trustline set", SnackbarIconType.MINT, SnackbarContext)
       setButtonText("Mint custom token")
     }).catch((error: any) => {
       console.log("Error setting trustline",error)
@@ -113,11 +115,13 @@ export function MintCustomToken() {
 
   useEffect(() => {
     const updateTokenInfo = async () => {
-      if (isAddress(tokenAddress)) {
-        const tokenInfo = await findToken(tokenAddress, tokensAsMap, sorobanContext);
+      const sorobanAddress = getClassicAssetSorobanAddress(tokenAddress, sorobanContext);
+      const newTokenAddress = sorobanAddress ? sorobanAddress : tokenAddress;
+      if (isAddress(newTokenAddress)) {
+        const tokenInfo = await findToken(newTokenAddress, tokensAsMap, sorobanContext);
         setTokenSymbol(tokenInfo?.symbol as string);
   
-        const requiresTrust = await requiresTrustline(tokenAddress, sorobanContext);
+        const requiresTrust = await requiresTrustline(newTokenAddress, sorobanContext);
         if (requiresTrust) {
           setButtonText("Set Trustline");
           setNeedToSetTrustline(true);

@@ -6,6 +6,8 @@ import ConfirmSwapModal from 'components/Swap/ConfirmSwapModal';
 import SwapDetailsDropdown from 'components/Swap/SwapDetailsDropdown';
 import { ButtonText } from 'components/Text';
 import { TransactionFailedContent } from 'components/TransactionConfirmationModal';
+import { AppContext, SnackbarIconType } from 'contexts';
+import { sendNotification } from 'functions/sendNotification';
 import { getClassicStellarAsset } from 'helpers/address';
 import { formatTokenAmount } from 'helpers/format';
 import { requiresTrustline } from 'helpers/stellar';
@@ -15,7 +17,7 @@ import useGetReservesByPair from 'hooks/useGetReservesByPair';
 import { useSwapCallback } from 'hooks/useSwapCallback';
 import useSwapMainButton from 'hooks/useSwapMainButton';
 import { TokenType } from 'interfaces';
-import { ReactNode, useCallback, useEffect, useMemo, useReducer, useState } from 'react';
+import { ReactNode, useCallback, useContext, useEffect, useMemo, useReducer, useState } from 'react';
 import { ArrowDown } from 'react-feather';
 import { InterfaceTrade, TradeState } from 'state/routing/types';
 import { Field } from 'state/swap/actions';
@@ -101,6 +103,7 @@ export function SwapComponent({
   disableTokenInputs?: boolean;
 }) {
   const sorobanContext = useSorobanReact();
+  const { SnackbarContext } = useContext(AppContext);
   const [showPriceImpactModal, setShowPriceImpactModal] = useState<boolean>(false);
   const [txError, setTxError] = useState<boolean>(false);
   
@@ -279,6 +282,7 @@ export function SwapComponent({
     setTrustline({ tokenSymbol: asset.assetCode, tokenAdmin: asset.issuer, sorobanContext })
       .then((result) => {
         setNeedTrustline(false)
+        sendNotification(`for ${asset.assetCode}`, "Trustline set", SnackbarIconType.MINT, SnackbarContext)
       })
       .catch((error) => {
         // console.log(error);

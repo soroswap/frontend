@@ -19,7 +19,7 @@ export function isValidSymbol(code: string): boolean {
   return /^[A-Za-z0-9]{2,}$/.test(code);
 }
 
-export function isClassicStellarAsset(value: string): boolean {
+export function isClassicStellarAssetFormat(value: string): boolean {
   if (!value) return false;
   const parts = value.split(':');
   if (parts.length !== 2) {
@@ -45,5 +45,6 @@ export function getClassicStellarAsset(value: string) {
   return {
     assetCode,
     issuer,
+    asset: `${assetCode}:${issuer}`,
   };
 }

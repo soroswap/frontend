@@ -1,6 +1,6 @@
 import { SorobanContextType } from '@soroban-react/core';
 import { tokenBalance } from 'hooks';
-import { isClassicStellarAsset } from './address';
+import { isClassicStellarAssetFormat } from './address';
 import { getTokenName } from './soroban';
 
 export const requiresTrustline = async (
@@ -10,7 +10,7 @@ export const requiresTrustline = async (
   const tokenName = await getTokenName(address, sorobanContext);
 
   // Return false immediately if it's not a classic Stellar asset
-  if (!isClassicStellarAsset(tokenName as string)) {
+  if (!isClassicStellarAssetFormat(tokenName as string)) {
     return false;
   }
 
