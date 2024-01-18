@@ -46,16 +46,16 @@ export default function CurrencyBalance({
   showMaxButton,
 }: CurrencyBalanceProps) {
   const { tokenBalancesResponse } = useGetMyBalances();
-  const balance = tokenBalancesResponse?.balances?.find((b) => b?.address === currency?.address)
-    ?.balance;
+  const balance =
+    tokenBalancesResponse?.balances?.find((b) => b?.address === currency?.address)?.balance || '0';
 
   const theme = useTheme();
   return (
     <RowFixed style={{ height: '17px' }}>
       <BodySmall color={theme.palette.secondary.main}>
-        {!hideBalance && currency && balance ? `Balance: ${balance}` : null}
+        {!hideBalance && currency ? `Balance: ${balance}` : null}
       </BodySmall>
-      {showMaxButton && balance ? (
+      {showMaxButton ? (
         <StyledBalanceMax onClick={() => onMax(balance as string)}>Max</StyledBalanceMax>
       ) : null}
     </RowFixed>
