@@ -5,6 +5,7 @@ export default function BalancesPage() {
   return (
     <>
       <SEO title="Balances - Soroswap" description="Soroswap Balances" />
+
       <Balances />
     </>
   );

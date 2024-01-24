@@ -1,18 +1,14 @@
-import { Box, CircularProgress, Tooltip, Typography, styled } from '@mui/material';
-import CardContent from '@mui/material/CardContent';
+import { Box, CircularProgress, Paper, Stack, Typography, styled } from '@mui/material';
 import { AppContext } from 'contexts';
-import { isClassicStellarAssetFormat } from 'helpers/address';
 import useGetMyBalances from 'hooks/useGetMyBalances';
 import { useMintTestToken } from 'hooks/useMintTestToken';
 import { TokenType } from 'interfaces';
 import { useContext, useState } from 'react';
 import { ButtonPrimary } from './Buttons/Button';
-import { AutoColumn } from './Column';
-import CurrencyLogo from './Logo/CurrencyLogo';
 import { MintCustomToken } from './MintCustomToken';
+import BalancesTable from './BalancesTable/BalancesTable';
 
-const PageWrapper = styled(AutoColumn)`
-  position: relative;
+const PageWrapper = styled(Paper)`
   background: ${({ theme }) => `linear-gradient(${theme.palette.customBackground.bg2}, ${
     theme.palette.customBackground.bg2
   }) padding-box,
@@ -23,19 +19,13 @@ const PageWrapper = styled(AutoColumn)`
               }) 65%, rgba(136,102,221,1) 100%) border-box`};
   border: 1px solid transparent;
   border-radius: 16px;
-  padding: 32px;
-  transition: transform 250ms ease;
-  max-width: 400px;
+  padding: 32px 48px;
   width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 24px;
+  max-width: 860px;
 `;
 
 export function Balances() {
-  const { sorobanContext, tokens, tokenBalancesResponse, isLoading, isError, refetch } =
-    useGetMyBalances();
+  const { sorobanContext, refetch } = useGetMyBalances();
 
   const mintTestTokens = useMintTestToken();
   const { ConnectWalletModal } = useContext(AppContext);
@@ -79,63 +69,46 @@ export function Balances() {
 
   return (
     <PageWrapper>
-      <CardContent>
-        <Typography gutterBottom variant="h5" component="div">
-          {"Your test token's balance:"}
-        </Typography>
-
-        {sorobanContext.address && tokens.length > 0 && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-            {isLoading && <CircularProgress size="24px" />}
-            {tokenBalancesResponse?.balances?.map((tokenBalance) => {
-              const typeOfAsset = isClassicStellarAssetFormat(tokenBalance.name) ? "Stellar Classic Asset" : "Soroban Token" 
-              return (
-                <Tooltip key={tokenBalance.address} title={typeOfAsset} placement="left">
-                  <div style={{ display: 'flex', alignItems: 'center' }}>
-                    <CurrencyLogo
-                      currency={tokens.find((token) => token.address === tokenBalance.address)}
-                      size={'16px'}
-                      style={{ marginRight: '8px' }}
-                    />
-                    {currentMintingToken?.address === tokenBalance.address ? (
-                      <CircularProgress size="12px" />
-                    ) : (
-                      <p>
-                        {tokenBalance.symbol} :{' '}
-                        {Number(tokenBalance.balance).toLocaleString('en') as string}
-                      </p>
-                    )}
-                  </div>
-                </Tooltip>
-            )})}
-          </div>
-        )}
-
-        {!sorobanContext.address ? (
-          <>
-            <Typography gutterBottom>
-              Connect your wallet to see your test tokens balances
-            </Typography>
-            <ButtonPrimary
-              onClick={() => setConnectWalletModalOpen(true)}
-              style={{ marginTop: '24px' }}
-            >
-              Connect Wallet
-            </ButtonPrimary>
-          </>
-        ) : (
+      {!sorobanContext.address ? (
+        <>
+          <Typography gutterBottom variant="h5">
+            {"Your test token's balance:"}
+          </Typography>
+          <Typography gutterBottom>Connect your wallet to see your test tokens balances</Typography>
           <ButtonPrimary
-            onClick={handleMint}
-            disabled={isButtonDisabled()}
+            onClick={() => setConnectWalletModalOpen(true)}
             style={{ marginTop: '24px' }}
           >
-            {getButtonTxt()}
+            Connect Wallet
           </ButtonPrimary>
-        )}
-      </CardContent>
-      {sorobanContext.address && (
-        <MintCustomToken />
+        </>
+      ) : (
+        <>
+          <Box
+            display="flex"
+            flexWrap="wrap"
+            justifyContent="space-between"
+            alignItems="center"
+            mb={2}
+          >
+            <Typography gutterBottom variant="h5">
+              {"Your test token's balance:"}
+            </Typography>
+            <ButtonPrimary
+              onClick={handleMint}
+              disabled={isButtonDisabled()}
+              style={{ maxWidth: 250 }}
+            >
+              {getButtonTxt()}
+            </ButtonPrimary>
+          </Box>
+          <Box>
+            <BalancesTable />
+          </Box>
+        </>
       )}
+
+      {sorobanContext.address && <MintCustomToken />}
     </PageWrapper>
   );
 }
