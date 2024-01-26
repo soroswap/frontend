@@ -16,7 +16,7 @@ export function useTotalShares(
   } catch (error) {}
   const totalShares_scval = useContractValue({
     contractAddress: pairAddress,
-    method: "total_shares",
+    method: "total_supply",
     args,
     sorobanContext: sorobanContext,
   });

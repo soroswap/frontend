@@ -34,11 +34,11 @@ export async function getLpTokensAmount(
  * @returns {Promise<number | undefined>} - The total shares in stroop, or undefined if unable to fetch.
  */
 export async function getTotalShares(pairAddress: string, sorobanContext: SorobanContextType) {
-  // Invoke the "total_shares" method on the contract at the given pair address.
+  // Invoke the "total_supply" method on the contract at the given pair address.
   // The result will be in Soroban contract value (scval) format.
   const totalShares_scval = await contractInvoke({
     contractAddress: pairAddress,
-    method: 'total_shares',
+    method: 'total_supply',
     sorobanContext: sorobanContext,
   });
 

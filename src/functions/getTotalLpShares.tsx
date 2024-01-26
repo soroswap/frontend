@@ -8,7 +8,7 @@ export async function getTotalLpShares(pairAddress: string, sorobanContext: Soro
   try {
     const response = await contractInvoke({
       contractAddress: pairAddress,
-      method: 'total_shares',
+      method: 'total_supply',
       sorobanContext,
     });
 
