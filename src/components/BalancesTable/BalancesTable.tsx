@@ -77,7 +77,7 @@ function BalancesTableHead(props: BalancesTableProps) {
 
   return (
     <TableHead>
-      <TableRow>
+      <TableRow sx={{ verticalAlign: 'bottom' }}>
         <TableCell>#</TableCell>
         {headCells.map((headCell) => (
           <TableCell
@@ -170,7 +170,7 @@ export default function BalancesTable() {
             const isStellarClassicAsset = row.type === 'Stellar Classic Asset';
             return (
               <TableRow onClick={() => onClickRow(row.address)} key={index}>
-                <TableCell>{index + 1}</TableCell>
+                <TableCell>{index + 1 + page * rowsPerPage}</TableCell>
                 <TableCell align="left">
                   <Box display="flex" gap="2px" alignItems="center">
                     <CurrencyLogo
@@ -212,7 +212,7 @@ export default function BalancesTable() {
         page={page}
         onPageChange={handleChangePage}
         onRowsPerPageChange={handleChangeRowsPerPage}
-        rowsPerPageOptions={[]}
+        rowsPerPageOptions={[5, 10, 20, 100]}
       />
     </TableContainer>
   );
