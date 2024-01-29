@@ -1,7 +1,7 @@
 import { Box, CircularProgress, Modal, useTheme } from '@mui/material';
 import { wrapStellarAsset } from '@soroban-react/contracts';
 import { useSorobanReact } from '@soroban-react/core';
-import { ButtonPrimary } from 'components/Buttons/Button';
+import { ButtonLight, ButtonPrimary } from 'components/Buttons/Button';
 import { CloseButton } from 'components/Buttons/CloseButton';
 import { AutoColumn } from 'components/Column';
 import { RowBetween } from 'components/Row';
@@ -11,6 +11,7 @@ import { Wrapper } from 'components/TransactionConfirmationModal/ModalStyles';
 import { AppContext, SnackbarIconType } from 'contexts';
 import { sendNotification } from 'functions/sendNotification';
 import { getClassicStellarAsset } from 'helpers/address';
+import useGetNativeTokenBalance from 'hooks/useGetNativeTokenBalance';
 import { TokenType } from 'interfaces';
 import Link from 'next/link';
 import { useContext, useState } from 'react';
@@ -27,10 +28,11 @@ const WrapStellarAssetModal = ({ isOpen, asset, onDismiss, onSuccess }: Props) =
   const [isWrapping, setIsWrapping] = useState<boolean>(false);
   const theme = useTheme();
   const sorobanContext = useSorobanReact();
-  const { SnackbarContext } = useContext(AppContext);
+  const { SnackbarContext, ConnectWalletModal } = useContext(AppContext);
+  const { setConnectWalletModalOpen } = ConnectWalletModal;
+  const { data } = useGetNativeTokenBalance();
 
   const handleConfirm = () => {
-    console.log("TRYING TO WRAP")
     const stellarAsset = getClassicStellarAsset(asset?.name!);
     if (!stellarAsset) return;
     setIsWrapping(true);
@@ -69,7 +71,7 @@ const WrapStellarAssetModal = ({ isOpen, asset, onDismiss, onSuccess }: Props) =
           </Box>
           <AutoColumn gap="12px" justify="center">
             <SubHeaderLarge color="textPrimary" textAlign="center">
-              {isWrapping ? "Wrapping" : "Wrap Required"}
+            {isWrapping ? "Wrapping" : "Wrap Required"}
             </SubHeaderLarge>
             {isWrapping ? (
               <SubHeaderSmall color="textSecondary" textAlign="center" marginBottom="12px">
@@ -79,21 +81,26 @@ const WrapStellarAssetModal = ({ isOpen, asset, onDismiss, onSuccess }: Props) =
               <SubHeaderSmall color="textSecondary" textAlign="center" marginBottom="12px">
                 This token isn&apos;t yet wrapped for the Soroban network. Wrap it now for full trading capabilities.
                 {' '}
-                {/* //TODO: Add learn more link */}
-                <Link href={'https://docs.soroswap.finance'} target='_blank' style={{ color: '#8866DD' }}>Learn more</Link>
+                <Link href={'https://docs.soroswap.finance/05-tutorial/summary/01-wrapping-stellar-classic-assets'} target='_blank' style={{ color: '#8866DD' }}>Learn more</Link>
               </SubHeaderSmall>
             )}
           </AutoColumn>
-          <ButtonPrimary
-            onClick={handleConfirm}
-            disabled={isWrapping}
-            style={{ gap: "1rem"}}
-          >
-            {isWrapping ? `Wrapping ${asset?.symbol}` : `Wrap ${asset?.symbol}`}
-            {isWrapping && (
-              <CircularProgress size="18px" />
-            )}
-          </ButtonPrimary>
+          {sorobanContext.address ? (
+            <ButtonPrimary
+              onClick={handleConfirm} 
+              disabled={isWrapping || !data?.validAccount}
+              style={{ gap: "1rem"}}
+            >
+              {isWrapping ? `Wrapping ${asset?.symbol}` : !data?.validAccount ? "Insufficient balance" : `Wrap ${asset?.symbol}`}
+              {isWrapping && (
+                <CircularProgress size="18px" />
+              )}
+            </ButtonPrimary>
+          ): (
+            <ButtonLight onClick={() => setConnectWalletModalOpen(true)}>
+              Connect Wallet
+            </ButtonLight>
+          )}
         </AutoColumn>
       </Wrapper>
     </Modal>
