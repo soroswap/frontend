@@ -1,4 +1,4 @@
-import { Box, CircularProgress, Typography } from '@mui/material';
+import { Box, CircularProgress, Stack, Typography } from '@mui/material';
 import CardContent from '@mui/material/CardContent';
 import { contractInvoke, setTrustline } from '@soroban-react/contracts';
 import { useSorobanReact } from '@soroban-react/core';
@@ -29,8 +29,8 @@ export function MintCustomToken() {
   const [tokenAmount, setTokenAmount] = useState<number>();
   const [isMinting, setIsMinting] = useState(false);
   const [buttonText, setButtonText] = useState<string>('Mint custom token');
-  const [needToSetTrustline, setNeedToSetTrustline] = useState<boolean>(false)
-  const [tokenSymbol, setTokenSymbol] = useState<string>('')
+  const [needToSetTrustline, setNeedToSetTrustline] = useState<boolean>(false);
+  const [tokenSymbol, setTokenSymbol] = useState<string>('');
 
   const handleMint = async () => {
     setIsMinting(true);
@@ -81,37 +81,44 @@ export function MintCustomToken() {
       //This will connect again the wallet to fetch its data
       sorobanContext.connect();
     } catch (error) {
-      console.log(error)
+      console.log(error);
       setIsMinting(false);
     }
   };
 
   const handleSetTrustline = () => {
-    console.log("SETTING TRUSTLINE")
+    console.log('SETTING TRUSTLINE');
     setTrustline({
       tokenSymbol: tokenSymbol,
       tokenAdmin: admin_public,
-      sorobanContext
-    }).then((resp) => {
-      setNeedToSetTrustline(false)
-      sendNotification(`for ${tokenSymbol}`, "Trustline set", SnackbarIconType.MINT, SnackbarContext)
-      setButtonText("Mint custom token")
-    }).catch((error: any) => {
-      console.log("Error setting trustline",error)
+      sorobanContext,
     })
-  }
+      .then((resp) => {
+        setNeedToSetTrustline(false);
+        sendNotification(
+          `for ${tokenSymbol}`,
+          'Trustline set',
+          SnackbarIconType.MINT,
+          SnackbarContext,
+        );
+        setButtonText('Mint custom token');
+      })
+      .catch((error: any) => {
+        console.log('Error setting trustline', error);
+      });
+  };
 
   const handleSubmit = () => {
     if (needToSetTrustline) {
-      handleSetTrustline()
+      handleSetTrustline();
     } else {
       if (isAddress(tokenAddress)) {
-        handleMint()
+        handleMint();
       } else {
-        console.log("type token address first")
+        console.log('type token address first');
       }
     }
-  }
+  };
 
   useEffect(() => {
     const updateTokenInfo = async () => {
@@ -120,26 +127,26 @@ export function MintCustomToken() {
       if (isAddress(newTokenAddress)) {
         const tokenInfo = await findToken(newTokenAddress, tokensAsMap, sorobanContext);
         setTokenSymbol(tokenInfo?.symbol as string);
-  
+
         const requiresTrust = await requiresTrustline(newTokenAddress, sorobanContext);
         if (requiresTrust) {
-          setButtonText("Set Trustline");
+          setButtonText('Set Trustline');
           setNeedToSetTrustline(true);
         } else {
-          setButtonText("Mint custom token");
+          setButtonText('Mint custom token');
           setNeedToSetTrustline(false);
         }
       } else {
-        setButtonText("Mint custom token");
+        setButtonText('Mint custom token');
         setNeedToSetTrustline(false);
       }
-  
+
       if (isMinting) {
         setButtonText(`Minting ${shortenAddress(tokenAddress)}`);
         setNeedToSetTrustline(false);
       }
     };
-  
+
     updateTokenInfo();
   }, [isMinting, sorobanContext, tokenAddress, tokensAsMap]);
 
@@ -159,29 +166,24 @@ export function MintCustomToken() {
           </a>
         </BodySmall>
       </Typography>
+      <Stack spacing={1}>
+        <TextInput
+          placeholder="Token address"
+          value={tokenAddress}
+          onChange={(e) => setTokenAddress(e.target.value)}
+        />
 
-      <TextInput
-        placeholder="Token address"
-        value={tokenAddress}
-        onChange={(e) => setTokenAddress(e.target.value)}
-      />
-
-      <TextInput
-        placeholder="Amount"
-        type="number"
-        value={tokenAmount}
-        onChange={(e) => setTokenAmount(Number(e.target.value))}
-      />
-      <ButtonPrimary
-        onClick={handleSubmit}
-        disabled={isMinting}
-        style={{ marginTop: '24px' }}
-      >
+        <TextInput
+          placeholder="Amount"
+          type="number"
+          value={tokenAmount}
+          onChange={(e) => setTokenAmount(Number(e.target.value))}
+        />
+      </Stack>
+      <ButtonPrimary onClick={handleSubmit} disabled={isMinting} style={{ marginTop: '24px' }}>
         <Box display="flex" alignItems="center" gap="6px">
           {buttonText}
-          {isMinting && (
-            <CircularProgress size="18px" />
-          )}
+          {isMinting && <CircularProgress size="18px" />}
         </Box>
       </ButtonPrimary>
     </CardContent>

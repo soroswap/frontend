@@ -1,11 +1,11 @@
-import { Balances } from '../src/components/Balances';
+import { SwapComponent } from 'components/Swap/SwapComponent';
 import SEO from '../src/components/SEO';
 
 export default function Home() {
   return (
     <>
-      <SEO title="Soroswap" description="Soroswap Index" data-testid='SEO' />
-      <Balances />
+      <SEO title="Soroswap" description="Soroswap Index" data-testid="SEO" />
+      <SwapComponent />
     </>
   );
 }

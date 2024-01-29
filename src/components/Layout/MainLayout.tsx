@@ -13,12 +13,13 @@ import Banner from './Banner';
 const MainBackground = styled('main')<{ isMobile: boolean; showBanner: boolean }>`
   background-image: url(${background1.src});
   background-size: cover;
-  height: ${({ isMobile }) => (isMobile ? 'calc(100vh - 78px)' : 'calc(100vh - 120px)')};
+  min-height: ${({ isMobile }) => (isMobile ? 'calc(100vh - 78px)' : 'calc(100vh - 120px)')};
+  height: 100%;
   display: flex;
   justify-content: center;
   align-items: flex-start;
   width: 100vw;
-  padding: ${({ isMobile }) => (isMobile ? '50px 20px 0 20px' : '65px 20px 0 20px')};
+  padding: ${({ isMobile }) => (isMobile ? '50px 20px 50px 20px' : '65px 20px 50px 20px')};
   margin-top: ${({ isMobile, showBanner }) =>
     isMobile ? (showBanner ? '120px' : '78px') : showBanner ? '162px' : '120px'};
 `;
