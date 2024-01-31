@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Card, Stack, Switch, Tooltip, Typography, Paper } from '@mui/material';
+import { Card, Stack, Switch, Tooltip, Typography } from '@mui/material';
 import { isClassicStellarAssetFormat, shortenAddress } from 'helpers/address';
 import { relevantTokensType } from 'hooks';
 import { useRouter } from 'next/router';
@@ -17,6 +17,7 @@ import TableSortLabel from '@mui/material/TableSortLabel';
 import useBoolean, { UseBooleanReturnProps } from 'hooks/useBoolean';
 import useGetMyBalances from 'hooks/useGetMyBalances';
 import useTable from 'hooks/useTable';
+import ClipboardComponent from 'components/Clipboard/ClipboardComponent';
 
 const shortenStellarClassicAddress = (address: string) => {
   const [first, last] = address.split(':');
@@ -181,10 +182,31 @@ export default function BalancesTable() {
                     {row.symbol}
                   </Box>
                 </TableCell>
-                <TableCell align="left">
-                  {isStellarClassicAsset && showStellarClassicAddresses.value
-                    ? shortenStellarClassicAddress(row.name)
-                    : shortenAddress(row.address)}
+                <TableCell align="left" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <ClipboardComponent
+                    size={16}
+                    onClick={() => {
+                      const copyText =
+                        isStellarClassicAsset && showStellarClassicAddresses.value
+                          ? row.name
+                          : row.address;
+                      navigator.clipboard.writeText(copyText);
+                    }}
+                  />
+                  <Tooltip
+                    title={
+                      isStellarClassicAsset && showStellarClassicAddresses.value
+                        ? row.name
+                        : row.address
+                    }
+                    placement="top"
+                  >
+                    <div>
+                      {isStellarClassicAsset && showStellarClassicAddresses.value
+                        ? shortenStellarClassicAddress(row.name)
+                        : shortenAddress(row.address)}
+                    </div>
+                  </Tooltip>
                 </TableCell>
                 <TableCell align="left">{row.type}</TableCell>
                 <TableCell align="right">
