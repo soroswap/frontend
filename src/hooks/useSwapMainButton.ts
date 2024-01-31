@@ -137,13 +137,10 @@ const useSwapMainButton = ({
     }
   };
 
-  const MainButton = address ? ButtonPrimary : ButtonLight;
-
   return {
     getMainButtonText,
     isMainButtonDisabled,
     handleMainButtonClick,
-    MainButton,
     getSwapValues,
   };
 };
