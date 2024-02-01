@@ -17,7 +17,15 @@ import useGetReservesByPair from 'hooks/useGetReservesByPair';
 import { useSwapCallback } from 'hooks/useSwapCallback';
 import useSwapMainButton from 'hooks/useSwapMainButton';
 import { TokenType } from 'interfaces';
-import { ReactNode, useCallback, useContext, useEffect, useMemo, useReducer, useState } from 'react';
+import {
+  ReactNode,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useReducer,
+  useState,
+} from 'react';
 import { ArrowDown } from 'react-feather';
 import { InterfaceTrade, TradeState } from 'state/routing/types';
 import { Field } from 'state/swap/actions';
@@ -27,6 +35,7 @@ import { opacify } from 'themes/utils';
 import SwapCurrencyInputPanel from '../CurrencyInputPanel/SwapCurrencyInputPanel';
 import SwapHeader from './SwapHeader';
 import { ArrowWrapper, SwapWrapper } from './styleds';
+import { ButtonPrimary } from 'components/Buttons/Button';
 
 const SwapSection = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -106,7 +115,7 @@ export function SwapComponent({
   const { SnackbarContext } = useContext(AppContext);
   const [showPriceImpactModal, setShowPriceImpactModal] = useState<boolean>(false);
   const [txError, setTxError] = useState<boolean>(false);
-  
+
   const [needTrustline, setNeedTrustline] = useState<boolean>(true);
 
   const { token: prefilledToken } = useToken(prefilledState.INPUT?.currencyId!);
@@ -276,13 +285,18 @@ export function SwapComponent({
   };
 
   const handleTrustline = () => {
-    const asset = getClassicStellarAsset(trade?.outputAmount?.currency.name!)
-    if (!asset) return
-    
+    const asset = getClassicStellarAsset(trade?.outputAmount?.currency.name!);
+    if (!asset) return;
+
     setTrustline({ tokenSymbol: asset.assetCode, tokenAdmin: asset.issuer, sorobanContext })
       .then((result) => {
-        setNeedTrustline(false)
-        sendNotification(`for ${asset.assetCode}`, "Trustline set", SnackbarIconType.MINT, SnackbarContext)
+        setNeedTrustline(false);
+        sendNotification(
+          `for ${asset.assetCode}`,
+          'Trustline set',
+          SnackbarIconType.MINT,
+          SnackbarContext,
+        );
       })
       .catch((error) => {
         // console.log(error);
@@ -291,7 +305,7 @@ export function SwapComponent({
           ...currentState,
           showConfirm: false,
         }));
-      });      
+      });
   };
 
   const showDetailsDropdown = Boolean(
@@ -307,53 +321,50 @@ export function SwapComponent({
     otherAddress: currencies[Field.OUTPUT]?.address,
   });
 
-  const {
-    getMainButtonText,
-    isMainButtonDisabled,
-    handleMainButtonClick,
-    MainButton,
-    getSwapValues,
-  } = useSwapMainButton({
-    currencies,
-    currencyBalances,
-    formattedAmounts,
-    routeNotFound,
-    onSubmit: handleContinueToReview,
-    reserves,
-  });
+  const { getMainButtonText, isMainButtonDisabled, handleMainButtonClick, getSwapValues } =
+    useSwapMainButton({
+      currencies,
+      currencyBalances,
+      formattedAmounts,
+      routeNotFound,
+      onSubmit: handleContinueToReview,
+      reserves,
+    });
 
   useEffect(() => {
     const checkRequiresTrustlineAdjust = async () => {
       if (!swapCallback) {
         return;
       }
-      
+
       try {
-        const simulatedTransaction = await swapCallback(true)
+        const simulatedTransaction = await swapCallback(true);
         if (simulatedTransaction) {
-          return false
+          return false;
         }
       } catch (error) {
-        return true
+        return true;
       }
-  
     };
 
     const checkTrustline = async () => {
-      if (!trade) return
-      
-      const needTrustline = await requiresTrustline(trade?.outputAmount?.currency.address!, sorobanContext)
-      const requiresTrustlineAdjust = await checkRequiresTrustlineAdjust()
-      
+      if (!trade) return;
+
+      const needTrustline = await requiresTrustline(
+        trade?.outputAmount?.currency.address!,
+        sorobanContext,
+      );
+      const requiresTrustlineAdjust = await checkRequiresTrustlineAdjust();
+
       if (needTrustline || requiresTrustlineAdjust) {
-        setNeedTrustline(true)
+        setNeedTrustline(true);
       } else {
-        setNeedTrustline(false)
+        setNeedTrustline(false);
       }
-    }
+    };
 
     checkTrustline();
-  }, [sorobanContext, swapCallback, trade])
+  }, [sorobanContext, swapCallback, trade]);
 
   return (
     <>
@@ -477,11 +488,11 @@ export function SwapComponent({
           )}
           {/* {showPriceImpactWarning && <PriceImpactWarning priceImpact={largerPriceImpact} />} */}
           <div>
-            <MainButton disabled={isMainButtonDisabled()} onClick={handleMainButtonClick}>
+            <ButtonPrimary disabled={isMainButtonDisabled()} onClick={handleMainButtonClick}>
               <ButtonText fontSize={20} fontWeight={600}>
                 {getMainButtonText()}
               </ButtonText>
-            </MainButton>
+            </ButtonPrimary>
           </div>
         </AutoColumn>
       </SwapWrapper>
