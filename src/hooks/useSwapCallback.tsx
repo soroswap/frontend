@@ -98,9 +98,9 @@ export function useSwapCallback(
   const routerCallback = useRouterCallback();
   const allowedSlippage = useUserSlippageToleranceWithDefault(DEFAULT_SLIPPAGE_INPUT_VALUE);
 
-  const doSwap = async (simulation?: boolean): Promise<
-    SuccessfullSwapResponse | StellarSdk.SorobanRpc.Api.GetTransactionResponse
-  > => {
+  const doSwap = async (
+    simulation?: boolean,
+  ): Promise<SuccessfullSwapResponse | StellarSdk.SorobanRpc.Api.GetTransactionResponse> => {
     if (!trade) throw new Error('missing trade');
     if (!address || !activeChain) throw new Error('wallet must be connected to swap');
     if (!trade.tradeType) throw new Error('tradeType must be defined');
@@ -155,7 +155,7 @@ export function useSwapCallback(
       )) as StellarSdk.SorobanRpc.Api.GetTransactionResponse;
 
       //if it is a simulation should return the result
-      if(simulation) return result
+      if (simulation) return result;
 
       if (result.status !== StellarSdk.SorobanRpc.Api.GetTransactionStatus.SUCCESS) throw result;
 
