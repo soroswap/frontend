@@ -1,4 +1,4 @@
-import { Modal, styled } from '@mui/material';
+import { Box, CircularProgress, Modal, styled } from '@mui/material';
 import { setTrustline } from '@soroban-react/contracts';
 import { useSorobanReact } from '@soroban-react/core';
 import { AutoColumn } from 'components/Column';
@@ -248,7 +248,7 @@ export function SwapComponent({
     }
   }, [onUserInput, swapResult]);
 
-  const swapCallback = useSwapCallback(
+  const { doSwap: swapCallback, isLoading } = useSwapCallback(
     trade,
     // swapFiatValues,
     // allowedSlippage,
@@ -488,9 +488,19 @@ export function SwapComponent({
           )}
           {/* {showPriceImpactWarning && <PriceImpactWarning priceImpact={largerPriceImpact} />} */}
           <div>
-            <ButtonPrimary disabled={isMainButtonDisabled()} onClick={handleMainButtonClick}>
+            <ButtonPrimary
+              disabled={isMainButtonDisabled() || isLoading}
+              onClick={handleMainButtonClick}
+              sx={{ height: '64px' }}
+            >
               <ButtonText fontSize={20} fontWeight={600}>
-                {getMainButtonText()}
+                {isLoading ? (
+                  <Box display="flex" alignItems="center">
+                    <CircularProgress size="24px" />
+                  </Box>
+                ) : (
+                  getMainButtonText()
+                )}
               </ButtonText>
             </ButtonPrimary>
           </div>
