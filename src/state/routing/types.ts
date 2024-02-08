@@ -228,8 +228,8 @@ export enum QuoteMethod {
 //   }
 // }
 export enum TradeType {
-  EXACT_INPUT = 0,
-  EXACT_OUTPUT = 1,
+  EXACT_INPUT = 'EXACT_INPUT',
+  EXACT_OUTPUT = 'EXACT_OUTPUT',
 }
 export type InterfaceTrade = {
   inputAmount: CurrencyAmount | undefined;

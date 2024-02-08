@@ -1,15 +1,23 @@
 import BigNumber from 'bignumber.js';
-import { ChainId, CurrencyAmount, Router, Token } from 'soroswap-router-sdk';
+import {
+  ChainId,
+  CurrencyAmount,
+  Router,
+  Token,
+  TradeType as SdkTradeType,
+} from 'soroswap-router-sdk';
 import { InterfaceTrade, TradeType } from 'state/routing/types';
 
 const backendUrl = process.env.NEXT_PUBLIC_SOROSWAP_BACKEND_URL;
 const apiKey = process.env.NEXT_PUBLIC_SOROSWAP_BACKEND_API_KEY;
 
+const router = new Router(backendUrl!, apiKey!, 10);
+
 export interface GenerateRouteProps {
   amountTokenAddress: string;
   quoteTokenAddress: string;
   amount: string;
-  tradeType: TradeType;
+  tradeType: SdkTradeType;
 }
 
 export const fromTradeToRouterSdkParams = (
@@ -20,7 +28,7 @@ export const fromTradeToRouterSdkParams = (
       amountTokenAddress: trade.inputAmount?.currency.address as string,
       quoteTokenAddress: trade.outputAmount?.currency.address as string,
       amount: BigNumber(trade.inputAmount?.value!).toString(),
-      tradeType: TradeType.EXACT_INPUT,
+      tradeType: SdkTradeType.EXACT_INPUT,
     };
   }
   if (trade?.tradeType === TradeType.EXACT_OUTPUT) {
@@ -28,7 +36,7 @@ export const fromTradeToRouterSdkParams = (
       amountTokenAddress: trade.outputAmount?.currency.address as string,
       quoteTokenAddress: trade.inputAmount?.currency.address as string,
       amount: BigNumber(trade.outputAmount?.value!).toString(),
-      tradeType: TradeType.EXACT_OUTPUT,
+      tradeType: SdkTradeType.EXACT_OUTPUT,
     };
   }
   return null;
@@ -57,8 +65,6 @@ export const generateRoute = async ({
 
   const currencyAmount = fromAddressAndAmountToCurrencyAmount(amountTokenAddress, amount);
   const quoteCurrency = fromAddressToToken(quoteTokenAddress);
-
-  const router = new Router(backendUrl, apiKey);
 
   return router.route(currencyAmount, quoteCurrency, tradeType);
 };
