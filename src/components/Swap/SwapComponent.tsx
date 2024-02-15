@@ -2,7 +2,7 @@ import { Box, CircularProgress, Modal, styled } from '@mui/material';
 import { setTrustline } from '@soroban-react/contracts';
 import { useSorobanReact } from '@soroban-react/core';
 import { AutoColumn } from 'components/Column';
-import ConfirmSwapModal from 'components/Swap/ConfirmSwapModal';
+import ConfirmSwapModal, { useConfirmModalState } from 'components/Swap/ConfirmSwapModal';
 import SwapDetailsDropdown from 'components/Swap/SwapDetailsDropdown';
 import { ButtonText } from 'components/Text';
 import { TransactionFailedContent } from 'components/TransactionConfirmationModal';
@@ -37,6 +37,7 @@ import SwapHeader from './SwapHeader';
 import { ArrowWrapper, SwapWrapper } from './styleds';
 import { ButtonPrimary } from 'components/Buttons/Button';
 import { WalletButton } from 'components/Buttons/WalletButton';
+import { resetRouterSdkCache } from 'functions/generateRoute';
 
 const SwapSection = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -232,24 +233,16 @@ export function SwapComponent({
     [trade, tradeState],
   );
 
-  const handleContinueToReview = useCallback(() => {
+  const handleContinueToReview = () => {
     setSwapState({
       tradeToConfirm: trade,
       swapError: undefined,
       showConfirm: true,
       swapResult: undefined,
     });
-  }, [trade]);
+  };
 
-  const handleConfirmDismiss = useCallback(() => {
-    setSwapState((currentState) => ({ ...currentState, showConfirm: false }));
-    // If there was a swap, we want to clear the input
-    if (swapResult) {
-      onUserInput(Field.INPUT, '');
-    }
-  }, [onUserInput, swapResult]);
-
-  const { doSwap: swapCallback, isLoading } = useSwapCallback(
+  const { doSwap: swapCallback } = useSwapCallback(
     trade,
     // swapFiatValues,
     // allowedSlippage,
@@ -367,6 +360,27 @@ export function SwapComponent({
     checkTrustline();
   }, [sorobanContext, swapCallback, trade]);
 
+  const useConfirmModal = useConfirmModalState({
+    trade: trade!,
+    allowedSlippage,
+    onSwap: handleSwap,
+    onSetTrustline: handleTrustline,
+    onCurrencySelection,
+    trustline: needTrustline,
+  });
+
+  const handleConfirmDismiss = useCallback(() => {
+    setSwapState((currentState) => ({ ...currentState, showConfirm: false }));
+    // If there was a swap, we want to clear the input
+    if (swapResult) {
+      onUserInput(Field.INPUT, '');
+    }
+
+    resetRouterSdkCache();
+
+    useConfirmModal.resetStates();
+  }, [onUserInput, swapResult, useConfirmModal]);
+
   return (
     <>
       <SwapWrapper>
@@ -381,9 +395,10 @@ export function SwapComponent({
             <TransactionFailedContent onDismiss={() => setTxError(false)} />
           </div>
         </Modal>
-        {trade && showConfirm && (
+        {(trade || routeIsLoading) && showConfirm && (
           <ConfirmSwapModal
-            trade={trade}
+            useConfirmModal={useConfirmModal}
+            trade={trade!}
             inputCurrency={inputCurrency}
             originalTrade={tradeToConfirm}
             onAcceptChanges={() => null} //handleAcceptChanges}
@@ -491,12 +506,12 @@ export function SwapComponent({
           <div>
             {sorobanContext.address ? (
                 <ButtonPrimary
-              disabled={isMainButtonDisabled() || isLoading}
+              disabled={isMainButtonDisabled() || routeIsLoading}
               onClick={handleMainButtonClick}
               sx={{ height: '64px' }}
             >
                 <ButtonText fontSize={20} fontWeight={600}>
-                  {isLoading ? (
+                  {routeIsLoading ? (
                   <Box display="flex" alignItems="center">
                     <CircularProgress size="24px" />
                   </Box>
