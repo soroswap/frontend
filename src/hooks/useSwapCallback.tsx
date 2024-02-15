@@ -162,8 +162,8 @@ export function useSwapCallback(
 
       const switchValues: string[] = scValToJs(result.returnValue!);
 
-      const [currencyA, , ...rest] = switchValues;
-      const currencyB = rest[rest.length - 1];
+      const currencyA = switchValues?.[0];
+      const currencyB = switchValues?.[switchValues?.length - 1];
 
       const notificationMessage = `${formatTokenAmount(currencyA ?? '0')} ${trade?.inputAmount
         ?.currency.symbol} for ${formatTokenAmount(currencyB ?? '0')} ${trade?.outputAmount
