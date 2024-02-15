@@ -32,7 +32,7 @@ export enum ConfirmModalState {
   PENDING_CONFIRMATION,
 }
 
-function useConfirmModalState({
+export function useConfirmModalState({
   trade,
   allowedSlippage,
   onSwap,
@@ -48,8 +48,8 @@ function useConfirmModalState({
   trustline: boolean; //Allowance
   doesTradeDiffer?: boolean;
   onCurrencySelection: (field: Field, currency: TokenType) => void;
-  }) {
-  const sorobanContext = useSorobanReact()
+}) {
+  const sorobanContext = useSorobanReact();
   const [confirmModalState, setConfirmModalState] = useState<ConfirmModalState>(
     ConfirmModalState.REVIEWING,
   );
@@ -68,6 +68,12 @@ function useConfirmModalState({
     return steps;
   }, [trustline]);
 
+  const resetStates = () => {
+    setConfirmModalState(ConfirmModalState.REVIEWING);
+    setApprovalError(undefined);
+    setPendingModalSteps([]);
+  };
+
   // const { chainId } = useWeb3React()
   // const trace = useTrace()
   // const maximumAmountIn = useMaxAmountIn(trade, allowedSlippage)
@@ -76,7 +82,7 @@ function useConfirmModalState({
 
   const [wrapTxHash, setWrapTxHash] = useState<string>();
   const [onSetTrustlineExecuted, setOnSetTrustlineExecuted] = useState<boolean>(false);
-  
+
   // const { execute: onWrap } = useWrapCallback(
   //   nativeCurrency,
   //   trade.inputAmount.currency,
@@ -102,8 +108,8 @@ function useConfirmModalState({
         case ConfirmModalState.SETTING_TRUSTLINE:
           setConfirmModalState(ConfirmModalState.SETTING_TRUSTLINE);
           try {
-            onSetTrustline()
-            setOnSetTrustlineExecuted(true)
+            onSetTrustline();
+            setOnSetTrustlineExecuted(true);
           } catch (e) {
             catchUserReject(e, PendingModalError.CONFIRMATION_ERROR);
           }
@@ -115,7 +121,7 @@ function useConfirmModalState({
           setConfirmModalState(ConfirmModalState.PENDING_CONFIRMATION);
           try {
             onSwap();
-            setOnSetTrustlineExecuted(false)
+            setOnSetTrustlineExecuted(false);
           } catch (e) {
             catchUserReject(e, PendingModalError.CONFIRMATION_ERROR);
           }
@@ -137,12 +143,9 @@ function useConfirmModalState({
   useEffect(() => {
     // If the trustline step finished, trigger the next step (swap).
     if (!trustline && onSetTrustlineExecuted) {
-      performStep(pendingModalSteps[1])
+      performStep(pendingModalSteps[1]);
     }
-  }, [onSetTrustlineExecuted, pendingModalSteps, performStep, trustline])
-
-
-
+  }, [onSetTrustlineExecuted, pendingModalSteps, performStep, trustline]);
 
   const onCancel = () => {
     setConfirmModalState(ConfirmModalState.REVIEWING);
@@ -156,6 +159,7 @@ function useConfirmModalState({
     approvalError,
     pendingModalSteps,
     wrapTxHash,
+    resetStates,
   };
 }
 
@@ -175,6 +179,7 @@ export default function ConfirmSwapModal({
   swapQuoteReceivedDate,
   fiatValueInput,
   fiatValueOutput,
+  useConfirmModal,
 }: {
   trade: InterfaceTrade;
   inputCurrency?: TokenType;
@@ -191,6 +196,7 @@ export default function ConfirmSwapModal({
   swapQuoteReceivedDate?: Date;
   fiatValueInput: { data?: number; isLoading: boolean };
   fiatValueOutput: { data?: number; isLoading: boolean };
+  useConfirmModal: any;
 }) {
   const {
     startSwapFlow,
@@ -199,14 +205,8 @@ export default function ConfirmSwapModal({
     approvalError,
     pendingModalSteps,
     wrapTxHash,
-  } = useConfirmModalState({
-    trade,
-    allowedSlippage,
-    onSwap: onConfirm,
-    onSetTrustline: onSetTrustline,
-    onCurrencySelection,
-    trustline,
-  });
+  } = useConfirmModal;
+
   const swapFailed = Boolean(swapError); // && !didUserReject(swapError)
 
   // const showAcceptChanges = Boolean(
@@ -253,9 +253,7 @@ export default function ConfirmSwapModal({
         trade={trade}
         swapResult={swapResult}
         wrapTxHash={wrapTxHash}
-        tokenApprovalPending={
-          trustline
-        }
+        tokenApprovalPending={trustline}
       />
     );
   }, [

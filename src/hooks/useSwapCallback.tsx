@@ -8,12 +8,12 @@ import { sendNotification } from 'functions/sendNotification';
 import { scValToJs } from 'helpers/convert';
 import { formatTokenAmount } from 'helpers/format';
 import { bigNumberToI128, bigNumberToU64 } from 'helpers/utils';
-import { useContext, useState } from 'react';
+import { useContext } from 'react';
 import { InterfaceTrade, TradeType } from 'state/routing/types';
 import { useUserSlippageToleranceWithDefault } from 'state/user/hooks';
 import * as StellarSdk from 'stellar-sdk';
 import { RouterMethod, useRouterCallback } from './useRouterCallback';
-import { fromTradeToRouterSdkParams, generateRoute } from 'functions/generateRoute';
+import { useSWRConfig } from 'swr';
 
 // Returns a function that will execute a swap, if the parameters are all valid
 // and the user has approved the slippage adjusted input amount for the trade
@@ -98,7 +98,8 @@ export function useSwapCallback(
   const { activeChain, address } = sorobanContext;
   const routerCallback = useRouterCallback();
   const allowedSlippage = useUserSlippageToleranceWithDefault(DEFAULT_SLIPPAGE_INPUT_VALUE);
-  const [isLoading, setIsLoading] = useState(false);
+
+  const { mutate } = useSWRConfig();
 
   const doSwap = async (
     simulation?: boolean,
@@ -106,8 +107,6 @@ export function useSwapCallback(
     if (!trade) throw new Error('missing trade');
     if (!address || !activeChain) throw new Error('wallet must be connected to swap');
     if (!trade.tradeType) throw new Error('tradeType must be defined');
-
-    setIsLoading(true);
 
     const { amount0, amount1, routerMethod } = getSwapAmounts({
       tradeType: trade.tradeType,
@@ -137,19 +136,14 @@ export function useSwapCallback(
     //     deadline: u64,
     // ) -> Vec<i128>;
 
-    const generateRouteProps = fromTradeToRouterSdkParams(trade);
-    if (!generateRouteProps) throw new Error('Invalid trade');
+    const path = trade.path?.map((address) => new StellarSdk.Address(address));
 
-    const route = await generateRoute(generateRouteProps);
-    const routePath = route?.trade.path.map((address) => new StellarSdk.Address(address));
-    const routePathScVal = StellarSdk.nativeToScVal(routePath);
-
-    setIsLoading(false);
+    const pathScVal = StellarSdk.nativeToScVal(path);
 
     const args = [
       amount0ScVal,
       amount1ScVal,
-      routePathScVal, // path
+      pathScVal, // path
       new StellarSdk.Address(address!).toScVal(),
       bigNumberToU64(BigNumber(getCurrentTimePlusOneHour())),
     ];
@@ -168,7 +162,8 @@ export function useSwapCallback(
 
       const switchValues: string[] = scValToJs(result.returnValue!);
 
-      const [currencyA, currencyB] = switchValues;
+      const [currencyA, , ...rest] = switchValues;
+      const currencyB = rest[rest.length - 1];
 
       const notificationMessage = `${formatTokenAmount(currencyA ?? '0')} ${trade?.inputAmount
         ?.currency.symbol} for ${formatTokenAmount(currencyB ?? '0')} ${trade?.outputAmount
@@ -182,5 +177,5 @@ export function useSwapCallback(
     }
   };
 
-  return { doSwap, isLoading };
+  return { doSwap, isLoading: trade?.isLoading };
 }
