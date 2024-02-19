@@ -25,7 +25,7 @@ const isObject = (val: any) => typeof val === 'object' && val !== null && !Array
 
 //refetch balance, lptokens and reserves after router tx success
 export const revalidateKeysCondition = (key: any) => {
-  const revalidateKeys = new Set(['balance', 'lp-tokens', 'reserves', 'trade']);
+  const revalidateKeys = new Set(['balance', 'lp-tokens', 'reserves', 'trade', 'subscribed-pairs']);
 
   return Array.isArray(key) && key.some((k) => revalidateKeys.has(k));
 };

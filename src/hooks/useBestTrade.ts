@@ -28,7 +28,7 @@ const getBestTrade = async (
       tradeType === TradeType.EXACT_INPUT ? SdkTradeType.EXACT_INPUT : SdkTradeType.EXACT_OUTPUT,
   });
 
-  return route?.trade;
+  return route;
 };
 
 /**
@@ -83,7 +83,7 @@ export function useBestTrade(
     if (!data || !currencyIn || !currencyOut) return;
 
     if (tradeType === TradeType.EXACT_INPUT) {
-      const result = data as {
+      const result = data.trade as {
         amountIn: string;
         amountOutMin: string;
         path: string[];
@@ -103,7 +103,7 @@ export function useBestTrade(
     }
 
     if (tradeType === TradeType.EXACT_OUTPUT) {
-      const result = data as {
+      const result = data.trade as {
         amountInMax: string;
         amountOut: string;
         path: string[];
@@ -128,8 +128,9 @@ export function useBestTrade(
       inputAmount,
       outputAmount,
       expectedAmount, // //isNaN(expectedAmount) ? 0 : expectedAmount,
-      path: data?.path,
+      path: data?.trade.path,
       tradeType: tradeType,
+      rawRoute: data,
     };
   }, [expectedAmount, inputAmount, outputAmount, tradeType, data]);
 
