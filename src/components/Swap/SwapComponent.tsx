@@ -310,11 +310,6 @@ export function SwapComponent({
   const priceImpactSeverity = 2; //IF is < 2 it shows Swap anyway button in red
   const showPriceImpactWarning = false;
 
-  const { reserves } = useGetReservesByPair({
-    baseAddress: currencies[Field.INPUT]?.address,
-    otherAddress: currencies[Field.OUTPUT]?.address,
-  });
-
   const { getMainButtonText, isMainButtonDisabled, handleMainButtonClick, getSwapValues } =
     useSwapMainButton({
       currencies,
@@ -322,7 +317,7 @@ export function SwapComponent({
       formattedAmounts,
       routeNotFound,
       onSubmit: handleContinueToReview,
-      reserves,
+      trade,
     });
 
   useEffect(() => {
@@ -433,11 +428,7 @@ export function SwapComponent({
                 independentField === Field.OUTPUT ? <span>From (at most)</span> : <span>From</span>
               }
               // disabled={disableTokenInputs}
-              value={
-                sorobanContext?.address && getSwapValues().insufficientLiquidity
-                  ? '0'
-                  : formattedAmounts[Field.INPUT]
-              }
+              value={formattedAmounts[Field.INPUT]}
               showMaxButton={showMaxButton}
               onUserInput={handleTypeInput}
               onMax={(maxBalance) => handleTypeInput(maxBalance.toString())}
@@ -449,7 +440,7 @@ export function SwapComponent({
               loading={independentField === Field.OUTPUT && routeIsSyncing}
               currency={currencies[Field.INPUT] ?? null}
               id={'swap-input'}
-              disableInput={getSwapValues().noLiquidity || getSwapValues().noCurrencySelected}
+              disableInput={getSwapValues().noCurrencySelected}
             />
           </SwapSection>
           <ArrowWrapper clickable={true}>
@@ -489,13 +480,12 @@ export function SwapComponent({
                 //showCommonBases
                 //id={InterfaceSectionName.CURRENCY_OUTPUT_PANEL}
                 loading={independentField === Field.INPUT && routeIsSyncing}
-                disableInput={getSwapValues().noLiquidity || getSwapValues().noCurrencySelected}
+                disableInput={getSwapValues().noCurrencySelected}
               />
             </OutputSwapSection>
           </div>
           {showDetailsDropdown && !getSwapValues().insufficientLiquidity && (
             <SwapDetailsDropdown
-              noLiquidity={getSwapValues().noLiquidity}
               trade={trade}
               syncing={routeIsSyncing}
               loading={routeIsLoading}

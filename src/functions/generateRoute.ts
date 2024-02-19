@@ -9,7 +9,7 @@ import {
 const backendUrl = process.env.NEXT_PUBLIC_SOROSWAP_BACKEND_URL;
 const apiKey = process.env.NEXT_PUBLIC_SOROSWAP_BACKEND_API_KEY;
 
-const router = new Router(backendUrl!, apiKey!, 30);
+const router = new Router(backendUrl!, apiKey!, 60);
 
 export interface GenerateRouteProps {
   amountTokenAddress: string;
