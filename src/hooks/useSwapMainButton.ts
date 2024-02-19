@@ -53,8 +53,6 @@ const useSwapMainButton = ({
 
     const invalidAmount = Number(inputA) < 0 || Number(inputB) < 0;
 
-    console.log({ trade });
-
     const insufficientLiquidity = !noAmountTyped && !trade;
 
     return {
