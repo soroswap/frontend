@@ -7430,10 +7430,10 @@ sodium-native@^4.0.1:
   dependencies:
     node-gyp-build "^4.6.0"
 
-soroswap-router-sdk@1.1.4:
-  version "1.1.4"
-  resolved "https://registry.yarnpkg.com/soroswap-router-sdk/-/soroswap-router-sdk-1.1.4.tgz#95b6411875c64fa5458e767e06abf05c1734f6bf"
-  integrity sha512-mYtBp6eIWyiZzZFb/2Ptid0jL1Lfv9S4negvZWbxjBdtPf0BRVcuZPs3qekiQfXzai5RDErGIlQRaoVGhlYKcQ==
+soroswap-router-sdk@^1.1.6:
+  version "1.1.6"
+  resolved "https://registry.yarnpkg.com/soroswap-router-sdk/-/soroswap-router-sdk-1.1.6.tgz#a7ffde4a35abd08878c4a26b6241d5772c256419"
+  integrity sha512-v+eWAqmSRpPKjeThLdTJtPasoK3RdEn7pFABfBNZmElmYVv+uuveBVgjPeq9Ys93A1pOZv/OtO3jM7apUOTdsw==
   dependencies:
     "@ethersproject/address" "^5.7.0"
     "@ethersproject/logger" "^5.7.0"

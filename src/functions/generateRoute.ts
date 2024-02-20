@@ -4,12 +4,13 @@ import {
   Router,
   Token,
   TradeType as SdkTradeType,
+  Protocols,
 } from 'soroswap-router-sdk';
 
 const backendUrl = process.env.NEXT_PUBLIC_SOROSWAP_BACKEND_URL;
 const apiKey = process.env.NEXT_PUBLIC_SOROSWAP_BACKEND_API_KEY;
 
-const router = new Router(backendUrl!, apiKey!, 60);
+const router = new Router(backendUrl!, apiKey!, 60, [Protocols.SOROSWAP]);
 
 export interface GenerateRouteProps {
   amountTokenAddress: string;
