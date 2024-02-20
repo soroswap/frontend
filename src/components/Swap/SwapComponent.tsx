@@ -36,6 +36,7 @@ import SwapCurrencyInputPanel from '../CurrencyInputPanel/SwapCurrencyInputPanel
 import SwapHeader from './SwapHeader';
 import { ArrowWrapper, SwapWrapper } from './styleds';
 import { ButtonPrimary } from 'components/Buttons/Button';
+import { WalletButton } from 'components/Buttons/WalletButton';
 
 const SwapSection = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -488,11 +489,15 @@ export function SwapComponent({
           )}
           {/* {showPriceImpactWarning && <PriceImpactWarning priceImpact={largerPriceImpact} />} */}
           <div>
-            <ButtonPrimary disabled={isMainButtonDisabled()} onClick={handleMainButtonClick}>
-              <ButtonText fontSize={20} fontWeight={600}>
-                {getMainButtonText()}
-              </ButtonText>
-            </ButtonPrimary>
+            {sorobanContext.address ? (
+                <ButtonPrimary disabled={isMainButtonDisabled()} onClick={handleMainButtonClick}>
+                <ButtonText fontSize={20} fontWeight={600}>
+                  {getMainButtonText()}
+                </ButtonText>
+              </ButtonPrimary>
+            ):(
+              <WalletButton/>
+            )}
           </div>
         </AutoColumn>
       </SwapWrapper>
