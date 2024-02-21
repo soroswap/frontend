@@ -3,6 +3,7 @@ import { wrapStellarAsset } from '@soroban-react/contracts';
 import { useSorobanReact } from '@soroban-react/core';
 import { ButtonLight, ButtonPrimary } from 'components/Buttons/Button';
 import { CloseButton } from 'components/Buttons/CloseButton';
+import { WalletButton } from 'components/Buttons/WalletButton';
 import { AutoColumn } from 'components/Column';
 import { RowBetween } from 'components/Row';
 import { LoadingIndicatorOverlay, LogoContainer } from 'components/Swap/PendingModalContent/Logos';
@@ -97,9 +98,7 @@ const WrapStellarAssetModal = ({ isOpen, asset, onDismiss, onSuccess }: Props) =
               )}
             </ButtonPrimary>
           ): (
-            <ButtonLight onClick={() => setConnectWalletModalOpen(true)}>
-              Connect Wallet
-            </ButtonLight>
+            <WalletButton/>
           )}
         </AutoColumn>
       </Wrapper>
