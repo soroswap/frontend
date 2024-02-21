@@ -1,14 +1,12 @@
 'Use Client';
-import React, { useContext, useState, useEffect } from 'react'
 import { useSorobanReact } from '@soroban-react/core';
-import { ButtonPrimary, ButtonLight } from 'components/Buttons/Button';
+import { isConnected } from "@stellar/freighter-api";
+import { ButtonLight, ButtonPrimary } from 'components/Buttons/Button';
 import { ConnectorsDropdown } from 'components/Buttons/ConnectorsDropdown';
 import { AppContext } from 'contexts';
-import { isConnected, isAllowed, setAllowed } from "@stellar/freighter-api";
-import { xbull } from '@soroban-react/xbull';
-import { freighter } from '@soroban-react/freighter';
+import React, { useContext, useEffect, useState } from 'react';
 
-import * as Bowser from 'bowser'
+import * as Bowser from 'bowser';
 
 export function WalletButton({ style, light }: { style?: React.CSSProperties; light?: boolean}) {
     const sorobanContext = useSorobanReact();
@@ -22,19 +20,17 @@ export function WalletButton({ style, light }: { style?: React.CSSProperties; li
     };
     const installFreighter = () => {
         connected();
-        console.log(hasFreighter)
         if (hasFreighter) {
             window.location.reload();
         }
         else {
             const browser = Bowser.getParser(window.navigator.userAgent).getBrowserName()
-            console.log(browser)
             switch (browser) {
                 case 'Firefox':
-                    window.open('https://addons.mozilla.org/en-US/firefox/addon/freighter/', '_self');
+                    window.open('https://addons.mozilla.org/en-US/firefox/addon/freighter/', '_blank');
                     break;
                 default: 
-                    window.open('https://chromewebstore.google.com/detail/freighter/bcacfldlkkdogcmkkibnjlakofdplcbk', '_self');
+                    window.open('https://chromewebstore.google.com/detail/freighter/bcacfldlkkdogcmkkibnjlakofdplcbk', '_blank');
                     break;
             }
             setTimeout(() => {
