@@ -1,6 +1,7 @@
 import { futurenet, sandbox, standalone, testnet } from '@soroban-react/chains';
 import { SorobanReactProvider } from '@soroban-react/core';
 import { freighter } from '@soroban-react/freighter';
+import { xbull } from '@soroban-react/xbull';
 import { ChainMetadata, Connector, WalletChain } from '@soroban-react/types';
 import useMounted from 'hooks/useMounted';
 
@@ -19,7 +20,7 @@ import useMounted from 'hooks/useMounted';
   const activeChain: WalletChain = findWalletChainByName(activeChainName) || testnet;
 
 // Set allowed connectors
-const connectors: Connector[] = [freighter()];
+const connectors: Connector[] = [freighter(), xbull()];
 
 export default function MySorobanReactProvider({ children }: { children: React.ReactNode }) {
   const mounted = useMounted();
