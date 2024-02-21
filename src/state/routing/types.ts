@@ -235,17 +235,7 @@ export type InterfaceTrade = {
   inputAmount: CurrencyAmount | undefined;
   outputAmount: CurrencyAmount | undefined;
   tradeType: TradeType | undefined;
-  swaps: {
-    inputAmount: CurrencyAmount | undefined;
-    outputAmount: CurrencyAmount | undefined;
-    route: {
-      input: TokenType | undefined;
-      output: TokenType | undefined;
-      pairs: {
-        pairAddress: string | undefined;
-      }[];
-    };
-  }[];
+  path: string[] | undefined;
   [x: string]: any;
 };
 

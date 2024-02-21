@@ -33,8 +33,9 @@ export function TradeSummary({
   const getSwappedAmounts = () => {
     let input = '0';
     let output = '0';
-    if (swapResult && swapResult?.switchValues?.length === 2) {
-      [input, output] = swapResult?.switchValues;
+    if (swapResult && swapResult?.switchValues) {
+      input = swapResult?.switchValues?.[0];
+      output = swapResult?.switchValues?.[swapResult?.switchValues?.length - 1];
     } else {
       input = trade?.inputAmount?.value ?? '0';
       output = trade?.outputAmount?.value ?? '0';

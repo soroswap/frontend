@@ -1,19 +1,21 @@
-import { Modal, styled } from '@mui/material';
+import { Box, CircularProgress, Modal, styled } from '@mui/material';
 import { setTrustline } from '@soroban-react/contracts';
 import { useSorobanReact } from '@soroban-react/core';
+import { ButtonPrimary } from 'components/Buttons/Button';
+import { WalletButton } from 'components/Buttons/WalletButton';
 import { AutoColumn } from 'components/Column';
-import ConfirmSwapModal from 'components/Swap/ConfirmSwapModal';
+import ConfirmSwapModal, { useConfirmModalState } from 'components/Swap/ConfirmSwapModal';
 import SwapDetailsDropdown from 'components/Swap/SwapDetailsDropdown';
 import { ButtonText } from 'components/Text';
 import { TransactionFailedContent } from 'components/TransactionConfirmationModal';
 import { AppContext, SnackbarIconType } from 'contexts';
+import { resetRouterSdkCache } from 'functions/generateRoute';
 import { sendNotification } from 'functions/sendNotification';
 import { getClassicStellarAsset } from 'helpers/address';
 import { formatTokenAmount } from 'helpers/format';
 import { requiresTrustline } from 'helpers/stellar';
 import { relevantTokensType } from 'hooks';
 import { useToken } from 'hooks/tokens/useToken';
-import useGetReservesByPair from 'hooks/useGetReservesByPair';
 import { useSwapCallback } from 'hooks/useSwapCallback';
 import useSwapMainButton from 'hooks/useSwapMainButton';
 import { TokenType } from 'interfaces';
@@ -35,8 +37,6 @@ import { opacify } from 'themes/utils';
 import SwapCurrencyInputPanel from '../CurrencyInputPanel/SwapCurrencyInputPanel';
 import SwapHeader from './SwapHeader';
 import { ArrowWrapper, SwapWrapper } from './styleds';
-import { ButtonPrimary } from 'components/Buttons/Button';
-import { WalletButton } from 'components/Buttons/WalletButton';
 
 const SwapSection = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -232,24 +232,16 @@ export function SwapComponent({
     [trade, tradeState],
   );
 
-  const handleContinueToReview = useCallback(() => {
+  const handleContinueToReview = () => {
     setSwapState({
       tradeToConfirm: trade,
       swapError: undefined,
       showConfirm: true,
       swapResult: undefined,
     });
-  }, [trade]);
+  };
 
-  const handleConfirmDismiss = useCallback(() => {
-    setSwapState((currentState) => ({ ...currentState, showConfirm: false }));
-    // If there was a swap, we want to clear the input
-    if (swapResult) {
-      onUserInput(Field.INPUT, '');
-    }
-  }, [onUserInput, swapResult]);
-
-  const swapCallback = useSwapCallback(
+  const { doSwap: swapCallback } = useSwapCallback(
     trade,
     // swapFiatValues,
     // allowedSlippage,
@@ -317,11 +309,6 @@ export function SwapComponent({
   const priceImpactSeverity = 2; //IF is < 2 it shows Swap anyway button in red
   const showPriceImpactWarning = false;
 
-  const { reserves } = useGetReservesByPair({
-    baseAddress: currencies[Field.INPUT]?.address,
-    otherAddress: currencies[Field.OUTPUT]?.address,
-  });
-
   const { getMainButtonText, isMainButtonDisabled, handleMainButtonClick, getSwapValues } =
     useSwapMainButton({
       currencies,
@@ -329,7 +316,7 @@ export function SwapComponent({
       formattedAmounts,
       routeNotFound,
       onSubmit: handleContinueToReview,
-      reserves,
+      trade,
     });
 
   useEffect(() => {
@@ -367,6 +354,27 @@ export function SwapComponent({
     checkTrustline();
   }, [sorobanContext, swapCallback, trade]);
 
+  const useConfirmModal = useConfirmModalState({
+    trade: trade!,
+    allowedSlippage,
+    onSwap: handleSwap,
+    onSetTrustline: handleTrustline,
+    onCurrencySelection,
+    trustline: needTrustline,
+  });
+
+  const handleConfirmDismiss = useCallback(() => {
+    setSwapState((currentState) => ({ ...currentState, showConfirm: false }));
+    // If there was a swap, we want to clear the input
+    if (swapResult) {
+      onUserInput(Field.INPUT, '');
+    }
+
+    resetRouterSdkCache();
+
+    useConfirmModal.resetStates();
+  }, [onUserInput, swapResult, useConfirmModal]);
+
   return (
     <>
       <SwapWrapper>
@@ -381,9 +389,10 @@ export function SwapComponent({
             <TransactionFailedContent onDismiss={() => setTxError(false)} />
           </div>
         </Modal>
-        {trade && showConfirm && (
+        {(trade || routeIsLoading) && showConfirm && (
           <ConfirmSwapModal
-            trade={trade}
+            useConfirmModal={useConfirmModal}
+            trade={trade!}
             inputCurrency={inputCurrency}
             originalTrade={tradeToConfirm}
             onAcceptChanges={() => null} //handleAcceptChanges}
@@ -418,11 +427,7 @@ export function SwapComponent({
                 independentField === Field.OUTPUT ? <span>From (at most)</span> : <span>From</span>
               }
               // disabled={disableTokenInputs}
-              value={
-                sorobanContext?.address && getSwapValues().insufficientLiquidity
-                  ? '0'
-                  : formattedAmounts[Field.INPUT]
-              }
+              value={formattedAmounts[Field.INPUT]}
               showMaxButton={showMaxButton}
               onUserInput={handleTypeInput}
               onMax={(maxBalance) => handleTypeInput(maxBalance.toString())}
@@ -434,7 +439,7 @@ export function SwapComponent({
               loading={independentField === Field.OUTPUT && routeIsSyncing}
               currency={currencies[Field.INPUT] ?? null}
               id={'swap-input'}
-              disableInput={getSwapValues().noLiquidity || getSwapValues().noCurrencySelected}
+              disableInput={getSwapValues().noCurrencySelected}
             />
           </SwapSection>
           <ArrowWrapper clickable={true}>
@@ -474,13 +479,12 @@ export function SwapComponent({
                 //showCommonBases
                 //id={InterfaceSectionName.CURRENCY_OUTPUT_PANEL}
                 loading={independentField === Field.INPUT && routeIsSyncing}
-                disableInput={getSwapValues().noLiquidity || getSwapValues().noCurrencySelected}
+                disableInput={getSwapValues().noCurrencySelected}
               />
             </OutputSwapSection>
           </div>
           {showDetailsDropdown && !getSwapValues().insufficientLiquidity && (
             <SwapDetailsDropdown
-              noLiquidity={getSwapValues().noLiquidity}
               trade={trade}
               syncing={routeIsSyncing}
               loading={routeIsLoading}
@@ -489,10 +493,20 @@ export function SwapComponent({
           )}
           {/* {showPriceImpactWarning && <PriceImpactWarning priceImpact={largerPriceImpact} />} */}
           <div>
-            {sorobanContext.address ? (
-                <ButtonPrimary disabled={isMainButtonDisabled()} onClick={handleMainButtonClick}>
+            {sorobanContext.address ? (  
+              <ButtonPrimary
+                disabled={isMainButtonDisabled() || routeIsLoading}
+                onClick={handleMainButtonClick}
+                sx={{ height: '64px' }}
+              >
                 <ButtonText fontSize={20} fontWeight={600}>
-                  {getMainButtonText()}
+                  {routeIsLoading ? (
+                    <Box display="flex" alignItems="center">
+                      <CircularProgress size="24px" />
+                    </Box>
+                  ) : (
+                    getMainButtonText()
+                  )}
                 </ButtonText>
               </ButtonPrimary>
             ):(
