@@ -5,6 +5,8 @@ import { ButtonLight, ButtonPrimary } from 'components/Buttons/Button';
 import { ConnectorsDropdown } from 'components/Buttons/ConnectorsDropdown';
 import { AppContext } from 'contexts';
 import React, { useContext, useEffect, useState } from 'react';
+import { xbull } from '@soroban-react/xbull';
+import { freighter } from '@soroban-react/freighter';
 
 import * as Bowser from 'bowser';
 
