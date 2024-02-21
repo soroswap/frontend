@@ -29,8 +29,8 @@ describe('Swap Page GUI', ()=>{
         const token_selectors = await screen.findAllByTestId('Swap__Panel__Selector')
         expect(token_selectors.length).toBe(2)
     })
-    test('The connect wallet button exists', async ()=>{
-        const connect_button = await screen.findByText('Connect Wallet')
+    test('The wallet button exists', async ()=>{
+        const connect_button = await screen.findByText('Install Freighter')
         expect(connect_button).toBeDefined()
     })
 })

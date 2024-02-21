@@ -4,6 +4,7 @@ import { SorobanContextType, useSorobanReact } from '@soroban-react/core';
 import { AppContext } from 'contexts';
 import React, { useContext, useEffect, useRef } from 'react';
 import { shortenAddress } from '../../helpers/address';
+import { WalletButton } from 'components/Buttons/WalletButton';
 
 export const HeaderChip = ({
   label,
@@ -72,16 +73,17 @@ export default function ProfileSection() {
   return (
     <Box display="flex" gap="8px">
       {!isMobile && <ActiveChainHeaderChip />}
-      <HeaderChip
-        label={
-          sorobanContext.address ? (
-            <div>{shortenAddress(sorobanContext.address ?? '')}</div>
-          ) : (
-            <div>Connect wallet</div>
-          )
-        }
-        onClick={handleClick}
-      />
+      {(sorobanContext.address ? (
+        <HeaderChip
+          label={
+              <div>{shortenAddress(sorobanContext.address ?? '')}</div>
+          }
+          onClick={()=>{console.log('Current address: ' + sorobanContext.address)}}
+          isSmall={isMobile}
+        />
+      ):(
+        <WalletButton style={{whiteSpace:'nowrap', overflow: 'hidden', textOverflow: 'ellipsis'}}/>
+      ))}
     </Box>
   );
 }
