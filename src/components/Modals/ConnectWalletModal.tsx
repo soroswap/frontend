@@ -1,4 +1,4 @@
-import { useContext, useState } from 'react';
+import { useContext, useState, useEffect } from 'react';
 
 import { Box, Modal, useMediaQuery } from '@mui/material';
 import { styled, useTheme } from '@mui/material/styles';
@@ -10,6 +10,10 @@ import freighterLogoWhite from '../../assets/svg/FreighterWalletWhite.svg';
 import ModalBox from './ModalBox';
 import { ButtonPrimary } from 'components/Buttons/Button';
 import { AlertCircle } from 'react-feather';
+
+import * as Bowser from 'bowser';
+import { isConnected } from "@stellar/freighter-api";
+
 
 const Title = styled('div')`
   font-size: 24px;
@@ -56,12 +60,77 @@ const FooterText = styled('div')<{ isMobile: boolean }>`
 
 const ConnectWalletContent = ({
   isMobile,
-  handleClick,
+  wallets,
+
 }: {
   isMobile: boolean;
-  handleClick: () => Promise<void>;
+  wallets?: any[];
+
 }) => {
   const theme = useTheme();
+  const { ConnectWalletModal } = useContext(AppContext);
+  const { setConnectWalletModalOpen } = ConnectWalletModal;
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const sorobanContext = useSorobanReact();
+  const {setActiveConnectorAndConnect} = sorobanContext;
+  const [walletsStatus, setWalletsStatus] = useState<any[]>([{name: 'freighter', isInstalled: false}, {name: 'xbull', isInstalled: false}]);
+  const browser = Bowser.getParser(window.navigator.userAgent).getBrowserName()
+
+  const installWallet = (wallet: any) => {
+    if (wallet.id === 'freighter') {
+      switch (browser) {
+        case 'Firefox':
+            window.open('https://addons.mozilla.org/en-US/firefox/addon/freighter/', '_blank');
+            break;
+        default: 
+            window.open('https://chromewebstore.google.com/detail/freighter/bcacfldlkkdogcmkkibnjlakofdplcbk', '_blank');
+            break;
+      }
+    } else if (wallet.id === 'xbull') {
+      switch (browser) {
+        case 'Firefox':
+            window.open('https://addons.mozilla.org/es/firefox/addon/xbull-wallet/', '_blank');
+            break;
+        default: 
+            window.open('https://chromewebstore.google.com/detail/xbull-wallet/omajpeaffjgmlpmhbfdjepdejoemifpe', '_blank');
+            break;
+      }
+    }
+    setTimeout(() => {
+      window.location.reload();
+    }, 15000);
+  }
+
+  const handleClick = (wallet: any) => {
+    const isWalletInstalled = walletsStatus.filter((walletStatus) => walletStatus.name === wallet.id)[0].isInstalled;
+    if (isWalletInstalled) {
+      setConnectWalletModalOpen(false);
+      setActiveConnectorAndConnect && setActiveConnectorAndConnect(wallet);
+    } else {
+      installWallet(wallet);
+    }
+  }
+
+  useEffect(() => {
+    const newWalletsStatus = walletsStatus.map(async (walletStatus) => {
+      if (walletStatus.name === 'freighter') {
+        const connected = await isConnected();
+        return { name: walletStatus.name, isInstalled: connected };
+      }
+      if (walletStatus.name === 'xbull') {
+        if ((window as any).xBullSDK) {
+          return { name: walletStatus.name, isInstalled: true };
+        }
+      }
+      return walletStatus;
+    });
+  
+    Promise.all(newWalletsStatus).then((updatedWalletsStatus) => {
+      setWalletsStatus(updatedWalletsStatus);
+    });
+
+  }, []);
+
   return (
     <ModalBox>
       <ContentWrapper isMobile={isMobile}>
@@ -70,19 +139,25 @@ const ConnectWalletContent = ({
           Choose how you want to connect.{' '}
           <span>If you don’t have a wallet, you can select a provider and create one.</span>
         </Subtitle>
-        <WalletBox onClick={() => handleClick()}>
-          <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+        {wallets?.map((wallet, index) => (
+          <WalletBox key={index}  onClick={() => handleClick(wallet)}>
+            <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
             <Image
               src={theme.palette.mode == 'dark' ? freighterLogoWhite.src : freighterLogoBlack.src}
               width={24}
               height={24}
-              alt="Freighter Wallet"
-            />
-            <span>Freighter Wallet</span>
-          </div>
-          {/* TODO: If detected wallet show detected or if it has to be installed */}
-          <span style={{ color: theme.palette.custom.textQuaternary }}>Detected</span>
-        </WalletBox>
+              alt={wallet.name + ' Wallet'}
+            />              
+            <span>{wallet.name} Wallet</span>
+            </div>
+            {walletsStatus.filter((walletStatus) => walletStatus.name === wallet.id)[0].isInstalled ? 
+              (
+                <span style={{ color: theme.palette.custom.textQuaternary }}>Detected</span>
+              ) : (
+                <span style={{ color: theme.palette.warning.main }}>Install</span>
+              )}            
+          </WalletBox>))
+          }
       </ContentWrapper>
       {/* TODO: add link to terms of service */}
       <FooterText isMobile={isMobile}>
@@ -127,21 +202,13 @@ const ErrorContent = ({
 export default function ConnectWalletModal() {
   const theme = useTheme();
   const sorobanContext = useSorobanReact();
+  const supportedWallets = sorobanContext.connectors;
   const { ConnectWalletModal } = useContext(AppContext);
   const { isConnectWalletModalOpen, setConnectWalletModalOpen } = ConnectWalletModal;
 
   const isMobile = useMediaQuery(theme.breakpoints.down(1220));
 
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-
-  const handleClick = async () => {
-    try {
-      await sorobanContext.connect();
-      setConnectWalletModalOpen(false);
-    } catch (error: any) {
-      setErrorMessage(error?.message ?? 'Something went wrong, try again.');
-    }
-  };
 
   return (
     <Modal
@@ -161,7 +228,7 @@ export default function ConnectWalletModal() {
             errorMessage={errorMessage}
           />
         ) : (
-          <ConnectWalletContent isMobile={isMobile} handleClick={handleClick} />
+          <ConnectWalletContent isMobile={isMobile} wallets={supportedWallets} />
         )}
       </div>
     </Modal>
