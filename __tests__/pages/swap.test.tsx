@@ -30,7 +30,7 @@ describe('Swap Page GUI', ()=>{
         expect(token_selectors.length).toBe(2)
     })
     test('The wallet button exists', async ()=>{
-        const connect_button = await screen.findByText('Install Freighter')
+        const connect_button = await screen.findByText('Connect Wallet')
         expect(connect_button).toBeDefined()
     })
 })

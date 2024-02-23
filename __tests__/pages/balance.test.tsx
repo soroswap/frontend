@@ -19,7 +19,7 @@ describe('Balance Page GUI', ()=>{
         </Provider>
     )
     test('The connect wallet button exists', ()=>{
-        const connect_button = screen.getByText('Install Freighter')
+        const connect_button = screen.getByText('Connect Wallet')
         expect(connect_button).toBeDefined()
     })
 })
