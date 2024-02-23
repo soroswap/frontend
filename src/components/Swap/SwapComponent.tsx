@@ -1,19 +1,21 @@
 import { Box, CircularProgress, Modal, styled } from '@mui/material';
 import { setTrustline } from '@soroban-react/contracts';
 import { useSorobanReact } from '@soroban-react/core';
+import { ButtonPrimary } from 'components/Buttons/Button';
+import { WalletButton } from 'components/Buttons/WalletButton';
 import { AutoColumn } from 'components/Column';
 import ConfirmSwapModal, { useConfirmModalState } from 'components/Swap/ConfirmSwapModal';
 import SwapDetailsDropdown from 'components/Swap/SwapDetailsDropdown';
 import { ButtonText } from 'components/Text';
 import { TransactionFailedContent } from 'components/TransactionConfirmationModal';
 import { AppContext, SnackbarIconType } from 'contexts';
+import { resetRouterSdkCache } from 'functions/generateRoute';
 import { sendNotification } from 'functions/sendNotification';
 import { getClassicStellarAsset } from 'helpers/address';
 import { formatTokenAmount } from 'helpers/format';
 import { requiresTrustline } from 'helpers/stellar';
 import { relevantTokensType } from 'hooks';
 import { useToken } from 'hooks/tokens/useToken';
-import useGetReservesByPair from 'hooks/useGetReservesByPair';
 import { useSwapCallback } from 'hooks/useSwapCallback';
 import useSwapMainButton from 'hooks/useSwapMainButton';
 import { TokenType } from 'interfaces';
@@ -35,9 +37,11 @@ import { opacify } from 'themes/utils';
 import SwapCurrencyInputPanel from '../CurrencyInputPanel/SwapCurrencyInputPanel';
 import SwapHeader from './SwapHeader';
 import { ArrowWrapper, SwapWrapper } from './styleds';
+
 import { ButtonPrimary } from 'components/Buttons/Button';
 import { WalletButton } from 'components/Buttons/WalletButton';
 import { resetRouterSdkCache } from 'functions/generateRoute';
+
 
 const SwapSection = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -494,20 +498,20 @@ export function SwapComponent({
           )}
           {/* {showPriceImpactWarning && <PriceImpactWarning priceImpact={largerPriceImpact} />} */}
           <div>
-            {sorobanContext.address ? (
-                <ButtonPrimary
-              disabled={isMainButtonDisabled() || routeIsLoading}
-              onClick={handleMainButtonClick}
-              sx={{ height: '64px' }}
-            >
+            {sorobanContext.address ? (  
+              <ButtonPrimary
+                disabled={isMainButtonDisabled() || routeIsLoading}
+                onClick={handleMainButtonClick}
+                sx={{ height: '64px' }}
+              >
                 <ButtonText fontSize={20} fontWeight={600}>
                   {routeIsLoading ? (
-                  <Box display="flex" alignItems="center">
-                    <CircularProgress size="24px" />
-                  </Box>
-                ) : (
-                  getMainButtonText()
-                )}
+                    <Box display="flex" alignItems="center">
+                      <CircularProgress size="24px" />
+                    </Box>
+                  ) : (
+                    getMainButtonText()
+                  )}
                 </ButtonText>
               </ButtonPrimary>
             ):(
