@@ -13,6 +13,7 @@ import { AlertCircle } from 'react-feather';
 
 import * as Bowser from 'bowser';
 import { isConnected } from "@stellar/freighter-api";
+import { Connector } from '@soroban-react/types';
 
 
 const Title = styled('div')`
@@ -22,6 +23,23 @@ const Title = styled('div')`
 const Subtitle = styled('div')`
   font-size: 14px;
   font-weight: 500;
+  & > span {
+    display: block;
+  }
+`;
+
+const Text = styled('div')`
+  font-size: 12px;
+  font-weight: 300;
+  textWrap: wrap;
+  & > span {
+    display: block;
+  }
+`;
+const Info = styled('div')`
+  font-size: 10px;
+  font-weight: 100;
+  textWrap: wrap;
   & > span {
     display: block;
   }
@@ -61,11 +79,12 @@ const FooterText = styled('div')<{ isMobile: boolean }>`
 const ConnectWalletContent = ({
   isMobile,
   wallets,
+  onError
 
 }: {
   isMobile: boolean;
-  wallets?: any[];
-
+  wallets?: Connector[];
+  onError: any
 }) => {
   const theme = useTheme();
   const { ConnectWalletModal } = useContext(AppContext);
@@ -98,18 +117,32 @@ const ConnectWalletContent = ({
     }
     setTimeout(() => {
       window.location.reload();
-    }, 15000);
+    }, 30000);
   }
 
-  const handleClick = (wallet: any) => {
+  const connectWallet = async (wallet: Connector) => {
+    const connect = setActiveConnectorAndConnect && setActiveConnectorAndConnect(wallet)
+    try{
+      await connect
+      setConnectWalletModalOpen(false);
+    } catch(err) {
+      const errorMessage = `${err}`
+      if(errorMessage.includes(`Error: Wallet hasn't been set upp`)){
+        onError(`Error: Wallet hasn't been set up. Please set up your xBull wallet.`)
+      } else {
+        onError('Something went wrong. Please try again.')
+      }
+    }
+  }
+  const handleClick = async (wallet: Connector) => {
     const isWalletInstalled = walletsStatus.filter((walletStatus) => walletStatus.name === wallet.id)[0].isInstalled;
     if (isWalletInstalled) {
-      setConnectWalletModalOpen(false);
-      setActiveConnectorAndConnect && setActiveConnectorAndConnect(wallet);
+      connectWallet(wallet)
     } else {
       installWallet(wallet);
     }
   }
+
 
   useEffect(() => {
     const newWalletsStatus = walletsStatus.map(async (walletStatus) => {
@@ -124,7 +157,7 @@ const ConnectWalletContent = ({
       }
       return walletStatus;
     });
-  
+    
     Promise.all(newWalletsStatus).then((updatedWalletsStatus) => {
       setWalletsStatus(updatedWalletsStatus);
     });
@@ -185,11 +218,9 @@ const ErrorContent = ({
           <Title>Connection Error</Title>
         </Box>
         <Box>
-          <Box display="flex" alignItems="center" gap="8px" marginBottom="12px">
-            <Subtitle>{errorMessage}</Subtitle>
+          <Box display="flex" flexDirection="column" alignItems="center" gap="8px" marginBottom="12px">
+            <Text style={{textWrap: 'pretty'}}>{errorMessage}</Text>
           </Box>
-          <Subtitle>Please make sure you are connected to Stellar Testnet network </Subtitle>
-          <Subtitle>and that you allow use experimental APIs in Freighter</Subtitle>
           <ButtonPrimary onClick={handleClick} style={{ marginTop: 32 }}>
             Try again
           </ButtonPrimary>
@@ -210,6 +241,10 @@ export default function ConnectWalletModal() {
 
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
+  const handleError = (error: string) => {
+    setErrorMessage(error)
+  }
+
   return (
     <Modal
       open={isConnectWalletModalOpen}
@@ -228,7 +263,7 @@ export default function ConnectWalletModal() {
             errorMessage={errorMessage}
           />
         ) : (
-          <ConnectWalletContent isMobile={isMobile} wallets={supportedWallets} />
+          <ConnectWalletContent isMobile={isMobile} wallets={supportedWallets} onError={handleError}/>
         )}
       </div>
     </Modal>
