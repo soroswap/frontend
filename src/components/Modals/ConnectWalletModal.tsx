@@ -135,11 +135,15 @@ const ConnectWalletContent = ({
     }
   }
   const handleClick = async (wallet: Connector) => {
-    const isWalletInstalled = walletsStatus.filter((walletStatus) => walletStatus.name === wallet.id)[0].isInstalled;
-    if (isWalletInstalled) {
+    if(!isMobile){
+      const isWalletInstalled = walletsStatus.filter((walletStatus) => walletStatus.name === wallet.id)[0].isInstalled;
+      if (isWalletInstalled) {
+        connectWallet(wallet)
+      } else {
+        installWallet(wallet);
+      }
+    } else if (isMobile){
       connectWallet(wallet)
-    } else {
-      installWallet(wallet);
     }
   }
 
@@ -166,36 +170,76 @@ const ConnectWalletContent = ({
 
   return (
     <ModalBox>
-      <ContentWrapper isMobile={isMobile}>
-        <Title>Connect a wallet to continue</Title>
-        <Subtitle>
-          Choose how you want to connect.{' '}
-          <span>If you don’t have a wallet, you can select a provider and create one.</span>
-        </Subtitle>
-        {wallets?.map((wallet, index) => (
-          <WalletBox key={index}  onClick={() => handleClick(wallet)}>
-            <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
-            <Image
-              src={theme.palette.mode == 'dark' ? freighterLogoWhite.src : freighterLogoBlack.src}
-              width={24}
-              height={24}
-              alt={wallet.name + ' Wallet'}
-            />              
-            <span>{wallet.name} Wallet</span>
-            </div>
-            {walletsStatus.filter((walletStatus) => walletStatus.name === wallet.id)[0].isInstalled ? 
-              (
-                <span style={{ color: theme.palette.custom.textQuaternary }}>Detected</span>
-              ) : (
-                <span style={{ color: theme.palette.warning.main }}>Install</span>
-              )}            
-          </WalletBox>))
-          }
-      </ContentWrapper>
-      {/* TODO: add link to terms of service */}
-      <FooterText isMobile={isMobile}>
-        By connecting a wallet, you agree to Soroswap <span>Terms of Service</span>
-      </FooterText>
+      {!isMobile && (
+        <>
+          <ContentWrapper isMobile={isMobile}>
+            <Title>Connect a wallet to continue</Title>
+            <Subtitle>
+              Choose how you want to connect.{' '}
+              <span>If you don’t have a wallet, you can select a provider and create one.</span>
+            </Subtitle>
+            {wallets?.map((wallet, index) => (
+              <WalletBox key={index}  onClick={() => handleClick(wallet)}>
+                <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+                <Image
+                  src={theme.palette.mode == 'dark' ? freighterLogoWhite.src : freighterLogoBlack.src}
+                  width={24}
+                  height={24}
+                  alt={wallet.name + ' Wallet'}
+                />              
+                <span>{wallet.name} Wallet</span>
+                </div>
+                {walletsStatus.filter((walletStatus) => walletStatus.name === wallet.id)[0].isInstalled ? 
+                  (
+                    <span style={{ color: theme.palette.custom.textQuaternary }}>Detected</span>
+                  ) : (
+                    <span style={{ color: theme.palette.warning.main }}>Install</span>
+                  )}            
+              </WalletBox>))
+              }
+          </ContentWrapper>
+          {/* TODO: add link to terms of service */}
+          <FooterText isMobile={isMobile}>
+            By connecting a wallet, you agree to Soroswap <span>Terms of Service</span>
+          </FooterText>
+        </>
+        )
+      }
+      {isMobile && (
+        <>
+          <ContentWrapper isMobile={isMobile}>
+            <Title>Connect a wallet to continue</Title>
+            <Subtitle>
+              Choose how you want to connect.{' '}
+              <span>If you don’t have a wallet, you can select a provider and create one.</span>
+            </Subtitle>
+            {wallets?.map((wallet, index) => (
+              <WalletBox key={index}  onClick={() => handleClick(wallet)}>
+                <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+                <Image
+                  src={theme.palette.mode == 'dark' ? freighterLogoWhite.src : freighterLogoBlack.src}
+                  width={24}
+                  height={24}
+                  alt={wallet.name + ' Wallet'}
+                />              
+                <span>{wallet.name} Wallet</span>
+                </div>
+             {wallet.id == 'xbull' ? 
+                  (
+                    <span style={{ color: theme.palette.custom.textQuaternary }}>Connect</span>
+                  ) : (
+                    <span style={{ color: theme.palette.error.main }}>Not available</span>
+                  )}    
+              </WalletBox>))
+              }
+          </ContentWrapper>
+          {/* TODO: add link to terms of service */}
+          <FooterText isMobile={isMobile}>
+            By connecting a wallet, you agree to Soroswap <span>Terms of Service</span>
+          </FooterText>
+        </>
+        )
+      }
     </ModalBox>
   );
 };
@@ -237,7 +281,7 @@ export default function ConnectWalletModal() {
   const { ConnectWalletModal } = useContext(AppContext);
   const { isConnectWalletModalOpen, setConnectWalletModalOpen } = ConnectWalletModal;
 
-  const isMobile = useMediaQuery(theme.breakpoints.down(1220));
+  const isMobile = useMediaQuery(theme.breakpoints.down(768));
 
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
