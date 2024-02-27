@@ -6,8 +6,6 @@ import { SorobanContextType, useSorobanReact } from '@soroban-react/core';
 import { AppContext } from 'contexts';
 import { shortenAddress } from '../../helpers/address';
 import { WalletButton } from 'components/Buttons/WalletButton';
-import { a } from 'react-spring';
-
 
 const StyledMenu = styled((props: MenuProps) => (
   <Menu
@@ -95,7 +93,40 @@ export const HeaderChip = ({
     handleClose();
   }
 
-
+  const profileChipStyle = {
+    display: 'flex',
+    flexDirection: 'row',
+    height: isSmall ? 30 : 56,
+    padding: isSmall ? '14px 16px 18px 16px' : '16px 24px',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 0.5,
+    flexShrink: 0,
+    borderRadius: isSmall ? '4px' : '16px',
+    backgroundColor: '#8866DD',
+    '&[aria-controls="menu-list-grow"], &:hover': {
+      color: theme.palette.primary.light,
+      '& svg': {
+        stroke: theme.palette.primary.light,
+      },
+    },
+    '& .MuiChip-label': {
+      color: '#FFFFFF',
+      fontSize: isSmall ? 14 : 20,
+      fontFamily: 'Inter',
+      fontWeight: 600,
+      lineHeight: '140%',
+      padding: 0
+    },
+    ':hover': {
+      backgroundColor: '#8866DD',
+    },
+    '.MuiChip-action-icon':{
+      position:'relative',
+      top: isSmall ? '7px' :'5px',
+      left: '5px'
+    }
+  }
   return (
     <>
       {chains ? 
@@ -103,36 +134,9 @@ export const HeaderChip = ({
           <>
             <Chip
               onClick={handleDropdownClick}
-              sx={{
-                display: 'inline-flex',
-                height: isSmall ? 20 : 56,
-                padding: isSmall ? '4px 2px' : '16px 24px',
-                justifyContent: 'center',
-                alignItems: 'center',
-                gap: 0.5,
-                flexShrink: 0,
-                borderRadius: isSmall ? '4px' : '16px',
-                backgroundColor: '#8866DD',
-                '&[aria-controls="menu-list-grow"], &:hover': {
-                  color: theme.palette.primary.light,
-                  '& svg': {
-                    stroke: theme.palette.primary.light,
-                  },
-                },
-                '& .MuiChip-label': {
-                  color: '#FFFFFF',
-                  fontSize: isSmall ? 14 : 20,
-                  fontFamily: 'Inter',
-                  fontWeight: 600,
-                  lineHeight: '140%',
-                },
-                ':hover': {
-                  backgroundColor: '#8866DD',
-                },
-              }}
-              icon={<ArrowDropDownSharp />}
+              sx={profileChipStyle}
               label={label}
-              {...rest}
+              {...rest} 
             />
             
             <StyledMenu
@@ -160,33 +164,7 @@ export const HeaderChip = ({
         ( <>
             <Chip
               onClick={canDisconnect ? handleDropdownClick : onClick}
-              sx={{
-                display: 'inline-flex',
-                height: isSmall ? 20 : 56,
-                padding: isSmall ? '4px 2px' : '16px 24px',
-                justifyContent: 'center',
-                alignItems: 'center',
-                gap: 0.5,
-                flexShrink: 0,
-                borderRadius: isSmall ? '4px' : '16px',
-                backgroundColor: '#8866DD',
-                '&[aria-controls="menu-list-grow"], &:hover': {
-                  color: theme.palette.primary.light,
-                  '& svg': {
-                    stroke: theme.palette.primary.light,
-                  },
-                },
-                '& .MuiChip-label': {
-                  color: '#FFFFFF',
-                  fontSize: isSmall ? 14 : 20,
-                  fontFamily: 'Inter',
-                  fontWeight: 600,
-                  lineHeight: '140%',
-                },
-                ':hover': {
-                  backgroundColor: '#8866DD',
-                },
-              }}
+              sx={profileChipStyle}
               label={label}
               {...rest}
             />
@@ -221,7 +199,7 @@ export const ActiveChainHeaderChip = ({ isMobile }: { isMobile?: boolean }) => {
   return (
     <>
       {activeChain && chains && activeConnector?.id == 'xbull' && address ? 
-        <HeaderChip label={activeChain?.name} isSmall={isMobile} chains={chains}/>
+        <HeaderChip label={[activeChain?.name, <ArrowDropDownSharp className='MuiChip-action-icon'/>]} isSmall={isMobile} chains={chains}/>
       : 
         <HeaderChip label={activeChain?.name} isSmall={isMobile}/>
       }
@@ -246,7 +224,7 @@ export default function ProfileSection() {
       {(sorobanContext.address ? (
         <HeaderChip
           label={
-              <div>{shortenAddress(sorobanContext.address ?? '')}</div>
+              <div>{shortenAddress(sorobanContext.address ?? '')} <ArrowDropDownSharp className='MuiChip-action-icon'/></div>
           }
           onClick={()=>{console.log('Current address: ' + sorobanContext.address)}}
           isSmall={isMobile}
