@@ -1,11 +1,11 @@
 import { SorobanContextType } from '@soroban-react/core';
 import BigNumber from 'bignumber.js';
 import { tokenBalance } from 'hooks';
+import { findToken } from 'hooks/tokens/useToken';
 import { reservesBigNumber } from 'hooks/useReserves';
-import { TokenType } from 'interfaces';
+import { TokenMapType, TokenType } from 'interfaces';
 import { getPairsFromFactory } from './getPairs';
 import { getTotalLpShares } from './getTotalLpShares';
-import { getToken } from 'hooks/tokens/utils';
 
 export type LpTokensObj = {
   token_0: TokenType | undefined;
@@ -17,7 +17,7 @@ export type LpTokensObj = {
   reserve1: BigNumber | undefined;
 };
 
-export async function getLpTokens(sorobanContext: SorobanContextType) {
+export async function getLpTokens(sorobanContext: SorobanContextType, tokensAsMap: TokenMapType) {
   if (!sorobanContext.activeChain) return;
 
   // const pairs = await getPairs(sorobanContext); // This one uses pairs from the API
@@ -33,8 +33,8 @@ export async function getLpTokens(sorobanContext: SorobanContextType) {
     );
 
     if (pairLpTokens != 0) {
-      const token_0 = await getToken(sorobanContext, element.token_a_address);
-      const token_1 = await getToken(sorobanContext, element.token_b_address);
+      const token_0 = await findToken(element.token_a_address, tokensAsMap, sorobanContext);
+      const token_1 = await findToken(element.token_b_address, tokensAsMap, sorobanContext);
       const totalShares = await getTotalLpShares(element.pair_address, sorobanContext);
       const reservesResponse = await reservesBigNumber(element.pair_address, sorobanContext);
 

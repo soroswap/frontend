@@ -3,6 +3,7 @@ import { TxResponse } from '@soroban-react/contracts';
 import { useSorobanReact } from '@soroban-react/core';
 import BigNumber from 'bignumber.js';
 import { ButtonError, ButtonLight } from 'components/Buttons/Button';
+import { WalletButton } from 'components/Buttons/WalletButton';
 import { DarkGrayCard } from 'components/Card';
 import { AutoColumn, ColumnCenter } from 'components/Column';
 import CurrencyInputPanel from 'components/CurrencyInputPanel';
@@ -379,9 +380,7 @@ export default function AddLiquidityComponent({
             // showCommonBases
           />
           {!sorobanContext.address ? (
-            <ButtonLight onClick={() => setConnectWalletModalOpen(true)}>
-              <>Connect Wallet</>
-            </ButtonLight>
+            <WalletButton/>
           ) : (
             <AutoColumn gap="md">
               <ButtonError

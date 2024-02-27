@@ -13,6 +13,7 @@ import { InterfaceTrade, TradeType } from 'state/routing/types';
 import { useUserSlippageToleranceWithDefault } from 'state/user/hooks';
 import * as StellarSdk from 'stellar-sdk';
 import { RouterMethod, useRouterCallback } from './useRouterCallback';
+import { useSWRConfig } from 'swr';
 
 // Returns a function that will execute a swap, if the parameters are all valid
 // and the user has approved the slippage adjusted input amount for the trade
@@ -98,9 +99,11 @@ export function useSwapCallback(
   const routerCallback = useRouterCallback();
   const allowedSlippage = useUserSlippageToleranceWithDefault(DEFAULT_SLIPPAGE_INPUT_VALUE);
 
-  const doSwap = async (simulation?: boolean): Promise<
-    SuccessfullSwapResponse | StellarSdk.SorobanRpc.Api.GetTransactionResponse
-  > => {
+  const { mutate } = useSWRConfig();
+
+  const doSwap = async (
+    simulation?: boolean,
+  ): Promise<SuccessfullSwapResponse | StellarSdk.SorobanRpc.Api.GetTransactionResponse> => {
     if (!trade) throw new Error('missing trade');
     if (!address || !activeChain) throw new Error('wallet must be connected to swap');
     if (!trade.tradeType) throw new Error('tradeType must be defined');
@@ -132,12 +135,10 @@ export function useSwapCallback(
     //     to: Address,
     //     deadline: u64,
     // ) -> Vec<i128>;
-    const pathAddresses = [
-      new StellarSdk.Address(trade.inputAmount?.currency.address as string),
-      new StellarSdk.Address(trade.outputAmount?.currency.address as string),
-    ];
 
-    const pathScVal = StellarSdk.nativeToScVal(pathAddresses);
+    const path = trade.path?.map((address) => new StellarSdk.Address(address));
+
+    const pathScVal = StellarSdk.nativeToScVal(path);
 
     const args = [
       amount0ScVal,
@@ -155,13 +156,14 @@ export function useSwapCallback(
       )) as StellarSdk.SorobanRpc.Api.GetTransactionResponse;
 
       //if it is a simulation should return the result
-      if(simulation) return result
+      if (simulation) return result;
 
       if (result.status !== StellarSdk.SorobanRpc.Api.GetTransactionStatus.SUCCESS) throw result;
 
       const switchValues: string[] = scValToJs(result.returnValue!);
 
-      const [currencyA, currencyB] = switchValues;
+      const currencyA = switchValues?.[0];
+      const currencyB = switchValues?.[switchValues?.length - 1];
 
       const notificationMessage = `${formatTokenAmount(currencyA ?? '0')} ${trade?.inputAmount
         ?.currency.symbol} for ${formatTokenAmount(currencyB ?? '0')} ${trade?.outputAmount
@@ -175,5 +177,5 @@ export function useSwapCallback(
     }
   };
 
-  return doSwap;
+  return { doSwap, isLoading: trade?.isLoading };
 }

@@ -60,8 +60,8 @@ export default function SwapModalFooter({
   fiatValueInput: { data?: number; isLoading: boolean };
   fiatValueOutput: { data?: number; isLoading: boolean };
   showAcceptChanges: boolean;
-    onAcceptChanges: () => void;
-  trustline: boolean
+  onAcceptChanges: () => void;
+  trustline: boolean;
 }) {
   const theme = useTheme();
   // const transactionDeadlineSecondsSinceEpoch = useTransactionDeadline()?.toNumber() // in seconds since epoch
@@ -93,9 +93,13 @@ export default function SwapModalFooter({
     ).then((resp) => {
       setPriceImpact(twoDecimalsPercentage(resp.toString()));
     });
-
-
-  }, [trade?.inputAmount?.currency, trade.outputAmount?.currency, trade?.inputAmount?.value, trade.tradeType, reserves]);
+  }, [
+    trade?.inputAmount?.currency,
+    trade.outputAmount?.currency,
+    trade?.inputAmount?.value,
+    trade.tradeType,
+    reserves,
+  ]);
 
   const getSwapValues = () => {
     if (!trade || !trade.tradeType) return { formattedAmount0: '0', formattedAmount1: '0' };

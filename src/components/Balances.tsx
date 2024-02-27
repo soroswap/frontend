@@ -5,6 +5,7 @@ import { useMintTestToken } from 'hooks/useMintTestToken';
 import { TokenType } from 'interfaces';
 import { useContext, useState } from 'react';
 import { ButtonPrimary } from './Buttons/Button';
+import { WalletButton } from './Buttons/WalletButton';
 import { MintCustomToken } from './MintCustomToken';
 import BalancesTable from './BalancesTable/BalancesTable';
 
@@ -75,12 +76,7 @@ export function Balances() {
             {"Your test token's balance:"}
           </Typography>
           <Typography gutterBottom>Connect your wallet to see your test tokens balances</Typography>
-          <ButtonPrimary
-            onClick={() => setConnectWalletModalOpen(true)}
-            style={{ marginTop: '24px' }}
-          >
-            Connect Wallet
-          </ButtonPrimary>
+          <WalletButton/>
         </>
       ) : (
         <>
