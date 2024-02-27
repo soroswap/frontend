@@ -25,7 +25,10 @@ const Banner = ({ show, setShow }: Props) => {
       alignItems="center"
       justifyContent="center"
       paddingRight={isMobile ? '35px' : '0px'}
-      sx={{ backgroundColor: theme.palette.customBackground.accentAction }}
+      sx={{ 
+        backgroundColor: theme.palette.customBackground.accentAction, 
+        minWidth: '100vw' 
+      }}
     >
       <Typography fontSize="14px" textAlign="center" color="white">
         Soroswap.Finance is currently working on Testnet. Click
