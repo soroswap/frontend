@@ -199,7 +199,7 @@ export const ActiveChainHeaderChip = ({ isMobile }: { isMobile?: boolean }) => {
   return (
     <>
       {activeChain && chains && activeConnector?.id == 'xbull' && address ? 
-        <HeaderChip label={[activeChain?.name, <ArrowDropDownSharp className='MuiChip-action-icon'/>]} isSmall={isMobile} chains={chains}/>
+        <HeaderChip label={[activeChain?.name, <ArrowDropDownSharp key={'action-icon'} className='MuiChip-action-icon'/>]} isSmall={isMobile} chains={chains}/>
       : 
         <HeaderChip label={activeChain?.name} isSmall={isMobile}/>
       }
