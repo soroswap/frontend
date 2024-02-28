@@ -246,6 +246,14 @@
   resolved "https://registry.yarnpkg.com/@colors/colors/-/colors-1.5.0.tgz#bb504579c1cae923e6576a4f5da43d25f97bdbd9"
   integrity sha512-ooWCrlZP11i8GImSjTHYHLkvFDP48nS4+204nGb1RiX/WXYHmJA2III9/e2DWVabCESdW7hBAEzHRqUn9OUVvQ==
 
+"@creit-tech/xbull-wallet-connect@github:Creit-Tech/xBull-Wallet-Connect":
+  version "0.2.0"
+  resolved "https://codeload.github.com/Creit-Tech/xBull-Wallet-Connect/tar.gz/a93e2e0d97c61bbd83fedcca0c71feef9f28b2d3"
+  dependencies:
+    rxjs "^7.5.5"
+    tweetnacl "^1.0.3"
+    tweetnacl-util "^0.15.1"
+
 "@cspotcode/source-map-support@^0.8.0":
   version "0.8.1"
   resolved "https://registry.yarnpkg.com/@cspotcode/source-map-support/-/source-map-support-0.8.1.tgz#00629c35a688e05a88b1cda684fb9d5e73f000a1"
@@ -1436,67 +1444,91 @@
   resolved "https://registry.yarnpkg.com/@sinonjs/text-encoding/-/text-encoding-0.7.2.tgz#5981a8db18b56ba38ef0efb7d995b12aa7b51918"
   integrity sha512-sXXKG+uL9IrKqViTtao2Ws6dy0znu9sOaP1di/jKGW1M6VssO8vlpXCQcpZ+jisQ1tTFAC5Jo/EOzFbggBagFQ==
 
-"@soroban-react/chains@8.0.1":
-  version "8.0.1"
-  resolved "https://registry.yarnpkg.com/@soroban-react/chains/-/chains-8.0.1.tgz#6546652b61632e892c01fb7d926c6da8109490ac"
-  integrity sha512-SsM1dQSqB7J8O7xyVZw7DIEtf7WITa1DkfWUiyhxjlkQz8Dk8ZgbUxXdoGodSLDT4/ZhdPmss1Mv4NjXMjnSDg==
+"@soroban-react/chains@^9.0.0":
+  version "9.0.0"
+  resolved "https://registry.yarnpkg.com/@soroban-react/chains/-/chains-9.0.0.tgz#84d486e91baed6f7bc9b07f78b0542fd61d50d27"
+  integrity sha512-AtGlqPJiZnCwWutWH0ihJhnt9ITfJ43YE01Kfp2szAOrlxpfu4qFXiwyN0GO3xveI8g8MZ9n8QH6v/w5aKFurQ==
   dependencies:
-    "@soroban-react/types" "^8.0.0"
+    "@soroban-react/types" "^9.0.0"
     stellar-sdk "11.1.0"
 
-"@soroban-react/connect-button@^8.0.0":
-  version "8.0.0"
-  resolved "https://registry.yarnpkg.com/@soroban-react/connect-button/-/connect-button-8.0.0.tgz#1a71f662d00f72e43f2b7d0b7be9a138a9852ae2"
-  integrity sha512-pMAVRscqIYGhoUq/ACyQnY4F0CcuNX0iuuw4z1d+ZM7GW+4kTOqxW86UKW0Mc07lXBP3rk3OXrkyEHLYyIlWNg==
+"@soroban-react/connect-button@^9.0.0":
+  version "9.0.0"
+  resolved "https://registry.yarnpkg.com/@soroban-react/connect-button/-/connect-button-9.0.0.tgz#dd32adaa781570b9a6c4a59bfa9d6162b33425e5"
+  integrity sha512-KC8m21XgJ09Y/u+K/Btpe+PkwvsqyYXrDw+06XctwOpqU/jhFZ74IEgUwMTwOXdgmZeBMAQDK417HLRn7J9Z3Q==
   dependencies:
-    "@soroban-react/core" "^8.0.0"
+    "@soroban-react/core" "^9.0.0"
 
-"@soroban-react/contracts@^8.1.1":
-  version "8.1.1"
-  resolved "https://registry.yarnpkg.com/@soroban-react/contracts/-/contracts-8.1.1.tgz#768892c4485770cb7e4ce0a8009a0c72c66ce649"
-  integrity sha512-5MJ0Hl6OGy5xnDWoictLHs5cCeAi68fAYiZPKiNyXn79KJU9re5F45mZ0q0RGaQgx7PCD+zIePGhyc5o4LypTw==
+"@soroban-react/contracts@^9.0.0":
+  version "9.0.0"
+  resolved "https://registry.yarnpkg.com/@soroban-react/contracts/-/contracts-9.0.0.tgz#83d2836877f8d0f15561377beb5ce4bc23a0e3b5"
+  integrity sha512-1N/DGRP5Ax/ns43a/KkBkUL8e1kANzVuUGLyTXDfKN6/Al0yf2yKK/1JZk0vclh6ZawwPdCJCVOn+gfWQ3neFA==
   dependencies:
-    "@soroban-react/core" "^8.0.0"
+    "@soroban-react/core" "^9.0.0"
     stellar-sdk "11.1.0"
 
-"@soroban-react/core@8.0.0", "@soroban-react/core@^8.0.0":
-  version "8.0.0"
-  resolved "https://registry.yarnpkg.com/@soroban-react/core/-/core-8.0.0.tgz#508308d5f5892afae0443b958a2cf8fb5d9297eb"
-  integrity sha512-xJ/1CaBEwQMS9r3heOKeQH0ch1EuG0De0wY8J1EAO3rKpigUAC1B3hhySp6bJzB+4YG22FhoM+3vesiYiTCPdA==
+"@soroban-react/core@^9.0.0":
+  version "9.0.0"
+  resolved "https://registry.yarnpkg.com/@soroban-react/core/-/core-9.0.0.tgz#378074b61951f59d007d12983fbbf389d84566ee"
+  integrity sha512-RUlo1L1XZ2QBwvie8GjUq8rYRloyBKX4VrlFku7EZ6CDdi8M1BLt/jN8z/WY1HLC/WCqKmC+0tafoYfESyO2FA==
   dependencies:
-    "@soroban-react/freighter" "^8.0.0"
-    "@soroban-react/types" "^8.0.0"
+    "@soroban-react/freighter" "^9.0.0"
+    "@soroban-react/types" "^9.0.0"
+    "@soroban-react/xbull" "^1.0.1"
     stellar-sdk "11.1.0"
 
-"@soroban-react/freighter@8.0.0", "@soroban-react/freighter@^8.0.0":
-  version "8.0.0"
-  resolved "https://registry.yarnpkg.com/@soroban-react/freighter/-/freighter-8.0.0.tgz#7a305724c1d7fdbd5c1490a4fdc49d1a140a600c"
-  integrity sha512-eJXz1Uh7C59XuUU6XiKh/0BSHKrNze/ib7eFhLtjiZ8FQWK5joVNZkhvyNo76+IwQ+VDtVg2KG8qdvcQPtYorw==
+"@soroban-react/freighter@^9.0.0":
+  version "9.0.0"
+  resolved "https://registry.yarnpkg.com/@soroban-react/freighter/-/freighter-9.0.0.tgz#f4dc50c222426bbc48b0e9996c5721769766e391"
+  integrity sha512-xrmYvaYYxdIWLZzg+d0IYby2RpJbSCTMGQnUsZTks9wcsUC+73vFc1mceNkZoHP/RFihjb6qyI/cM1JXVMIkXA==
   dependencies:
-    "@soroban-react/types" "^8.0.0"
+    "@soroban-react/types" "^9.0.0"
     "@stellar/freighter-api" "1.7.1"
 
-"@soroban-react/types@8.0.0", "@soroban-react/types@^8.0.0":
+"@soroban-react/types@8.0.0":
   version "8.0.0"
   resolved "https://registry.yarnpkg.com/@soroban-react/types/-/types-8.0.0.tgz#14cb25911d2d45e3448a0fc6c0b2a6ae16b4851e"
   integrity sha512-t8eohOlmb4LAD1e3bfI01KKK7oCcm468QKsKrD0fL67fnZYcx9K61tSCqwWEbFCWGMGPkwaOwI3sE/bYKKDMIQ==
 
-"@soroban-react/utils@^8.0.0":
-  version "8.0.0"
-  resolved "https://registry.yarnpkg.com/@soroban-react/utils/-/utils-8.0.0.tgz#811512e956388028d7029f7457e1afbe11c677bd"
-  integrity sha512-Ob648ow9pSlXrPsH/aIILVmeS5d4/3DCVyeqBzcmij5syJ4FwL5w98O5cFHDaJEWmw5HQJ4krPTR8TmrhQs9CQ==
+"@soroban-react/types@^9.0.0":
+  version "9.0.0"
+  resolved "https://registry.yarnpkg.com/@soroban-react/types/-/types-9.0.0.tgz#d53ab222137e35c69d72c625f6fce102031847f4"
+  integrity sha512-bc8YROuNcl/sQ7uj8ZfDBY/ZIqovupr/kuuIStLoOvI9OzOU3GMqj7eh2wq8G59PKUnECc5mB0VEZAPji/U6zg==
+
+"@soroban-react/utils@^9.0.0":
+  version "9.0.0"
+  resolved "https://registry.yarnpkg.com/@soroban-react/utils/-/utils-9.0.0.tgz#f899fb287440fdafcf809dc73cddb22ddeebb9b0"
+  integrity sha512-14mAUA3KN+zS6Fu3Q7BkFz3IVz5rPjpjHFS+Lxwh/uKLA1P4FjQ59gbLvs/acOBCBukSLrGSWVab1tP0C3+EzA==
   dependencies:
     bignumber.js "^9.1.1"
     stellar-sdk "11.1.0"
 
-"@soroban-react/wallet-data@8.0.0":
-  version "8.0.0"
-  resolved "https://registry.yarnpkg.com/@soroban-react/wallet-data/-/wallet-data-8.0.0.tgz#6a91c0ddc6c4e6fa9f6f3598b48094ad7811ac34"
-  integrity sha512-0DHtCoQrHmldWsAfsszgoDMD57ub75OYnfSuRs5cuG1GwXd3E5Be9HubS9OwjfhJ4QQW52zdfgY54ChqiY/30Q==
+"@soroban-react/wallet-data@^9.0.0":
+  version "9.0.0"
+  resolved "https://registry.yarnpkg.com/@soroban-react/wallet-data/-/wallet-data-9.0.0.tgz#c54f61557ff8dc103cf933481216059a8d971668"
+  integrity sha512-YBhBv8ALT/SccGvEahZ/weg5aOyS8bH/84dqayMe86Eg2z5s1pS257gH9He0PMo8aoU63V7iiym+KUXhJ2pztg==
   dependencies:
-    "@soroban-react/connect-button" "^8.0.0"
-    "@soroban-react/core" "^8.0.0"
-    "@soroban-react/types" "^8.0.0"
+    "@soroban-react/connect-button" "^9.0.0"
+    "@soroban-react/core" "^9.0.0"
+    "@soroban-react/types" "^9.0.0"
+    stellar-sdk "11.1.0"
+
+"@soroban-react/xbull@^1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@soroban-react/xbull/-/xbull-1.0.1.tgz#0468bf06e92d7d44c35265c42c93769f1066fe96"
+  integrity sha512-dk/qoF6CsRMgKWyO++woJmq5bTgo9ZCGBtGaNFOiljliQ7bX6MzvMoeZSwTvNNJZhL18AWpaiWmxCvv2bJJoQg==
+  dependencies:
+    "@creit-tech/xbull-wallet-connect" "github:Creit-Tech/xBull-Wallet-Connect"
+    "@soroban-react/types" "8.0.0"
+    stellar-sdk "11.1.0"
+
+"@soroban-react/xbull@^9.0.0":
+  version "9.0.0"
+  resolved "https://registry.yarnpkg.com/@soroban-react/xbull/-/xbull-9.0.0.tgz#2f63d346ba183dcc776e097d5f810aac8dfbef60"
+  integrity sha512-rJx6kvQmh7QSLgxKgRST3H6ReUBEfopzuvufVVNZ534NZWW6R6IanpQ4P5t8wUvIJVrPY8+rJpZ4q2QQOS6uGQ==
+  dependencies:
+    "@creit-tech/xbull-wallet-connect" "github:Creit-Tech/xBull-Wallet-Connect"
+    "@soroban-react/types" "^9.0.0"
     stellar-sdk "11.1.0"
 
 "@stellar/freighter-api@1.7.1", "@stellar/freighter-api@^1.7.1":
@@ -1668,6 +1700,11 @@
   version "0.4.1"
   resolved "https://registry.yarnpkg.com/@types/cookie/-/cookie-0.4.1.tgz#bfd02c1f2224567676c1545199f87c3a861d878d"
   integrity sha512-XW/Aa8APYr6jSVVA1y/DEIZX0/GMKLEVekNG727R8cs56ahETkRAy/3DR7+fJyh7oUgGwNQaRfXCun0+KbWY7Q==
+
+"@types/estree@^1.0.0":
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/@types/estree/-/estree-1.0.5.tgz#a6ce3e556e00fd9895dd872dd172ad0d4bd687f4"
+  integrity sha512-/kYRxGDLWzHOB7q+wtSUQlFrtcdUccpfy+X+9iMBpHK8QLLhx2wIPYuS5DYtR9Wa/YlZAbIovy7qVdB1Aq6Lyw==
 
 "@types/http-cache-semantics@^4.0.2":
   version "4.0.4"
@@ -1916,46 +1953,47 @@
     "@types/babel__core" "^7.20.5"
     react-refresh "^0.14.0"
 
-"@vitest/expect@1.1.0":
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/@vitest/expect/-/expect-1.1.0.tgz#f58eef7de090ad65f30bb93ec54fa9f94c9d1d5d"
-  integrity sha512-9IE2WWkcJo2BR9eqtY5MIo3TPmS50Pnwpm66A6neb2hvk/QSLfPXBz2qdiwUOQkwyFuuXEUj5380CbwfzW4+/w==
+"@vitest/expect@1.3.1":
+  version "1.3.1"
+  resolved "https://registry.yarnpkg.com/@vitest/expect/-/expect-1.3.1.tgz#d4c14b89c43a25fd400a6b941f51ba27fe0cb918"
+  integrity sha512-xofQFwIzfdmLLlHa6ag0dPV8YsnKOCP1KdAeVVh34vSjN2dcUiXYCD9htu/9eM7t8Xln4v03U9HLxLpPlsXdZw==
   dependencies:
-    "@vitest/spy" "1.1.0"
-    "@vitest/utils" "1.1.0"
+    "@vitest/spy" "1.3.1"
+    "@vitest/utils" "1.3.1"
     chai "^4.3.10"
 
-"@vitest/runner@1.1.0":
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/@vitest/runner/-/runner-1.1.0.tgz#b3bf60f4a78f4324ca09811dd0f87b721a96b534"
-  integrity sha512-zdNLJ00pm5z/uhbWF6aeIJCGMSyTyWImy3Fcp9piRGvueERFlQFbUwCpzVce79OLm2UHk9iwaMSOaU9jVHgNVw==
+"@vitest/runner@1.3.1":
+  version "1.3.1"
+  resolved "https://registry.yarnpkg.com/@vitest/runner/-/runner-1.3.1.tgz#e7f96cdf74842934782bfd310eef4b8695bbfa30"
+  integrity sha512-5FzF9c3jG/z5bgCnjr8j9LNq/9OxV2uEBAITOXfoe3rdZJTdO7jzThth7FXv/6b+kdY65tpRQB7WaKhNZwX+Kg==
   dependencies:
-    "@vitest/utils" "1.1.0"
+    "@vitest/utils" "1.3.1"
     p-limit "^5.0.0"
     pathe "^1.1.1"
 
-"@vitest/snapshot@1.1.0":
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/@vitest/snapshot/-/snapshot-1.1.0.tgz#b9924e4303382b43bb2c31061b173e69a6fb3437"
-  integrity sha512-5O/wyZg09V5qmNmAlUgCBqflvn2ylgsWJRRuPrnHEfDNT6tQpQ8O1isNGgo+VxofISHqz961SG3iVvt3SPK/QQ==
+"@vitest/snapshot@1.3.1":
+  version "1.3.1"
+  resolved "https://registry.yarnpkg.com/@vitest/snapshot/-/snapshot-1.3.1.tgz#193a5d7febf6ec5d22b3f8c5a093f9e4322e7a88"
+  integrity sha512-EF++BZbt6RZmOlE3SuTPu/NfwBF6q4ABS37HHXzs2LUVPBLx2QoY/K0fKpRChSo8eLiuxcbCVfqKgx/dplCDuQ==
   dependencies:
     magic-string "^0.30.5"
     pathe "^1.1.1"
     pretty-format "^29.7.0"
 
-"@vitest/spy@1.1.0":
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/@vitest/spy/-/spy-1.1.0.tgz#7f40697e4fc217ac8c3cc89a865d1751b263f561"
-  integrity sha512-sNOVSU/GE+7+P76qYo+VXdXhXffzWZcYIPQfmkiRxaNCSPiLANvQx5Mx6ZURJ/ndtEkUJEpvKLXqAYTKEY+lTg==
+"@vitest/spy@1.3.1":
+  version "1.3.1"
+  resolved "https://registry.yarnpkg.com/@vitest/spy/-/spy-1.3.1.tgz#814245d46d011b99edd1c7528f5725c64e85a88b"
+  integrity sha512-xAcW+S099ylC9VLU7eZfdT9myV67Nor9w9zhf0mGCYJSO+zM2839tOeROTdikOi/8Qeusffvxb/MyBSOja1Uig==
   dependencies:
     tinyspy "^2.2.0"
 
-"@vitest/utils@1.1.0":
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/@vitest/utils/-/utils-1.1.0.tgz#d177a5f41bdb484bbb43c8d73a77ca782df068b5"
-  integrity sha512-z+s510fKmYz4Y41XhNs3vcuFTFhcij2YF7F8VQfMEYAAUfqQh0Zfg7+w9xdgFGhPf3tX3TicAe+8BDITk6ampQ==
+"@vitest/utils@1.3.1":
+  version "1.3.1"
+  resolved "https://registry.yarnpkg.com/@vitest/utils/-/utils-1.3.1.tgz#7b05838654557544f694a372de767fcc9594d61a"
+  integrity sha512-d3Waie/299qqRyHTm2DjADeTaNdNSVsnwHPWrs20JMpjh6eiVq7ggggweO8rc4arhf6rRkWuHKwvxGvejUXZZQ==
   dependencies:
     diff-sequences "^29.6.3"
+    estree-walker "^3.0.3"
     loupe "^2.3.7"
     pretty-format "^29.7.0"
 
@@ -2139,10 +2177,15 @@ acorn-jsx@^5.3.2:
   resolved "https://registry.yarnpkg.com/acorn-jsx/-/acorn-jsx-5.3.2.tgz#7ed5bb55908b3b2f1bc55c6af1653bada7f07937"
   integrity sha512-rq9s+JNhf0IChjtDXxllJ7g41oZk5SlXtp0LHwyA5cejwn7vKmKp4pPri6YEePv2PU65sAsegbXtIinmDFDXgQ==
 
-acorn-walk@^8.1.1, acorn-walk@^8.3.0:
+acorn-walk@^8.1.1:
   version "8.3.1"
   resolved "https://registry.yarnpkg.com/acorn-walk/-/acorn-walk-8.3.1.tgz#2f10f5b69329d90ae18c58bf1fa8fccd8b959a43"
   integrity sha512-TgUZgYvqZprrl7YldZNoa9OciCAyZR+Ejm9eXzKCmjsF5IKp/wgQ7Z/ZpjpGTIUPwrHQIcYeI8qDh4PsEwxMbw==
+
+acorn-walk@^8.3.2:
+  version "8.3.2"
+  resolved "https://registry.yarnpkg.com/acorn-walk/-/acorn-walk-8.3.2.tgz#7703af9415f1b6db9315d6895503862e231d34aa"
+  integrity sha512-cjkyv4OtNCIeqhHrfS81QWXoCBPExR/J62oyEqepVw8WaQeSqpW2uhuLPh1m9eWhDuOo/jUXVTlifvesOWp/4A==
 
 acorn@^8.10.0, acorn@^8.4.1, acorn@^8.9.0:
   version "8.11.2"
@@ -3803,6 +3846,13 @@ estraverse@^5.1.0, estraverse@^5.2.0, estraverse@^5.3.0:
   resolved "https://registry.yarnpkg.com/estraverse/-/estraverse-5.3.0.tgz#2eea5290702f26ab8fe5370370ff86c965d21123"
   integrity sha512-MMdARuVEQziNTeJD8DgMqmhwR11BRQ/cBP+pLtYdSTnf3MIO8fFeiINEbX36ZdNlfU/7A9f3gUw49B3oQsvwBA==
 
+estree-walker@^3.0.3:
+  version "3.0.3"
+  resolved "https://registry.yarnpkg.com/estree-walker/-/estree-walker-3.0.3.tgz#67c3e549ec402a487b4fc193d1953a524752340d"
+  integrity sha512-7RUKfXgSMMkzt6ZuXmqapOurLGPPfgj6l9uRZ7lRGolvk0y2yocc35LdcxKC5PQZdn2DMqioAQ2NoWcrTKmm6g==
+  dependencies:
+    "@types/estree" "^1.0.0"
+
 esutils@^2.0.2:
   version "2.0.3"
   resolved "https://registry.yarnpkg.com/esutils/-/esutils-2.0.3.tgz#74d2eb4de0b8da1293711910d50775b9b710ef64"
@@ -5083,6 +5133,11 @@ js-sha3@0.8.0:
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/js-tokens/-/js-tokens-4.0.0.tgz#19203fb59991df98e3a287050d4647cdeaf32499"
   integrity sha512-RdJUflcE3cUzKiMqQgsCu06FPu9UdIJO0beYbPhHN4k6apgJtifcoCtT9bcxOpYBtpD2kCM6Sbzg4CausW/PKQ==
+
+js-tokens@^8.0.2:
+  version "8.0.3"
+  resolved "https://registry.yarnpkg.com/js-tokens/-/js-tokens-8.0.3.tgz#1c407ec905643603b38b6be6977300406ec48775"
+  integrity sha512-UfJMcSJc+SEXEl9lH/VLHSZbThQyLpw1vLO1Lb+j4RWDvG3N2f7yj3PVQA3cmkTBNldJ9eFnM+xEXxHIXrYiJw==
 
 js-yaml@4.1.0, js-yaml@^4.1.0:
   version "4.1.0"
@@ -7435,16 +7490,19 @@ sodium-native@^4.0.1:
   dependencies:
     node-gyp-build "^4.6.0"
 
-soroswap-router-sdk@^1.1.6:
-  version "1.1.6"
-  resolved "https://registry.yarnpkg.com/soroswap-router-sdk/-/soroswap-router-sdk-1.1.6.tgz#a7ffde4a35abd08878c4a26b6241d5772c256419"
-  integrity sha512-v+eWAqmSRpPKjeThLdTJtPasoK3RdEn7pFABfBNZmElmYVv+uuveBVgjPeq9Ys93A1pOZv/OtO3jM7apUOTdsw==
+soroswap-router-sdk@^1.1.13:
+  version "1.1.13"
+  resolved "https://registry.yarnpkg.com/soroswap-router-sdk/-/soroswap-router-sdk-1.1.13.tgz#f397eda2585c5a3ba9610d636a735771b112359e"
+  integrity sha512-2ZuJQrLqPY4fUu+yzXrfqX/QakfMJOiLRfTZip6fWXEI60VL+wSJudy0L3yxAinzs5VVMtEf2v4dvz7kjiHhTQ==
   dependencies:
     "@ethersproject/address" "^5.7.0"
     "@ethersproject/logger" "^5.7.0"
     "@ethersproject/solidity" "^5.7.0"
+    "@soroban-react/contracts" "^9.0.0"
     axios "^1.6.5"
     big.js "^6.2.1"
+    bigint-conversion "^2.4.3"
+    bignumber.js "^9.1.2"
     bunyan "^1.8.15"
     decimal.js-light "^2.5.1"
     dotenv "^16.4.0"
@@ -7675,12 +7733,12 @@ strip-json-comments@3.1.1, strip-json-comments@^3.1.1:
   resolved "https://registry.yarnpkg.com/strip-json-comments/-/strip-json-comments-3.1.1.tgz#31f1281b3832630434831c310c01cccda8cbe006"
   integrity sha512-6fPc+R4ihwqP6N/aIv2f1gMH8lOVtWQHoqC4yK6oSDVVocumAsfCqjkXnqiYMhmMwS/mEHLp7Vehlt3ql6lEig==
 
-strip-literal@^1.3.0:
-  version "1.3.0"
-  resolved "https://registry.yarnpkg.com/strip-literal/-/strip-literal-1.3.0.tgz#db3942c2ec1699e6836ad230090b84bb458e3a07"
-  integrity sha512-PugKzOsyXpArk0yWmUwqOZecSO0GH0bPoctLcqNDH9J04pVW3lflYE0ujElBGTloevcxF5MofAOZ7C5l2b+wLg==
+strip-literal@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/strip-literal/-/strip-literal-2.0.0.tgz#5d063580933e4e03ebb669b12db64d2200687527"
+  integrity sha512-f9vHgsCWBq2ugHAkGMiiYY+AYG0D/cbloKKg0nhaaaSNsujdGIpVXCNsrJpCKr5M0f4aI31mr13UjY6GAuXCKA==
   dependencies:
-    acorn "^8.10.0"
+    js-tokens "^8.0.2"
 
 styled-jsx@5.1.1:
   version "5.1.1"
@@ -7798,10 +7856,10 @@ tinybench@^2.5.1:
   resolved "https://registry.yarnpkg.com/tinybench/-/tinybench-2.5.1.tgz#3408f6552125e53a5a48adee31261686fd71587e"
   integrity sha512-65NKvSuAVDP/n4CqH+a9w2kTlLReS9vhsAP06MWx+/89nMinJyB2icyl58RIcqCmIggpojIGeuJGhjU1aGMBSg==
 
-tinypool@^0.8.1:
-  version "0.8.1"
-  resolved "https://registry.yarnpkg.com/tinypool/-/tinypool-0.8.1.tgz#b6c4e4972ede3e3e5cda74a3da1679303d386b03"
-  integrity sha512-zBTCK0cCgRROxvs9c0CGK838sPkeokNGdQVUUwHAbynHFlmyJYj825f/oRs528HaIJ97lo0pLIlDUzwN+IorWg==
+tinypool@^0.8.2:
+  version "0.8.2"
+  resolved "https://registry.yarnpkg.com/tinypool/-/tinypool-0.8.2.tgz#84013b03dc69dacb322563a475d4c0a9be00f82a"
+  integrity sha512-SUszKYe5wgsxnNOVlBYO6IC+8VGWdVGZWAqUxp3UErNBtptZvWbwyUOyzNL59zigz2rCA92QiL3wvG+JDSdJdQ==
 
 tinyspy@^2.2.0:
   version "2.2.0"
@@ -7926,6 +7984,11 @@ tuf-js@^2.1.0:
     "@tufjs/models" "2.0.0"
     debug "^4.3.4"
     make-fetch-happen "^13.0.0"
+
+tweetnacl-util@^0.15.1:
+  version "0.15.1"
+  resolved "https://registry.yarnpkg.com/tweetnacl-util/-/tweetnacl-util-0.15.1.tgz#b80fcdb5c97bcc508be18c44a4be50f022eea00b"
+  integrity sha512-RKJBIj8lySrShN4w6i/BonWp2Z/uxwC3h4y7xsRrpP59ZboCd0GpEVsOnMDYLMmKBpYhb5TgHzZXy7wTfYFBRw==
 
 tweetnacl@^1.0.3:
   version "1.0.3"
@@ -8161,10 +8224,10 @@ validate-npm-package-name@^5.0.0:
   dependencies:
     builtins "^5.0.0"
 
-vite-node@1.1.0:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/vite-node/-/vite-node-1.1.0.tgz#0ebcb7398692e378954786dfba28e905e28a76b4"
-  integrity sha512-jV48DDUxGLEBdHCQvxL1mEh7+naVy+nhUUUaPAZLd3FJgXuxQiewHcfeZebbJ6onDqNGkP4r3MhQ342PRlG81Q==
+vite-node@1.3.1:
+  version "1.3.1"
+  resolved "https://registry.yarnpkg.com/vite-node/-/vite-node-1.3.1.tgz#a93f7372212f5d5df38e945046b945ac3f4855d2"
+  integrity sha512-azbRrqRxlWTJEVbzInZCTchx0X69M/XPTCz4H+TLvlTcR/xH/3hkRqhOakT41fMJCMzXTu4UvegkZiEoJAWvng==
   dependencies:
     cac "^6.7.14"
     debug "^4.3.4"
@@ -8192,18 +8255,17 @@ vite@^5.0.0:
   optionalDependencies:
     fsevents "~2.3.3"
 
-vitest@^1.1.0:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/vitest/-/vitest-1.1.0.tgz#47ba67c564aa137b53b0197d2a992908e7f5b04d"
-  integrity sha512-oDFiCrw7dd3Jf06HoMtSRARivvyjHJaTxikFxuqJjO76U436PqlVw1uLn7a8OSPrhSfMGVaRakKpA2lePdw79A==
+vitest@^1.3.1:
+  version "1.3.1"
+  resolved "https://registry.yarnpkg.com/vitest/-/vitest-1.3.1.tgz#2d7e9861f030d88a4669392a4aecb40569d90937"
+  integrity sha512-/1QJqXs8YbCrfv/GPQ05wAZf2eakUPLPa18vkJAKE7RXOKfVHqMZZ1WlTjiwl6Gcn65M5vpNUB6EFLnEdRdEXQ==
   dependencies:
-    "@vitest/expect" "1.1.0"
-    "@vitest/runner" "1.1.0"
-    "@vitest/snapshot" "1.1.0"
-    "@vitest/spy" "1.1.0"
-    "@vitest/utils" "1.1.0"
-    acorn-walk "^8.3.0"
-    cac "^6.7.14"
+    "@vitest/expect" "1.3.1"
+    "@vitest/runner" "1.3.1"
+    "@vitest/snapshot" "1.3.1"
+    "@vitest/spy" "1.3.1"
+    "@vitest/utils" "1.3.1"
+    acorn-walk "^8.3.2"
     chai "^4.3.10"
     debug "^4.3.4"
     execa "^8.0.1"
@@ -8212,11 +8274,11 @@ vitest@^1.1.0:
     pathe "^1.1.1"
     picocolors "^1.0.0"
     std-env "^3.5.0"
-    strip-literal "^1.3.0"
+    strip-literal "^2.0.0"
     tinybench "^2.5.1"
-    tinypool "^0.8.1"
+    tinypool "^0.8.2"
     vite "^5.0.0"
-    vite-node "1.1.0"
+    vite-node "1.3.1"
     why-is-node-running "^2.2.2"
 
 w3c-xmlserializer@^5.0.0:

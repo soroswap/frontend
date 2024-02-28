@@ -55,7 +55,7 @@
     "react-virtualized-auto-sizer": "^1.0.20",
     "react-window": "^1.8.9",
     "redux": "^4.2.1",
-    "soroswap-router-sdk": "^1.1.6",
+    "soroswap-router-sdk": "^1.1.13",
     "stellar-sdk": "11.1.0",
     "swr": "^2.2.0",
     "typescript": "5.3.3",
