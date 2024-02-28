@@ -36,7 +36,7 @@ export const useRouterSDK = () => {
         'NEXT_PUBLIC_SOROSWAP_BACKEND_URL and NEXT_PUBLIC_SOROSWAP_BACKEND_API_KEY must be set in the environment variables.',
       );
     }
-    const chainId = chainNameToId[sorobanContext.activeChain?.name ?? 'testnet'];
+    const chainId = chainNameToId[sorobanContext.activeChain?.name?.toLowerCase() ?? 'testnet'];
 
     return new Router(backendUrl, apiKey, 60, [Protocols.SOROSWAP], chainId);
   }, [sorobanContext.activeChain?.name]);
