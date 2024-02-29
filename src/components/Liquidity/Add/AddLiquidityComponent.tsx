@@ -74,7 +74,6 @@ export default function AddLiquidityComponent({
   const theme = useTheme();
   const userSlippage = useUserSlippageToleranceWithDefault(DEFAULT_SLIPPAGE_INPUT_VALUE);
   const { ConnectWalletModal } = useContext(AppContext);
-  const { isConnectWalletModalOpen, setConnectWalletModalOpen } = ConnectWalletModal;
 
   const router = useRouter();
 
@@ -250,25 +249,25 @@ export default function AddLiquidityComponent({
   const handleCurrencyASelect = useCallback(
     (currencyA: TokenType) => {
       const newCurrencyIdA = currencyA.address;
-      if (currencyIdB === undefined) {
-        router.push(`/liquidity/add/${newCurrencyIdA}`);
-      } else {
-        router.push(`/liquidity/add/${newCurrencyIdA}/${currencyIdB}`);
+      let newCurrencyIdB = currencyIdB;
+      if (currencyIdB === undefined || currencyIdB === newCurrencyIdA) {
+        newCurrencyIdB = undefined;
       }
+      router.push(`/liquidity/add/${newCurrencyIdA}/${newCurrencyIdB}`);
     },
-    [currencyIdB, router],
+    [currencyIdA, currencyIdB, router],
   );
 
   const handleCurrencyBSelect = useCallback(
     (currencyB: TokenType) => {
       const newCurrencyIdB = currencyB.address;
-      if (currencyIdA === undefined) {
-        router.push(`/liquidity/add/${newCurrencyIdB}`);
-      } else {
-        router.push(`/liquidity/add/${currencyIdA}/${newCurrencyIdB}`);
+      let newCurrencyIdA = currencyIdA;
+      if (currencyIdA === undefined || currencyIdA === newCurrencyIdB) {
+        newCurrencyIdA = undefined;
       }
+      router.push(`/liquidity/add/${newCurrencyIdA}/${newCurrencyIdB}`);
     },
-    [currencyIdA, router],
+    [currencyIdA, currencyIdB, router],
   );
 
   const pendingText = (
