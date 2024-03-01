@@ -30,19 +30,20 @@ export const useRouterSDK = () => {
   const sorobanContext = useSorobanReact();
   const { factory } = useFactory(sorobanContext);
 
+  const chainId = chainNameToId[sorobanContext.activeChain?.network?.toLowerCase() ?? 'testnet'];
+
   const router = useMemo(() => {
     if (!backendUrl || !apiKey) {
       throw new Error(
         'NEXT_PUBLIC_SOROSWAP_BACKEND_URL and NEXT_PUBLIC_SOROSWAP_BACKEND_API_KEY must be set in the environment variables.',
       );
     }
-    const chainId = chainNameToId[sorobanContext.activeChain?.name?.toLowerCase() ?? 'testnet'];
 
     return new Router(backendUrl, apiKey, 60, [Protocols.SOROSWAP], chainId);
-  }, [sorobanContext.activeChain?.name]);
+  }, [chainId]);
 
   const fromAddressToToken = (address: string) => {
-    return new Token(ChainId.TESTNET, address, 18);
+    return new Token(chainId, address, 18);
   };
 
   const fromAddressAndAmountToCurrencyAmount = (address: string, amount: string) => {
