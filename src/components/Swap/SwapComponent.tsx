@@ -8,7 +8,6 @@ import SwapDetailsDropdown from 'components/Swap/SwapDetailsDropdown';
 import { ButtonText } from 'components/Text';
 import { TransactionFailedContent } from 'components/TransactionConfirmationModal';
 import { AppContext, SnackbarIconType } from 'contexts';
-import { resetRouterSdkCache } from 'functions/generateRoute';
 import { sendNotification } from 'functions/sendNotification';
 import { getClassicStellarAsset } from 'helpers/address';
 import { formatTokenAmount } from 'helpers/format';
@@ -138,7 +137,7 @@ export function SwapComponent({
   }, [onCurrencySelection, prefilledToken]);
 
   const {
-    trade: { state: tradeState, trade },
+    trade: { state: tradeState, trade, resetRouterSdkCache },
     allowedSlippage,
     currencyBalances,
     parsedAmount,
@@ -372,7 +371,7 @@ export function SwapComponent({
     resetRouterSdkCache();
 
     useConfirmModal.resetStates();
-  }, [onUserInput, swapResult, useConfirmModal]);
+  }, [onUserInput, swapResult, useConfirmModal, resetRouterSdkCache]);
 
   return (
     <>
