@@ -7,9 +7,8 @@ import BigNumber from 'bignumber.js';
 import { AppContext, SnackbarIconType } from 'contexts';
 import { sendNotification } from 'functions/sendNotification';
 import { TokenType } from 'interfaces';
-import * as StellarSdk from 'stellar-sdk';import { bigNumberToI128 } from '../../helpers/utils';
-import { useKeys } from '../../hooks';
-import { scValToJs } from 'helpers/convert';
+import * as StellarSdk from 'stellar-sdk';
+import { bigNumberToI128 } from '../../helpers/utils';
 
 interface MintButtonProps {
   sorobanContext: SorobanContextType;
@@ -23,7 +22,7 @@ export function MintButton({ sorobanContext, token, amountToMint }: MintButtonPr
   const networkPassphrase = sorobanContext.activeChain?.networkPassphrase ?? '';
   const server = sorobanContext.server;
   const account = sorobanContext.address;
-  const { admin_public, admin_secret } = useKeys(sorobanContext);
+  const admin_account = StellarSdk.Keypair.fromSecret(process.env.NEXT_PUBLIC_ADMIN_SECRET as string);
 
   const mintTokens = async () => {
     setSubmitting(true);
@@ -37,7 +36,7 @@ export function MintButton({ sorobanContext, token, amountToMint }: MintButtonPr
     let adminSource, walletSource;
 
     try {
-      adminSource = await server?.getAccount(admin_public);
+      adminSource = await server?.getAccount(admin_account.publicKey());
     } catch (error) {
       alert('Your wallet or the token admin wallet might not be funded');
       setSubmitting(false);
@@ -68,7 +67,7 @@ export function MintButton({ sorobanContext, token, amountToMint }: MintButtonPr
         args: [new StellarSdk.Address(account).toScVal(), amountScVal],
         sorobanContext,
         signAndSend: true,
-        secretKey: admin_secret,
+        secretKey: admin_account.secret(),
       });
 
       if (result) {

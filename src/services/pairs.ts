@@ -1,11 +1,4 @@
 import axios from 'axios';
-import axiosInstance from './axios';
-
-export const fetchPairs = async () => {
-  const { data } = await axiosInstance.get('/api/pairs');
-
-  return data;
-};
 
 interface SubscribedPair {
   contractId: string;

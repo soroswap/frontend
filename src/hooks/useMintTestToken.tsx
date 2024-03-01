@@ -3,7 +3,6 @@ import { useSorobanReact } from '@soroban-react/core';
 import BigNumber from 'bignumber.js';
 import { SnackbarIconType } from 'contexts';
 import { bigNumberToI128 } from 'helpers/utils';
-import { useKeys } from 'hooks';
 import { TokenType } from 'interfaces';
 import { useCallback } from 'react';
 import * as StellarSdk from 'stellar-sdk';
@@ -17,7 +16,8 @@ interface MintTestTokenProps {
 
 export function useMintTestToken() {
   const sorobanContext = useSorobanReact();
-  const { admin_public, admin_secret } = useKeys(sorobanContext);
+  const admin_account = StellarSdk.Keypair.fromSecret(process.env.NEXT_PUBLIC_ADMIN_SECRET as string);
+
   const { tokens } = useApiTokens();
   const { notify } = useNotification();
 
@@ -34,7 +34,7 @@ export function useMintTestToken() {
       let adminSource;
 
       try {
-        adminSource = await server?.getAccount(admin_public);
+        adminSource = await server?.getAccount(admin_account.publicKey());
       } catch (error) {
         alert('Your wallet or the token admin wallet might not be funded');
         return;
@@ -59,7 +59,7 @@ export function useMintTestToken() {
             args: [new StellarSdk.Address(account).toScVal(), amountScVal],
             sorobanContext,
             signAndSend: true,
-            secretKey: admin_secret,
+            secretKey: admin_account.secret(),
             reconnectAfterTx: false,
           })) as StellarSdk.SorobanRpc.Api.GetTransactionResponse;
 
@@ -89,6 +89,6 @@ export function useMintTestToken() {
 
       sorobanContext.connect();
     },
-    [admin_public, admin_secret, sorobanContext, tokens, notify],
+    [admin_account, sorobanContext, tokens, notify],
   );
 }
