@@ -246,14 +246,18 @@ export default function AddLiquidityComponent({
     userSlippage,
   ]);
 
+  const baseRoute = `/liquidity/add/`;
+  
   const handleCurrencyASelect = useCallback(
     (currencyA: TokenType) => {
       const newCurrencyIdA = currencyA.address;
-      let newCurrencyIdB = currencyIdB;
-      if (currencyIdB === undefined || currencyIdB === newCurrencyIdA) {
-        newCurrencyIdB = undefined;
+      let path = `${newCurrencyIdA}/${currencyIdB}`;
+      if( currencyIdB === undefined || currencyIdB === newCurrencyIdA && currencyIdB === undefined) {
+        path = `${newCurrencyIdA}`;
+      } else if(currencyIdB === newCurrencyIdA){
+        path = `${newCurrencyIdA}/${currencyIdA}`;
       }
-      router.push(`/liquidity/add/${newCurrencyIdA}/${newCurrencyIdB}`);
+      router.push(baseRoute+path);
     },
     [currencyIdA, currencyIdB, router],
   );
@@ -261,11 +265,15 @@ export default function AddLiquidityComponent({
   const handleCurrencyBSelect = useCallback(
     (currencyB: TokenType) => {
       const newCurrencyIdB = currencyB.address;
-      let newCurrencyIdA = currencyIdA;
-      if (currencyIdA === undefined || currencyIdA === newCurrencyIdB) {
-        newCurrencyIdA = undefined;
+      let path = `/${currencyIdA}/${newCurrencyIdB}`;
+      if (currencyIdA === undefined) {
+        path = `/${newCurrencyIdB}`;
+      } else if (currencyIdA === newCurrencyIdB && currencyIdB === undefined) {
+        path = `/undefined/${newCurrencyIdB}`;
+      } else if (currencyIdA === newCurrencyIdB) {
+        path = `/${currencyIdB}/${newCurrencyIdB}`;
       }
-      router.push(`/liquidity/add/${newCurrencyIdA}/${newCurrencyIdB}`);
+      router.push(baseRoute+path);
     },
     [currencyIdA, currencyIdB, router],
   );
