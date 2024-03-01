@@ -1,12 +1,5 @@
 import { useSorobanReact } from '@soroban-react/core';
-import {
-  ChainId,
-  CurrencyAmount,
-  Router,
-  Token,
-  TradeType as SdkTradeType,
-  Protocols,
-} from 'soroswap-router-sdk';
+import { Networks, CurrencyAmount, Router, Token, TradeType, Protocols } from 'soroswap-router-sdk';
 import { useFactory } from 'hooks';
 import { useMemo } from 'react';
 
@@ -17,20 +10,21 @@ export interface GenerateRouteProps {
   amountTokenAddress: string;
   quoteTokenAddress: string;
   amount: string;
-  tradeType: SdkTradeType;
+  tradeType: TradeType;
 }
 
-const chainNameToId: { [x: string]: number } = {
-  testnet: ChainId.TESTNET,
-  standalone: ChainId.STANDALONE,
-  futurenet: ChainId.FUTURENET,
+const chainNameToId: { [x: string]: Networks } = {
+  testnet: Networks.TESTNET,
+  standalone: Networks.STANDALONE,
+  futurenet: Networks.FUTURENET,
 };
 
 export const useRouterSDK = () => {
   const sorobanContext = useSorobanReact();
   const { factory } = useFactory(sorobanContext);
 
-  const chainId = chainNameToId[sorobanContext.activeChain?.network?.toLowerCase() ?? 'testnet'];
+  const network: Networks =
+    chainNameToId[sorobanContext.activeChain?.network?.toLowerCase() ?? 'testnet'];
 
   const router = useMemo(() => {
     if (!backendUrl || !apiKey) {
@@ -39,11 +33,11 @@ export const useRouterSDK = () => {
       );
     }
 
-    return new Router(backendUrl, apiKey, 60, [Protocols.SOROSWAP], chainId);
-  }, [chainId]);
+    return new Router(backendUrl, apiKey, 60, [Protocols.SOROSWAP], network);
+  }, [network]);
 
   const fromAddressToToken = (address: string) => {
-    return new Token(chainId, address, 18);
+    return new Token(network, address, 18);
   };
 
   const fromAddressAndAmountToCurrencyAmount = (address: string, amount: string) => {
