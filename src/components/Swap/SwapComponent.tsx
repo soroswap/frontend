@@ -35,6 +35,7 @@ import { opacify } from 'themes/utils';
 import SwapCurrencyInputPanel from '../CurrencyInputPanel/SwapCurrencyInputPanel';
 import SwapHeader from './SwapHeader';
 import { ArrowWrapper, SwapWrapper } from './styleds';
+import { calculateSwapFees } from 'functions/getNetworkFees';
 
 const SwapSection = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -373,6 +374,16 @@ export function SwapComponent({
     useConfirmModal.resetStates();
   }, [onUserInput, swapResult, useConfirmModal, resetRouterSdkCache]);
 
+  const handleTransactionSimulation = () => {
+    const path = [
+      'CBMMUCSABO36LJWR2P3UNYHOBL3TZEOF4LZBN5E7GJ2KKL43POHHS2ZR',
+      'CDBCNUMMEQZGD4SZXULOTI5CY7IRCJKK6XG4I37HLVNS25Q7QZ4LWQVS',
+    ];
+    const amountIn = 2000;
+    const amountOutMin = 0;
+    calculateSwapFees(sorobanContext, path, amountIn, amountOutMin);
+  };
+
   return (
     <>
       <SwapWrapper>
@@ -508,6 +519,7 @@ export function SwapComponent({
             </ButtonPrimary>
           </div>
         </AutoColumn>
+        <button onClick={handleTransactionSimulation}>Simulate transaction</button>
       </SwapWrapper>
     </>
   );
