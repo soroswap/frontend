@@ -26,7 +26,7 @@ export function MintCustomToken() {
   const { tokensAsMap } = useAllTokens();
 
   const [tokenAddress, setTokenAddress] = useState<string>('');
-  const [tokenAmount, setTokenAmount] = useState<number>();
+  const [tokenAmount, setTokenAmount] = useState<string | number>('');
   const [isMinting, setIsMinting] = useState(false);
   const [buttonText, setButtonText] = useState<string>('Mint custom token');
   const [needToSetTrustline, setNeedToSetTrustline] = useState<boolean>(false);
@@ -65,7 +65,7 @@ export function MintCustomToken() {
         secretKey: admin_secret,
       });
       console.log('🚀 « result:', result);
-
+      
       if (result) {
         setIsMinting(false);
         sendNotification(
@@ -175,9 +175,17 @@ export function MintCustomToken() {
 
         <TextInput
           placeholder="Amount"
-          type="number"
           value={tokenAmount}
-          onChange={(e) => setTokenAmount(Number(e.target.value))}
+          isNumeric
+          onChange={(e) => {
+            const value = e.target.value;
+            if (typeof value === 'string' && value.match(/^[0-9]*$/)) {
+              setTokenAmount(Number(e.target.value))
+            } else {
+              setTokenAmount(tokenAmount)
+            }
+          }}
+          
         />
       </Stack>
       <ButtonPrimary onClick={handleSubmit} disabled={isMinting} style={{ marginTop: '24px' }}>
