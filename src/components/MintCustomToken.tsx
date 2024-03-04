@@ -108,10 +108,26 @@ export function MintCustomToken() {
       });
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
+    console.log(tokenAddress)
     if (needToSetTrustline) {
       handleSetTrustline();
-    } else {
+    } else if(tokenAddress.length > 56){
+      console.log('could be an stellar classic address')
+      try {
+        const [symbol, issuer] = tokenAddress.split(':');
+        const stellarAsset = new StellarSdk.Asset(symbol, issuer);
+        const networkPassphrase = sorobanContext.activeChain?.networkPassphrase ?? '';
+        console.log('stellarAsset', stellarAsset);
+        await setTokenAddress(stellarAsset.contractId(networkPassphrase));
+        
+      } catch (error) {
+        console.log('error', error);
+      } finally {
+        handleMint();
+      }
+    }
+    else {
       if (isAddress(tokenAddress)) {
         handleMint();
       } else {
