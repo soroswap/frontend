@@ -7,26 +7,13 @@ import { bigNumberToU32 } from 'helpers/utils';
 import { tokenBalance } from 'hooks';
 import { reservesBNWithTokens } from 'hooks/useReserves';
 import { TokenType } from 'interfaces';
-import { FactoryResponseType } from 'interfaces/factory';
+import { fetchFactory } from 'services/factory';
 import { xdr } from 'stellar-sdk';
-import { getFactory } from './getFactory';
 import { getPairAddress } from './getPairAddress';
 import { getTotalLpShares } from './getTotalLpShares';
 
-export const getPairs = async (sorobanContext: SorobanContextType) => {
-  const fetchResponse = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/pairs`);
-  const data = await fetchResponse.json();
-
-  const filtered = data?.filter(
-    (item: FactoryResponseType) =>
-      item.network === sorobanContext?.activeChain?.name?.toLowerCase(),
-  );
-
-  return filtered[0].pairs;
-};
-
 export const getPairsFromFactory = async (sorobanContext: SorobanContextType) => {
-  const {factory_address} = await getFactory(sorobanContext)
+  const factory_address = await fetchFactory(sorobanContext.activeChain?.id!)
   let pairs = []  
   let allpairs_length = await contractInvoke({
     contractAddress: factory_address,
