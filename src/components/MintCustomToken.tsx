@@ -11,12 +11,16 @@ import { requiresTrustline } from 'helpers/stellar';
 import { bigNumberToI128 } from 'helpers/utils';
 import { useKeys } from 'hooks';
 import { useAllTokens } from 'hooks/tokens/useAllTokens';
-import { findToken } from 'hooks/tokens/useToken';
+import { findToken, useToken } from 'hooks/tokens/useToken';
 import { useContext, useEffect, useState } from 'react';
 import * as StellarSdk from 'stellar-sdk';
 import { ButtonPrimary } from './Buttons/Button';
 import { TextInput } from './Inputs/TextInput';
 import { BodySmall } from './Text';
+
+import { getClassicStellarAsset } from 'helpers/address';
+
+import WrapStellarAssetModal from './Modals/WrapStellarAssetModal';
 
 export function MintCustomToken() {
   const sorobanContext = useSorobanReact();
@@ -24,13 +28,16 @@ export function MintCustomToken() {
   const { admin_public, admin_secret } = useKeys(sorobanContext);
   const { SnackbarContext } = useContext(AppContext);
   const { tokensAsMap } = useAllTokens();
-
+  
   const [tokenAddress, setTokenAddress] = useState<string>('');
-  const [tokenAmount, setTokenAmount] = useState<string | number>('');
+  const [tokenAmount, setTokenAmount] = useState<string | number>(2500000);
   const [isMinting, setIsMinting] = useState(false);
   const [buttonText, setButtonText] = useState<string>('Mint custom token');
   const [needToSetTrustline, setNeedToSetTrustline] = useState<boolean>(false);
   const [tokenSymbol, setTokenSymbol] = useState<string>('');
+  const [showWrapStellarAssetModal, setShowWrapStellarAssetModal] = useState<boolean>(false);
+  
+  const {  token, needsWrapping } = useToken(tokenAddress);
 
   const handleMint = async () => {
     setIsMinting(true);
@@ -39,7 +46,6 @@ export function MintCustomToken() {
     const amountScVal = bigNumberToI128(amount);
 
     let adminSource, walletSource;
-
     try {
       adminSource = await server?.getAccount(admin_public);
     } catch (error) {
@@ -57,7 +63,7 @@ export function MintCustomToken() {
 
     try {
       let result = await contractInvoke({
-        contractAddress: tokenAddress,
+        contractAddress: token?.address as string,
         method: 'mint',
         args: [new StellarSdk.Address(address).toScVal(), amountScVal],
         sorobanContext,
@@ -65,11 +71,10 @@ export function MintCustomToken() {
         secretKey: admin_secret,
       });
       console.log('🚀 « result:', result);
-      
       if (result) {
         setIsMinting(false);
         sendNotification(
-          `Minted ${tokenAmount} ${shortenAddress(tokenAddress)}`,
+          `Minted ${tokenAmount} ${shortenAddress(token?.address as string)}`,
           'Minted',
           SnackbarIconType.MINT,
           SnackbarContext,
@@ -81,7 +86,7 @@ export function MintCustomToken() {
       //This will connect again the wallet to fetch its data
       sorobanContext.connect();
     } catch (error) {
-      console.log(error);
+      console.log('Catch error while minting', error);
       setIsMinting(false);
     }
   };
@@ -109,31 +114,39 @@ export function MintCustomToken() {
   };
 
   const handleSubmit = async () => {
-    console.log(tokenAddress)
+    const isSCA = await getClassicStellarAsset(tokenAddress);
+    if (isSCA && needsWrapping) {
+        console.log('Opening wrap modal...');
+        setShowWrapStellarAssetModal(true);
+    } else if(isSCA && !needsWrapping) {
+      console.log('No need to wrap, minting directly...');
+    if (needToSetTrustline) {
+        console.log('Setting trustline first')
+        try {
+          await handleSetTrustline();
+          setNeedToSetTrustline(false);
+        } catch (error) {
+          console.log('Error setting trustline', error);
+        } 
+      }  
+    }
+    console.log('Minting SCA');
+    if (token?.address && isAddress(token.address)) {
+      handleMint();
+    } else {
+      console.log(token?.address)
+      console.log(token?.address && await isAddress(token.address));
+    }
     if (needToSetTrustline) {
       handleSetTrustline();
-    } else if(tokenAddress.length > 56){
-      console.log('could be an stellar classic address')
-      try {
-        const [symbol, issuer] = tokenAddress.split(':');
-        const stellarAsset = new StellarSdk.Asset(symbol, issuer);
-        const networkPassphrase = sorobanContext.activeChain?.networkPassphrase ?? '';
-        console.log('stellarAsset', stellarAsset);
-        await setTokenAddress(stellarAsset.contractId(networkPassphrase));
-        
-      } catch (error) {
-        console.log('error', error);
-      } finally {
-        handleMint();
-      }
-    }
-    else {
+    } else {
       if (isAddress(tokenAddress)) {
         handleMint();
       } else {
-        console.log('type token address first');
+        console.log('Invalid address || token || asset');
       }
-    }
+    } 
+
   };
 
   useEffect(() => {
@@ -143,7 +156,6 @@ export function MintCustomToken() {
       if (isAddress(newTokenAddress)) {
         const tokenInfo = await findToken(newTokenAddress, tokensAsMap, sorobanContext);
         setTokenSymbol(tokenInfo?.symbol as string);
-
         const requiresTrust = await requiresTrustline(newTokenAddress, sorobanContext);
         if (requiresTrust) {
           setButtonText('Set Trustline');
@@ -156,9 +168,12 @@ export function MintCustomToken() {
         setButtonText('Mint custom token');
         setNeedToSetTrustline(false);
       }
+      if (getClassicAssetSorobanAddress(tokenAddress, sorobanContext) && needsWrapping) {
+        setButtonText('Wrap token');
+      }
 
       if (isMinting) {
-        setButtonText(`Minting ${shortenAddress(tokenAddress)}`);
+        setButtonText(`Minting ${shortenAddress(newTokenAddress)}`);
         setNeedToSetTrustline(false);
       }
     };
@@ -173,6 +188,12 @@ export function MintCustomToken() {
   };
   return (
     <CardContent>
+      <WrapStellarAssetModal
+        isOpen={showWrapStellarAssetModal}
+        asset={token}
+        onDismiss={() => setShowWrapStellarAssetModal(false)}
+        onSuccess={()=>setShowWrapStellarAssetModal(false)}
+      />
       <Typography gutterBottom variant="h5" component="div">
         {'Mint custom token'}
         <BodySmall>
