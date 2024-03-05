@@ -91,8 +91,7 @@ export default function LiquidityPage() {
   const noLiquidity = false;
   const isCreate = false;
 
-  const { lpTokens, isLoading } = useGetLpTokens();
-  // console.log("🚀 « lpTokens:", lpTokens)
+  const { lpTokens, isLoading, mutate } = useGetLpTokens();
 
   const [isModalOpen, setModalOpen] = useState<boolean>(false);
   const [selectedLP, setSelectedLP] = useState<LpTokensObj>();

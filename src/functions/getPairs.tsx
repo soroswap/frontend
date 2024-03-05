@@ -16,7 +16,7 @@ export const getPairsFromFactory = async (sorobanContext: SorobanContextType) =>
   const factory_address = await fetchFactory(sorobanContext.activeChain?.id!)
   let pairs = []  
   let allpairs_length = await contractInvoke({
-    contractAddress: factory_address,
+    contractAddress: factory_address.address,
     method: 'all_pairs_length',
     args: [],
     sorobanContext,
@@ -26,7 +26,7 @@ export const getPairsFromFactory = async (sorobanContext: SorobanContextType) =>
 
   for (let index = 0; index < Number(allpairs_length); index++) {
     let pairAddress = await contractInvoke({
-      contractAddress: factory_address,
+      contractAddress: factory_address.address,
       method: 'all_pairs',
       args: [bigNumberToU32(new BigNumber(index))],
       sorobanContext,

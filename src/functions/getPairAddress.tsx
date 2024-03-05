@@ -13,7 +13,7 @@ export async function getPairAddress(
   const factory = await fetchFactory(sorobanContext.activeChain?.id!);
 
   const response = await contractInvoke({
-    contractAddress: factory,
+    contractAddress: factory.address,
     method: 'get_pair',
     args: [addressToScVal(address_0), addressToScVal(address_1)],
     sorobanContext,
