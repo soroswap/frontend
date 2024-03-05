@@ -1,5 +1,4 @@
 import { SorobanContextType, useSorobanReact } from '@soroban-react/core';
-import { RouterResponseType, RouterType } from 'interfaces/router';
 import { useEffect, useState } from 'react';
 import { fetchRouter } from 'services/router';
 import useSWRImmutable from 'swr/immutable';
@@ -7,27 +6,21 @@ import useSWRImmutable from 'swr/immutable';
 export const useRouterAddress = () => {
   const sorobanContext: SorobanContextType = useSorobanReact();
 
-  const { data, mutate, isLoading, error } = useSWRImmutable('router', fetchRouter);
+  const { activeChain } = sorobanContext;
 
-  const [router, setRouter] = useState<RouterType>({
-    router_address: '',
-    router_id: '',
-  });
+  const { data, error, isLoading, mutate } = useSWRImmutable(
+    ['router', activeChain],
+    ([key, activeChain]) =>
+      fetchRouter(activeChain?.id!),
+  );
+
+  const [router, setRouter] = useState<string>();
 
   useEffect(() => {
-    if (!data) return;
+    console.log('🚀 « data:', data);
+    if (!data || !sorobanContext) return;
 
-    const filtered = data?.filter(
-      (item: RouterResponseType) =>
-        item.network === sorobanContext?.activeChain?.name?.toLowerCase(),
-    );
-
-    if (filtered?.length > 0) {
-      setRouter({
-        router_address: filtered[0].router_address,
-        router_id: filtered[0].router_id,
-      });
-    }
+    setRouter(data.address)
   }, [data, sorobanContext]);
 
   return { router, isLoading, isError: error, data };

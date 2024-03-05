@@ -34,7 +34,6 @@ docker run --volume ${currentDir}:/workspace \
            --publish-all \
            --memory=12g \
            --env-file .env \
-           --net-alias ${containerName} \
            ${imageName}:${versionTag}
 
 # Set the git config
