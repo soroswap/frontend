@@ -11,94 +11,95 @@ Before you begin, ensure you have met the following requirements:
 
 1. Clone the Repository
 
-```bash
+    ```bash
 
-git clone https://github.com/soroswap/frontend.git
-cd frontend
-```
+    git clone https://github.com/soroswap/frontend.git
+    cd frontend
+    ```
 
 2. Set Up Environment Variables
 
-Copy the .env.example file to create a new .env file:
+    Copy the .env.example file to create a new .env file:
 
-```bash
-cp .env.local.example .env
-```
+    ```bash
+    cp .env.local.example .env
+    ```
 
-Now, edit the `.env` file and provide the `NEXT_PUBLIC_BACKEND_URL` variable.
-This will tell the frontend where to look for:
+    Now, edit the `.env` file and provide the `NEXT_PUBLIC_BACKEND_URL`, `NEXT_PUBLIC_SOROSWAP_BACKEND_API_KEY` and `NEXT_PUBLIC_TEST_TOKENS_ADMIN_SECRET_KEY` variables.
+    This will tell the frontend where to look for:
 
-- the list of known tokens
-- the SoroswapFactory address
-- the tokens admin's private key (in order to mint tokens)
+    - the list of known tokens
+    - the SoroswapFactory address
+    - the SoroswapRouter address
+    - the admin key for token minting
 
-If you are following the instructions in `https://github.com/soroswap/core` in order to deploy the smart contacts in your local environment and serve the API, your .env should look like this:
+    If you are following the instructions in `https://github.com/soroswap/core` in order to deploy the smart contacts in your local environment and serve the API. you should have:
+    ```bash
+    NEXT_PUBLIC_BACKEND_URL=http://localhost:8010
+    ```
+    Also, the variable `NEXT_PUBLIC_TEST_TOKENS_ADMIN_SECRET_KEY` should be the same as the one that deployed the tokens in the `core` repository.
 
-```bash
-NEXT_PUBLIC_BACKEND_URL=http://localhost:8010
-```
+    If you are ready for production, you can take Futurenet Contracts information from `https://api.soroswap.finance` and just do
 
-If you are ready for production, you can take Futurenet Contracts information from `https://api.soroswap.finance` and just do
+    ```bash
+    cp .env.production.example .env
+    ```
 
-```bash
-cp .env.production.example .env
-```
+    ❗️❗️ Note that some Futurenet RPC's might not have the same version, so we recomend you to connect to a local quickstart node following the instructions in `https://github.com/soroswap/core`; and setting up your Freighter Wallet as in step 6.
 
-❗️❗️ Note that some Futurenet RPC's might not have the same version, so we recomend you to connect to a local quickstart node following the instructions in `https://github.com/soroswap/core`; and setting up your Freighter Wallet as in step 6.
+1. Start Docker
 
-3. Start Docker
+    Navigate to the the `run.sh` script inside the `docker` folder
 
-Navigate to the the `run.sh` script inside the `docker` folder
+    ```bash
+    bash docker/run.sh
+    ```
 
-```bash
-bash docker/run.sh
-```
-
-This script will set up and start the Docker containers required for Soroswap.
+    This script will set up and start the Docker containers required for Soroswap.
 
 4. Install the Dependencies
 
-After the Docker container is up, you will be inside the root folder on the container. Then, install the dependencies using Yarn:
+    After the Docker container is up, you will be inside the root folder on the container. Then, install the dependencies using Yarn:
 
-```bash
-yarn install
-```
+    ```bash
+    yarn install
+    ```
 
 5. Run the Development Instance
 
-Now you are ready to start the development instance. Run the following command:
+    Now you are ready to start the development instance. Run the following command:
 
-```bash
-yarn dev
-```
+    ```bash
+    yarn dev
+    ```
 
-This will start the Soroswap development instance.
+    This will start the Soroswap development instance.
 
 6. Configure your Freigher Wallet
 
-For Standalone network
-| | |
-|---|---|
-| Name | Local Standalone |
-| HORIZON RPC URL | http://localhost:8000 |
-| SOROBAN RPC URL | http://localhost:8000/soroban/rpc |
-| Passphrase | Standalone Network ; February 2017 |
-| Friendbot | http://localhost:8000/friendbot |
-| Allow HTTP connection | Enabled |
-| Switch to this network | Enabled |
+    For Standalone network
+    | | |
+    |---|---|
+    | Name | Local Standalone |
+    | HORIZON RPC URL | http://localhost:8000 |
+    | SOROBAN RPC URL | http://localhost:8000/soroban/rpc |
+    | Passphrase | Standalone Network ; February 2017 |
+    | Friendbot | http://localhost:8000/friendbot |
+    | Allow HTTP connection | Enabled |
+    | Switch to this network | Enabled |
 
-For Futurenet network
-| | |
-|---|---|
-| Name | Local Futurenet|
-| HORIZON RPC URL | http://localhost:8000 |
-| SOROBAN RPC URL | http://localhost:8000/soroban/rpc |
-| Passphrase | Test SDF Future Network ; October 2022 |
-| Friendbot | http://localhost:8000/friendbot |
-| Allow HTTP connection | Enabled |
-| Switch to this network | Enabled |
+    For Futurenet network
+    | | |
+    |---|---|
+    | Name | Local Futurenet|
+    | HORIZON RPC URL | http://localhost:8000 |
+    | SOROBAN RPC URL | http://localhost:8000/soroban/rpc |
+    | Passphrase | Test SDF Future Network ; October 2022 |
+    | Friendbot | http://localhost:8000/friendbot |
+    | Allow HTTP connection | Enabled |
+    | Switch to this network | Enabled |
 
-** Important:** You should also do: Preferences> Allow experimental mode
+    ** Important:** You should also do: Preferences> Allow experimental mode
 
 7. Last, but not least, add some lumens to your Freighter wallet!
 

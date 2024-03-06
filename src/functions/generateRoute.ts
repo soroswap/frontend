@@ -1,7 +1,7 @@
 import { useSorobanReact } from '@soroban-react/core';
-import { Networks, CurrencyAmount, Router, Token, TradeType, Protocols } from 'soroswap-router-sdk';
 import { useFactory } from 'hooks';
 import { useMemo } from 'react';
+import { CurrencyAmount, Networks, Protocols, Router, Token, TradeType } from 'soroswap-router-sdk';
 
 const backendUrl = process.env.NEXT_PUBLIC_SOROSWAP_BACKEND_URL;
 const apiKey = process.env.NEXT_PUBLIC_SOROSWAP_BACKEND_API_KEY;
@@ -55,7 +55,7 @@ export const useRouterSDK = () => {
     amount,
     tradeType,
   }: GenerateRouteProps) => {
-    if (!factory.factory_address) throw new Error('Factory address not found');
+    if (!factory) throw new Error('Factory address not found');
 
     const currencyAmount = fromAddressAndAmountToCurrencyAmount(amountTokenAddress, amount);
     const quoteCurrency = fromAddressToToken(quoteTokenAddress);
@@ -64,7 +64,7 @@ export const useRouterSDK = () => {
       currencyAmount,
       quoteCurrency,
       tradeType,
-      factory.factory_address,
+      factory,
       sorobanContext,
     );
   };

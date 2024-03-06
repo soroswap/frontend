@@ -1,7 +1,7 @@
 import axios from './axios';
 
-export const fetchFactory = async () => {
-  const { data } = await axios.get('/api/factory');
+export const fetchFactory = async (network: string) => {
+  const { data } = await axios.get(`/api/${network}/factory`);
 
   return data;
 };

@@ -33,7 +33,7 @@ export const revalidateKeysCondition = (key: any) => {
 export function useRouterCallback() {
   const sorobanContext = useSorobanReact();
   const { router } = useRouterAddress();
-  const router_address = router?.router_address;
+  const router_address = router!;
   const { mutate } = useSWRConfig();
 
   return useCallback(
