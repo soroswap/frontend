@@ -1,7 +1,7 @@
 import axios from './axios';
 
-export const fetchRouter = async () => {
-  const { data } = await axios.get('/api/router');
+export const fetchRouter = async (network: string) => {
+  const { data } = await axios.get(`/api/${network}/router`);
 
   return data;
 };

@@ -1,7 +1,8 @@
 import { useContractValue } from '@soroban-react/contracts';
 import { SorobanContextType } from '@soroban-react/core';
 import { useMemo } from 'react';
-import * as StellarSdk from 'stellar-sdk';import { accountToScVal } from '../helpers/utils';
+import * as StellarSdk from 'stellar-sdk';
+import { accountToScVal } from '../helpers/utils';
 import { useFactory } from './useFactory';
 
 export function usePairContractAddress(
@@ -20,7 +21,7 @@ export function usePairContractAddress(
 
   const { factory } = useFactory(sorobanContext);
   const pairAddress_scval = useContractValue({
-    contractAddress: factory.factory_address,
+    contractAddress: factory!,
     method: 'get_pair',
     args,
     sorobanContext,

@@ -89,14 +89,14 @@ export function useDerivedMintInfo(
 
   useEffect(() => {
     if (!currencyA || !currencyB) return;
-    if (factoryAddress.factory_address !== '' && currencyA && currencyB) {
+    if (factoryAddress !== '' && currencyA && currencyB) {
       getPairAddress(currencyA.address, currencyB.address, sorobanContext)
         .then((response) => {
           setPairAddress(response);
         })
         .catch(() => setPairAddress(undefined));
     }
-  }, [currencyA, currencyB, factoryAddress.factory_address, sorobanContext]);
+  }, [currencyA, currencyB, factoryAddress, sorobanContext]);
 
   const [reservesBN, setReservesBN] = useState<
     { reserve0: BigNumber; reserve1: BigNumber } | undefined

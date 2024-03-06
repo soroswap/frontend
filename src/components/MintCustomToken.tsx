@@ -9,7 +9,6 @@ import { sendNotification } from 'functions/sendNotification';
 import { isAddress, shortenAddress } from 'helpers/address';
 import { requiresTrustline } from 'helpers/stellar';
 import { bigNumberToI128 } from 'helpers/utils';
-import { useKeys } from 'hooks';
 import { useAllTokens } from 'hooks/tokens/useAllTokens';
 import { findToken } from 'hooks/tokens/useToken';
 import { useContext, useEffect, useState } from 'react';
@@ -21,7 +20,8 @@ import { BodySmall } from './Text';
 export function MintCustomToken() {
   const sorobanContext = useSorobanReact();
   const { server, address } = sorobanContext;
-  const { admin_public, admin_secret } = useKeys(sorobanContext);
+  const admin_account = StellarSdk.Keypair.fromSecret(process.env.NEXT_PUBLIC_ADMIN_SECRET as string);
+
   const { SnackbarContext } = useContext(AppContext);
   const { tokensAsMap } = useAllTokens();
 
@@ -41,7 +41,7 @@ export function MintCustomToken() {
     let adminSource, walletSource;
 
     try {
-      adminSource = await server?.getAccount(admin_public);
+      adminSource = await server?.getAccount(admin_account.publicKey());
     } catch (error) {
       alert('Your wallet or the token admin wallet might not be funded');
       setIsMinting(false);
@@ -62,7 +62,7 @@ export function MintCustomToken() {
         args: [new StellarSdk.Address(address).toScVal(), amountScVal],
         sorobanContext,
         signAndSend: true,
-        secretKey: admin_secret,
+        secretKey: admin_account.secret(),
       });
       console.log('🚀 « result:', result);
 
@@ -90,7 +90,7 @@ export function MintCustomToken() {
     console.log('SETTING TRUSTLINE');
     setTrustline({
       tokenSymbol: tokenSymbol,
-      tokenAdmin: admin_public,
+      tokenAdmin: admin_account.publicKey(),
       sorobanContext,
     })
       .then((resp) => {

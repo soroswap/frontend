@@ -1,11 +1,9 @@
 import { CurrencyAmount, TokenType } from 'interfaces';
-import { generateRoute } from 'functions/generateRoute';
+import { useRouterSDK } from 'functions/generateRoute';
 import { InterfaceTrade, QuoteState, TradeState, TradeType } from 'state/routing/types';
 import { ReservesType } from 'functions/getExpectedAmount';
 import { TradeType as SdkTradeType } from 'soroswap-router-sdk';
 import { useEffect, useMemo, useState } from 'react';
-import { useSorobanReact } from '@soroban-react/core';
-import useGetReservesByPair from './useGetReservesByPair';
 import useSWR from 'swr';
 
 const TRADE_NOT_FOUND = {
@@ -13,23 +11,6 @@ const TRADE_NOT_FOUND = {
   trade: undefined,
 } as const;
 const TRADE_LOADING = { state: TradeState.LOADING, trade: undefined } as const;
-
-const getBestTrade = async (
-  amountTokenAddress: string,
-  quoteTokenAddress: string,
-  amount: string,
-  tradeType: TradeType,
-) => {
-  const route = await generateRoute({
-    amountTokenAddress,
-    quoteTokenAddress,
-    amount,
-    tradeType:
-      tradeType === TradeType.EXACT_INPUT ? SdkTradeType.EXACT_INPUT : SdkTradeType.EXACT_OUTPUT,
-  });
-
-  return route;
-};
 
 /**
  * Returns the best v2+v3 trade for a desired swap.
@@ -45,9 +26,10 @@ export function useBestTrade(
 ): {
   state: TradeState;
   trade?: InterfaceTrade;
-  pairAddress?: string;
-  reserves?: ReservesType | null;
+  resetRouterSdkCache: () => void;
 } {
+  const { generateRoute, resetRouterSdkCache } = useRouterSDK();
+
   const {
     data,
     isLoading: isLoadingSWR,
@@ -57,7 +39,15 @@ export function useBestTrade(
       ? [amountSpecified.currency.address, otherCurrency.address, tradeType, amountSpecified.value]
       : null,
     ([amountTokenAddress, quoteTokenAddress, tradeType, amount]) =>
-      getBestTrade(amountTokenAddress, quoteTokenAddress, amount, tradeType),
+      generateRoute({
+        amountTokenAddress,
+        quoteTokenAddress,
+        amount,
+        tradeType:
+          tradeType === TradeType.EXACT_INPUT
+            ? SdkTradeType.EXACT_INPUT
+            : SdkTradeType.EXACT_OUTPUT,
+      }),
     {
       revalidateIfStale: true,
       revalidateOnFocus: true,
@@ -151,29 +141,41 @@ export function useBestTrade(
   const bestTrade = useMemo(() => {
     if (skipFetch && amountSpecified && otherCurrency) {
       // If we don't want to fetch new trades, but have valid inputs, return the stale trade.
-      return { state: TradeState.STALE, trade: trade };
+      return { state: TradeState.STALE, trade: trade, resetRouterSdkCache };
     } else if (!amountSpecified || (amountSpecified && !otherCurrency)) {
       return {
         state: TradeState.INVALID,
         trade: undefined,
+        resetRouterSdkCache,
       };
     } else if (isLoading) {
       return {
         state: TradeState.LOADING,
         trade: undefined,
+        resetRouterSdkCache,
       };
     } else if (tradeResult?.state === QuoteState.NOT_FOUND) {
       return {
         state: TradeState.NO_ROUTE_FOUND,
         trade: undefined,
+        resetRouterSdkCache,
       };
     } else {
       return {
         state: TradeState.VALID, //isCurrent ? TradeState.VALID : TradeState.LOADING,
         trade: tradeResult.trade,
+        resetRouterSdkCache,
       };
     }
-  }, [skipFetch, amountSpecified, otherCurrency, tradeResult, trade, isLoading]);
+  }, [
+    skipFetch,
+    amountSpecified,
+    otherCurrency,
+    tradeResult,
+    trade,
+    isLoading,
+    resetRouterSdkCache,
+  ]);
 
   return bestTrade;
 }
