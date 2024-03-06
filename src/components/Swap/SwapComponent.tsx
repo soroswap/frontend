@@ -374,14 +374,29 @@ export function SwapComponent({
     useConfirmModal.resetStates();
   }, [onUserInput, swapResult, useConfirmModal, resetRouterSdkCache]);
 
-  const handleTransactionSimulation = () => {
-    const path = [
-      'CBMMUCSABO36LJWR2P3UNYHOBL3TZEOF4LZBN5E7GJ2KKL43POHHS2ZR',
-      'CDBCNUMMEQZGD4SZXULOTI5CY7IRCJKK6XG4I37HLVNS25Q7QZ4LWQVS',
-    ];
-    const amountIn = 2000;
-    const amountOutMin = 0;
-    calculateSwapFees(sorobanContext, path, amountIn, amountOutMin);
+  const handleTransactionSimulation = async () => {
+    // Ensure that we have a trade object and the swapCallback function is available
+    console.log("TRADE: ", trade);
+    console.log("swapCallback", swapCallback)
+    if (!trade || !swapCallback) {
+      console.error("Trade data is not available or swapCallback is not defined.");
+      return;
+    }
+    
+    try {
+      // Call swapCallback with simulation set to true
+      const simulationResult = await swapCallback(true);
+      console.log("Simulation result:", simulationResult);
+      
+      // You can process the simulation result here
+      // For example, displaying success message, or showing estimated amounts after swap
+      // sendNotification( ... );
+    } catch (error) {
+      console.error("Simulation failed:", error);
+      // Handle the simulation error here
+      // For example, showing an error message to the user
+      setTxError(true); // If you're using this state to handle transaction errors
+    }
   };
 
   return (
