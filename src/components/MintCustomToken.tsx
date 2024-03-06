@@ -21,18 +21,19 @@ import { requiresTrustline } from 'helpers/stellar';
 import { bigNumberToI128 } from 'helpers/utils';
 import BigNumber from 'bignumber.js';
 
-import { useKeys } from 'hooks';
 import { useAllTokens } from 'hooks/tokens/useAllTokens';
 import { findToken, useToken } from 'hooks/tokens/useToken';
 
 export function MintCustomToken() {
   const sorobanContext = useSorobanReact();
   const { server, address } = sorobanContext;
-  const admin_account = StellarSdk.Keypair.fromSecret(process.env.NEXT_PUBLIC_TEST_TOKENS_ADMIN_SECRET_KEY as string);
+  const admin_account = StellarSdk.Keypair.fromSecret(
+    process.env.NEXT_PUBLIC_TEST_TOKENS_ADMIN_SECRET_KEY as string,
+  );
 
   const { SnackbarContext } = useContext(AppContext);
   const { tokensAsMap } = useAllTokens();
-  
+
   const [buttonText, setButtonText] = useState<string>('Mint custom token');
   const [isMinting, setIsMinting] = useState(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -43,8 +44,7 @@ export function MintCustomToken() {
   const [tokenAmount, setTokenAmount] = useState<string | number>('');
   const [tokenSymbol, setTokenSymbol] = useState<string>('');
 
-  const {  token, needsWrapping, handleTokenRefresh } = useToken(tokenAddress);
-
+  const { token, needsWrapping, handleTokenRefresh } = useToken(tokenAddress);
 
   const handleMint = async () => {
     console.log('minting...');
@@ -123,7 +123,8 @@ export function MintCustomToken() {
       .catch((error: any) => {
         setIsSettingTrustline(false);
         console.log('Error setting trustline', error);
-      }).finally(() => {
+      })
+      .finally(() => {
         setIsSettingTrustline(false);
       });
   };
@@ -154,14 +155,14 @@ export function MintCustomToken() {
         console.log('case not handled');
         break;
     }
-  }
-  
+  };
+
   const handleSubmit = async () => {
     const isSCA = await getClassicStellarAsset(tokenAddress);
     if (isSCA) {
       handleSCA();
       return;
-    } else if(!isSCA && needToSetTrustline){
+    } else if (!isSCA && needToSetTrustline) {
       if (needToSetTrustline) {
         handleSetTrustline();
       } else {
@@ -170,10 +171,10 @@ export function MintCustomToken() {
         } else {
           console.log('Invalid address || token || asset');
         }
-      } 
+      }
     }
-  }
-  
+  };
+
   useEffect(() => {
     const updateTokenInfo = async () => {
       const sorobanAddress = getClassicAssetSorobanAddress(tokenAddress, sorobanContext);
@@ -188,8 +189,7 @@ export function MintCustomToken() {
         } else if (needsWrapping) {
           setButtonText('Wrap token');
           setNeedToSetTrustline(false);
-        }
-        else {
+        } else {
           setButtonText('Mint custom token');
           setNeedToSetTrustline(false);
         }
@@ -209,11 +209,11 @@ export function MintCustomToken() {
         setButtonText('Wrapping token...');
         break;
       case false:
-        setTimeout(()=>setIsLoading(false), 500)
-   
+        setTimeout(() => setIsLoading(false), 500);
+
         break;
     }
-  }, [showWrapStellarAssetModal,]);
+  }, [showWrapStellarAssetModal]);
 
   useEffect(() => {
     switch (isSettingTrustline) {
@@ -236,8 +236,7 @@ export function MintCustomToken() {
     } else {
       setIsLoading(false);
     }
-  }
-  , [isMinting]);
+  }, [isMinting]);
 
   const getTokensApiUrl = () => {
     const base = process.env.NEXT_PUBLIC_BACKEND_URL ?? 'https://api.soroswap.finance';
@@ -249,12 +248,12 @@ export function MintCustomToken() {
       <WrapStellarAssetModal
         isOpen={showWrapStellarAssetModal}
         asset={token}
-        onDismiss={() =>{
-          setShowWrapStellarAssetModal(false)
-          setIsLoading(false)
+        onDismiss={() => {
+          setShowWrapStellarAssetModal(false);
+          setIsLoading(false);
         }}
-        onSuccess={()=>{
-          setShowWrapStellarAssetModal(false)
+        onSuccess={() => {
+          setShowWrapStellarAssetModal(false);
           handleTokenRefresh();
         }}
       />
@@ -281,12 +280,11 @@ export function MintCustomToken() {
           onChange={(e) => {
             const value = e.target.value;
             if (typeof value === 'string' && value.match(/^[0-9]*$/)) {
-              setTokenAmount(Number(e.target.value))
+              setTokenAmount(Number(e.target.value));
             } else {
-              setTokenAmount(tokenAmount)
+              setTokenAmount(tokenAmount);
             }
           }}
-          
         />
       </Stack>
       <ButtonPrimary onClick={handleSubmit} disabled={isLoading} style={{ marginTop: '24px' }}>
