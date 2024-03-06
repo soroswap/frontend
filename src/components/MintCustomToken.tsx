@@ -30,18 +30,23 @@ export function MintCustomToken() {
   const { tokensAsMap } = useAllTokens();
   
   const [tokenAddress, setTokenAddress] = useState<string>('');
-  const [tokenAmount, setTokenAmount] = useState<string | number>(2500000);
+  const [tokenAmount, setTokenAmount] = useState<string | number>('');
   const [isMinting, setIsMinting] = useState(false);
   const [buttonText, setButtonText] = useState<string>('Mint custom token');
   const [needToSetTrustline, setNeedToSetTrustline] = useState<boolean>(false);
+  const [needWrap, setNeedWrap] = useState<boolean>(false);
   const [tokenSymbol, setTokenSymbol] = useState<string>('');
   const [showWrapStellarAssetModal, setShowWrapStellarAssetModal] = useState<boolean>(false);
   
   const {  token, needsWrapping } = useToken(tokenAddress);
 
   const handleMint = async () => {
+    console.log('minting...');
     setIsMinting(true);
-
+    if (!tokenAddress || !tokenAmount) {
+      setIsMinting(false);
+      throw new Error('Token address or amount is missing');
+    }
     const amount = new BigNumber(tokenAmount ?? 0).shiftedBy(7);
     const amountScVal = bigNumberToI128(amount);
 
@@ -113,42 +118,57 @@ export function MintCustomToken() {
       });
   };
 
+  const handleSCA = async () => {
+    const wrapToken = needsWrapping && needWrap;
+    const setTrustline = wrapToken == false && needToSetTrustline;
+    const mintToken = wrapToken == false && needToSetTrustline == false;
+    /* console.log('needsWrapping', needsWrapping);
+    console.log('wrapToken', wrapToken);
+    console.log('setTrustline', setTrustline);
+    console.log('mintToken', mintToken); */
+    switch (true) {
+      case wrapToken:
+        console.log('Needs wrap')
+        setShowWrapStellarAssetModal(true);
+        setNeedToSetTrustline(true);
+        setNeedWrap(false);
+        setTokenAddress(tokenAddress);
+        break;
+      case setTrustline:
+        console.log('Needs set trustline')
+        await handleSetTrustline();
+        setNeedToSetTrustline(false);
+        setNeedWrap(false);
+        break;
+      case mintToken:
+        console.log('Minting...')
+        handleMint();
+        setTokenAmount('');
+        setTokenAddress('');
+        break;
+      default:
+        console.log('case not handled');
+        break;
+    }
+  }
+  
   const handleSubmit = async () => {
     const isSCA = await getClassicStellarAsset(tokenAddress);
-    if (isSCA && needsWrapping) {
-        console.log('Opening wrap modal...');
-        setShowWrapStellarAssetModal(true);
-    } else if(isSCA && !needsWrapping) {
-      console.log('No need to wrap, minting directly...');
-    if (needToSetTrustline) {
-        console.log('Setting trustline first')
-        try {
-          await handleSetTrustline();
-          setNeedToSetTrustline(false);
-        } catch (error) {
-          console.log('Error setting trustline', error);
-        } 
-      }  
-    }
-    console.log('Minting SCA');
-    if (token?.address && isAddress(token.address)) {
-      handleMint();
-    } else {
-      console.log(token?.address)
-      console.log(token?.address && await isAddress(token.address));
-    }
-    if (needToSetTrustline) {
-      handleSetTrustline();
-    } else {
-      if (isAddress(tokenAddress)) {
-        handleMint();
+    if (isSCA) {
+      handleSCA();
+      return;
+    } else if(!isSCA && needToSetTrustline){
+      if (needToSetTrustline) {
+        handleSetTrustline();
       } else {
-        console.log('Invalid address || token || asset');
-      }
-    } 
-
-  };
-
+        if (isAddress(tokenAddress)) {
+          handleMint();
+        } else {
+          console.log('Invalid address || token || asset');
+        }
+      } 
+    }
+  }
   useEffect(() => {
     const updateTokenInfo = async () => {
       const sorobanAddress = getClassicAssetSorobanAddress(tokenAddress, sorobanContext);
@@ -159,8 +179,14 @@ export function MintCustomToken() {
         const requiresTrust = await requiresTrustline(newTokenAddress, sorobanContext);
         if (requiresTrust) {
           setButtonText('Set Trustline');
+          setNeedWrap(false)
           setNeedToSetTrustline(true);
-        } else {
+        } else if (needsWrapping) {
+          setButtonText('Wrap token');
+          setNeedWrap(true);
+          setNeedToSetTrustline(false);
+        }
+        else {
           setButtonText('Mint custom token');
           setNeedToSetTrustline(false);
         }
@@ -168,18 +194,17 @@ export function MintCustomToken() {
         setButtonText('Mint custom token');
         setNeedToSetTrustline(false);
       }
-      if (getClassicAssetSorobanAddress(tokenAddress, sorobanContext) && needsWrapping) {
-        setButtonText('Wrap token');
-      }
-
       if (isMinting) {
         setButtonText(`Minting ${shortenAddress(newTokenAddress)}`);
         setNeedToSetTrustline(false);
       }
     };
+    setNeedWrap(needsWrapping!);
 
     updateTokenInfo();
-  }, [isMinting, sorobanContext, tokenAddress, tokensAsMap]);
+
+
+  }, [isMinting, sorobanContext, tokenAddress, tokensAsMap, needsWrapping]);
 
   const getTokensApiUrl = () => {
     const base = process.env.NEXT_PUBLIC_BACKEND_URL ?? 'https://api.soroswap.finance';
@@ -192,7 +217,7 @@ export function MintCustomToken() {
         isOpen={showWrapStellarAssetModal}
         asset={token}
         onDismiss={() => setShowWrapStellarAssetModal(false)}
-        onSuccess={()=>setShowWrapStellarAssetModal(false)}
+        onSuccess={()=>{setShowWrapStellarAssetModal(false)}}
       />
       <Typography gutterBottom variant="h5" component="div">
         {'Mint custom token'}
