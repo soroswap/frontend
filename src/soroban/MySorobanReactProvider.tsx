@@ -1,4 +1,4 @@
-import { standalone, testnet, public_chain } from '@soroban-react/chains';
+import { standalone, testnet, mainnet } from '@soroban-react/chains';
 import { SorobanReactProvider } from '@soroban-react/core';
 import { freighter } from '@soroban-react/freighter';
 import { xbull } from '@soroban-react/xbull';
@@ -7,7 +7,7 @@ import useMounted from 'hooks/useMounted';
 
 // Set allowed chains:
   const chains: ChainMetadata[] =
-  process.env.NODE_ENV === 'production' ? [testnet, public_chain] : [standalone, testnet, public_chain];
+  process.env.NODE_ENV === 'production' ? [testnet, mainnet] : [standalone, testnet, mainnet];
   
   // Set chain by default:
   // Helper function
