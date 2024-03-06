@@ -1,10 +1,10 @@
-import { useSorobanReact } from '@soroban-react/core';
-import BigNumber from 'bignumber.js';
-import { ReservesType, getExpectedAmountNew } from 'functions/getExpectedAmount';
 import { CurrencyAmount, TokenType } from 'interfaces';
-import { useEffect, useMemo, useState } from 'react';
+import { useRouterSDK } from 'functions/generateRoute';
 import { InterfaceTrade, QuoteState, TradeState, TradeType } from 'state/routing/types';
-import useGetReservesByPair from './useGetReservesByPair';
+import { ReservesType } from 'functions/getExpectedAmount';
+import { TradeType as SdkTradeType } from 'soroswap-router-sdk';
+import { useEffect, useMemo, useState } from 'react';
+import useSWR from 'swr';
 
 const TRADE_NOT_FOUND = {
   state: TradeState.NO_ROUTE_FOUND,
@@ -26,15 +26,36 @@ export function useBestTrade(
 ): {
   state: TradeState;
   trade?: InterfaceTrade;
-  pairAddress?: string;
-  reserves?: ReservesType | null;
+  resetRouterSdkCache: () => void;
 } {
-  const sorobanContext = useSorobanReact();
+  const { generateRoute, resetRouterSdkCache } = useRouterSDK();
 
-  const { pairAddress, reserves } = useGetReservesByPair({
-    baseAddress: amountSpecified?.currency?.address,
-    otherAddress: otherCurrency?.address,
-  });
+  const {
+    data,
+    isLoading: isLoadingSWR,
+    isValidating,
+  } = useSWR(
+    amountSpecified && otherCurrency
+      ? [amountSpecified.currency.address, otherCurrency.address, tradeType, amountSpecified.value]
+      : null,
+    ([amountTokenAddress, quoteTokenAddress, tradeType, amount]) =>
+      generateRoute({
+        amountTokenAddress,
+        quoteTokenAddress,
+        amount,
+        tradeType:
+          tradeType === TradeType.EXACT_INPUT
+            ? SdkTradeType.EXACT_INPUT
+            : SdkTradeType.EXACT_OUTPUT,
+      }),
+    {
+      revalidateIfStale: true,
+      revalidateOnFocus: true,
+      refreshInterval: 0,
+    },
+  );
+
+  const isLoading = isLoadingSWR || isValidating;
 
   const [currencyIn, currencyOut]: [TokenType | undefined, TokenType | undefined] = useMemo(
     () =>
@@ -44,139 +65,64 @@ export function useBestTrade(
     [amountSpecified, otherCurrency, tradeType],
   );
 
-  /* This is because the user can set some input amount and input token, before setting the output token */
-  // if (amountSpecified?.currency?.address && otherCurrency?.address) {
-  //   getPairAddress(amountSpecified?.currency?.address, otherCurrency?.address, sorobanContext).then(
-  //     (response) => {
-  //       if (response) {
-  //         setPairAddress(response);
-  //       } else {
-  //         setPairAddress(undefined);
-  //       }
-  //     },
-  //   );
-  // }
-
-  // EXPECTED AMOUNTS. TODO: THIS WILL CHANGE AFTER USING THE ROUTER CONTRACT
   const [expectedAmount, setExpectedAmount] = useState<string>('0');
+  const [inputAmount, setInputAmount] = useState<CurrencyAmount | undefined>();
+  const [outputAmount, setOutputAmount] = useState<CurrencyAmount | undefined>();
 
   useEffect(() => {
-    if (amountSpecified?.value && pairAddress && reserves) {
-      getExpectedAmountNew(
-        currencyIn,
-        currencyOut,
-        BigNumber(amountSpecified.value),
-        reserves,
-        tradeType,
-      ).then((resp) => {
-        setExpectedAmount(resp?.toString());
+    if (!data || !currencyIn || !currencyOut) return;
+
+    if (tradeType === TradeType.EXACT_INPUT) {
+      const result = data.trade as {
+        amountIn: string;
+        amountOutMin: string;
+        path: string[];
+      };
+
+      setInputAmount({
+        value: result?.amountIn,
+        currency: currencyIn,
       });
-    }
-  }, [
-    amountSpecified?.value,
-    currencyIn,
-    currencyOut,
-    sorobanContext,
-    tradeType,
-    pairAddress,
-    reserves,
-  ]);
 
-  // if (amountSpecified?.value) {
-  //   getExpectedAmount(
-  //     currencyIn,
-  //     currencyOut,
-  //     BigNumber(amountSpecified.value),
-  //     sorobanContext,
-  //     tradeType,
-  //   ).then((resp) => {
-  //     setExpectedAmount(resp?.toString());
-  //   });
-  // }
-  // Now both expectedAmount and amountSpecified are strings in stroop format
-  // Lets convert all of this to two CurrencyAmount objects: inputAmount & outputAmount
-
-  let inputAmount: CurrencyAmount | undefined;
-  let outputAmount: CurrencyAmount | undefined;
-
-  // TODO: Not sure if we need to check for all of this:
-  if (amountSpecified && currencyIn && expectedAmount && currencyOut) {
-    // Set inputAmount
-    if (currencyIn?.address == amountSpecified?.currency.address) {
-      inputAmount = {
-        value: amountSpecified.value,
-        currency: currencyIn,
-      };
-    } else {
-      inputAmount = {
-        value: expectedAmount,
-        currency: currencyIn,
-      };
-    }
-
-    // Set outputAmount
-    if (currencyOut?.address == otherCurrency?.address) {
-      outputAmount = {
-        value: expectedAmount,
+      setOutputAmount({
+        value: result?.amountOutMin,
         currency: currencyOut,
-      };
-    } else {
-      outputAmount = {
-        value: amountSpecified?.value,
-        currency: currencyOut,
-      };
+      });
+
+      setExpectedAmount(result?.amountOutMin);
     }
-  }
 
-  // const inputAmount = (currencyIn?.address == amountSpecified?.currency.address) ? tryParseCurrencyAmount(amountSpecified?.value, currencyIn) : tryParseCurrencyAmount(expectedAmount, currencyIn)
-  //
-  // const outputAmount = (currencyOut?.address == otherCurrency?.address) ? tryParseCurrencyAmount(expectedAmount, currencyOut) : tryParseCurrencyAmount(amountSpecified?.value, currencyOut)
-  //
+    if (tradeType === TradeType.EXACT_OUTPUT) {
+      const result = data.trade as {
+        amountInMax: string;
+        amountOut: string;
+        path: string[];
+      };
 
-  //TODO: Set the trade specs, getQuote
+      setInputAmount({
+        value: result?.amountInMax,
+        currency: currencyIn,
+      });
 
-  //   /*
-  //   export type InterfaceTrade = {
-  //   inputAmount: CurrencyAmount;
-  //   outputAmount: CurrencyAmount;
-  //   tradeType: TradeType;
-  //   swaps: {
-  //     inputAmount: CurrencyAmount;
-  //     outputAmount: CurrencyAmount;
-  //     route: {
-  //       input: TokenType;
-  //       output: TokenType;
-  //       pairs: {
-  //         pairAddress: string;
-  //       }[];
-  //     };
-  //   }[];
-  // };
+      setOutputAmount({
+        value: result?.amountOut,
+        currency: currencyOut,
+      });
 
-  //   */
+      setExpectedAmount(result?.amountInMax);
+    }
+  }, [data, currencyIn, currencyOut, tradeType]);
+
   const trade: InterfaceTrade = useMemo(() => {
     return {
-      inputAmount: inputAmount,
-      outputAmount: outputAmount,
+      inputAmount,
+      outputAmount,
       expectedAmount, // //isNaN(expectedAmount) ? 0 : expectedAmount,
+      path: data?.trade.path,
       tradeType: tradeType,
-      swaps: [
-        {
-          inputAmount: inputAmount,
-          outputAmount: outputAmount,
-          route: {
-            input: currencyIn,
-            output: currencyOut,
-            pairs: [
-              {
-                pairAddress,
-              },
-            ],
-          },
-        },
-      ],
+      rawRoute: data,
     };
-  }, [currencyIn, currencyOut, expectedAmount, inputAmount, outputAmount, pairAddress, tradeType]);
+  }, [expectedAmount, inputAmount, outputAmount, tradeType, data]);
 
   /*
   If the pairAddress or the trades chenges, we upgrade the tradeResult
@@ -184,49 +130,52 @@ export function useBestTrade(
   */
   const tradeResult = useMemo(() => {
     // Trade is correctly updated depending on the user change (input token / amount, etc...)
-    const state = pairAddress ? QuoteState.SUCCESS : QuoteState.NOT_FOUND;
+    const state = data ? QuoteState.SUCCESS : QuoteState.NOT_FOUND;
 
     const myTradeResult = { state: state, trade: trade };
     return myTradeResult;
-  }, [pairAddress, trade]); //should get the pair address and quotes
+  }, [data, trade]); //should get the pair address and quotes
 
   const skipFetch: boolean = false;
 
   const bestTrade = useMemo(() => {
     if (skipFetch && amountSpecified && otherCurrency) {
       // If we don't want to fetch new trades, but have valid inputs, return the stale trade.
-      return { state: TradeState.STALE, trade: trade, pairAddress, reserves };
+      return { state: TradeState.STALE, trade: trade, resetRouterSdkCache };
     } else if (!amountSpecified || (amountSpecified && !otherCurrency)) {
       return {
         state: TradeState.INVALID,
         trade: undefined,
-        pairAddress,
-        reserves,
+        resetRouterSdkCache,
+      };
+    } else if (isLoading) {
+      return {
+        state: TradeState.LOADING,
+        trade: undefined,
+        resetRouterSdkCache,
       };
     } else if (tradeResult?.state === QuoteState.NOT_FOUND) {
       return {
         state: TradeState.NO_ROUTE_FOUND,
         trade: undefined,
-        pairAddress,
-        reserves,
-      };
-    } else if (!tradeResult?.trade) {
-      // TODO(WEB-1985): use `isLoading` returned by rtk-query hook instead of checking for `trade` status
-      return {
-        state: TradeState.LOADING,
-        trade: undefined,
-        pairAddress,
-        reserves,
+        resetRouterSdkCache,
       };
     } else {
       return {
         state: TradeState.VALID, //isCurrent ? TradeState.VALID : TradeState.LOADING,
         trade: tradeResult.trade,
-        pairAddress,
-        reserves,
+        resetRouterSdkCache,
       };
     }
-  }, [skipFetch, amountSpecified, otherCurrency, tradeResult, trade, pairAddress, reserves]);
+  }, [
+    skipFetch,
+    amountSpecified,
+    otherCurrency,
+    tradeResult,
+    trade,
+    isLoading,
+    resetRouterSdkCache,
+  ]);
 
   return bestTrade;
 }

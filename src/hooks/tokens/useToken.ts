@@ -5,6 +5,7 @@ import { TokenMapType, TokenType } from 'interfaces';
 import useSWRImmutable from 'swr/immutable';
 import { useAllTokens } from './useAllTokens';
 import { getToken, isClassicStellarAsset } from './utils';
+import { useSWRConfig } from 'swr';
 
 export const findToken = async (
   tokenAddress: string | undefined,
@@ -30,17 +31,27 @@ export const findToken = async (
   return token;
 };
 
+const revalidateKeysCondition = (key: any) => {
+  const revalidateKeys = new Set(['token', 'isStellarClassicAsset']);
+
+  return Array.isArray(key) && key.some((k) => revalidateKeys.has(k));
+};
+
 //Returns token from map (user added + api) or network
 export function useToken(tokenAddress: string | undefined) {
   const sorobanContext = useSorobanReact();
 
   const { tokensAsMap } = useAllTokens();
-
+  const { mutate } = useSWRConfig();
   const { data, isLoading, error } = useSWRImmutable(
     ['token', tokenAddress, tokensAsMap, sorobanContext],
     ([key, tokenAddress, tokensAsMap, sorobanContext]) =>
       findToken(tokenAddress, tokensAsMap, sorobanContext),
   );
+  
+  const handleTokenRefresh = () => {
+    mutate((key: any) => revalidateKeysCondition(key), undefined, { revalidate: true });
+  }
 
   const {
     data: isStellarClassicAsset,
@@ -77,5 +88,6 @@ export function useToken(tokenAddress: string | undefined) {
     needsWrapping,
     isLoading: bothLoading,
     isError: error,
+    handleTokenRefresh
   };
 }

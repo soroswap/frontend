@@ -14,17 +14,20 @@ interface SwapButtonProps {
   type?: string;
   value?: string | number;
   onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  isNumeric? : boolean;
 }
 
 export function TextInput({
   placeholder,
   type,
   value,
-  onChange
-}: SwapButtonProps) {
-
+  onChange,
+  isNumeric = false
+}: SwapButtonProps) { 
+  const inputProps = isNumeric ? { min: 0, max: 9999999999999999, maxLength: 20, pattern:/^[0-9]$/ } : {};
   return (
     <CustomInput
+      inputProps={inputProps}
       type={type}
       value={value}
       placeholder={placeholder}

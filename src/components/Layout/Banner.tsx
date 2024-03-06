@@ -1,6 +1,6 @@
 import { Box, Typography, useMediaQuery, useTheme } from '@mui/material';
-import { X } from 'react-feather';
 import Link from 'next/link';
+import { X } from 'react-feather';
 
 interface Props {
   show: boolean;
@@ -25,12 +25,15 @@ const Banner = ({ show, setShow }: Props) => {
       alignItems="center"
       justifyContent="center"
       paddingRight={isMobile ? '35px' : '0px'}
-      sx={{ backgroundColor: theme.palette.customBackground.accentAction }}
+      sx={{ 
+        backgroundColor: theme.palette.customBackground.accentAction, 
+        minWidth: '100vw' 
+      }}
     >
       <Typography fontSize="14px" textAlign="center" color="white">
         Soroswap.Finance is currently working on Testnet. Click
         <Link
-          href="https://google.com"
+          href="https://docs.soroswap.finance/"
           target="_blank"
           style={{ marginRight: 3, marginLeft: 3, textDecoration: 'underline' }}
         >

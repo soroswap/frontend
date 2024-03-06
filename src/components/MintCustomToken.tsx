@@ -1,47 +1,64 @@
-import { Box, CircularProgress, Stack, Typography } from '@mui/material';
-import CardContent from '@mui/material/CardContent';
+import { useContext, useEffect, useState } from 'react';
 import { contractInvoke, setTrustline } from '@soroban-react/contracts';
 import { useSorobanReact } from '@soroban-react/core';
-import BigNumber from 'bignumber.js';
-import { AppContext, SnackbarIconType } from 'contexts';
-import { getClassicAssetSorobanAddress } from 'functions/getClassicAssetSorobanAddress';
-import { sendNotification } from 'functions/sendNotification';
-import { isAddress, shortenAddress } from 'helpers/address';
-import { requiresTrustline } from 'helpers/stellar';
-import { bigNumberToI128 } from 'helpers/utils';
-import { useKeys } from 'hooks';
-import { useAllTokens } from 'hooks/tokens/useAllTokens';
-import { findToken } from 'hooks/tokens/useToken';
-import { useContext, useEffect, useState } from 'react';
 import * as StellarSdk from 'stellar-sdk';
+
+import { AppContext, SnackbarIconType } from 'contexts';
+
+import { Box, CircularProgress, Stack, Typography } from '@mui/material';
+import CardContent from '@mui/material/CardContent';
+import WrapStellarAssetModal from './Modals/WrapStellarAssetModal';
 import { ButtonPrimary } from './Buttons/Button';
 import { TextInput } from './Inputs/TextInput';
 import { BodySmall } from './Text';
 
+import { getClassicAssetSorobanAddress } from 'functions/getClassicAssetSorobanAddress';
+import { sendNotification } from 'functions/sendNotification';
+
+import { isAddress, shortenAddress } from 'helpers/address';
+import { getClassicStellarAsset } from 'helpers/address';
+import { requiresTrustline } from 'helpers/stellar';
+import { bigNumberToI128 } from 'helpers/utils';
+import BigNumber from 'bignumber.js';
+
+import { useKeys } from 'hooks';
+import { useAllTokens } from 'hooks/tokens/useAllTokens';
+import { findToken, useToken } from 'hooks/tokens/useToken';
+
 export function MintCustomToken() {
   const sorobanContext = useSorobanReact();
   const { server, address } = sorobanContext;
-  const { admin_public, admin_secret } = useKeys(sorobanContext);
+  const admin_account = StellarSdk.Keypair.fromSecret(process.env.NEXT_PUBLIC_TEST_TOKENS_ADMIN_SECRET_KEY as string);
+
   const { SnackbarContext } = useContext(AppContext);
   const { tokensAsMap } = useAllTokens();
-
-  const [tokenAddress, setTokenAddress] = useState<string>('');
-  const [tokenAmount, setTokenAmount] = useState<number>();
-  const [isMinting, setIsMinting] = useState(false);
+  
   const [buttonText, setButtonText] = useState<string>('Mint custom token');
+  const [isMinting, setIsMinting] = useState(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isSettingTrustline, setIsSettingTrustline] = useState<boolean>(false);
   const [needToSetTrustline, setNeedToSetTrustline] = useState<boolean>(false);
+  const [showWrapStellarAssetModal, setShowWrapStellarAssetModal] = useState<boolean>(false);
+  const [tokenAddress, setTokenAddress] = useState<string>('');
+  const [tokenAmount, setTokenAmount] = useState<string | number>('');
   const [tokenSymbol, setTokenSymbol] = useState<string>('');
 
-  const handleMint = async () => {
-    setIsMinting(true);
+  const {  token, needsWrapping, handleTokenRefresh } = useToken(tokenAddress);
 
+
+  const handleMint = async () => {
+    console.log('minting...');
+    setIsMinting(true);
+    if (!tokenAddress || !tokenAmount) {
+      setIsMinting(false);
+      throw new Error('Token address or amount is missing');
+    }
     const amount = new BigNumber(tokenAmount ?? 0).shiftedBy(7);
     const amountScVal = bigNumberToI128(amount);
 
     let adminSource, walletSource;
-
     try {
-      adminSource = await server?.getAccount(admin_public);
+      adminSource = await server?.getAccount(admin_account.publicKey());
     } catch (error) {
       alert('Your wallet or the token admin wallet might not be funded');
       setIsMinting(false);
@@ -57,19 +74,18 @@ export function MintCustomToken() {
 
     try {
       let result = await contractInvoke({
-        contractAddress: tokenAddress,
+        contractAddress: token?.address as string,
         method: 'mint',
         args: [new StellarSdk.Address(address).toScVal(), amountScVal],
         sorobanContext,
         signAndSend: true,
-        secretKey: admin_secret,
+        secretKey: admin_account.secret(),
       });
       console.log('🚀 « result:', result);
-
       if (result) {
         setIsMinting(false);
         sendNotification(
-          `Minted ${tokenAmount} ${shortenAddress(tokenAddress)}`,
+          `Minted ${tokenAmount} ${shortenAddress(token?.address as string)}`,
           'Minted',
           SnackbarIconType.MINT,
           SnackbarContext,
@@ -81,16 +97,17 @@ export function MintCustomToken() {
       //This will connect again the wallet to fetch its data
       sorobanContext.connect();
     } catch (error) {
-      console.log(error);
+      console.log('Catch error while minting', error);
       setIsMinting(false);
     }
   };
 
   const handleSetTrustline = () => {
+    setIsSettingTrustline(true);
     console.log('SETTING TRUSTLINE');
     setTrustline({
       tokenSymbol: tokenSymbol,
-      tokenAdmin: admin_public,
+      tokenAdmin: admin_account.publicKey(),
       sorobanContext,
     })
       .then((resp) => {
@@ -104,22 +121,59 @@ export function MintCustomToken() {
         setButtonText('Mint custom token');
       })
       .catch((error: any) => {
+        setIsSettingTrustline(false);
         console.log('Error setting trustline', error);
+      }).finally(() => {
+        setIsSettingTrustline(false);
       });
   };
 
-  const handleSubmit = () => {
-    if (needToSetTrustline) {
-      handleSetTrustline();
-    } else {
-      if (isAddress(tokenAddress)) {
+  const handleSCA = async () => {
+    const wrapToken = needsWrapping;
+    const setTrustline = wrapToken == false && needToSetTrustline;
+    const mintToken = wrapToken == false && needToSetTrustline == false;
+    switch (true) {
+      case wrapToken:
+        setIsLoading(true);
+        console.log(isLoading);
+        setShowWrapStellarAssetModal(true);
+        setNeedToSetTrustline(true);
+        handleTokenRefresh();
+        break;
+      case setTrustline:
+        await handleSetTrustline();
+        setNeedToSetTrustline(false);
+        handleTokenRefresh();
+        break;
+      case mintToken:
         handleMint();
-      } else {
-        console.log('type token address first');
-      }
+        setTokenAmount('');
+        setTokenAddress('');
+        break;
+      default:
+        console.log('case not handled');
+        break;
     }
-  };
-
+  }
+  
+  const handleSubmit = async () => {
+    const isSCA = await getClassicStellarAsset(tokenAddress);
+    if (isSCA) {
+      handleSCA();
+      return;
+    } else if(!isSCA && needToSetTrustline){
+      if (needToSetTrustline) {
+        handleSetTrustline();
+      } else {
+        if (isAddress(tokenAddress)) {
+          handleMint();
+        } else {
+          console.log('Invalid address || token || asset');
+        }
+      } 
+    }
+  }
+  
   useEffect(() => {
     const updateTokenInfo = async () => {
       const sorobanAddress = getClassicAssetSorobanAddress(tokenAddress, sorobanContext);
@@ -127,12 +181,15 @@ export function MintCustomToken() {
       if (isAddress(newTokenAddress)) {
         const tokenInfo = await findToken(newTokenAddress, tokensAsMap, sorobanContext);
         setTokenSymbol(tokenInfo?.symbol as string);
-
         const requiresTrust = await requiresTrustline(newTokenAddress, sorobanContext);
         if (requiresTrust) {
           setButtonText('Set Trustline');
           setNeedToSetTrustline(true);
-        } else {
+        } else if (needsWrapping) {
+          setButtonText('Wrap token');
+          setNeedToSetTrustline(false);
+        }
+        else {
           setButtonText('Mint custom token');
           setNeedToSetTrustline(false);
         }
@@ -140,15 +197,47 @@ export function MintCustomToken() {
         setButtonText('Mint custom token');
         setNeedToSetTrustline(false);
       }
-
-      if (isMinting) {
-        setButtonText(`Minting ${shortenAddress(tokenAddress)}`);
-        setNeedToSetTrustline(false);
-      }
     };
 
     updateTokenInfo();
-  }, [isMinting, sorobanContext, tokenAddress, tokensAsMap]);
+  }, [isMinting, sorobanContext, tokenAddress, tokensAsMap, needsWrapping]);
+
+  useEffect(() => {
+    switch (showWrapStellarAssetModal) {
+      case true:
+        setIsLoading(true);
+        setButtonText('Wrapping token...');
+        break;
+      case false:
+        setTimeout(()=>setIsLoading(false), 500)
+   
+        break;
+    }
+  }, [showWrapStellarAssetModal,]);
+
+  useEffect(() => {
+    switch (isSettingTrustline) {
+      case true:
+        setIsLoading(true);
+        break;
+      case false:
+        setIsLoading(false);
+        break;
+    }
+  }, [isSettingTrustline]);
+
+  useEffect(() => {
+    const sorobanAddress = getClassicAssetSorobanAddress(tokenAddress, sorobanContext);
+    const newTokenAddress = sorobanAddress ? sorobanAddress : tokenAddress;
+    if (isMinting) {
+      setButtonText(`Minting ${shortenAddress(newTokenAddress)}`);
+      setIsLoading(true);
+      setNeedToSetTrustline(false);
+    } else {
+      setIsLoading(false);
+    }
+  }
+  , [isMinting]);
 
   const getTokensApiUrl = () => {
     const base = process.env.NEXT_PUBLIC_BACKEND_URL ?? 'https://api.soroswap.finance';
@@ -157,6 +246,18 @@ export function MintCustomToken() {
   };
   return (
     <CardContent>
+      <WrapStellarAssetModal
+        isOpen={showWrapStellarAssetModal}
+        asset={token}
+        onDismiss={() =>{
+          setShowWrapStellarAssetModal(false)
+          setIsLoading(false)
+        }}
+        onSuccess={()=>{
+          setShowWrapStellarAssetModal(false)
+          handleTokenRefresh();
+        }}
+      />
       <Typography gutterBottom variant="h5" component="div">
         {'Mint custom token'}
         <BodySmall>
@@ -175,15 +276,23 @@ export function MintCustomToken() {
 
         <TextInput
           placeholder="Amount"
-          type="number"
           value={tokenAmount}
-          onChange={(e) => setTokenAmount(Number(e.target.value))}
+          isNumeric
+          onChange={(e) => {
+            const value = e.target.value;
+            if (typeof value === 'string' && value.match(/^[0-9]*$/)) {
+              setTokenAmount(Number(e.target.value))
+            } else {
+              setTokenAmount(tokenAmount)
+            }
+          }}
+          
         />
       </Stack>
-      <ButtonPrimary onClick={handleSubmit} disabled={isMinting} style={{ marginTop: '24px' }}>
+      <ButtonPrimary onClick={handleSubmit} disabled={isLoading} style={{ marginTop: '24px' }}>
         <Box display="flex" alignItems="center" gap="6px">
           {buttonText}
-          {isMinting && <CircularProgress size="18px" />}
+          {isLoading && <CircularProgress size="18px" />}
         </Box>
       </ButtonPrimary>
     </CardContent>

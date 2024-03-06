@@ -7,8 +7,14 @@ import { opacify } from 'themes/utils';
 
 export const SwapWrapper = styled('main')`
   position: relative;
-  background: ${({ theme }) => `linear-gradient(${theme.palette.customBackground.bg1}, ${theme.palette.customBackground.bg1}) padding-box,
-              linear-gradient(150deg, rgba(136,102,221,1) 0%, rgba(${theme.palette.mode == 'dark' ? "33,29,50,1" : "255,255,255,1"}) 35%, rgba(${theme.palette.mode == 'dark' ? "33,29,50,1" : "255,255,255,1"}) 65%, rgba(136,102,221,1) 100%) border-box`};
+  background: ${({ theme }) => `linear-gradient(${theme.palette.customBackground.bg1}, ${
+    theme.palette.customBackground.bg1
+  }) padding-box,
+              linear-gradient(150deg, rgba(136,102,221,1) 0%, rgba(${
+                theme.palette.mode == 'dark' ? '33,29,50,1' : '255,255,255,1'
+              }) 35%, rgba(${
+                theme.palette.mode == 'dark' ? '33,29,50,1' : '255,255,255,1'
+              }) 65%, rgba(136,102,221,1) 100%) border-box`};
   border: 1px solid transparent;
   border-radius: 16px;
   padding: 32px;
@@ -18,15 +24,15 @@ export const SwapWrapper = styled('main')`
   max-width: 480px;
   width: 100%;
   &:hover: {
-    border: 1px solid ${({ theme }) => opacify(24, theme.palette.secondary.main,)},
+    border: 1px solid ${({ theme }) => opacify(24, theme.palette.secondary.main)};
   }
 
-  @media (max-width: ${({theme}) => theme.breakpoints.values.md}px) {
+  @media (max-width: ${({ theme }) => theme.breakpoints.values.md}px) {
     padding: 16px;
   }
-`
+`;
 
-export const ArrowWrapper = styled('div')<{clickable: boolean }>`
+export const ArrowWrapper = styled('div')<{ clickable: boolean }>`
   border-radius: 32px;
   height: 32px;
   width: 32px;
@@ -46,7 +52,7 @@ export const ArrowWrapper = styled('div')<{clickable: boolean }>`
           }
         `
       : null}
-`
+`;
 
 const SwapCallbackErrorInner = styled('div')`
   background-color: ${({ theme }) => transparentize(0.9, theme.palette.error.main)};
@@ -64,7 +70,7 @@ const SwapCallbackErrorInner = styled('div')`
     margin: 0;
     font-weight: 500;
   }
-`
+`;
 
 const SwapCallbackErrorInnerAlertTriangle = styled('div')`
   background-color: ${({ theme }) => transparentize(0.9, theme.palette.error.main)};
@@ -75,7 +81,7 @@ const SwapCallbackErrorInnerAlertTriangle = styled('div')`
   border-radius: 12px;
   min-width: 48px;
   height: 48px;
-`
+`;
 
 export function SwapCallbackError({ error }: { error: ReactNode }) {
   return (
@@ -85,13 +91,14 @@ export function SwapCallbackError({ error }: { error: ReactNode }) {
       </SwapCallbackErrorInnerAlertTriangle>
       <p style={{ wordBreak: 'break-word' }}>{error}</p>
     </SwapCallbackErrorInner>
-  )
+  );
 }
 
 export const SwapShowAcceptChanges = styled(AutoColumn)`
-  background-color: ${({ theme }) => transparentize(0.95, theme.palette.custom.deprecated_primary3)};
+  background-color: ${({ theme }) =>
+    transparentize(0.95, theme.palette.custom.deprecated_primary3)};
   color: ${({ theme }) => theme.palette.customBackground.accentAction};
   padding: 12px;
   border-radius: 12px;
   margin-top: 8px;
-`
+`;

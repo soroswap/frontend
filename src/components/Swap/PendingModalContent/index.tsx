@@ -169,7 +169,10 @@ function getContent(args: ContentArgs): PendingModalStep {
       return {
         title: `Setting trustline for ${approvalCurrency?.symbol ?? 'this token'}`,
         subtitle: (
-          <CustomLink href="https://support.uniswap.org/hc/en-us/articles/8120520483085" target='_blank'>
+          <CustomLink
+            href="https://support.uniswap.org/hc/en-us/articles/8120520483085"
+            target="_blank"
+          >
             Why is this required?
           </CustomLink>
         ),
@@ -275,15 +278,14 @@ export function PendingModalContent({
         {currentStep === ConfirmModalState.PENDING_CONFIRMATION && showSuccess && (
           <AnimatedEntranceConfirmationIcon />
         )}
-        {((currentStep === ConfirmModalState.PENDING_CONFIRMATION && !showSuccess) ||
+        {(currentStep === ConfirmModalState.PENDING_CONFIRMATION ||
           tokenApprovalPending ||
           wrapPending ||
-          revocationPending) && <LoadingIndicatorOverlay />}
+          revocationPending) &&
+          !showSuccess && <LoadingIndicatorOverlay />}
       </LogoContainer>
       <HeaderContainer
-        $disabled={
-          revocationPending || tokenApprovalPending || wrapPending || (!swapPending && !showSuccess)
-        }
+        $disabled={(revocationPending || tokenApprovalPending || wrapPending) && !showSuccess}
       >
         {trade && trade.inputAmount && (
           <AnimationWrapper>

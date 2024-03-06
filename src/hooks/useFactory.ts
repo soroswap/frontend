@@ -1,31 +1,23 @@
-import { FactoryResponseType, FactoryType } from '../interfaces/factory';
-import { fetchFactory } from 'services/factory';
 import { SorobanContext, SorobanContextType } from '@soroban-react/core';
 import { useEffect, useState } from 'react';
+import { fetchFactory } from 'services/factory';
 import useSWRImmutable from 'swr/immutable';
 
 export const useFactory = (sorobanContext: SorobanContextType) => {
-  const { data, mutate, isLoading, error } = useSWRImmutable('factory', fetchFactory);
+  const { activeChain } = sorobanContext;
 
-  const [factory, setFactory] = useState<FactoryType>({
-    factory_address: '',
-    factory_id: '',
-  });
+  const { data, error, isLoading, mutate } = useSWRImmutable(
+    ['factory', activeChain],
+    ([key, activeChain]) =>
+      fetchFactory(activeChain?.id!),
+  );
+
+  const [factory, setFactory] = useState<string>();
 
   useEffect(() => {
     if (!data || !SorobanContext) return;
 
-    const filtered = data?.filter(
-      (item: FactoryResponseType) =>
-        item.network === sorobanContext?.activeChain?.name?.toLowerCase(),
-    );
-
-    if (filtered?.length > 0) {
-      setFactory({
-        factory_address: filtered[0].factory_address,
-        factory_id: filtered[0].factory_id,
-      });
-    }
+    setFactory(data.address)
   }, [data, sorobanContext]);
 
   return { factory, isLoading, isError: error, mutate };

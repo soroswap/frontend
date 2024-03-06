@@ -3,6 +3,7 @@ import { TxResponse } from '@soroban-react/contracts';
 import { useSorobanReact } from '@soroban-react/core';
 import BigNumber from 'bignumber.js';
 import { ButtonError, ButtonLight } from 'components/Buttons/Button';
+import { WalletButton } from 'components/Buttons/WalletButton';
 import { DarkGrayCard } from 'components/Card';
 import { AutoColumn, ColumnCenter } from 'components/Column';
 import CurrencyInputPanel from 'components/CurrencyInputPanel';
@@ -73,7 +74,6 @@ export default function AddLiquidityComponent({
   const theme = useTheme();
   const userSlippage = useUserSlippageToleranceWithDefault(DEFAULT_SLIPPAGE_INPUT_VALUE);
   const { ConnectWalletModal } = useContext(AppContext);
-  const { isConnectWalletModalOpen, setConnectWalletModalOpen } = ConnectWalletModal;
 
   const router = useRouter();
 
@@ -246,28 +246,36 @@ export default function AddLiquidityComponent({
     userSlippage,
   ]);
 
+  const baseRoute = `/liquidity/add/`;
+  
   const handleCurrencyASelect = useCallback(
     (currencyA: TokenType) => {
       const newCurrencyIdA = currencyA.address;
-      if (currencyIdB === undefined) {
-        router.push(`/liquidity/add/${newCurrencyIdA}`);
-      } else {
-        router.push(`/liquidity/add/${newCurrencyIdA}/${currencyIdB}`);
+      let path = `${newCurrencyIdA}/${currencyIdB}`;
+      if( currencyIdB === undefined || currencyIdB === newCurrencyIdA && currencyIdB === undefined) {
+        path = `${newCurrencyIdA}`;
+      } else if(currencyIdB === newCurrencyIdA){
+        path = `${newCurrencyIdA}/${currencyIdA}`;
       }
+      router.push(baseRoute+path);
     },
-    [currencyIdB, router],
+    [currencyIdA, currencyIdB, router],
   );
 
   const handleCurrencyBSelect = useCallback(
     (currencyB: TokenType) => {
       const newCurrencyIdB = currencyB.address;
+      let path = `/${currencyIdA}/${newCurrencyIdB}`;
       if (currencyIdA === undefined) {
-        router.push(`/liquidity/add/${newCurrencyIdB}`);
-      } else {
-        router.push(`/liquidity/add/${currencyIdA}/${newCurrencyIdB}`);
+        path = `/${newCurrencyIdB}`;
+      } else if (currencyIdA === newCurrencyIdB && currencyIdB === undefined) {
+        path = `/undefined/${newCurrencyIdB}`;
+      } else if (currencyIdA === newCurrencyIdB) {
+        path = `/${currencyIdB}/${newCurrencyIdB}`;
       }
+      router.push(baseRoute+path);
     },
-    [currencyIdA, router],
+    [currencyIdA, currencyIdB, router],
   );
 
   const pendingText = (
@@ -379,9 +387,7 @@ export default function AddLiquidityComponent({
             // showCommonBases
           />
           {!sorobanContext.address ? (
-            <ButtonLight onClick={() => setConnectWalletModalOpen(true)}>
-              <>Connect Wallet</>
-            </ButtonLight>
+            <WalletButton/>
           ) : (
             <AutoColumn gap="md">
               <ButtonError

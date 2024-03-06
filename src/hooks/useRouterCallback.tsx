@@ -24,8 +24,8 @@ export enum RouterMethod {
 const isObject = (val: any) => typeof val === 'object' && val !== null && !Array.isArray(val);
 
 //refetch balance, lptokens and reserves after router tx success
-const revalidateKeysCondition = (key: any) => {
-  const revalidateKeys = new Set(['balance', 'lp-tokens', 'reserves']);
+export const revalidateKeysCondition = (key: any) => {
+  const revalidateKeys = new Set(['balance', 'lp-tokens', 'reserves', 'trade', 'subscribed-pairs']);
 
   return Array.isArray(key) && key.some((k) => revalidateKeys.has(k));
 };
@@ -33,12 +33,11 @@ const revalidateKeysCondition = (key: any) => {
 export function useRouterCallback() {
   const sorobanContext = useSorobanReact();
   const { router } = useRouterAddress();
-  const router_address = router?.router_address;
+  const router_address = router!;
   const { mutate } = useSWRConfig();
 
   return useCallback(
     async (method: RouterMethod, args?: StellarSdk.xdr.ScVal[], signAndSend?: boolean) => {
-
       let result = (await contractInvoke({
         contractAddress: router_address as string,
         method: method,
@@ -49,7 +48,7 @@ export function useRouterCallback() {
       })) as TxResponse;
 
       //If is only a simulation return the result
-      if(!signAndSend) return result
+      if (!signAndSend) return result;
 
       if (
         isObject(result) &&

@@ -1,6 +1,7 @@
 import { CircularProgress, styled, useMediaQuery, useTheme } from '@mui/material';
 import { useSorobanReact } from '@soroban-react/core';
 import { ButtonPrimary } from 'components/Buttons/Button';
+import { WalletButton } from 'components/Buttons/WalletButton';
 import { AutoColumn } from 'components/Column';
 import LiquidityPoolInfoModal from 'components/Liquidity/LiquidityPoolInfoModal';
 import { LPPercentage } from 'components/Liquidity/styleds';
@@ -90,8 +91,7 @@ export default function LiquidityPage() {
   const noLiquidity = false;
   const isCreate = false;
 
-  const { lpTokens, isLoading } = useGetLpTokens();
-  // console.log("🚀 « lpTokens:", lpTokens)
+  const { lpTokens, isLoading, mutate } = useGetLpTokens();
 
   const [isModalOpen, setModalOpen] = useState<boolean>(false);
   const [selectedLP, setSelectedLP] = useState<LpTokensObj>();
@@ -160,9 +160,7 @@ export default function LiquidityPage() {
             + Add Liquidity
           </ButtonPrimary>
         ) : (
-          <ButtonPrimary onClick={() => setConnectWalletModalOpen(true)}>
-            Connect Wallet
-          </ButtonPrimary>
+          <WalletButton/>
         )}
       </PageWrapper>
       <LiquidityPoolInfoModal

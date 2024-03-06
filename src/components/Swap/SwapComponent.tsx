@@ -1,8 +1,9 @@
-import { Modal, styled } from '@mui/material';
+import { Box, CircularProgress, Modal, styled } from '@mui/material';
 import { setTrustline } from '@soroban-react/contracts';
 import { useSorobanReact } from '@soroban-react/core';
+import { ButtonPrimary } from 'components/Buttons/Button';
 import { AutoColumn } from 'components/Column';
-import ConfirmSwapModal from 'components/Swap/ConfirmSwapModal';
+import ConfirmSwapModal, { useConfirmModalState } from 'components/Swap/ConfirmSwapModal';
 import SwapDetailsDropdown from 'components/Swap/SwapDetailsDropdown';
 import { ButtonText } from 'components/Text';
 import { TransactionFailedContent } from 'components/TransactionConfirmationModal';
@@ -13,11 +14,18 @@ import { formatTokenAmount } from 'helpers/format';
 import { requiresTrustline } from 'helpers/stellar';
 import { relevantTokensType } from 'hooks';
 import { useToken } from 'hooks/tokens/useToken';
-import useGetReservesByPair from 'hooks/useGetReservesByPair';
 import { useSwapCallback } from 'hooks/useSwapCallback';
 import useSwapMainButton from 'hooks/useSwapMainButton';
 import { TokenType } from 'interfaces';
-import { ReactNode, useCallback, useContext, useEffect, useMemo, useReducer, useState } from 'react';
+import {
+  ReactNode,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useReducer,
+  useState,
+} from 'react';
 import { ArrowDown } from 'react-feather';
 import { InterfaceTrade, TradeState } from 'state/routing/types';
 import { Field } from 'state/swap/actions';
@@ -106,7 +114,7 @@ export function SwapComponent({
   const { SnackbarContext } = useContext(AppContext);
   const [showPriceImpactModal, setShowPriceImpactModal] = useState<boolean>(false);
   const [txError, setTxError] = useState<boolean>(false);
-  
+
   const [needTrustline, setNeedTrustline] = useState<boolean>(true);
 
   const { token: prefilledToken } = useToken(prefilledState.INPUT?.currencyId!);
@@ -129,7 +137,7 @@ export function SwapComponent({
   }, [onCurrencySelection, prefilledToken]);
 
   const {
-    trade: { state: tradeState, trade },
+    trade: { state: tradeState, trade, resetRouterSdkCache },
     allowedSlippage,
     currencyBalances,
     parsedAmount,
@@ -222,24 +230,16 @@ export function SwapComponent({
     [trade, tradeState],
   );
 
-  const handleContinueToReview = useCallback(() => {
+  const handleContinueToReview = () => {
     setSwapState({
       tradeToConfirm: trade,
       swapError: undefined,
       showConfirm: true,
       swapResult: undefined,
     });
-  }, [trade]);
+  };
 
-  const handleConfirmDismiss = useCallback(() => {
-    setSwapState((currentState) => ({ ...currentState, showConfirm: false }));
-    // If there was a swap, we want to clear the input
-    if (swapResult) {
-      onUserInput(Field.INPUT, '');
-    }
-  }, [onUserInput, swapResult]);
-
-  const swapCallback = useSwapCallback(
+  const { doSwap: swapCallback } = useSwapCallback(
     trade,
     // swapFiatValues,
     // allowedSlippage,
@@ -276,13 +276,18 @@ export function SwapComponent({
   };
 
   const handleTrustline = () => {
-    const asset = getClassicStellarAsset(trade?.outputAmount?.currency.name!)
-    if (!asset) return
-    
+    const asset = getClassicStellarAsset(trade?.outputAmount?.currency.name!);
+    if (!asset) return;
+
     setTrustline({ tokenSymbol: asset.assetCode, tokenAdmin: asset.issuer, sorobanContext })
       .then((result) => {
-        setNeedTrustline(false)
-        sendNotification(`for ${asset.assetCode}`, "Trustline set", SnackbarIconType.MINT, SnackbarContext)
+        setNeedTrustline(false);
+        sendNotification(
+          `for ${asset.assetCode}`,
+          'Trustline set',
+          SnackbarIconType.MINT,
+          SnackbarContext,
+        );
       })
       .catch((error) => {
         // console.log(error);
@@ -291,7 +296,7 @@ export function SwapComponent({
           ...currentState,
           showConfirm: false,
         }));
-      });      
+      });
   };
 
   const showDetailsDropdown = Boolean(
@@ -302,58 +307,71 @@ export function SwapComponent({
   const priceImpactSeverity = 2; //IF is < 2 it shows Swap anyway button in red
   const showPriceImpactWarning = false;
 
-  const { reserves } = useGetReservesByPair({
-    baseAddress: currencies[Field.INPUT]?.address,
-    otherAddress: currencies[Field.OUTPUT]?.address,
-  });
-
-  const {
-    getMainButtonText,
-    isMainButtonDisabled,
-    handleMainButtonClick,
-    MainButton,
-    getSwapValues,
-  } = useSwapMainButton({
-    currencies,
-    currencyBalances,
-    formattedAmounts,
-    routeNotFound,
-    onSubmit: handleContinueToReview,
-    reserves,
-  });
+  const { getMainButtonText, isMainButtonDisabled, handleMainButtonClick, getSwapValues } =
+    useSwapMainButton({
+      currencies,
+      currencyBalances,
+      formattedAmounts,
+      routeNotFound,
+      onSubmit: handleContinueToReview,
+      trade,
+    });
 
   useEffect(() => {
     const checkRequiresTrustlineAdjust = async () => {
       if (!swapCallback) {
         return;
       }
-      
+
       try {
-        const simulatedTransaction = await swapCallback(true)
+        const simulatedTransaction = await swapCallback(true);
         if (simulatedTransaction) {
-          return false
+          return false;
         }
       } catch (error) {
-        return true
+        return true;
       }
-  
     };
 
     const checkTrustline = async () => {
-      if (!trade) return
-      
-      const needTrustline = await requiresTrustline(trade?.outputAmount?.currency.address!, sorobanContext)
-      const requiresTrustlineAdjust = await checkRequiresTrustlineAdjust()
-      
+      if (!trade) return;
+
+      const needTrustline = await requiresTrustline(
+        trade?.outputAmount?.currency.address!,
+        sorobanContext,
+      );
+      const requiresTrustlineAdjust = await checkRequiresTrustlineAdjust();
+
       if (needTrustline || requiresTrustlineAdjust) {
-        setNeedTrustline(true)
+        setNeedTrustline(true);
       } else {
-        setNeedTrustline(false)
+        setNeedTrustline(false);
       }
-    }
+    };
 
     checkTrustline();
-  }, [sorobanContext, swapCallback, trade])
+  }, [sorobanContext, swapCallback, trade]);
+
+  const useConfirmModal = useConfirmModalState({
+    trade: trade!,
+    allowedSlippage,
+    onSwap: handleSwap,
+    onSetTrustline: handleTrustline,
+    onCurrencySelection,
+    trustline: needTrustline,
+  });
+
+  const handleConfirmDismiss = useCallback(() => {
+    setSwapState((currentState) => ({ ...currentState, showConfirm: false }));
+    // If there was a swap, we want to clear the input
+    if (swapResult) {
+      onUserInput(Field.INPUT, '');
+    }
+
+    resetRouterSdkCache();
+
+    useConfirmModal.resetStates();
+  }, [onUserInput, swapResult, useConfirmModal, resetRouterSdkCache]);
 
   return (
     <>
@@ -369,9 +387,10 @@ export function SwapComponent({
             <TransactionFailedContent onDismiss={() => setTxError(false)} />
           </div>
         </Modal>
-        {trade && showConfirm && (
+        {(trade || routeIsLoading) && showConfirm && (
           <ConfirmSwapModal
-            trade={trade}
+            useConfirmModal={useConfirmModal}
+            trade={trade!}
             inputCurrency={inputCurrency}
             originalTrade={tradeToConfirm}
             onAcceptChanges={() => null} //handleAcceptChanges}
@@ -406,11 +425,7 @@ export function SwapComponent({
                 independentField === Field.OUTPUT ? <span>From (at most)</span> : <span>From</span>
               }
               // disabled={disableTokenInputs}
-              value={
-                sorobanContext?.address && getSwapValues().insufficientLiquidity
-                  ? '0'
-                  : formattedAmounts[Field.INPUT]
-              }
+              value={formattedAmounts[Field.INPUT]}
               showMaxButton={showMaxButton}
               onUserInput={handleTypeInput}
               onMax={(maxBalance) => handleTypeInput(maxBalance.toString())}
@@ -422,7 +437,7 @@ export function SwapComponent({
               loading={independentField === Field.OUTPUT && routeIsSyncing}
               currency={currencies[Field.INPUT] ?? null}
               id={'swap-input'}
-              disableInput={getSwapValues().noLiquidity || getSwapValues().noCurrencySelected}
+              disableInput={getSwapValues().noCurrencySelected}
             />
           </SwapSection>
           <ArrowWrapper clickable={true}>
@@ -462,13 +477,12 @@ export function SwapComponent({
                 //showCommonBases
                 //id={InterfaceSectionName.CURRENCY_OUTPUT_PANEL}
                 loading={independentField === Field.INPUT && routeIsSyncing}
-                disableInput={getSwapValues().noLiquidity || getSwapValues().noCurrencySelected}
+                disableInput={getSwapValues().noCurrencySelected}
               />
             </OutputSwapSection>
           </div>
           {showDetailsDropdown && !getSwapValues().insufficientLiquidity && (
             <SwapDetailsDropdown
-              noLiquidity={getSwapValues().noLiquidity}
               trade={trade}
               syncing={routeIsSyncing}
               loading={routeIsLoading}
@@ -477,11 +491,21 @@ export function SwapComponent({
           )}
           {/* {showPriceImpactWarning && <PriceImpactWarning priceImpact={largerPriceImpact} />} */}
           <div>
-            <MainButton disabled={isMainButtonDisabled()} onClick={handleMainButtonClick}>
+            <ButtonPrimary
+              disabled={isMainButtonDisabled() || routeIsLoading}
+              onClick={handleMainButtonClick}
+              sx={{ height: '64px' }}
+            >
               <ButtonText fontSize={20} fontWeight={600}>
-                {getMainButtonText()}
+                {routeIsLoading ? (
+                  <Box display="flex" alignItems="center">
+                    <CircularProgress size="24px" />
+                  </Box>
+                ) : (
+                  getMainButtonText()
+                )}
               </ButtonText>
-            </MainButton>
+            </ButtonPrimary>
           </div>
         </AutoColumn>
       </SwapWrapper>
