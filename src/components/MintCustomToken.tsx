@@ -34,11 +34,10 @@ export function MintCustomToken() {
   const [isMinting, setIsMinting] = useState(false);
   const [buttonText, setButtonText] = useState<string>('Mint custom token');
   const [needToSetTrustline, setNeedToSetTrustline] = useState<boolean>(false);
-  const [needWrap, setNeedWrap] = useState<boolean>(false);
   const [tokenSymbol, setTokenSymbol] = useState<string>('');
   const [showWrapStellarAssetModal, setShowWrapStellarAssetModal] = useState<boolean>(false);
   
-  const {  token, needsWrapping } = useToken(tokenAddress);
+  const {  token, needsWrapping, handleTokenRefresh } = useToken(tokenAddress);
 
   const handleMint = async () => {
     console.log('minting...');
@@ -119,29 +118,21 @@ export function MintCustomToken() {
   };
 
   const handleSCA = async () => {
-    const wrapToken = needsWrapping && needWrap;
+    const wrapToken = needsWrapping;
     const setTrustline = wrapToken == false && needToSetTrustline;
     const mintToken = wrapToken == false && needToSetTrustline == false;
-    /* console.log('needsWrapping', needsWrapping);
-    console.log('wrapToken', wrapToken);
-    console.log('setTrustline', setTrustline);
-    console.log('mintToken', mintToken); */
     switch (true) {
       case wrapToken:
-        console.log('Needs wrap')
         setShowWrapStellarAssetModal(true);
         setNeedToSetTrustline(true);
-        setNeedWrap(false);
-        setTokenAddress(tokenAddress);
+        handleTokenRefresh();
         break;
       case setTrustline:
-        console.log('Needs set trustline')
         await handleSetTrustline();
         setNeedToSetTrustline(false);
-        setNeedWrap(false);
+        handleTokenRefresh();
         break;
       case mintToken:
-        console.log('Minting...')
         handleMint();
         setTokenAmount('');
         setTokenAddress('');
@@ -179,11 +170,9 @@ export function MintCustomToken() {
         const requiresTrust = await requiresTrustline(newTokenAddress, sorobanContext);
         if (requiresTrust) {
           setButtonText('Set Trustline');
-          setNeedWrap(false)
           setNeedToSetTrustline(true);
         } else if (needsWrapping) {
           setButtonText('Wrap token');
-          setNeedWrap(true);
           setNeedToSetTrustline(false);
         }
         else {
@@ -199,7 +188,6 @@ export function MintCustomToken() {
         setNeedToSetTrustline(false);
       }
     };
-    setNeedWrap(needsWrapping!);
 
     updateTokenInfo();
 
