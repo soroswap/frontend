@@ -20,7 +20,7 @@ import { BodySmall } from './Text';
 export function MintCustomToken() {
   const sorobanContext = useSorobanReact();
   const { server, address } = sorobanContext;
-  const admin_account = StellarSdk.Keypair.fromSecret(process.env.NEXT_PUBLIC_ADMIN_SECRET as string);
+  const admin_account = StellarSdk.Keypair.fromSecret(process.env.NEXT_PUBLIC_TEST_TOKENS_ADMIN_SECRET_KEY as string);
 
   const { SnackbarContext } = useContext(AppContext);
   const { tokensAsMap } = useAllTokens();

@@ -22,7 +22,7 @@ export function MintButton({ sorobanContext, token, amountToMint }: MintButtonPr
   const networkPassphrase = sorobanContext.activeChain?.networkPassphrase ?? '';
   const server = sorobanContext.server;
   const account = sorobanContext.address;
-  const admin_account = StellarSdk.Keypair.fromSecret(process.env.NEXT_PUBLIC_ADMIN_SECRET as string);
+  const admin_account = StellarSdk.Keypair.fromSecret(process.env.NEXT_PUBLIC_TEST_TOKENS_ADMIN_SECRET_KEY as string);
 
   const mintTokens = async () => {
     setSubmitting(true);
