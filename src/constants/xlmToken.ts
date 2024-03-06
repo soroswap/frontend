@@ -1,5 +1,18 @@
 export const xlmTokenList = [
   {
+    network: 'mainnet',
+    tokens: [
+      {
+        address: 'CAS3J7GYLGXMF6TDJBBYYSE3HQ6BBSMLNUQ34T6TZMYMW2EVH34XOWMA',
+        name: 'StellarLumens',
+        symbol: 'XLM',
+        logoURI:
+          'https://assets.coingecko.com/coins/images/100/standard/Stellar_symbol_black_RGB.png',
+        decimals: 7,
+      },
+    ],
+  },
+  {
     network: 'testnet',
     tokens: [
       {

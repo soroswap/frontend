@@ -26,6 +26,8 @@ export default function Home() {
     setPrefilledState(newPrefilledState);
   }, [activeChain, xlmToken]);
 
+  console.log(xlmToken);
+
   return (
     <>
       <SEO title="Soroswap" description="Soroswap Index" data-testid="SEO" />
