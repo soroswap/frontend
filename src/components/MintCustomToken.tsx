@@ -1,26 +1,29 @@
-import { Box, CircularProgress, Stack, Typography } from '@mui/material';
-import CardContent from '@mui/material/CardContent';
+import { useContext, useEffect, useState } from 'react';
 import { contractInvoke, setTrustline } from '@soroban-react/contracts';
 import { useSorobanReact } from '@soroban-react/core';
-import BigNumber from 'bignumber.js';
-import { AppContext, SnackbarIconType } from 'contexts';
-import { getClassicAssetSorobanAddress } from 'functions/getClassicAssetSorobanAddress';
-import { sendNotification } from 'functions/sendNotification';
-import { isAddress, shortenAddress } from 'helpers/address';
-import { requiresTrustline } from 'helpers/stellar';
-import { bigNumberToI128 } from 'helpers/utils';
-import { useKeys } from 'hooks';
-import { useAllTokens } from 'hooks/tokens/useAllTokens';
-import { findToken, useToken } from 'hooks/tokens/useToken';
-import { useContext, useEffect, useState } from 'react';
 import * as StellarSdk from 'stellar-sdk';
+
+import { AppContext, SnackbarIconType } from 'contexts';
+
+import { Box, CircularProgress, Stack, Typography } from '@mui/material';
+import CardContent from '@mui/material/CardContent';
+import WrapStellarAssetModal from './Modals/WrapStellarAssetModal';
 import { ButtonPrimary } from './Buttons/Button';
 import { TextInput } from './Inputs/TextInput';
 import { BodySmall } from './Text';
 
-import { getClassicStellarAsset } from 'helpers/address';
+import { getClassicAssetSorobanAddress } from 'functions/getClassicAssetSorobanAddress';
+import { sendNotification } from 'functions/sendNotification';
 
-import WrapStellarAssetModal from './Modals/WrapStellarAssetModal';
+import { isAddress, shortenAddress } from 'helpers/address';
+import { getClassicStellarAsset } from 'helpers/address';
+import { requiresTrustline } from 'helpers/stellar';
+import { bigNumberToI128 } from 'helpers/utils';
+import BigNumber from 'bignumber.js';
+
+import { useKeys } from 'hooks';
+import { useAllTokens } from 'hooks/tokens/useAllTokens';
+import { findToken, useToken } from 'hooks/tokens/useToken';
 
 export function MintCustomToken() {
   const sorobanContext = useSorobanReact();
@@ -29,15 +32,18 @@ export function MintCustomToken() {
   const { SnackbarContext } = useContext(AppContext);
   const { tokensAsMap } = useAllTokens();
   
+  const [buttonText, setButtonText] = useState<string>('Mint custom token');
+  const [isMinting, setIsMinting] = useState(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isSettingTrustline, setIsSettingTrustline] = useState<boolean>(false);
+  const [needToSetTrustline, setNeedToSetTrustline] = useState<boolean>(false);
+  const [showWrapStellarAssetModal, setShowWrapStellarAssetModal] = useState<boolean>(false);
   const [tokenAddress, setTokenAddress] = useState<string>('');
   const [tokenAmount, setTokenAmount] = useState<string | number>('');
-  const [isMinting, setIsMinting] = useState(false);
-  const [buttonText, setButtonText] = useState<string>('Mint custom token');
-  const [needToSetTrustline, setNeedToSetTrustline] = useState<boolean>(false);
   const [tokenSymbol, setTokenSymbol] = useState<string>('');
-  const [showWrapStellarAssetModal, setShowWrapStellarAssetModal] = useState<boolean>(false);
-  
+
   const {  token, needsWrapping, handleTokenRefresh } = useToken(tokenAddress);
+
 
   const handleMint = async () => {
     console.log('minting...');
@@ -96,6 +102,7 @@ export function MintCustomToken() {
   };
 
   const handleSetTrustline = () => {
+    setIsSettingTrustline(true);
     console.log('SETTING TRUSTLINE');
     setTrustline({
       tokenSymbol: tokenSymbol,
@@ -113,7 +120,10 @@ export function MintCustomToken() {
         setButtonText('Mint custom token');
       })
       .catch((error: any) => {
+        setIsSettingTrustline(false);
         console.log('Error setting trustline', error);
+      }).finally(() => {
+        setIsSettingTrustline(false);
       });
   };
 
@@ -123,6 +133,8 @@ export function MintCustomToken() {
     const mintToken = wrapToken == false && needToSetTrustline == false;
     switch (true) {
       case wrapToken:
+        setIsLoading(true);
+        console.log(isLoading);
         setShowWrapStellarAssetModal(true);
         setNeedToSetTrustline(true);
         handleTokenRefresh();
@@ -160,6 +172,7 @@ export function MintCustomToken() {
       } 
     }
   }
+  
   useEffect(() => {
     const updateTokenInfo = async () => {
       const sorobanAddress = getClassicAssetSorobanAddress(tokenAddress, sorobanContext);
@@ -183,16 +196,47 @@ export function MintCustomToken() {
         setButtonText('Mint custom token');
         setNeedToSetTrustline(false);
       }
-      if (isMinting) {
-        setButtonText(`Minting ${shortenAddress(newTokenAddress)}`);
-        setNeedToSetTrustline(false);
-      }
     };
 
     updateTokenInfo();
-
-
   }, [isMinting, sorobanContext, tokenAddress, tokensAsMap, needsWrapping]);
+
+  useEffect(() => {
+    switch (showWrapStellarAssetModal) {
+      case true:
+        setIsLoading(true);
+        setButtonText('Wrapping token...');
+        break;
+      case false:
+        setTimeout(()=>setIsLoading(false), 500)
+   
+        break;
+    }
+  }, [showWrapStellarAssetModal,]);
+
+  useEffect(() => {
+    switch (isSettingTrustline) {
+      case true:
+        setIsLoading(true);
+        break;
+      case false:
+        setIsLoading(false);
+        break;
+    }
+  }, [isSettingTrustline]);
+
+  useEffect(() => {
+    const sorobanAddress = getClassicAssetSorobanAddress(tokenAddress, sorobanContext);
+    const newTokenAddress = sorobanAddress ? sorobanAddress : tokenAddress;
+    if (isMinting) {
+      setButtonText(`Minting ${shortenAddress(newTokenAddress)}`);
+      setIsLoading(true);
+      setNeedToSetTrustline(false);
+    } else {
+      setIsLoading(false);
+    }
+  }
+  , [isMinting]);
 
   const getTokensApiUrl = () => {
     const base = process.env.NEXT_PUBLIC_BACKEND_URL ?? 'https://api.soroswap.finance';
@@ -204,8 +248,14 @@ export function MintCustomToken() {
       <WrapStellarAssetModal
         isOpen={showWrapStellarAssetModal}
         asset={token}
-        onDismiss={() => setShowWrapStellarAssetModal(false)}
-        onSuccess={()=>{setShowWrapStellarAssetModal(false)}}
+        onDismiss={() =>{
+          setShowWrapStellarAssetModal(false)
+          setIsLoading(false)
+        }}
+        onSuccess={()=>{
+          setShowWrapStellarAssetModal(false)
+          handleTokenRefresh();
+        }}
       />
       <Typography gutterBottom variant="h5" component="div">
         {'Mint custom token'}
@@ -238,10 +288,10 @@ export function MintCustomToken() {
           
         />
       </Stack>
-      <ButtonPrimary onClick={handleSubmit} disabled={isMinting} style={{ marginTop: '24px' }}>
+      <ButtonPrimary onClick={handleSubmit} disabled={isLoading} style={{ marginTop: '24px' }}>
         <Box display="flex" alignItems="center" gap="6px">
           {buttonText}
-          {isMinting && <CircularProgress size="18px" />}
+          {isLoading && <CircularProgress size="18px" />}
         </Box>
       </ButtonPrimary>
     </CardContent>
