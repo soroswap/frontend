@@ -17,7 +17,6 @@ export const useRouterAddress = () => {
   const [router, setRouter] = useState<string>();
 
   useEffect(() => {
-    console.log('🚀 « data:', data);
     if (!data || !sorobanContext) return;
 
     setRouter(data.address)
