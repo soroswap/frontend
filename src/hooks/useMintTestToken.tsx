@@ -16,7 +16,9 @@ interface MintTestTokenProps {
 
 export function useMintTestToken() {
   const sorobanContext = useSorobanReact();
-  const admin_account = StellarSdk.Keypair.fromSecret(process.env.NEXT_PUBLIC_TEST_TOKENS_ADMIN_SECRET_KEY as string);
+  const admin_account = StellarSdk.Keypair.fromSecret(
+    process.env.NEXT_PUBLIC_TEST_TOKENS_ADMIN_SECRET_KEY as string,
+  );
 
   const { tokens } = useApiTokens();
   const { notify } = useNotification();
@@ -86,8 +88,6 @@ export function useMintTestToken() {
           type: SnackbarIconType.ERROR,
         });
       }
-
-      sorobanContext.connect();
     },
     [admin_account, sorobanContext, tokens, notify],
   );

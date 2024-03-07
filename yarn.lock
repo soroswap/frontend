@@ -7490,10 +7490,10 @@ sodium-native@^4.0.1:
   dependencies:
     node-gyp-build "^4.6.0"
 
-soroswap-router-sdk@1.1.16:
-  version "1.1.16"
-  resolved "https://registry.yarnpkg.com/soroswap-router-sdk/-/soroswap-router-sdk-1.1.16.tgz#55f57fe5e43dc2e4d45b586ac73f0e9e85ae8097"
-  integrity sha512-RTV3x9IZsz1yuRlezI0KETjJdsGZH2ber954J2+1kqH6MJsrfCJH0Gp2jOULd/pQMPoXNA/IRTdpy0d+cjnoSg==
+soroswap-router-sdk@^1.1.18:
+  version "1.1.18"
+  resolved "https://registry.yarnpkg.com/soroswap-router-sdk/-/soroswap-router-sdk-1.1.18.tgz#eef4d095aba3d9ade66d0e5055181d8ad48bcbab"
+  integrity sha512-mKjMiSMEuI+O5pbqoxDaEBsfwwBSrh0xH8Aej2EFrJ5rNh89mkd4rFAYn3/Rdf8/Wt9Cyyj+b8/X1zEFWYfCag==
   dependencies:
     "@soroban-react/contracts" "^9.0.0"
     axios "^1.6.5"
