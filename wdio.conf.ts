@@ -10,8 +10,26 @@ const chromeExtension = readFileSync(extPath, 'base64');
 /**
  * Configuration options for WebdriverIO test runner.
  */
-export const config: Options.Testrunner = {
+export const config = {
     runner: 'local',
+    //services: ['docker', 'selenium-standalone'],
+    services: ['docker', 'selenium-standalone'],
+    dockerOptions: {
+        image: 'nginx',
+        healthCheck: {
+            url: 'http://localhost:3000',
+            maxRetries: 3,
+            inspectInterval: 1000,
+            startDelay: 2000
+        },
+        options: {
+            p: ['3001:3000'],
+            v: [
+                `${ path.join(__dirname, '/workspace/') }:/usr/share/nginx/html:ro`,
+                `${ path.join(__dirname, '/nginx.conf') }:/etc/nginx/nginx.conf:ro`
+            ]
+        }
+    },
     autoCompileOpts: {
         autoCompile: true,
         tsNodeOpts: {
@@ -22,18 +40,25 @@ export const config: Options.Testrunner = {
     specs: [
         './test/specs/**/*.wdio.ts'
     ],
-    exclude: [
-    ],
     maxInstances: 1,
     headless: false,
     capabilities: [{
         browserName: 'chrome',
+        browserVersion: '122.0.6258.0',
         'goog:chromeOptions': {
+            binary: '/tmp/chrome/linux-122.0.6258.0/chrome-linux64/chrome',
             extensions: [chromeExtension],
-            args: ["--user-data-dir=./test/user_data", "--enable-profile-shortcut-manager"]
+            args: [
+                "--user-data-dir=./test/user_data",
+                "--enable-profile-shortcut-manager",
+                "--no-sandbox",
+                "--disable-dev-shm-usage",
+                "--headless",
+                "--remote-debugging-port=3000"
+            ]
         }
     }],
-    logLevel: 'info',
+    logLevel: 'debug',
     bail: 0,
     baseUrl: 'http://localhost:3000',
     waitforTimeout: 10000,
