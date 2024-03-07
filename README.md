@@ -37,6 +37,11 @@ Before you begin, ensure you have met the following requirements:
     ```bash
     NEXT_PUBLIC_BACKEND_URL=http://localhost:8010
     ```
+    If you don't want to use the backend, you should also set the following variable:
+    ```bash
+    NEXT_PUBLIC_SOROSWAP_BACKEND_ENABLED=false
+    ```
+
     Also, the variable `NEXT_PUBLIC_TEST_TOKENS_ADMIN_SECRET_KEY` should be the same as the one that deployed the tokens in the `core` repository.
 
     If you are ready for production, you can take Futurenet Contracts information from `https://api.soroswap.finance` and just do
