@@ -4,7 +4,8 @@ import { useMemo } from 'react';
 import { CurrencyAmount, Networks, Protocols, Router, Token, TradeType } from 'soroswap-router-sdk';
 
 const backendUrl = process.env.NEXT_PUBLIC_SOROSWAP_BACKEND_URL;
-const apiKey = process.env.NEXT_PUBLIC_SOROSWAP_BACKEND_API_KEY;
+const backendApiKey = process.env.NEXT_PUBLIC_SOROSWAP_BACKEND_API_KEY;
+const shouldUseBackend = process.env.NEXT_PUBLIC_SOROSWAP_BACKEND_ENABLED === 'true';
 
 export interface GenerateRouteProps {
   amountTokenAddress: string;
@@ -13,27 +14,27 @@ export interface GenerateRouteProps {
   tradeType: TradeType;
 }
 
-const chainNameToId: { [x: string]: Networks } = {
-  testnet: Networks.TESTNET,
-  standalone: Networks.STANDALONE,
-  futurenet: Networks.FUTURENET,
-};
-
 export const useRouterSDK = () => {
   const sorobanContext = useSorobanReact();
   const { factory } = useFactory(sorobanContext);
 
-  const network: Networks =
-    chainNameToId[sorobanContext.activeChain?.network?.toLowerCase() ?? 'testnet'];
+  const network = sorobanContext.activeChain?.networkPassphrase as Networks;
 
   const router = useMemo(() => {
-    if (!backendUrl || !apiKey) {
+    if (!backendUrl || !backendApiKey) {
       throw new Error(
         'NEXT_PUBLIC_SOROSWAP_BACKEND_URL and NEXT_PUBLIC_SOROSWAP_BACKEND_API_KEY must be set in the environment variables.',
       );
     }
 
-    return new Router(backendUrl, apiKey, 60, [Protocols.SOROSWAP], network);
+    return new Router({
+      backendUrl,
+      backendApiKey,
+      pairsCacheInSeconds: 60,
+      protocols: [Protocols.SOROSWAP],
+      network,
+      shouldUseBackend,
+    });
   }, [network]);
 
   const fromAddressToToken = (address: string) => {
@@ -60,13 +61,7 @@ export const useRouterSDK = () => {
     const currencyAmount = fromAddressAndAmountToCurrencyAmount(amountTokenAddress, amount);
     const quoteCurrency = fromAddressToToken(quoteTokenAddress);
 
-    return router.route(
-      currencyAmount,
-      quoteCurrency,
-      tradeType,
-      factory,
-      sorobanContext,
-    );
+    return router.route(currencyAmount, quoteCurrency, tradeType, factory, sorobanContext);
   };
 
   return { generateRoute, resetRouterSdkCache };
