@@ -1,7 +1,7 @@
 import * as StellarSdk from 'stellar-sdk';
-import { SorobanContextType } from '@soroban-react/core';
+import { useSorobanReact, SorobanContextType } from '@soroban-react/core';
+import { contractTransaction } from '@soroban-react/contracts';
 import axios from 'axios';
-import { fetchKeys } from 'services/keys';
 import { fetchRouter } from 'services/router';
 import { useSwapCallback } from 'hooks/useSwapCallback';
 import { InterfaceTrade } from 'state/routing/types';
@@ -21,65 +21,68 @@ const getCurrentTimePlusOneHour = (): number => {
 
 export async function calculateSwapFees(
   sorobanContext: SorobanContextType,
-  pathAddresses: string[],
-  amountIn: number,
-  amountOutMin: number,
+  trade: InterfaceTrade | undefined,
 ) {
-  console.log(sorobanContext);
-  if (!sorobanContext.activeChain || !sorobanContext.activeChain.sorobanRpcUrl) {
+  if (!trade) {
+    console.error('Trade data is not available.');
     return;
   }
 
-  const { lpTokens, isLoading } = useGetLpTokens();
-  console.log('🚀 « lpTokens:', lpTokens);
+  if (!sorobanContext.activeChain || !sorobanContext.activeChain.sorobanRpcUrl) {
+    console.error('Error getting Soroban context.');
+    return;
+  }
 
-  // const { result } = await useSwapCallback(args).doSwap(true);
+  let op = 'swap_tokens_for_exact_tokens';
+  if (trade.tradeType === 'EXACT_INPUT') {
+    op = 'swap_exact_tokens_for_tokens';
+  }
 
-  // const passphrase = sorobanContext.activeChain.networkPassphrase;
-  // const network = sorobanContext.activeChain.id;
+  const passphrase = sorobanContext.activeChain.networkPassphrase;
+  const network = sorobanContext.activeChain.id;
 
-  // const keysData = await fetchKeys();
-  // const keys = keysData.filter((key: { network: string }) => key.network === network)[0];
-  // const adminPublicKey = keys.admin_public;
-  // const adminSecretKey = keys.admin_secret;
+  const adminSecretKey = process.env.NEXT_PUBLIC_TEST_TOKENS_ADMIN_SECRET_KEY;
+  let adminPublicKey;
+  if (adminSecretKey) {
+    adminPublicKey = StellarSdk.Keypair.fromSecret(adminSecretKey).publicKey();
+  } else {
+    console.error('No secret key found.');
+    return;
+  }
+  const sorobanRpcUrl = sorobanContext.activeChain.sorobanRpcUrl;
+  const routerData = await fetchRouter(network);
+  const routerId = routerData.address;
+  const path = trade.path?.map((address) => new StellarSdk.Address(address));
+  const scValParams = [
+    StellarSdk.nativeToScVal(Number(trade.inputAmount?.value), { type: 'i128' }),
+    StellarSdk.nativeToScVal(Number(trade.outputAmount?.value), { type: 'i128' }),
+    StellarSdk.nativeToScVal(path, { type: 'Vec' }),
+    new StellarSdk.Address(adminPublicKey).toScVal(),
+    StellarSdk.nativeToScVal(getCurrentTimePlusOneHour(), { type: 'u64' }),
+  ];
 
-  // const sorobanRpcUrl = sorobanContext.activeChain.sorobanRpcUrl;
+  const server = new StellarSdk.SorobanRpc.Server(sorobanRpcUrl, {
+    allowHttp: true,
+  });
 
-  // const routerData = await fetchRouter();
-  // const router = routerData.filter((key: { network: string }) => key.network === network)[0];
-  // const routerId = router.router_id;
+  const account = await server.getAccount(adminPublicKey);
 
-  // const routerContract = new StellarSdk.Contract(routerId);
-  // const fee = StellarSdk.BASE_FEE;
-  // const path = pathAddresses.map((address) => new StellarSdk.Address(address));
-  // const scValParams = [
-  //   StellarSdk.nativeToScVal(Number(amountIn), { type: 'i128' }),
-  //   StellarSdk.nativeToScVal(Number(amountOutMin), { type: 'i128' }),
-  //   StellarSdk.nativeToScVal(path, { type: 'Vec' }),
-  //   new StellarSdk.Address(adminPublicKey).toScVal(),
-  //   StellarSdk.nativeToScVal(getCurrentTimePlusOneHour(), { type: 'u64' }),
-  // ];
+  const txn = contractTransaction({
+    networkPassphrase: passphrase,
+    source: account,
+    contractAddress: routerId,
+    method: op,
+    args: scValParams,
+  });
 
-  // const op = routerContract.call('swap_exact_tokens_for_tokens', ...scValParams);
-  // console.log('OPERATION: ', op);
-  // const server = new StellarSdk.SorobanRpc.Server(sorobanRpcUrl, {
-  //   allowHttp: true,
-  // });
-  // const account = await server.getAccount(adminPublicKey);
-  // const transaction = new StellarSdk.TransactionBuilder(account, { fee })
-  //   .setNetworkPassphrase(passphrase)
-  //   .setTimeout(30) // valid for the next 30s
-  //   .addOperation(op)
-  //   .build();
+  const simulated: StellarSdk.SorobanRpc.Api.SimulateTransactionResponse =
+    await server?.simulateTransaction(txn);
 
-  // console.log('TRANSACTION: ', transaction);
-  // transaction.sign(StellarSdk.Keypair.fromSecret(adminSecretKey));
-  // console.log('SIGNED TRANSACTION: ', transaction);
-  // const preparedTransaction = await server.prepareTransaction(transaction);
-  // console.log('PREPARED TRANSACTION: ', preparedTransaction);
-  // const simulatedTransaction = await server.simulateTransaction(preparedTransaction);
-  // type simulatedTransactionKey = keyof typeof simulatedTransaction;
-  // const minResourceFeeVar = 'minResourceFee' as simulatedTransactionKey;
-  // const minResourceFee = simulatedTransaction[minResourceFeeVar];
-  // console.log('minResourceFee:', minResourceFee);
+  if (StellarSdk.SorobanRpc.Api.isSimulationError(simulated)) {
+    throw new Error(simulated.error);
+  } else if (!simulated.result) {
+    throw new Error(`invalid simulation: no result in ${simulated}`);
+  }
+
+  return simulated.minResourceFee;
 }

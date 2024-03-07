@@ -12,6 +12,7 @@ import BigNumber from 'bignumber.js';
 import Column from 'components/Column';
 import CurrencyLogo from 'components/Logo/CurrencyLogo';
 import useGetReservesByPair from 'hooks/useGetReservesByPair';
+import { calculateSwapFees } from 'functions/getNetworkFees';
 
 interface AdvancedSwapDetailsProps {
   trade: InterfaceTrade | undefined;
@@ -85,6 +86,7 @@ export function AdvancedSwapDetails({
   });
 
   const [priceImpact, setPriceImpact] = useState<number>(0);
+  const [networkFees, setNetworkFees] = useState<string | null>(null);
 
   useEffect(() => {
     if (reserves) {
@@ -98,6 +100,21 @@ export function AdvancedSwapDetails({
         setPriceImpact(twoDecimalsPercentage(BigNumber(resp).absoluteValue().toString()));
       });
     }
+    const fetchNetworkFees = async () => {
+      if (trade) {
+        try {
+          const fees = await calculateSwapFees(sorobanContext, trade);
+          if (fees) {
+            setNetworkFees((Number(fees) / 10 ** 7).toString());
+          }
+        } catch (error) {
+          console.error('Error fetching network fees:', error);
+          setNetworkFees('--');
+        }
+      }
+    };
+
+    fetchNetworkFees();
   }, [
     sorobanContext,
     trade?.inputAmount?.currency,
@@ -120,13 +137,7 @@ export function AdvancedSwapDetails({
             <BodySmall color="textSecondary">Network fee</BodySmall>
           </MouseoverTooltip>
           <TextWithLoadingPlaceholder syncing={syncing} width={50}>
-            <BodySmall>
-              ~$?
-              {/* {`${trade.totalGasUseEstimateUSD ? '~' : ''}${formatNumber(
-                  trade.totalGasUseEstimateUSD,
-                  NumberType.FiatGasPrice
-                )}`} */}
-            </BodySmall>
+            <BodySmall>~{networkFees} XLM</BodySmall>
           </TextWithLoadingPlaceholder>
         </RowBetween>
       )}
