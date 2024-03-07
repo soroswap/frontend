@@ -176,6 +176,7 @@ export default function ConfirmSwapModal({
   onCurrencySelection,
   swapError,
   swapResult,
+  networkFees,
   swapQuoteReceivedDate,
   fiatValueInput,
   fiatValueOutput,
@@ -185,6 +186,7 @@ export default function ConfirmSwapModal({
   inputCurrency?: TokenType;
   originalTrade?: InterfaceTrade;
   swapResult?: any; //SwapResult
+  networkFees: number;
   allowedSlippage: any; //Percent
   trustline: boolean;
   onAcceptChanges: () => void;
@@ -242,6 +244,7 @@ export default function ConfirmSwapModal({
           onAcceptChanges={onAcceptChanges}
           swapErrorMessage={swapFailed ? swapError?.message : undefined}
           trustline={trustline}
+          networkFees={networkFees}
         />
       );
     }

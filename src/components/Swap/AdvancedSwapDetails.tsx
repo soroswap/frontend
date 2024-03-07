@@ -18,6 +18,7 @@ interface AdvancedSwapDetailsProps {
   trade: InterfaceTrade | undefined;
   allowedSlippage: number;
   syncing?: boolean;
+  networkFees: number;
 }
 
 function TextWithLoadingPlaceholder({
@@ -42,6 +43,7 @@ export function AdvancedSwapDetails({
   trade,
   allowedSlippage,
   syncing = false,
+  networkFees,
 }: AdvancedSwapDetailsProps) {
   // const { chainId } = useWeb3React()
   // const nativeCurrency = useNativeCurrency(chainId)
@@ -86,7 +88,6 @@ export function AdvancedSwapDetails({
   });
 
   const [priceImpact, setPriceImpact] = useState<number>(0);
-  const [networkFees, setNetworkFees] = useState<string | null>(null);
 
   useEffect(() => {
     if (reserves) {
@@ -100,21 +101,6 @@ export function AdvancedSwapDetails({
         setPriceImpact(twoDecimalsPercentage(BigNumber(resp).absoluteValue().toString()));
       });
     }
-    const fetchNetworkFees = async () => {
-      if (trade) {
-        try {
-          const fees = await calculateSwapFees(sorobanContext, trade);
-          if (fees) {
-            setNetworkFees((Number(fees) / 10 ** 7).toString());
-          }
-        } catch (error) {
-          console.error('Error fetching network fees:', error);
-          setNetworkFees('--');
-        }
-      }
-    };
-
-    fetchNetworkFees();
   }, [
     sorobanContext,
     trade?.inputAmount?.currency,

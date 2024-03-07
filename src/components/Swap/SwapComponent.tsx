@@ -36,6 +36,7 @@ import SwapCurrencyInputPanel from '../CurrencyInputPanel/SwapCurrencyInputPanel
 import SwapHeader from './SwapHeader';
 import { ArrowWrapper, SwapWrapper } from './styleds';
 import { calculateSwapFees } from 'functions/getNetworkFees';
+import { N } from 'vitest/dist/reporters-MmQN-57K';
 
 const SwapSection = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -126,6 +127,8 @@ export function SwapComponent({
 
   const [state, dispatch] = useReducer(swapReducer, { ...initialSwapState, ...prefilledState });
   const { typedValue, recipient, independentField } = state;
+
+  const [networkFees, setNetworkFees] = useState<number>(0);
 
   const { onSwitchTokens, onCurrencySelection, onUserInput, onChangeRecipient } =
     useSwapActionHandlers(dispatch);
@@ -350,6 +353,21 @@ export function SwapComponent({
       }
     };
 
+    const fetchNetworkFees = async () => {
+      if (trade) {
+        try {
+          const fees = await calculateSwapFees(sorobanContext, trade);
+          if (fees) {
+            setNetworkFees(Number(fees) / 10 ** 7);
+          }
+        } catch (error) {
+          console.error('Error fetching network fees:', error);
+          setNetworkFees(-1);
+        }
+      }
+    };
+
+    fetchNetworkFees();
     checkTrustline();
   }, [sorobanContext, swapCallback, trade]);
 
@@ -398,6 +416,7 @@ export function SwapComponent({
             onCurrencySelection={onCurrencySelection}
             swapResult={swapResult}
             allowedSlippage={allowedSlippage} //allowedSlippage}
+            networkFees={networkFees}
             onConfirm={handleSwap}
             onSetTrustline={handleTrustline}
             trustline={needTrustline}
@@ -488,6 +507,7 @@ export function SwapComponent({
               syncing={routeIsSyncing}
               loading={routeIsLoading}
               allowedSlippage={allowedSlippage}
+              networkFees={networkFees}
             />
           )}
           {/* {showPriceImpactWarning && <PriceImpactWarning priceImpact={largerPriceImpact} />} */}

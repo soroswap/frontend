@@ -11,6 +11,7 @@ import { formatTokenAmount, twoDecimalsPercentage } from 'helpers/format';
 import useGetReservesByPair from 'hooks/useGetReservesByPair';
 import { getSwapAmounts } from 'hooks/useSwapCallback';
 import { ReactNode, useEffect, useState } from 'react';
+import { useSorobanReact } from '@soroban-react/core';
 import { AlertTriangle } from 'react-feather';
 import { InterfaceTrade, TradeType } from 'state/routing/types';
 import { Label } from './SwapModalHeaderAmount';
@@ -49,6 +50,7 @@ export default function SwapModalFooter({
   showAcceptChanges,
   onAcceptChanges,
   trustline,
+  networkFees,
 }: {
   trade: InterfaceTrade;
   swapResult?: any; //SwapResult
@@ -62,6 +64,7 @@ export default function SwapModalFooter({
   showAcceptChanges: boolean;
   onAcceptChanges: () => void;
   trustline: boolean;
+  networkFees: number;
 }) {
   const theme = useTheme();
   // const transactionDeadlineSecondsSinceEpoch = useTransactionDeadline()?.toNumber() // in seconds since epoch
@@ -78,6 +81,8 @@ export default function SwapModalFooter({
     baseAddress: trade?.inputAmount?.currency?.address,
     otherAddress: trade?.outputAmount?.currency.address,
   });
+
+  const sorobanContext = useSorobanReact();
 
   const [priceImpact, setPriceImpact] = useState<number>(0);
 
@@ -137,9 +142,9 @@ export default function SwapModalFooter({
             >
               <Label cursor="help">Network fees</Label>
             </MouseoverTooltip>
-            <MouseoverTooltip placement="right" title={'<GasBreakdownTooltip trade={trade} />'}>
-              <DetailRowValue>~ XML</DetailRowValue>
-            </MouseoverTooltip>
+            <DetailRowValue>~{networkFees} XML</DetailRowValue>
+            {/* <MouseoverTooltip placement="right" title={'<GasBreakdownTooltip trade={trade} />'}>
+            </MouseoverTooltip> */}
           </Row>
         </BodySmall>
         {true && (
