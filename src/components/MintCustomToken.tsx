@@ -1,6 +1,5 @@
 import { useContext, useEffect, useState } from 'react';
 import { contractInvoke, setTrustline } from '@soroban-react/contracts';
-import { useSorobanReact } from '@soroban-react/core';
 import * as StellarSdk from 'stellar-sdk';
 
 import { AppContext, SnackbarIconType } from 'contexts';
@@ -23,9 +22,10 @@ import BigNumber from 'bignumber.js';
 
 import { useAllTokens } from 'hooks/tokens/useAllTokens';
 import { findToken, useToken } from 'hooks/tokens/useToken';
+import useGetMyBalances from 'hooks/useGetMyBalances';
 
 export function MintCustomToken() {
-  const sorobanContext = useSorobanReact();
+  const { sorobanContext, refetch } = useGetMyBalances();
   const { server, address } = sorobanContext;
   const admin_account = StellarSdk.Keypair.fromSecret(
     process.env.NEXT_PUBLIC_TEST_TOKENS_ADMIN_SECRET_KEY as string,
@@ -47,7 +47,6 @@ export function MintCustomToken() {
   const { token, needsWrapping, handleTokenRefresh } = useToken(tokenAddress);
 
   const handleMint = async () => {
-    console.log('minting...');
     setIsMinting(true);
     if (!tokenAddress || !tokenAmount) {
       setIsMinting(false);
@@ -90,12 +89,12 @@ export function MintCustomToken() {
           SnackbarIconType.MINT,
           SnackbarContext,
         );
+        refetch();
         setTokenAddress('');
-        setTokenAmount(0);
+        setTokenAmount('');
       }
 
-      //This will connect again the wallet to fetch its data
-      sorobanContext.connect();
+      handleTokenRefresh();
     } catch (error) {
       console.log('Catch error while minting', error);
       setIsMinting(false);
@@ -162,19 +161,18 @@ export function MintCustomToken() {
     if (isSCA) {
       handleSCA();
       return;
-    } else if (!isSCA && needToSetTrustline) {
-      if (needToSetTrustline) {
-        handleSetTrustline();
-      } else {
-        if (isAddress(tokenAddress)) {
-          handleMint();
-        } else {
-          console.log('Invalid address || token || asset');
-        }
-      }
     }
-  };
-
+    if (needToSetTrustline) {
+      handleSetTrustline();
+    } else {
+      if (isAddress(tokenAddress)) {
+        handleMint();
+      } else {
+        console.log('Invalid address || token || asset');
+      }
+    } 
+  }
+  
   useEffect(() => {
     const updateTokenInfo = async () => {
       const sorobanAddress = getClassicAssetSorobanAddress(tokenAddress, sorobanContext);
