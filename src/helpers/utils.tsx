@@ -1,5 +1,6 @@
 import BigNumber from 'bignumber.js';
-import * as StellarSdk from 'stellar-sdk';import { I128 } from './xdr';
+import * as StellarSdk from 'stellar-sdk';
+import { I128 } from './xdr';
 
 let xdr = StellarSdk.xdr;
 
@@ -202,4 +203,3 @@ export function bigNumberToU32(value: BigNumber): StellarSdk.xdr.ScVal {
 
   return xdr.ScVal.scvU32(num);
 }
-
