@@ -129,9 +129,11 @@ export async function calculateLiquidityFees(
     await server?.simulateTransaction(txn);
 
   if (StellarSdk.SorobanRpc.Api.isSimulationError(simulated)) {
-    throw new Error(simulated.error);
+    console.error(simulated.error);
+    return;
   } else if (!simulated.result) {
-    throw new Error(`invalid simulation: no result in ${simulated}`);
+    console.error(`invalid simulation: no result in ${simulated}`);
+    return;
   }
 
   return simulated.minResourceFee;

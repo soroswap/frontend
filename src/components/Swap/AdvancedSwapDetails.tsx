@@ -18,7 +18,7 @@ interface AdvancedSwapDetailsProps {
   trade: InterfaceTrade | undefined;
   allowedSlippage: number;
   syncing?: boolean;
-  networkFees: number;
+  networkFees: number | null;
 }
 
 function TextWithLoadingPlaceholder({

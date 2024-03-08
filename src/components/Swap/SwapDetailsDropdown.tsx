@@ -84,7 +84,7 @@ interface SwapDetailsInlineProps {
   syncing: boolean;
   loading: boolean;
   allowedSlippage: number;
-  networkFees: number;
+  networkFees: number | null;
 }
 
 export default function SwapDetailsDropdown({

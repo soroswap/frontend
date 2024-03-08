@@ -186,7 +186,7 @@ export default function ConfirmSwapModal({
   inputCurrency?: TokenType;
   originalTrade?: InterfaceTrade;
   swapResult?: any; //SwapResult
-  networkFees: number;
+  networkFees: number | null;
   allowedSlippage: any; //Percent
   trustline: boolean;
   onAcceptChanges: () => void;

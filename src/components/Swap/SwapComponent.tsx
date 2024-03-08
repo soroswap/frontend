@@ -128,7 +128,7 @@ export function SwapComponent({
   const [state, dispatch] = useReducer(swapReducer, { ...initialSwapState, ...prefilledState });
   const { typedValue, recipient, independentField } = state;
 
-  const [networkFees, setNetworkFees] = useState<number>(0);
+  const [networkFees, setNetworkFees] = useState<number | null>(0);
 
   const { onSwitchTokens, onCurrencySelection, onUserInput, onChangeRecipient } =
     useSwapActionHandlers(dispatch);
@@ -362,7 +362,7 @@ export function SwapComponent({
           }
         } catch (error) {
           console.error('Error fetching network fees:', error);
-          setNetworkFees(-1);
+          setNetworkFees(0);
         }
       }
     };

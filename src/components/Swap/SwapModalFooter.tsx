@@ -64,7 +64,7 @@ export default function SwapModalFooter({
   showAcceptChanges: boolean;
   onAcceptChanges: () => void;
   trustline: boolean;
-  networkFees: number;
+  networkFees: number | null;
 }) {
   const theme = useTheme();
   // const transactionDeadlineSecondsSinceEpoch = useTransactionDeadline()?.toNumber() // in seconds since epoch
