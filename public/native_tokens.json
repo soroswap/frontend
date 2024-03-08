@@ -11,6 +11,10 @@
     {
       "address": "CDLZFC3SYJYDZT7K67VZ75HPJVIEUVNIXF47ZG2FB2RMQQVU2HHGCYSC",
       "network": "testnet"
+    },
+    {
+      "network": "mainnet",
+      "address": "CAS3J7GYLGXMF6TDJBBYYSE3HQ6BBSMLNUQ34T6TZMYMW2EVH34XOWMA"
     }
   ]
 }
