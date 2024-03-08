@@ -32,7 +32,7 @@ import { AddRemoveTabs } from '../AddRemoveHeader';
 import AddModalFooter from './AddModalFooter';
 import AddModalHeader from './AddModalHeader';
 import { useToken } from 'hooks/tokens/useToken';
-import { calculateAddLiquidityFees } from 'functions/getNetworkFees';
+import { calculateLiquidityFees } from 'functions/getNetworkFees';
 
 export const PageWrapper = styled('main')`
   position: relative;
@@ -333,7 +333,7 @@ export default function AddLiquidityComponent({
       bigNumberToU64(BigNumber(getCurrentTimePlusOneHour())),
     ];
 
-    const fee = await calculateAddLiquidityFees(sorobanContext, args);
+    const fee = await calculateLiquidityFees(sorobanContext, args, RouterMethod.ADD_LIQUIDITY);
     return Number(fee) / 10 ** 7;
   };
 

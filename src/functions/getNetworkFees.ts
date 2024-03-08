@@ -86,7 +86,11 @@ export async function calculateSwapFees(
   return simulated.minResourceFee;
 }
 
-export async function calculateAddLiquidityFees(sorobanContext: SorobanContextType, args: any) {
+export async function calculateLiquidityFees(
+  sorobanContext: SorobanContextType,
+  args: any,
+  op: RouterMethod,
+) {
   if (!sorobanContext.activeChain || !sorobanContext.activeChain.sorobanRpcUrl) {
     console.error('Error getting Soroban context.');
     return;
@@ -117,7 +121,7 @@ export async function calculateAddLiquidityFees(sorobanContext: SorobanContextTy
     networkPassphrase: passphrase,
     source: account,
     contractAddress: routerId,
-    method: RouterMethod.ADD_LIQUIDITY,
+    method: op,
     args,
   });
 

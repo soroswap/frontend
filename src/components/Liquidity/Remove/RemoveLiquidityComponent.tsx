@@ -28,6 +28,7 @@ import { opacify } from 'themes/utils';
 import { AddRemoveTabs } from '../AddRemoveHeader';
 import { DEFAULT_SLIPPAGE_INPUT_VALUE } from 'components/Settings/MaxSlippageSettings';
 import { TxResponse } from '@soroban-react/contracts';
+import { calculateLiquidityFees } from 'functions/getNetworkFees';
 
 export const PageWrapper = styled('main')`
   position: relative;
@@ -157,6 +158,8 @@ export default function RemoveLiquidityComponent() {
   const [currencyBtoA, setCurrencyBtoA] = useState<string>();
   const [txError, setTxError] = useState<boolean>(false);
 
+  const [networkFees, setNetworkFees] = useState<number>(0);
+
   useEffect(() => {
     getExpectedAmount(currencyA!, currencyB!, BigNumber(1).shiftedBy(7), sorobanContext).then(
       (resp) => {
@@ -179,22 +182,18 @@ export default function RemoveLiquidityComponent() {
 
   const routerCallback = useRouterCallback();
 
-  const removeLiquidity = useCallback(() => {
-    setAttemptingTxn(true);
-
+  const getArgs = useCallback(() => {
     const factor = BigNumber(100).minus(allowedSlippage).dividedBy(100);
 
     const desiredA = new BigNumber(parsedAmounts.CURRENCY_A?.value as string);
     const desiredB = new BigNumber(parsedAmounts.CURRENCY_B?.value as string);
 
     const minABN = desiredA.multipliedBy(factor).decimalPlaces(0);
-
     const minBBN = desiredB.multipliedBy(factor).decimalPlaces(0);
-
     const minAScVal = bigNumberToI128(minABN);
     const minBScVal = bigNumberToI128(minBBN);
 
-    const args = [
+    return [
       new StellarSdk.Address(currencyA?.address as string).toScVal(),
       new StellarSdk.Address(currencyB?.address as string).toScVal(),
       bigNumberToI128(parsedAmounts.LIQUIDITY as BigNumber),
@@ -203,6 +202,20 @@ export default function RemoveLiquidityComponent() {
       new StellarSdk.Address(sorobanContext.address as string).toScVal(),
       bigNumberToU64(BigNumber(getCurrentTimePlusOneHour())),
     ];
+  }, [
+    currencyA?.address,
+    currencyB?.address,
+    parsedAmounts.CURRENCY_A?.value,
+    parsedAmounts.CURRENCY_B?.value,
+    parsedAmounts.LIQUIDITY,
+    sorobanContext.address,
+    allowedSlippage,
+  ]);
+
+  const removeLiquidity = useCallback(() => {
+    setAttemptingTxn(true);
+
+    const args = getArgs();
 
     routerCallback(RouterMethod.REMOVE_LIQUIDITY, args, true)
       .then((result: TxResponse) => {
@@ -213,16 +226,21 @@ export default function RemoveLiquidityComponent() {
         setTxError(true);
         setAttemptingTxn(false);
       });
-  }, [
-    currencyA?.address,
-    currencyB?.address,
-    parsedAmounts.CURRENCY_A?.value,
-    parsedAmounts.CURRENCY_B?.value,
-    parsedAmounts.LIQUIDITY,
-    routerCallback,
-    sorobanContext.address,
-    allowedSlippage,
-  ]);
+  }, [getArgs, routerCallback]);
+
+  const getNetworkFees = async () => {
+    const args = getArgs();
+
+    const fee = await calculateLiquidityFees(sorobanContext, args, RouterMethod.REMOVE_LIQUIDITY);
+    console.log('FEE: ', fee);
+    return Number(fee) / 10 ** 7;
+  };
+
+  const handleClickMainButton = async () => {
+    const fee = await getNetworkFees();
+    setNetworkFees(fee);
+    setShowConfirm(true);
+  };
 
   const modalHeader = () => {
     return (
@@ -273,6 +291,16 @@ export default function RemoveLiquidityComponent() {
             <DoubleCurrencyLogo currency0={currencyA} currency1={currencyB} margin={true} />
             <BodySmall fontWeight={535} fontSize={16}>
               {formatTokenAmount(parsedAmounts[Field.LIQUIDITY] ?? '')}
+            </BodySmall>
+          </RowFixed>
+        </RowBetween>
+        <RowBetween>
+          <BodySmall fontWeight={535} fontSize={16} color={theme.palette.secondary.main}>
+            Network fees
+          </BodySmall>
+          <RowFixed>
+            <BodySmall fontWeight={535} fontSize={16}>
+              ~{networkFees} XLM
             </BodySmall>
           </RowFixed>
         </RowBetween>
@@ -391,14 +419,7 @@ export default function RemoveLiquidityComponent() {
             <ButtonLight onClick={() => setConnectWalletModalOpen(true)}>{error}</ButtonLight>
           ) : (
             <AutoColumn gap="md">
-              <ButtonError
-                onClick={() => {
-                  setShowConfirm(true);
-                  // provideLiquidity()
-                }}
-                disabled={false}
-                error={false}
-              >
+              <ButtonError onClick={handleClickMainButton} disabled={false} error={false}>
                 <ButtonText fontSize={20} fontWeight={600}>
                   Remove
                 </ButtonText>
