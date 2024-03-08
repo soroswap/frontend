@@ -2,7 +2,7 @@ import { Box } from '@mui/material';
 import { Clipboard } from 'react-feather';
 import { LabelSmall } from 'components/Text';
 import { SnackbarIconType } from 'contexts';
-import { testnet, public_chain } from '@soroban-react/chains';
+import { testnet, mainnet } from '@soroban-react/chains';
 import { useEffect, useState } from 'react';
 import { useSorobanReact } from '@soroban-react/core';
 import CopyToClipboard from 'react-copy-to-clipboard';
@@ -27,7 +27,7 @@ const CopyTxHash = ({ txHash }: { txHash: string }) => {
 
     if (!activeChain) return;
 
-    if (activeChain.name === testnet.name || activeChain.name === public_chain.name) {
+    if (activeChain.name === testnet.name || activeChain.name === mainnet.name) {
       setExplorerLink(getExplorerUrl({ chain: activeChain.name?.toLowerCase() as string, txHash }));
     }
   }, [sorobanContext, txHash]);

@@ -8,7 +8,7 @@ import { ButtonPrimary } from './Buttons/Button';
 import { WalletButton } from './Buttons/WalletButton';
 import { MintCustomToken } from './MintCustomToken';
 import BalancesTable from './BalancesTable/BalancesTable';
-
+import { Networks } from 'stellar-sdk';
 const PageWrapper = styled(Paper)`
   background: ${({ theme }) => `linear-gradient(${theme.palette.customBackground.bg2}, ${
     theme.palette.customBackground.bg2
@@ -27,6 +27,8 @@ const PageWrapper = styled(Paper)`
 
 export function Balances() {
   const { sorobanContext, refetch } = useGetMyBalances();
+
+  const isMainnet = sorobanContext.activeChain?.networkPassphrase === Networks.PUBLIC;
 
   const mintTestTokens = useMintTestToken();
   const { ConnectWalletModal } = useContext(AppContext);
@@ -76,7 +78,7 @@ export function Balances() {
             {"Your test token's balance:"}
           </Typography>
           <Typography gutterBottom>Connect your wallet to see your test tokens balances</Typography>
-          <WalletButton/>
+          <WalletButton />
         </>
       ) : (
         <>
@@ -90,13 +92,15 @@ export function Balances() {
             <Typography gutterBottom variant="h5">
               {"Your test token's balance:"}
             </Typography>
-            <ButtonPrimary
-              onClick={handleMint}
-              disabled={isButtonDisabled()}
-              style={{ maxWidth: 250 }}
-            >
-              {getButtonTxt()}
-            </ButtonPrimary>
+            {!isMainnet && (
+              <ButtonPrimary
+                onClick={handleMint}
+                disabled={isButtonDisabled()}
+                style={{ maxWidth: 250 }}
+              >
+                {getButtonTxt()}
+              </ButtonPrimary>
+            )}
           </Box>
           <Box>
             <BalancesTable />
@@ -104,7 +108,7 @@ export function Balances() {
         </>
       )}
 
-      {sorobanContext.address && <MintCustomToken />}
+      {sorobanContext.address && !isMainnet && <MintCustomToken />}
     </PageWrapper>
   );
 }
