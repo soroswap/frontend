@@ -264,7 +264,7 @@ export default function AddLiquidityComponent({
       }
       router.push(baseRoute + path);
     },
-    [currencyIdA, currencyIdB, router],
+    [currencyIdA, currencyIdB, router, baseRoute],
   );
 
   const handleCurrencyBSelect = useCallback(
@@ -280,15 +280,7 @@ export default function AddLiquidityComponent({
       }
       router.push(baseRoute + path);
     },
-    [currencyIdA, currencyIdB, router],
-  );
-
-  const pendingText = (
-    <BodySmall>
-      Adding {formatTokenAmount(parsedAmounts[Field.CURRENCY_A]?.value ?? '')}{' '}
-      {baseCurrency?.symbol} and {formatTokenAmount(parsedAmounts[Field.CURRENCY_B]?.value ?? '')}{' '}
-      {currencyB?.symbol}
-    </BodySmall>
+    [currencyIdA, currencyIdB, router, baseRoute],
   );
 
   const { getLpAmountAndPercentage } = useCalculateLpToReceive({
@@ -361,6 +353,13 @@ export default function AddLiquidityComponent({
     formattedAmounts,
     pairAddress,
   });
+
+  const pendingText = (
+    <BodySmall>
+      Adding {formattedAmounts[Field.CURRENCY_A]} {baseCurrency?.symbol} and{' '}
+      {formattedAmounts[Field.CURRENCY_B]} {currencyB?.symbol}
+    </BodySmall>
+  );
 
   return (
     <>
