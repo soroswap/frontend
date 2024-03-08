@@ -75,9 +75,9 @@ export function Balances() {
       {!sorobanContext.address ? (
         <>
           <Typography gutterBottom variant="h5">
-            {"Your test token's balance:"}
+            {"Your token's balance:"}
           </Typography>
-          <Typography gutterBottom>Connect your wallet to see your test tokens balances</Typography>
+          <Typography gutterBottom>Connect your wallet to see your tokens balances</Typography>
           <WalletButton />
         </>
       ) : (
@@ -90,7 +90,7 @@ export function Balances() {
             mb={2}
           >
             <Typography gutterBottom variant="h5">
-              {"Your test token's balance:"}
+              {"Your token's balance:"}
             </Typography>
             {!isMainnet && (
               <ButtonPrimary
