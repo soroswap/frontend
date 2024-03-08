@@ -12,7 +12,7 @@ const useGetLpTokens = () => {
     ([key, sorobanContext]) => getLpTokens(sorobanContext, tokensAsMap),
   );
 
-  console.log('🚀 « data:', data);
+  // console.log('🚀 « data:', data);
   return { lpTokens: data, sorobanContext, isLoading, isError: error, mutate };
 };
 

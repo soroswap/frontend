@@ -84,6 +84,7 @@ interface SwapDetailsInlineProps {
   syncing: boolean;
   loading: boolean;
   allowedSlippage: number;
+  networkFees: number | null;
 }
 
 export default function SwapDetailsDropdown({
@@ -91,6 +92,7 @@ export default function SwapDetailsDropdown({
   syncing,
   loading,
   allowedSlippage,
+  networkFees,
 }: SwapDetailsInlineProps) {
   const theme = useTheme();
   const [showDetails, setShowDetails] = useState(false);
@@ -136,6 +138,7 @@ export default function SwapDetailsDropdown({
               trade={trade}
               allowedSlippage={allowedSlippage}
               syncing={syncing}
+              networkFees={networkFees}
             />
           </SwapDetailsWrapper>
         </AnimatedDropdown>

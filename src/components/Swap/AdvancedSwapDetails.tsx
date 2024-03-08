@@ -12,11 +12,13 @@ import BigNumber from 'bignumber.js';
 import Column from 'components/Column';
 import CurrencyLogo from 'components/Logo/CurrencyLogo';
 import useGetReservesByPair from 'hooks/useGetReservesByPair';
+import { calculateSwapFees } from 'functions/getNetworkFees';
 
 interface AdvancedSwapDetailsProps {
   trade: InterfaceTrade | undefined;
   allowedSlippage: number;
   syncing?: boolean;
+  networkFees: number | null;
 }
 
 function TextWithLoadingPlaceholder({
@@ -41,6 +43,7 @@ export function AdvancedSwapDetails({
   trade,
   allowedSlippage,
   syncing = false,
+  networkFees,
 }: AdvancedSwapDetailsProps) {
   // const { chainId } = useWeb3React()
   // const nativeCurrency = useNativeCurrency(chainId)
@@ -120,13 +123,7 @@ export function AdvancedSwapDetails({
             <BodySmall color="textSecondary">Network fee</BodySmall>
           </MouseoverTooltip>
           <TextWithLoadingPlaceholder syncing={syncing} width={50}>
-            <BodySmall>
-              ~$?
-              {/* {`${trade.totalGasUseEstimateUSD ? '~' : ''}${formatNumber(
-                  trade.totalGasUseEstimateUSD,
-                  NumberType.FiatGasPrice
-                )}`} */}
-            </BodySmall>
+            <BodySmall>~{networkFees} XLM</BodySmall>
           </TextWithLoadingPlaceholder>
         </RowBetween>
       )}

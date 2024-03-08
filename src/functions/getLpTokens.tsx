@@ -19,7 +19,6 @@ export type LpTokensObj = {
 
 export async function getLpTokens(sorobanContext: SorobanContextType, tokensAsMap: TokenMapType) {
   if (!sorobanContext.activeChain) return;
-  console.log("CALLED")
   // const pairs = await getPairs(sorobanContext); // This one uses pairs from the API
   const pairs = await getPairsFromFactory(sorobanContext); // This one uses pairs from factory
   console.log('🚀 « pairs:', pairs);

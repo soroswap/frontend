@@ -32,6 +32,7 @@ import { AddRemoveTabs } from '../AddRemoveHeader';
 import AddModalFooter from './AddModalFooter';
 import AddModalHeader from './AddModalHeader';
 import { useToken } from 'hooks/tokens/useToken';
+import { calculateLiquidityFees } from 'functions/getNetworkFees';
 
 export const PageWrapper = styled('main')`
   position: relative;
@@ -112,6 +113,7 @@ export default function AddLiquidityComponent({
   const [amountOfLpTokensToReceive, setAmountOfLpTokensToReceive] = useState<string>('');
   const [lpPercentage, setLpPercentage] = useState<string>('');
   const [totalShares, setTotalShares] = useState<string>('');
+  const [networkFees, setNetworkFees] = useState<number>(0);
 
   const { token: baseCurrency } = useToken(currencyIdA);
   const { token: currencyB } = useToken(currencyIdB);
@@ -287,8 +289,51 @@ export default function AddLiquidityComponent({
     baseCurrency,
   });
 
+  const getNetworkFees = async () => {
+    let desired0BN: BigNumber;
+    let desired1BN: BigNumber;
+
+    if (independentField === Field.CURRENCY_A) {
+      desired0BN = new BigNumber(formattedAmounts[independentField]).shiftedBy(7);
+      desired1BN = new BigNumber(formattedAmounts[dependentField]).shiftedBy(7);
+    } else {
+      // if (independentField === Field.CURRENCY_B)
+      // menas that the user is typing the currency on bottom
+      desired0BN = new BigNumber(formattedAmounts[dependentField]).shiftedBy(7);
+      desired1BN = new BigNumber(formattedAmounts[independentField]).shiftedBy(7);
+    }
+
+    const desiredAScVal = bigNumberToI128(desired0BN);
+    const desiredBScVal = bigNumberToI128(desired1BN);
+
+    // Here we are implementint the slippage: which will be in the "0.5" format when is 0.5%
+    const factor = BigNumber(100).minus(userSlippage).dividedBy(100);
+    const min0BN = desired0BN.multipliedBy(factor).decimalPlaces(0); // we dont want to have decimals after applying the factor
+    const min1BN = desired1BN.multipliedBy(factor).decimalPlaces(0);
+
+    const minAScVal = bigNumberToI128(min0BN);
+    const minBScVal = bigNumberToI128(min1BN);
+
+    const args = [
+      new StellarSdk.Address(baseCurrency?.address ?? '').toScVal(),
+      new StellarSdk.Address(currencyB?.address ?? '').toScVal(),
+      desiredAScVal,
+      desiredBScVal,
+      minAScVal,
+      minBScVal,
+      new StellarSdk.Address(sorobanContext.address ?? '').toScVal(),
+      bigNumberToU64(BigNumber(getCurrentTimePlusOneHour())),
+    ];
+
+    const fee = await calculateLiquidityFees(sorobanContext, args, RouterMethod.ADD_LIQUIDITY);
+    return Number(fee) / 10 ** 7;
+  };
+
   const handleClickMainButton = async () => {
     const { amount, percentage } = await getLpAmountAndPercentage();
+
+    const fee = await getNetworkFees();
+    setNetworkFees(fee);
 
     setAmountOfLpTokensToReceive(`${amount}`);
 
@@ -340,6 +385,7 @@ export default function AddLiquidityComponent({
                   totalShares,
                   onConfirm: provideLiquidity,
                   shareOfPool: lpPercentage,
+                  networkFees,
                 })
               }
             />

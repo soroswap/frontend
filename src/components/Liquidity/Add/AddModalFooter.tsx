@@ -57,12 +57,14 @@ export default function AddModalFooter({
   totalShares,
   onConfirm,
   shareOfPool,
+  networkFees,
 }: {
   currencies: { [field in Field]?: TokenType };
   formattedAmounts: { [field in Field]?: string };
   totalShares: string;
   onConfirm: () => void;
   shareOfPool?: string;
+  networkFees: number;
 }) {
   const theme = useTheme();
 
@@ -100,7 +102,10 @@ export default function AddModalFooter({
       <DetailsContainer gap="md">
         <BodySmall component="div">
           <Row align="flex-start" justify="space-between" gap="sm">
-            <Label>{isClassicStellarAssetFormat(currencyA?.name!) ? currencyA?.symbol : currencyA?.name} to deposit</Label>
+            <Label>
+              {isClassicStellarAssetFormat(currencyA?.name!) ? currencyA?.symbol : currencyA?.name}{' '}
+              to deposit
+            </Label>
             <DetailRowValue style={{ display: 'flex', alignItems: 'center' }}>
               {`${formattedAmounts.CURRENCY_A} ${currencyA?.symbol}`}{' '}
               <CurrencyLogo currency={currencyA} size="16px" style={{ marginLeft: '6px' }} />
@@ -109,7 +114,10 @@ export default function AddModalFooter({
         </BodySmall>
         <BodySmall component="div">
           <Row align="flex-start" justify="space-between" gap="sm">
-            <Label>{isClassicStellarAssetFormat(currencyB?.name!) ? currencyB?.symbol : currencyB?.name} to deposit</Label>
+            <Label>
+              {isClassicStellarAssetFormat(currencyB?.name!) ? currencyB?.symbol : currencyB?.name}{' '}
+              to deposit
+            </Label>
             <DetailRowValue style={{ display: 'flex', alignItems: 'center' }}>
               {`${formattedAmounts.CURRENCY_B} ${currencyB?.symbol}`}{' '}
               <CurrencyLogo currency={currencyB} size="16px" style={{ marginLeft: '6px' }} />
@@ -145,6 +153,21 @@ export default function AddModalFooter({
               <Label cursor="help">Share of Pool</Label>
             </MouseoverTooltip>
             <DetailRowValue>{shareOfPool}</DetailRowValue>
+          </Row>
+        </BodySmall>
+
+        <BodySmall component="div">
+          <Row align="flex-start" justify="space-between" gap="sm">
+            <MouseoverTooltip
+              title={
+                <div>
+                  The fee paid to miners who process your transaction. This must be paid in XLM.
+                </div>
+              }
+            >
+              <Label cursor="help">Network fee</Label>
+            </MouseoverTooltip>
+            <DetailRowValue>~{networkFees} XLM</DetailRowValue>
           </Row>
         </BodySmall>
       </DetailsContainer>
