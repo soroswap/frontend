@@ -94,8 +94,7 @@ export function MintCustomToken() {
         setTokenAmount('');
       }
 
-      //This will connect again the wallet to fetch its data
-      sorobanContext.connect();
+      handleTokenRefresh();
     } catch (error) {
       console.log('Catch error while minting', error);
       setIsMinting(false);
