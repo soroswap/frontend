@@ -50,7 +50,7 @@ export function AdvancedSwapDetails({
   // const txCount = getTransactionCount(trade)
   const sorobanContext = useSorobanReact();
 
-  const supportsGasEstimate = true; //chainId && SUPPORTED_GAS_ESTIMATE_CHAIN_IDS.includes(chainId)
+  // const supportsGasEstimate = true; //chainId && SUPPORTED_GAS_ESTIMATE_CHAIN_IDS.includes(chainId)
 
   // {twoDecimalsPercentage().toString())
   // }%
@@ -115,7 +115,7 @@ export function AdvancedSwapDetails({
   return (
     <Column gap="md">
       <Separator />
-      {supportsGasEstimate && (
+      {(networkFees != 0) && (
         <RowBetween>
           <MouseoverTooltip
             title={'The fee paid to miners who process your transaction. This must be paid in XLM.'}

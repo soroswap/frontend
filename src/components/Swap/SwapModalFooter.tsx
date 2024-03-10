@@ -133,20 +133,23 @@ export default function SwapModalFooter({
             } ${labelInverted}`}</DetailRowValue>
           </Row>
         </BodySmall>
-        <BodySmall component="div">
-          <Row align="flex-start" justify="space-between" gap="sm">
-            <MouseoverTooltip
-              title={
-                'The fee paid to miners who process your transaction. This must be paid in ${nativeCurrency.symbol}.'
-              }
-            >
-              <Label cursor="help">Network fees</Label>
-            </MouseoverTooltip>
-            <DetailRowValue>~{networkFees} XML</DetailRowValue>
-            {/* <MouseoverTooltip placement="right" title={'<GasBreakdownTooltip trade={trade} />'}>
-            </MouseoverTooltip> */}
-          </Row>
-        </BodySmall>
+        {(networkFees != 0) && 
+          <BodySmall component="div">
+            <Row align="flex-start" justify="space-between" gap="sm">
+              <MouseoverTooltip
+                title={
+                  'The fee paid to miners who process your transaction. This must be paid in ${nativeCurrency.symbol}.'
+                }
+              >
+                <Label cursor="help">Network fees</Label>
+              </MouseoverTooltip>
+              <DetailRowValue>~{networkFees} XML</DetailRowValue>
+              {/* <MouseoverTooltip placement="right" title={'<GasBreakdownTooltip trade={trade} />'}>
+              </MouseoverTooltip> */}
+            </Row>
+          </BodySmall>
+        
+        }
         {true && (
           <BodySmall component="div">
             <Row align="flex-start" justify="space-between" gap="sm">
