@@ -339,18 +339,25 @@ export function SwapComponent({
 
     const checkTrustline = async () => {
       if (!trade) return;
-
-      const needTrustline = await requiresTrustline(
-        trade?.outputAmount?.currency.address!,
-        sorobanContext,
-      );
-      const requiresTrustlineAdjust = await checkRequiresTrustlineAdjust();
-
-      if (needTrustline || requiresTrustlineAdjust) {
-        setNeedTrustline(true);
-      } else {
-        setNeedTrustline(false);
+      if (sorobanContext.address){
+        // Check if we need trustline
+        const needTrustline = await requiresTrustline(
+          trade?.outputAmount?.currency.address!,
+          sorobanContext,
+        );
+        const requiresTrustlineAdjust = await checkRequiresTrustlineAdjust();
+  
+        if (needTrustline || requiresTrustlineAdjust) {
+          setNeedTrustline(true);
+        } else {
+          setNeedTrustline(false);
+        }
       }
+      else{
+        // Until the user does not connects the wallet, we will think that we need trustline
+        setNeedTrustline(true);
+      }
+
     };
 
     const fetchNetworkFees = async () => {
