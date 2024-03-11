@@ -188,7 +188,7 @@ export default function BalancesTable() {
                     onClick={() => {
                       const copyText =
                         isStellarClassicAsset && showStellarClassicAddresses.value
-                          ? row.name
+                          ? `${row.code}:${row.issuer}`
                           : row.contract;
                       navigator.clipboard.writeText(copyText);
                     }}
