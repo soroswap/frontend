@@ -125,7 +125,11 @@ export default function BalancesTable() {
   const rows =
     tokenBalancesResponse?.balances?.map((x) => ({
       ...x,
-      type: x.issuer ? 'Stellar Classic Asset' : x.name == 'Stellar Lumens' ? 'Native' : 'Soroban Token',
+      type: x.issuer
+        ? 'Stellar Classic Asset'
+        : x.name == 'Stellar Lumens'
+        ? 'Native'
+        : 'Soroban Token',
     })) ?? [];
 
   const showStellarClassicAddresses = useBoolean();
@@ -211,7 +215,7 @@ export default function BalancesTable() {
                 <TableCell align="left">{row.type}</TableCell>
                 <TableCell align="right">
                   {' '}
-                  {Number(row.balance).toLocaleString('en') as string}
+                  {Number(row.balance).toLocaleString('en', { maximumFractionDigits: 7 }) as string}
                 </TableCell>
               </TableRow>
             );
