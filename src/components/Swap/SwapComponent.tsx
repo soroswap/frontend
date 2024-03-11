@@ -10,7 +10,6 @@ import { TransactionFailedContent } from 'components/TransactionConfirmationModa
 import { AppContext, SnackbarIconType } from 'contexts';
 import { calculateSwapFees } from 'functions/getNetworkFees';
 import { sendNotification } from 'functions/sendNotification';
-import { getClassicStellarAsset } from 'helpers/address';
 import { formatTokenAmount } from 'helpers/format';
 import { requiresTrustline } from 'helpers/stellar';
 import { relevantTokensType } from 'hooks';
@@ -279,14 +278,14 @@ export function SwapComponent({
   };
 
   const handleTrustline = () => {
-    const asset = getClassicStellarAsset(trade?.outputAmount?.currency.name!);
-    if (!asset) return;
+    const asset = trade?.outputAmount?.currency
+    if (!asset?.issuer) return;
 
-    setTrustline({ tokenSymbol: asset.assetCode, tokenAdmin: asset.issuer, sorobanContext })
+    setTrustline({ tokenSymbol: asset.code, tokenAdmin: asset.issuer, sorobanContext })
       .then((result) => {
         setNeedTrustline(false);
         sendNotification(
-          `for ${asset.assetCode}`,
+          `for ${asset.code}`,
           'Trustline set',
           SnackbarIconType.MINT,
           SnackbarContext,
