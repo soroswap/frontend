@@ -13,6 +13,7 @@ import { TradeType } from 'state/routing/types';
 import { useUserSlippageToleranceWithDefault } from 'state/user/hooks';
 import { Field, selectCurrency, setRecipient, switchCurrencies, typeInput } from './actions';
 import { SwapState } from './reducer';
+import useHorizonLoadAccount from 'hooks/useHorizonLoadAccount';
 
 export function useSwapActionHandlers(dispatch: React.Dispatch<AnyAction>): {
   onCurrencySelection: (field: Field, currency: TokenType) => void;
@@ -100,15 +101,17 @@ export function useDerivedSwapInfo(state: SwapState) {
   const [relevantTokenBalances, setRelevantTokenBalances] = useState<
     relevantTokensType[] | undefined
   >();
+
+  const { account: horizonAccount } = useHorizonLoadAccount();
   useEffect(() => {
     if (account) {
-      tokenBalances(account, tokensArray, sorobanContext).then((balances) => {
+      tokenBalances(account, tokensArray, sorobanContext, horizonAccount).then((balances) => {
         if (balances != undefined) {
           setRelevantTokenBalances(balances.balances);
         }
       });
     }
-  }, [account, tokensArray, sorobanContext]);
+  }, [account, tokensArray, sorobanContext, horizonAccount]);
 
   const isExactIn: boolean = independentField === Field.INPUT;
   //
