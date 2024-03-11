@@ -11,7 +11,6 @@ import { SubHeaderLarge, SubHeaderSmall } from 'components/Text';
 import { Wrapper } from 'components/TransactionConfirmationModal/ModalStyles';
 import { AppContext, SnackbarIconType } from 'contexts';
 import { sendNotification } from 'functions/sendNotification';
-import { getClassicStellarAsset } from 'helpers/address';
 import useGetNativeTokenBalance from 'hooks/useGetNativeTokenBalance';
 import { TokenType } from 'interfaces';
 import Link from 'next/link';
@@ -34,13 +33,12 @@ const WrapStellarAssetModal = ({ isOpen, asset, onDismiss, onSuccess }: Props) =
   const { data } = useGetNativeTokenBalance();
 
   const handleConfirm = () => {
-    const stellarAsset = getClassicStellarAsset(asset?.name!);
-    if (!stellarAsset) return;
+    if (!asset?.issuer || asset.issuer == undefined) return;
     setIsWrapping(true);
 
     wrapStellarAsset({
-      code: stellarAsset.assetCode,
-      issuer: stellarAsset.issuer,
+      code: asset.code,
+      issuer: asset.issuer,
       sorobanContext
     })
       .then((result: any) => {

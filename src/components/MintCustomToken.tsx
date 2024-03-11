@@ -156,7 +156,7 @@ export function MintCustomToken() {
   };
 
   const handleSubmit = async () => {
-    const isSCA = await getClassicStellarAsset(tokenAddress);
+    const isSCA = getClassicStellarAsset(tokenAddress);
     if (isSCA) {
       handleSCA();
       return;

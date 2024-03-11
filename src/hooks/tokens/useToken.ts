@@ -14,7 +14,7 @@ export const findToken = async (
 ) => {
   if (!tokenAddress || tokenAddress === '') return undefined;
 
-  const classicAssetSearch = await getClassicAssetSorobanAddress(tokenAddress!, sorobanContext);
+  const classicAssetSearch = getClassicAssetSorobanAddress(tokenAddress!, sorobanContext);
   console.log('classicAssetSearch', classicAssetSearch);
 
   const formattedAddress = isAddress(classicAssetSearch ? classicAssetSearch : tokenAddress);
