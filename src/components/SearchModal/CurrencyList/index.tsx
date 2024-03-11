@@ -62,12 +62,14 @@ function Balance({ balance }: { balance: string }) {
   return <StyledBalanceText title={String(balance)}>{formatBalance()}</StyledBalanceText>;
 }
 
-const getCurrencyBalance = async (
+export const getCurrencyBalance = async (
   tokenBalancesResponse: tokenBalancesType | null | undefined,
   currency: TokenType,
   sorobanContext: SorobanContextType,
   account: AccountResponse,
 ) => {
+  if (!sorobanContext.address) return '0';
+
   const findInBalances = tokenBalancesResponse?.balances.find(
     (token) => token.contract === currency.contract,
   );
@@ -81,16 +83,14 @@ const getCurrencyBalance = async (
 
   //If it's a classic stellar asset and it's not in the tokens list, then we need to fetch the balance from the horizon server
   if (shouldUseHorizon) {
-    const [assetCode, issuer] = currency.name.split(':');
-
     const currencyBalance = account?.balances?.find(
-      (b: any) => b?.asset_issuer === issuer && b?.asset_code === assetCode,
+      (b: any) => b?.asset_issuer === currency.issuer && b?.asset_code === currency.code,
     )?.balance;
 
     return currencyBalance;
   } else {
     //Otherwise, we can fetch the balance with contract call
-    tokenBalance(currency.contract, sorobanContext.address!, sorobanContext).then((resp) => {
+    tokenBalance(currency.contract, sorobanContext.address, sorobanContext).then((resp) => {
       return formatTokenAmount(resp as BigNumber);
     });
   }
