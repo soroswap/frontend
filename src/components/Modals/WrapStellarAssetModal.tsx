@@ -1,7 +1,7 @@
 import { Box, CircularProgress, Modal, useTheme } from '@mui/material';
 import { wrapStellarAsset } from '@soroban-react/contracts';
 import { useSorobanReact } from '@soroban-react/core';
-import { ButtonLight, ButtonPrimary } from 'components/Buttons/Button';
+import { ButtonPrimary } from 'components/Buttons/Button';
 import { CloseButton } from 'components/Buttons/CloseButton';
 import { WalletButton } from 'components/Buttons/WalletButton';
 import { AutoColumn } from 'components/Column';
@@ -46,7 +46,7 @@ const WrapStellarAssetModal = ({ isOpen, asset, onDismiss, onSuccess }: Props) =
       .then((result: any) => {
         if (!result) throw new Error("No result");
         setIsWrapping(false);
-        sendNotification(`${asset?.symbol} wrapped successfully`, "Token wrapped", SnackbarIconType.MINT, SnackbarContext)
+        sendNotification(`${asset?.code} wrapped successfully`, "Token wrapped", SnackbarIconType.MINT, SnackbarContext)
         onSuccess();
       })
       .catch((error) => {
@@ -92,7 +92,7 @@ const WrapStellarAssetModal = ({ isOpen, asset, onDismiss, onSuccess }: Props) =
               disabled={isWrapping || !data?.validAccount}
               style={{ gap: "1rem"}}
             >
-              {isWrapping ? `Wrapping ${asset?.symbol}` : !data?.validAccount ? "Insufficient balance" : `Wrap ${asset?.symbol}`}
+              {isWrapping ? `Wrapping ${asset?.code}` : !data?.validAccount ? "Insufficient balance" : `Wrap ${asset?.code}`}
               {isWrapping && (
                 <CircularProgress size="18px" />
               )}

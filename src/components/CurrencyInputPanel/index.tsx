@@ -246,13 +246,13 @@ export default function CurrencyInputPanel({
                 ) : null}
                 <StyledTokenName
                   className="token-symbol-container"
-                  active={Boolean(currency && currency.symbol)}
+                  active={Boolean(currency && currency.code)}
                 >
-                  {(currency && currency.symbol && currency.symbol.length > 20
-                    ? currency.symbol.slice(0, 4) +
+                  {(currency && currency.code && currency.code.length > 20
+                    ? currency.code.slice(0, 4) +
                       '...' +
-                      currency.symbol.slice(currency.symbol.length - 5, currency.symbol.length)
-                    : currency?.symbol) || 'Select a token'}
+                      currency.code.slice(currency.code.length - 5, currency.code.length)
+                    : currency?.code) || 'Select a token'}
                 </StyledTokenName>
               </RowFixed>
               <StyledDropDown selected={!!currency} />

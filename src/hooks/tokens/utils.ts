@@ -7,7 +7,7 @@ export const tokensToMap = (tokens: TokenType[]) => {
   if (!tokens) return {};
 
   return tokens.reduce((map: TokenMapType, token) => {
-    map[token.address] = token;
+    map[token.contract] = token;
     return map;
   }, {});
 };
@@ -101,7 +101,7 @@ export const getTokenLogo = async (address: string, sorobanContext: SorobanConte
 
     // Find the token that matches the tokenAddress
     const token: TokenType = activeChainTokens.tokens.find(
-      (tkn: TokenType) => tkn.address.toLowerCase() === address.toLowerCase(),
+      (tkn: TokenType) => tkn.contract.toLowerCase() === address.toLowerCase(),
     );
     if (!token) return undefined;
 

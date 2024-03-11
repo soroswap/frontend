@@ -17,14 +17,14 @@ function balanceComparator(a?: number, b?: number) {
 export function tokenComparator(balances: TokenBalancesMap, a: TokenType, b: TokenType) {
   // Sorts by balances
   const balanceComparison = balanceComparator(
-    Number(balances[a.address]?.balance),
-    Number(balances[b.address]?.balance),
+    Number(balances[a.contract]?.balance),
+    Number(balances[b.contract]?.balance),
   );
   if (balanceComparison !== 0) return balanceComparison;
 
   // Sorts by symbol
-  if (a.symbol && b.symbol) {
-    return a.symbol.toLowerCase() < b.symbol.toLowerCase() ? -1 : 1;
+  if (a.code && b.code) {
+    return a.code.toLowerCase() < b.code.toLowerCase() ? -1 : 1;
   }
 
   return -1;
@@ -53,7 +53,7 @@ export function useSortTokensByQuery<T extends TokenType>(query: string, tokens?
     // sort tokens by exact match -> subtring on symbol match -> rest
     const trimmedQuery = query.toLowerCase().trim();
     tokens.map((token) => {
-      const symbol = token.symbol?.toLowerCase();
+      const symbol = token.code?.toLowerCase();
       if (symbol === matches[0]) {
         return exactMatches.push(token);
       } else if (symbol?.startsWith(trimmedQuery)) {

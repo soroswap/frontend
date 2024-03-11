@@ -1,11 +1,11 @@
-import { Field } from 'state/mint/actions';
-import { formatTokenAmount } from 'helpers/format';
-import { getTotalShares } from 'functions/LiquidityPools';
-import { reservesBNWithTokens } from './useReserves';
-import { TokenType } from 'interfaces';
 import { useSorobanReact } from '@soroban-react/core';
 import BigNumber from 'bignumber.js';
+import { getTotalShares } from 'functions/LiquidityPools';
 import getLpTokensAmount from 'functions/getLpTokensAmount';
+import { formatTokenAmount } from 'helpers/format';
+import { TokenType } from 'interfaces';
+import { Field } from 'state/mint/actions';
+import { reservesBNWithTokens } from './useReserves';
 
 interface UseCalculateLpToReceiveProps {
   pairAddress?: string;
@@ -28,7 +28,7 @@ const useCalculateLpToReceive = ({
     if (pairAddress) {
       pairReserves = await reservesBNWithTokens(pairAddress, sorobanContext);
 
-      if (pairReserves.token0 === baseCurrency?.address) {
+      if (pairReserves.token0 === baseCurrency?.contract) {
         reserve0 = pairReserves.reserve0 ?? BigNumber(0);
         reserve1 = pairReserves.reserve1 ?? BigNumber(0);
       } else {

@@ -8,7 +8,6 @@ import { DEFAULT_SLIPPAGE_INPUT_VALUE } from 'components/Settings/MaxSlippageSet
 import { SwapCallbackError } from 'components/Swap/styleds';
 import { BodySmall, HeadlineSmall } from 'components/Text';
 import { MouseoverTooltip } from 'components/Tooltip';
-import { isClassicStellarAssetFormat } from 'helpers/address';
 import { TokenType } from 'interfaces';
 import { useMemo, useState } from 'react';
 import { AlertTriangle } from 'react-feather';
@@ -90,7 +89,7 @@ export default function AddModalFooter({
     const amountA = new BigNumber(formattedAmounts.CURRENCY_A);
     const amountB = new BigNumber(formattedAmounts.CURRENCY_B);
 
-    return `1 ${currencyA?.symbol} = ${amountB.dividedBy(amountA).toFixed(6)} ${currencyB?.symbol}`;
+    return `1 ${currencyA?.code} = ${amountB.dividedBy(amountA).toFixed(6)} ${currencyB?.code}`;
   }, [currencyA, currencyB, formattedAmounts]);
 
   return (
@@ -103,11 +102,11 @@ export default function AddModalFooter({
         <BodySmall component="div">
           <Row align="flex-start" justify="space-between" gap="sm">
             <Label>
-              {isClassicStellarAssetFormat(currencyA?.name!) ? currencyA?.symbol : currencyA?.name}{' '}
+              {currencyA?.issuer ? currencyA?.code : currencyA?.name}{' '}
               to deposit
             </Label>
             <DetailRowValue style={{ display: 'flex', alignItems: 'center' }}>
-              {`${formattedAmounts.CURRENCY_A} ${currencyA?.symbol}`}{' '}
+              {`${formattedAmounts.CURRENCY_A} ${currencyA?.code}`}{' '}
               <CurrencyLogo currency={currencyA} size="16px" style={{ marginLeft: '6px' }} />
             </DetailRowValue>
           </Row>
@@ -115,11 +114,11 @@ export default function AddModalFooter({
         <BodySmall component="div">
           <Row align="flex-start" justify="space-between" gap="sm">
             <Label>
-              {isClassicStellarAssetFormat(currencyB?.name!) ? currencyB?.symbol : currencyB?.name}{' '}
+              {currencyB?.issuer ? currencyB?.code : currencyB?.name}{' '}
               to deposit
             </Label>
             <DetailRowValue style={{ display: 'flex', alignItems: 'center' }}>
-              {`${formattedAmounts.CURRENCY_B} ${currencyB?.symbol}`}{' '}
+              {`${formattedAmounts.CURRENCY_B} ${currencyB?.code}`}{' '}
               <CurrencyLogo currency={currencyB} size="16px" style={{ marginLeft: '6px' }} />
             </DetailRowValue>
           </Row>

@@ -12,8 +12,8 @@ import { useContext } from 'react';
 import { InterfaceTrade, TradeType } from 'state/routing/types';
 import { useUserSlippageToleranceWithDefault } from 'state/user/hooks';
 import * as StellarSdk from 'stellar-sdk';
-import { RouterMethod, useRouterCallback } from './useRouterCallback';
 import { useSWRConfig } from 'swr';
+import { RouterMethod, useRouterCallback } from './useRouterCallback';
 
 // Returns a function that will execute a swap, if the parameters are all valid
 // and the user has approved the slippage adjusted input amount for the trade
@@ -166,8 +166,8 @@ export function useSwapCallback(
       const currencyB = switchValues?.[switchValues?.length - 1];
 
       const notificationMessage = `${formatTokenAmount(currencyA ?? '0')} ${trade?.inputAmount
-        ?.currency.symbol} for ${formatTokenAmount(currencyB ?? '0')} ${trade?.outputAmount
-        ?.currency.symbol}`;
+        ?.currency.code} for ${formatTokenAmount(currencyB ?? '0')} ${trade?.outputAmount
+        ?.currency.code}`;
 
       sendNotification(notificationMessage, 'Swapped', SnackbarIconType.SWAP, SnackbarContext);
 

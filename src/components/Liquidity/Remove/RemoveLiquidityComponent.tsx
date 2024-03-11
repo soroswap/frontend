@@ -1,4 +1,5 @@
 import { Button, Slider, styled, useTheme } from '@mui/material';
+import { TxResponse } from '@soroban-react/contracts';
 import { useSorobanReact } from '@soroban-react/core';
 import BigNumber from 'bignumber.js';
 import { ButtonError, ButtonLight, ButtonPrimary } from 'components/Buttons/Button';
@@ -6,6 +7,7 @@ import Column, { AutoColumn } from 'components/Column';
 import CurrencyLogo from 'components/Logo/CurrencyLogo';
 import DoubleCurrencyLogo from 'components/Logo/DoubleLogo';
 import { RowBetween, RowFixed } from 'components/Row';
+import { DEFAULT_SLIPPAGE_INPUT_VALUE } from 'components/Settings/MaxSlippageSettings';
 import { BodySmall, ButtonText, SubHeaderSmall } from 'components/Text';
 import TransactionConfirmationModal, {
   ConfirmationModalContent,
@@ -13,6 +15,7 @@ import TransactionConfirmationModal, {
 import { AppContext } from 'contexts';
 import { getCurrentTimePlusOneHour } from 'functions/getCurrentTimePlusOneHour';
 import { getExpectedAmount } from 'functions/getExpectedAmount';
+import { calculateLiquidityFees } from 'functions/getNetworkFees';
 import { formatTokenAmount } from 'helpers/format';
 import { bigNumberToI128, bigNumberToU64 } from 'helpers/utils';
 import { useToken } from 'hooks/tokens/useToken';
@@ -20,15 +23,12 @@ import { RouterMethod, useRouterCallback } from 'hooks/useRouterCallback';
 import { useRouter } from 'next/router';
 import { useCallback, useContext, useEffect, useState } from 'react';
 import { Plus } from 'react-feather';
-import * as StellarSdk from 'stellar-sdk';
 import { Field } from 'state/burn/actions';
 import { useBurnActionHandlers, useBurnState, useDerivedBurnInfo } from 'state/burn/hooks';
 import { useUserSlippageToleranceWithDefault } from 'state/user/hooks';
+import * as StellarSdk from 'stellar-sdk';
 import { opacify } from 'themes/utils';
 import { AddRemoveTabs } from '../AddRemoveHeader';
-import { DEFAULT_SLIPPAGE_INPUT_VALUE } from 'components/Settings/MaxSlippageSettings';
-import { TxResponse } from '@soroban-react/contracts';
-import { calculateLiquidityFees } from 'functions/getNetworkFees';
 
 export const PageWrapper = styled('main')`
   position: relative;
@@ -175,8 +175,8 @@ export default function RemoveLiquidityComponent() {
 
   const pendingText = (
     <BodySmall>
-      Removing {formatTokenAmount(parsedAmounts[Field.CURRENCY_A]?.value ?? '')} {currencyA?.symbol}{' '}
-      and {formatTokenAmount(parsedAmounts[Field.CURRENCY_B]?.value ?? '')} {currencyB?.symbol}
+      Removing {formatTokenAmount(parsedAmounts[Field.CURRENCY_A]?.value ?? '')} {currencyA?.code}{' '}
+      and {formatTokenAmount(parsedAmounts[Field.CURRENCY_B]?.value ?? '')} {currencyB?.code}
     </BodySmall>
   );
 
@@ -194,8 +194,8 @@ export default function RemoveLiquidityComponent() {
     const minBScVal = bigNumberToI128(minBBN);
 
     return [
-      new StellarSdk.Address(currencyA?.address as string).toScVal(),
-      new StellarSdk.Address(currencyB?.address as string).toScVal(),
+      new StellarSdk.Address(currencyA?.contract as string).toScVal(),
+      new StellarSdk.Address(currencyB?.contract as string).toScVal(),
       bigNumberToI128(parsedAmounts.LIQUIDITY as BigNumber),
       minAScVal,
       minBScVal,
@@ -203,8 +203,8 @@ export default function RemoveLiquidityComponent() {
       bigNumberToU64(BigNumber(getCurrentTimePlusOneHour())),
     ];
   }, [
-    currencyA?.address,
-    currencyB?.address,
+    currencyA?.contract,
+    currencyB?.contract,
     parsedAmounts.CURRENCY_A?.value,
     parsedAmounts.CURRENCY_B?.value,
     parsedAmounts.LIQUIDITY,
@@ -252,7 +252,7 @@ export default function RemoveLiquidityComponent() {
           <RowFixed gap="4px">
             <CurrencyLogo currency={currencyA} size="24px" />
             <BodySmall fontSize={24} fontWeight={535} style={{ marginLeft: '10px' }}>
-              {currencyA?.symbol}
+              {currencyA?.code}
             </BodySmall>
           </RowFixed>
         </RowBetween>
@@ -266,7 +266,7 @@ export default function RemoveLiquidityComponent() {
           <RowFixed gap="4px">
             <CurrencyLogo currency={currencyB} size="24px" />
             <BodySmall fontSize={24} fontWeight={535} style={{ marginLeft: '10px' }}>
-              {currencyB?.symbol}
+              {currencyB?.code}
             </BodySmall>
           </RowFixed>
         </RowBetween>
@@ -285,7 +285,7 @@ export default function RemoveLiquidityComponent() {
       <>
         <RowBetween>
           <BodySmall fontWeight={535} fontSize={16} color={theme.palette.secondary.main}>
-            {currencyA?.symbol}/{currencyB?.symbol} Burned
+            {currencyA?.code}/{currencyB?.code} Burned
           </BodySmall>
           <RowFixed>
             <DoubleCurrencyLogo currency0={currencyA} currency1={currencyB} margin={true} />
@@ -311,13 +311,13 @@ export default function RemoveLiquidityComponent() {
                 Price
               </BodySmall>
               <BodySmall fontWeight={535} fontSize={14}>
-                1 {currencyA?.symbol} = {currencyAtoB ?? '-'} {currencyB?.symbol}
+                1 {currencyA?.code} = {currencyAtoB ?? '-'} {currencyB?.code}
               </BodySmall>
             </RowBetween>
             <RowBetween>
               <div />
               <BodySmall fontWeight={535} fontSize={14}>
-                1 {currencyB?.symbol} = {currencyBtoA ?? '-'} {currencyA?.symbol}
+                1 {currencyB?.code} = {currencyBtoA ?? '-'} {currencyA?.code}
               </BodySmall>
             </RowBetween>
           </>
@@ -374,13 +374,13 @@ export default function RemoveLiquidityComponent() {
               />
               <StyledTokenName
                 className="token-symbol-container"
-                active={Boolean(currencyA && currencyA.symbol)}
+                active={Boolean(currencyA && currencyA.code)}
               >
-                {currencyA && currencyA.symbol && currencyA.symbol.length > 20
-                  ? currencyA.symbol.slice(0, 4) +
+                {currencyA && currencyA.code && currencyA.code.length > 20
+                  ? currencyA.code.slice(0, 4) +
                     '...' +
-                    currencyA.symbol.slice(currencyA.symbol.length - 5, currencyA.symbol.length)
-                  : currencyA?.symbol}
+                    currencyA.code.slice(currencyA.code.length - 5, currencyA.code.length)
+                  : currencyA?.code}
               </StyledTokenName>
               {formatTokenAmount(parsedAmounts[Field.CURRENCY_A]?.value ?? '')}
             </RowFixed>
@@ -392,13 +392,13 @@ export default function RemoveLiquidityComponent() {
               />
               <StyledTokenName
                 className="token-symbol-container"
-                active={Boolean(currencyB && currencyB.symbol)}
+                active={Boolean(currencyB && currencyB.code)}
               >
-                {currencyB && currencyB.symbol && currencyB.symbol.length > 20
-                  ? currencyB.symbol.slice(0, 4) +
+                {currencyB && currencyB.code && currencyB.code.length > 20
+                  ? currencyB.code.slice(0, 4) +
                     '...' +
-                    currencyB.symbol.slice(currencyB.symbol.length - 5, currencyB.symbol.length)
-                  : currencyB?.symbol}
+                    currencyB.code.slice(currencyB.code.length - 5, currencyB.code.length)
+                  : currencyB?.code}
               </StyledTokenName>
               {formatTokenAmount(parsedAmounts[Field.CURRENCY_B]?.value ?? '')}
             </RowFixed>
@@ -407,10 +407,10 @@ export default function RemoveLiquidityComponent() {
           <Container>
             <Column>
               <div>
-                1 {currencyA?.symbol} = {currencyAtoB} {currencyB?.symbol}
+                1 {currencyA?.code} = {currencyAtoB} {currencyB?.code}
               </div>
               <div>
-                1 {currencyB?.symbol} = {currencyBtoA} {currencyA?.symbol}
+                1 {currencyB?.code} = {currencyBtoA} {currencyA?.code}
               </div>
             </Column>
           </Container>

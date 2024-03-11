@@ -41,7 +41,7 @@ export function useDerivedBurnInfo(
     }
   }, [sorobanContext, address, currencyA, currencyB]);
 
-  // const userLiquidity: undefined | CurrencyAmount<Token> = relevantTokenBalances?.[pair?.liquidityToken?.address ?? '']
+  // const userLiquidity: undefined | CurrencyAmount<Token> = relevantTokenBalances?.[pair?.liquidityToken?.contract ?? '']
 
   const tokens = {
     [Field.CURRENCY_A]: currencyA,
@@ -104,7 +104,7 @@ export function useDerivedBurnInfo(
 
         // Calculate newTokenAmount
         const tokenAmount =
-          currency?.address === pair?.tokenAmounts[0].currency?.address
+          currency?.contract === pair?.tokenAmounts[0].currency?.contract
             ? pair?.tokenAmounts[0]
             : pair?.tokenAmounts[1];
 

@@ -15,10 +15,10 @@ export async function getPriceImpactNew(
 ) {
   if (!currencyIn || !currencyOut) return '0';
 
-  const pairAddress = await getPairAddress(currencyIn.address, currencyOut.address, sorobanContext);
+  const pairAddress = await getPairAddress(currencyIn.contract, currencyOut.contract, sorobanContext);
   const reserves = await reservesBNWithTokens(pairAddress, sorobanContext);
 
-  const isToken0 = currencyIn.address === reserves.token0;
+  const isToken0 = currencyIn.contract === reserves.token0;
 
   const reserve0 = isToken0 ? reserves.reserve0 : reserves.reserve1;
   const reserve1 = isToken0 ? reserves.reserve1 : reserves.reserve0;
@@ -67,7 +67,7 @@ export async function getPriceImpactNew2(
 ) {
   if (!currencyIn || !currencyOut) return '0';
 
-  const isToken0 = currencyIn.address === reserves.token0;
+  const isToken0 = currencyIn.contract === reserves.token0;
 
   const reserve0 = isToken0 ? reserves.reserve0 : reserves.reserve1;
   const reserve1 = isToken0 ? reserves.reserve1 : reserves.reserve0;
@@ -78,8 +78,8 @@ export async function getPriceImpactNew2(
     const reserveOutAfter = reserve1.minus(expectedAmount);
 
     const reservesNew = {
-      token0: currencyIn.address,
-      token1: currencyOut.address,
+      token0: currencyIn.contract,
+      token1: currencyOut.contract,
       reserve0: reserveInAfter,
       reserve1: reserveOutAfter,
     };

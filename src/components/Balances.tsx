@@ -1,14 +1,14 @@
-import { Box, CircularProgress, Paper, Stack, Typography, styled } from '@mui/material';
+import { Box, CircularProgress, Paper, Typography, styled } from '@mui/material';
 import { AppContext } from 'contexts';
 import useGetMyBalances from 'hooks/useGetMyBalances';
 import { useMintTestToken } from 'hooks/useMintTestToken';
 import { TokenType } from 'interfaces';
 import { useContext, useState } from 'react';
+import { Networks } from 'stellar-sdk';
+import BalancesTable from './BalancesTable/BalancesTable';
 import { ButtonPrimary } from './Buttons/Button';
 import { WalletButton } from './Buttons/WalletButton';
 import { MintCustomToken } from './MintCustomToken';
-import BalancesTable from './BalancesTable/BalancesTable';
-import { Networks } from 'stellar-sdk';
 const PageWrapper = styled(Paper)`
   background: ${({ theme }) => `linear-gradient(${theme.palette.customBackground.bg2}, ${
     theme.palette.customBackground.bg2
@@ -59,7 +59,7 @@ export function Balances() {
     if (isMinting)
       return (
         <Box display="flex" alignItems="center" gap="6px">
-          Minting {currentMintingToken?.symbol} <CircularProgress size="18px" />
+          Minting {currentMintingToken?.code} <CircularProgress size="18px" />
         </Box>
       );
     return `Mint test tokens`;

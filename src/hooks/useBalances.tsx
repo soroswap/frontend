@@ -10,8 +10,9 @@ import { TokenMapType, TokenType } from '../interfaces';
 export type relevantTokensType = {
   balance: number | string | BigNumber;
   usdValue: number;
-  symbol: string;
-  address: string;
+  issuer?: string;
+  code: string;
+  contract: string;
   name: string;
   decimals: number;
   formatted: boolean | undefined;
@@ -67,8 +68,9 @@ const notFoundReturn = (token: TokenType) => {
   return {
     balance: 0,
     usdValue: 0,
-    symbol: token.symbol,
-    address: token.address,
+    issuer: token.issuer,
+    code: token.code,
+    contract: token.contract,
     name: token.name,
     decimals: 0,
     formatted: false,
@@ -91,21 +93,22 @@ export async function tokenBalances(
         //if not found, should skip and return 0 for all tokens
         if (notFound) return notFoundReturn(token);
 
-        const balanceResponse = await tokenBalance(token.address, userAddress, sorobanContext);
+        const balanceResponse = await tokenBalance(token.contract, userAddress, sorobanContext);
         if (!balanceResponse) return notFoundReturn(token);
-        const decimalsResponse = await tokenDecimals(token.address, sorobanContext);
+        const decimalsResponse = await tokenDecimals(token.contract, sorobanContext);
         let balance: number | string | BigNumber;
         if (formatted) {
           balance = formatTokenAmount(BigNumber(balanceResponse), decimalsResponse);
         } else {
           balance = balanceResponse;
         }
-
+        console.log("token", token)
         return {
           balance: balance,
           usdValue: 0, //TODO: should get usd value
-          symbol: token.symbol,
-          address: token.address,
+          issuer: token.issuer,
+          code: token.code,
+          contract: token.contract,
           name: token.name,
           decimals: decimalsResponse,
           formatted: formatted,

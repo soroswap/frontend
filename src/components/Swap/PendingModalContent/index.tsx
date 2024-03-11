@@ -167,7 +167,7 @@ function getContent(args: ContentArgs): PendingModalStep {
       };
     case ConfirmModalState.SETTING_TRUSTLINE:
       return {
-        title: `Setting trustline for ${approvalCurrency?.symbol ?? 'this token'}`,
+        title: `Setting trustline for ${approvalCurrency?.code ?? 'this token'}`,
         subtitle: (
           <CustomLink
             href="https://support.uniswap.org/hc/en-us/articles/8120520483085"
@@ -180,7 +180,7 @@ function getContent(args: ContentArgs): PendingModalStep {
       };
     case ConfirmModalState.PERMITTING:
       return {
-        title: `Allow ${approvalCurrency?.symbol ?? 'this token'} to be used for swapping`,
+        title: `Allow ${approvalCurrency?.code ?? 'this token'} to be used for swapping`,
         subtitle: (
           <CustomLink
             href="https://support.uniswap.org/hc/en-us/articles/8120520483085"

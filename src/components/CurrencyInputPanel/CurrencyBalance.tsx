@@ -1,14 +1,9 @@
 import { styled, useTheme } from '@mui/material';
-import { useSorobanReact } from '@soroban-react/core';
-import BigNumber from 'bignumber.js';
 import { RowFixed } from 'components/Row';
 import { BodySmall } from 'components/Text';
-import { formatTokenAmount } from 'helpers/format';
-import { tokenBalance } from 'hooks';
 import useGetMyBalances from 'hooks/useGetMyBalances';
 
 import { TokenType } from 'interfaces/tokens';
-import { useEffect, useState } from 'react';
 
 const StyledBalanceMax = styled('button')<{ disabled?: boolean }>`
   background-color: transparent;
@@ -47,7 +42,7 @@ export default function CurrencyBalance({
 }: CurrencyBalanceProps) {
   const { tokenBalancesResponse } = useGetMyBalances();
   const balance =
-    tokenBalancesResponse?.balances?.find((b) => b?.address === currency?.address)?.balance || '0';
+    tokenBalancesResponse?.balances?.find((b) => b?.contract === currency?.address)?.balance || '0';
 
   const theme = useTheme();
   return (

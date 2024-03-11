@@ -7,7 +7,8 @@ import { useTokensFromPair } from 'hooks/useTokensFromPair';
 import { TokenType } from 'interfaces/tokens';
 import { darken } from 'polished';
 import { useMemo, useState } from 'react';
-import * as StellarSdk from 'stellar-sdk';import { bigNumberToI128 } from '../../helpers/utils';
+import * as StellarSdk from 'stellar-sdk';
+import { bigNumberToI128 } from '../../helpers/utils';
 
 interface SwapButtonProps {
   sorobanContext: SorobanContextType;
@@ -116,8 +117,8 @@ export function SwapButtonNew({
 }: SwapButtonProps) {
   const tokensFromPair = useTokensFromPair(pairAddress, sorobanContext);
   useMemo(() => {
-    setToken0(tokens.find((token) => token.address === tokensFromPair?.token0) ?? null);
-    setToken1(tokens.find((token) => token.address === tokensFromPair?.token1) ?? null);
+    setToken0(tokens.find((token) => token.contract === tokensFromPair?.token0) ?? null);
+    setToken1(tokens.find((token) => token.contract === tokensFromPair?.token1) ?? null);
   }, [setToken0, setToken1, tokensFromPair, tokens]);
 
   const [isSubmitting, setSubmitting] = useState(false);

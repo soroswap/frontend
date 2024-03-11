@@ -53,7 +53,7 @@ export function useTokensWithPair(tokens: TokenType[], inputToken: TokenType) {
 
   tokens.map((token) => {
     // eslint-disable-next-line react-hooks/rules-of-hooks
-    const pairExist = usePairExist(inputToken.address, token.address, sorobanContext);
+    const pairExist = usePairExist(inputToken.contract, token.contract, sorobanContext);
 
     if (pairExist) {
       tokensWithPair.push(token);
@@ -68,11 +68,11 @@ export function useAllPairsFromTokens(tokens: TokenType[], sorobanContext: Sorob
   for (let i = 0; i < tokens.length; i++) {
     for (let j = i + 1; j < tokens.length; j++) {
       // eslint-disable-next-line react-hooks/rules-of-hooks
-      const pairExist = usePairExist(tokens[i].address, tokens[j].address, sorobanContext);
+      const pairExist = usePairExist(tokens[i].contract, tokens[j].contract, sorobanContext);
       // eslint-disable-next-line react-hooks/rules-of-hooks
       const pairAddress = usePairContractAddress(
-        tokens[i].address,
-        tokens[j].address,
+        tokens[i].contract,
+        tokens[j].contract,
         sorobanContext,
       );
 

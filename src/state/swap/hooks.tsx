@@ -25,7 +25,7 @@ export function useSwapActionHandlers(dispatch: React.Dispatch<AnyAction>): {
       dispatch(
         selectCurrency({
           field,
-          currencyId: currency.address ? currency.address : '',
+          currencyId: currency.contract ? currency.contract : '',
         }),
       );
     },
@@ -91,7 +91,7 @@ export function useDerivedSwapInfo(state: SwapState) {
   const { token: outputCurrency } = useToken(outputCurrencyId!);
   const recipientLookup = { address: '' }; //TODO: Use ENS useENS(recipient ?? undefined)
   //
-  const to: string | null | undefined = account; //recipient === null ? account : recipientLookup.address) ?? null
+  const to: string | null | undefined = account; //recipient === null ? account : recipientLookup.contract) ?? null
 
   const tokensArray = useMemo(() => {
     return inputCurrency && outputCurrency ? [inputCurrency, outputCurrency] : undefined;
@@ -193,7 +193,7 @@ export function useDerivedSwapInfo(state: SwapState) {
       typeof balanceIn !== 'string' &&
       BigNumber(balanceIn.balance).isLessThanOrEqualTo(BigNumber(maxAmountIn))
     ) {
-      inputError = `Insufficient ${balanceIn.symbol} balance`;
+      inputError = `Insufficient ${balanceIn.code} balance`;
     }
 
     return inputError;

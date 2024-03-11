@@ -19,8 +19,8 @@ export function CreatePairButton({ token0, token1, sorobanContext }: CreatePairP
   const networkPassphrase = sorobanContext.activeChain?.networkPassphrase ?? '';
   const server = sorobanContext.server;
   const account = sorobanContext.address;
-  const addressScVal0 = accountToScVal(token0.address);
-  const addressScVal1 = accountToScVal(token1.address);
+  const addressScVal0 = accountToScVal(token0.contract);
+  const addressScVal1 = accountToScVal(token1.contract);
   const params = [addressScVal0, addressScVal1];
 
   let xdr = StellarSdk.xdr;

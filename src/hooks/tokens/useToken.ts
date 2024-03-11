@@ -2,10 +2,10 @@ import { SorobanContextType, useSorobanReact } from '@soroban-react/core';
 import { getClassicAssetSorobanAddress } from 'functions/getClassicAssetSorobanAddress';
 import { getClassicStellarAsset, isAddress } from 'helpers/address';
 import { TokenMapType, TokenType } from 'interfaces';
+import { useSWRConfig } from 'swr';
 import useSWRImmutable from 'swr/immutable';
 import { useAllTokens } from './useAllTokens';
 import { getToken, isClassicStellarAsset } from './utils';
-import { useSWRConfig } from 'swr';
 
 export const findToken = async (
   tokenAddress: string | undefined,
@@ -26,7 +26,7 @@ export const findToken = async (
 
   const token = await getToken(sorobanContext, formattedAddress);
 
-  if (!token?.name || !token?.symbol) return undefined;
+  if (!token?.name || !token?.code) return undefined;
 
   return token;
 };

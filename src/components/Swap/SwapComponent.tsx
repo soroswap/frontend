@@ -8,6 +8,7 @@ import SwapDetailsDropdown from 'components/Swap/SwapDetailsDropdown';
 import { ButtonText } from 'components/Text';
 import { TransactionFailedContent } from 'components/TransactionConfirmationModal';
 import { AppContext, SnackbarIconType } from 'contexts';
+import { calculateSwapFees } from 'functions/getNetworkFees';
 import { sendNotification } from 'functions/sendNotification';
 import { getClassicStellarAsset } from 'helpers/address';
 import { formatTokenAmount } from 'helpers/format';
@@ -35,8 +36,6 @@ import { opacify } from 'themes/utils';
 import SwapCurrencyInputPanel from '../CurrencyInputPanel/SwapCurrencyInputPanel';
 import SwapHeader from './SwapHeader';
 import { ArrowWrapper, SwapWrapper } from './styleds';
-import { calculateSwapFees } from 'functions/getNetworkFees';
-import { N } from 'vitest/dist/reporters-MmQN-57K';
 
 const SwapSection = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -342,7 +341,7 @@ export function SwapComponent({
       if (sorobanContext.address){
         // Check if we need trustline
         const needTrustline = await requiresTrustline(
-          trade?.outputAmount?.currency.address!,
+          trade?.outputAmount?.currency.contract!,
           sorobanContext,
         );
         const requiresTrustlineAdjust = await checkRequiresTrustlineAdjust();

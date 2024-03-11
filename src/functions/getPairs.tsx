@@ -71,7 +71,7 @@ export const getPairsInfo = async (
   try {
     const pairAddresses = await Promise.all(
       currencies.map(async ([tokenA, tokenB]) => {
-        return await getPairAddress(tokenA?.address, tokenB?.address, sorobanContext);
+        return await getPairAddress(tokenA?.contract, tokenB?.contract, sorobanContext);
       }),
     );
 
@@ -115,12 +115,12 @@ export const getPairsInfo = async (
 
         const tokenAmounts = [
           {
-            currency: reserves.token0 === tokenA?.address ? tokenA : tokenB,
-            balance: reserves.token0 === tokenA?.address ? userShare0 : userShare1,
+            currency: reserves.token0 === tokenA?.contract ? tokenA : tokenB,
+            balance: reserves.token0 === tokenA?.contract ? userShare0 : userShare1,
           },
           {
-            currency: reserves.token1 === tokenA?.address ? tokenA : tokenB,
-            balance: reserves.token1 === tokenA?.address ? userShare0 : userShare1,
+            currency: reserves.token1 === tokenA?.contract ? tokenA : tokenB,
+            balance: reserves.token1 === tokenA?.contract ? userShare0 : userShare1,
           },
         ];
 

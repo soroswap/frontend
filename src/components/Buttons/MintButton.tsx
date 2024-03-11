@@ -62,7 +62,7 @@ export function MintButton({ sorobanContext, token, amountToMint }: MintButtonPr
       // let result = await sendTransaction(tx, options);
 
       let result = await contractInvoke({
-        contractAddress: token.address,
+        contractAddress: token.contract,
         method: 'mint',
         args: [new StellarSdk.Address(account).toScVal(), amountScVal],
         sorobanContext,
@@ -72,7 +72,7 @@ export function MintButton({ sorobanContext, token, amountToMint }: MintButtonPr
 
       if (result) {
         sendNotification(
-          `Minted ${amountToMint} ${token.symbol}`,
+          `Minted ${amountToMint} ${token.code}`,
           'Minted',
           SnackbarIconType.MINT,
           SnackbarContext,

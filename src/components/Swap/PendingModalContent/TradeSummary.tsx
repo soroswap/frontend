@@ -1,14 +1,14 @@
-import { ArrowContainer } from '../SwapComponent';
-import { ArrowDown } from 'react-feather';
-import { ArrowWrapper } from '../styleds';
-import { formatTokenAmount } from 'helpers/format';
-import { InterfaceTrade } from 'state/routing/types';
-import { LabelSmall } from 'components/Text';
 import { styled } from '@mui/material';
-import { SuccessfullSwapResponse } from 'hooks/useSwapCallback';
 import Column from 'components/Column';
 import CurrencyLogo from 'components/Logo/CurrencyLogo';
 import Row from 'components/Row';
+import { LabelSmall } from 'components/Text';
+import { formatTokenAmount } from 'helpers/format';
+import { SuccessfullSwapResponse } from 'hooks/useSwapCallback';
+import { ArrowDown } from 'react-feather';
+import { InterfaceTrade } from 'state/routing/types';
+import { ArrowContainer } from '../SwapComponent';
+import { ArrowWrapper } from '../styleds';
 
 const CustomRowTop = styled(Row)`
   border-radius: var(--arrendodamento, 16px);
@@ -56,7 +56,7 @@ export function TradeSummary({
           style={{ marginRight: '6px' }}
         />
         <LabelSmall color="textPrimary">
-          {`${getSwappedAmounts().formattedInput} ${trade?.inputAmount?.currency.symbol}`}
+          {`${getSwappedAmounts().formattedInput} ${trade?.inputAmount?.currency.code}`}
         </LabelSmall>
       </CustomRowTop>
       <ArrowWrapper clickable={false}>
@@ -71,7 +71,7 @@ export function TradeSummary({
           style={{ marginRight: '6px' }}
         />
         <LabelSmall color="textPrimary">
-          {`${getSwappedAmounts().formattedOutput} ${trade?.outputAmount?.currency.symbol}`}{' '}
+          {`${getSwappedAmounts().formattedOutput} ${trade?.outputAmount?.currency.code}`}{' '}
         </LabelSmall>
       </CustomRowBottom>
     </Column>

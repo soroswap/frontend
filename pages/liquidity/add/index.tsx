@@ -11,8 +11,8 @@ export default function AddLiquidityPage() {
   useEffect(() => {
     if (!tokens) return;
 
-    const xlm = tokens.find((token) => token.symbol === 'XLM');
-    if (xlm) router.push(`/liquidity/add/${xlm.address}`);
+    const xlm = tokens.find((token) => token.code === 'XLM');
+    if (xlm) router.push(`/liquidity/add/${xlm.contract}`);
   }, [tokens, router]);
 
   return (

@@ -56,7 +56,7 @@ export function useMintTestToken() {
         try {
           onTokenMintedStart?.(token);
           result = (await contractInvoke({
-            contractAddress: token.address,
+            contractAddress: token.contract,
             method: 'mint',
             args: [new StellarSdk.Address(account).toScVal(), amountScVal],
             sorobanContext,

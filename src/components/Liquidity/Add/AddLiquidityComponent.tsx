@@ -2,7 +2,7 @@ import { styled, useTheme } from '@mui/material';
 import { TxResponse } from '@soroban-react/contracts';
 import { useSorobanReact } from '@soroban-react/core';
 import BigNumber from 'bignumber.js';
-import { ButtonError, ButtonLight } from 'components/Buttons/Button';
+import { ButtonError } from 'components/Buttons/Button';
 import { WalletButton } from 'components/Buttons/WalletButton';
 import { DarkGrayCard } from 'components/Card';
 import { AutoColumn, ColumnCenter } from 'components/Column';
@@ -14,8 +14,10 @@ import TransactionConfirmationModal, {
 } from 'components/TransactionConfirmationModal';
 import { AppContext } from 'contexts';
 import { getCurrentTimePlusOneHour } from 'functions/getCurrentTimePlusOneHour';
+import { calculateLiquidityFees } from 'functions/getNetworkFees';
 import { formatTokenAmount } from 'helpers/format';
 import { bigNumberToI128, bigNumberToU64 } from 'helpers/utils';
+import { useToken } from 'hooks/tokens/useToken';
 import useCalculateLpToReceive from 'hooks/useCalculateLp';
 import useLiquidityValidations from 'hooks/useLiquidityValidations';
 import { RouterMethod, useRouterCallback } from 'hooks/useRouterCallback';
@@ -23,16 +25,14 @@ import { TokenType } from 'interfaces';
 import { useRouter } from 'next/router';
 import { useCallback, useContext, useMemo, useState } from 'react';
 import { Plus } from 'react-feather';
-import * as StellarSdk from 'stellar-sdk';
 import { Field } from 'state/mint/actions';
 import { useDerivedMintInfo, useMintActionHandlers, useMintState } from 'state/mint/hooks';
 import { useUserSlippageToleranceWithDefault } from 'state/user/hooks';
+import * as StellarSdk from 'stellar-sdk';
 import { opacify } from 'themes/utils';
 import { AddRemoveTabs } from '../AddRemoveHeader';
 import AddModalFooter from './AddModalFooter';
 import AddModalHeader from './AddModalHeader';
-import { useToken } from 'hooks/tokens/useToken';
-import { calculateLiquidityFees } from 'functions/getNetworkFees';
 
 export const PageWrapper = styled('main')`
   position: relative;
@@ -87,20 +87,20 @@ export default function AddLiquidityComponent({
 
   // useEffect(() => {
   //   if (currencyIdA) {
-  //     const tokenA = tokens.find((item) => item.symbol === currencyIdA);
+  //     const tokenA = tokens.find((item) => item.code === currencyIdA);
   //     if (tokenA) {
   //       setBaseCurrency(tokenA);
-  //       setCurrencyIdA(tokenA.address);
+  //       setCurrencyIdA(tokenA.contract);
   //     } else {
   //       setBaseCurrency(undefined);
   //       setCurrencyIdA(undefined);
   //     }
   //   }
   //   if (currencyIdB) {
-  //     const tokenB = tokens.find((item) => item.symbol === currencyIdB);
+  //     const tokenB = tokens.find((item) => item.code === currencyIdB);
   //     if (tokenB) {
   //       setCurrencyB(tokenB);
-  //       setCurrencyIdB(tokenB.address);
+  //       setCurrencyIdB(tokenB.contract);
   //     } else {
   //       setCurrencyB(undefined);
   //       setCurrencyIdB(undefined);
@@ -217,8 +217,8 @@ export default function AddLiquidityComponent({
     const minBScVal = bigNumberToI128(min1BN);
 
     const args = [
-      new StellarSdk.Address(baseCurrency?.address ?? '').toScVal(),
-      new StellarSdk.Address(currencyB?.address ?? '').toScVal(),
+      new StellarSdk.Address(baseCurrency?.contract ?? '').toScVal(),
+      new StellarSdk.Address(currencyB?.contract ?? '').toScVal(),
       desiredAScVal,
       desiredBScVal,
       minAScVal,
@@ -252,7 +252,7 @@ export default function AddLiquidityComponent({
 
   const handleCurrencyASelect = useCallback(
     (currencyA: TokenType) => {
-      const newCurrencyIdA = currencyA.address;
+      const newCurrencyIdA = currencyA.contract;
       let path = `${newCurrencyIdA}/${currencyIdB}`;
       if (
         currencyIdB === undefined ||
@@ -269,7 +269,7 @@ export default function AddLiquidityComponent({
 
   const handleCurrencyBSelect = useCallback(
     (currencyB: TokenType) => {
-      const newCurrencyIdB = currencyB.address;
+      const newCurrencyIdB = currencyB.contract;
       let path = `/${currencyIdA}/${newCurrencyIdB}`;
       if (currencyIdA === undefined) {
         path = `/${newCurrencyIdB}`;
@@ -315,8 +315,8 @@ export default function AddLiquidityComponent({
     const minBScVal = bigNumberToI128(min1BN);
 
     const args = [
-      new StellarSdk.Address(baseCurrency?.address ?? '').toScVal(),
-      new StellarSdk.Address(currencyB?.address ?? '').toScVal(),
+      new StellarSdk.Address(baseCurrency?.contract ?? '').toScVal(),
+      new StellarSdk.Address(currencyB?.contract ?? '').toScVal(),
       desiredAScVal,
       desiredBScVal,
       minAScVal,
@@ -356,8 +356,8 @@ export default function AddLiquidityComponent({
 
   const pendingText = (
     <BodySmall>
-      Adding {formattedAmounts[Field.CURRENCY_A]} {baseCurrency?.symbol} and{' '}
-      {formattedAmounts[Field.CURRENCY_B]} {currencyB?.symbol}
+      Adding {formattedAmounts[Field.CURRENCY_A]} {baseCurrency?.code} and{' '}
+      {formattedAmounts[Field.CURRENCY_B]} {currencyB?.code}
     </BodySmall>
   );
 

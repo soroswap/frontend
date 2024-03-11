@@ -1,13 +1,13 @@
 import CardActions from '@mui/material/CardActions';
 import { SorobanContextType } from '@soroban-react/core';
 import BigNumber from 'bignumber.js';
+import { useApiTokens } from 'hooks/tokens/useApiTokens';
 import { useMemo } from 'react';
 import { SwapButton } from '../components/Buttons/SwapButton';
 import { formatTokenAmount } from '../helpers/format';
 import { useReservesBigNumber } from '../hooks/useReserves';
 import { useTokensFromPair } from '../hooks/useTokensFromPair';
 import { TokenType } from '../interfaces';
-import { useApiTokens } from 'hooks/tokens/useApiTokens';
 
 export function ProvideSwapPair({
   sorobanContext,
@@ -37,8 +37,8 @@ export function ProvideSwapPair({
 
   const reserves = useReservesBigNumber(pairAddress, sorobanContext);
   useMemo(() => {
-    setToken0(tokens.find((token) => token.address === tokensFromPair?.token0) ?? null);
-    setToken1(tokens.find((token) => token.address === tokensFromPair?.token1) ?? null);
+    setToken0(tokens.find((token) => token.contract === tokensFromPair?.token0) ?? null);
+    setToken1(tokens.find((token) => token.contract === tokensFromPair?.token1) ?? null);
   }, [setToken0, setToken1, tokensFromPair, tokens]);
 
   return (
@@ -64,7 +64,7 @@ export function ProvideSwapPair({
 
       {/* <CardActions>
         <AllowanceButton
-          tokenAddress={inputToken.address}
+          tokenAddress={inputToken.contract}
           spenderAddress={pairAddress}
           amount={BigNumber(inputTokenAmount).shiftedBy(7)}
           sorobanContext={sorobanContext}
@@ -76,7 +76,7 @@ export function ProvideSwapPair({
           pairAddress={pairAddress}
           maxTokenA={BigNumber('1.1').multipliedBy(BigNumber(inputTokenAmount)).shiftedBy(7)}
           amountOut={BigNumber(outputTokenAmount).shiftedBy(7)}
-          isBuy={inputToken.address == token1?.address}
+          isBuy={inputToken.contract == token1?.contract}
           sorobanContext={sorobanContext}
         />
       </CardActions>

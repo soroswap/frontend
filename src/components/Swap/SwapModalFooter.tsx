@@ -1,4 +1,5 @@
 import { styled, useTheme } from '@mui/material';
+import { useSorobanReact } from '@soroban-react/core';
 import BigNumber from 'bignumber.js';
 import { ButtonError, SmallButtonPrimary } from 'components/Buttons/Button';
 import Column from 'components/Column';
@@ -11,7 +12,6 @@ import { formatTokenAmount, twoDecimalsPercentage } from 'helpers/format';
 import useGetReservesByPair from 'hooks/useGetReservesByPair';
 import { getSwapAmounts } from 'hooks/useSwapCallback';
 import { ReactNode, useEffect, useState } from 'react';
-import { useSorobanReact } from '@soroban-react/core';
 import { AlertTriangle } from 'react-feather';
 import { InterfaceTrade, TradeType } from 'state/routing/types';
 import { Label } from './SwapModalHeaderAmount';
@@ -74,12 +74,12 @@ export default function SwapModalFooter({
   // const { chainId } = useWeb3React()
   // const nativeCurrency = useNativeCurrency(chainId)
 
-  const label = `${trade?.inputAmount?.currency.symbol}`;
-  const labelInverted = `${trade?.outputAmount?.currency.symbol}`;
+  const label = `${trade?.inputAmount?.currency.code}`;
+  const labelInverted = `${trade?.outputAmount?.currency.code}`;
 
   const { reserves } = useGetReservesByPair({
-    baseAddress: trade?.inputAmount?.currency?.address,
-    otherAddress: trade?.outputAmount?.currency.address,
+    baseAddress: trade?.inputAmount?.currency?.contract,
+    otherAddress: trade?.outputAmount?.currency.contract,
   });
 
   const sorobanContext = useSorobanReact();
@@ -138,7 +138,7 @@ export default function SwapModalFooter({
             <Row align="flex-start" justify="space-between" gap="sm">
               <MouseoverTooltip
                 title={
-                  'The fee paid to miners who process your transaction. This must be paid in ${nativeCurrency.symbol}.'
+                  "The fee paid to miners who process your transaction. This must be paid in XLM."
                 }
               >
                 <Label cursor="help">Network fees</Label>
@@ -186,7 +186,7 @@ export default function SwapModalFooter({
               </Label>
             </MouseoverTooltip>
             <DetailRowValue style={{ display: 'flex', alignItems: 'center' }} component="div">
-              {getSwapValues().formattedAmount1} {trade?.outputAmount?.currency.symbol}
+              {getSwapValues().formattedAmount1} {trade?.outputAmount?.currency.code}
               <CurrencyLogo
                 currency={trade?.outputAmount?.currency}
                 size="16px"
@@ -218,7 +218,7 @@ export default function SwapModalFooter({
             id={'CONFIRM_SWAP_BUTTON'}
           >
             <HeadlineSmall color={theme.palette.custom.accentTextLightPrimary}>
-              {trustline ? `Set ${trade.outputAmount?.currency.symbol} trustline` : 'Confirm swap'}
+              {trustline ? `Set ${trade.outputAmount?.currency.code} trustline` : 'Confirm swap'}
             </HeadlineSmall>
           </ConfirmButton>
           {swapErrorMessage ? <SwapCallbackError error={swapErrorMessage} /> : null}

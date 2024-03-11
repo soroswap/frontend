@@ -2,7 +2,7 @@ import { styled } from '@mui/material';
 import Column from 'components/Column';
 import CurrencyLogo from 'components/Logo/CurrencyLogo';
 import Row from 'components/Row';
-import { BodySecondary, BodySmall } from 'components/Text';
+import { BodySmall } from 'components/Text';
 import { TokenType } from 'interfaces';
 import { useMemo } from 'react';
 import { Field } from 'state/mint/actions';
@@ -57,7 +57,7 @@ export default function AddModalHeader({
           <CurrencyLogo currency={currencyB} size="24px" />
           {amountOfLpTokensToReceive}
         </CurrencyWrapper>
-        {currencyA?.symbol}/{currencyB?.symbol} Liquidity Pool Token
+        {currencyA?.code}/{currencyB?.code} Liquidity Pool Token
       </Column>
     </CustomRow>
   );

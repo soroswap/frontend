@@ -113,10 +113,10 @@ export function CurrencySearch({
 
       return Object.values(defaultTokens).sort((a, b) => {
         const aBalance = tokenBalancesResponse?.balances.find((tokenBalance) => {
-          return tokenBalance.address === a.address;
+          return tokenBalance.contract === a.contract;
         });
         const bBalance = tokenBalancesResponse?.balances.find((tokenBalance) => {
-          return tokenBalance.address === b.address;
+          return tokenBalance.contract === b.contract;
         });
         if (aBalance && bBalance) {
           return Number(bBalance.balance) - Number(aBalance.balance);
@@ -143,7 +143,7 @@ export function CurrencySearch({
     (currency: TokenType, hasWarning?: boolean) => {
       if (needsWrapping) {
         setShowWrapStellarAssetModal(true);
-      } else if (!allTokens[currency.address]) {
+      } else if (!allTokens[currency.contract]) {
         setShowUserAddedTokenModal(true);
       } else {
         onCurrencySelect(currency, hasWarning);
@@ -171,7 +171,7 @@ export function CurrencySearch({
       if (e.key === 'Enter') {
         if (searchCurrencies.length > 0) {
           if (
-            searchCurrencies[0].symbol?.toLowerCase() === debouncedQuery.trim().toLowerCase() ||
+            searchCurrencies[0].code?.toLowerCase() === debouncedQuery.trim().toLowerCase() ||
             searchCurrencies.length === 1
           ) {
             handleCurrencySelect(searchCurrencies[0]);
