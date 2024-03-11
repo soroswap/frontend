@@ -72,6 +72,7 @@ export function useToken(tokenAddress: string | undefined) {
     if (sorobanAddress || (stellarAsset && typeof sorobanAddress === 'string')) {
       if (stellarAsset && typeof stellarAsset !== 'boolean') {
         newTokenData = {
+          issuer: stellarAsset.issuer,
           contract: sorobanAddress,
           name: stellarAsset.asset,
           code: stellarAsset.assetCode,
