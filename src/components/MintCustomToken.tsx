@@ -179,7 +179,7 @@ export function MintCustomToken() {
       if (isAddress(newTokenAddress)) {
         const tokenInfo = await findToken(newTokenAddress, tokensAsMap, sorobanContext);
         setTokenSymbol(tokenInfo?.code as string);
-        const requiresTrust = await requiresTrustline(newTokenAddress, sorobanContext);
+        const requiresTrust = sorobanContext.address ? true : await requiresTrustline(newTokenAddress, sorobanContext);
         if (requiresTrust) {
           setButtonText('Set Trustline');
           setNeedToSetTrustline(true);

@@ -229,11 +229,15 @@ export default function RemoveLiquidityComponent() {
   }, [getArgs, routerCallback]);
 
   const getNetworkFees = async () => {
-    const args = getArgs();
-
-    const fee = await calculateLiquidityFees(sorobanContext, args, RouterMethod.REMOVE_LIQUIDITY);
-    console.log('FEE: ', fee);
-    return Number(fee) / 10 ** 7;
+    let fees;
+    try { 
+      const args = getArgs();
+      fees = await calculateLiquidityFees(sorobanContext, args, RouterMethod.REMOVE_LIQUIDITY);
+      fees = Number(fees) / 10 ** 7;
+    } catch (error) {
+      console.error('Error fetching network fees:', error);
+      fees =  0;
+    }
   };
 
   const handleClickMainButton = async () => {
