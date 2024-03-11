@@ -67,9 +67,9 @@ export async function getToken(
     logo = await getTokenLogo(formattedAddress, sorobanContext);
 
     const token: TokenType = {
-      address: formattedAddress,
+      contract: formattedAddress,
       name: name as string,
-      symbol: symbol as string,
+      code: symbol as string,
       decimals,
       logoURI: logo,
     };

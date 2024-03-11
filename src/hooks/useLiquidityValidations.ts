@@ -76,7 +76,7 @@ const useLiquidityValidations = ({
 
   const getPairInfo = () => {
     const pair = lpTokens?.find((obj) => {
-      const pair = [obj.token_0?.address, obj.token_1?.address];
+      const pair = [obj.token_0?.contract, obj.token_1?.contract];
 
       return pair.includes(currencyIdA) && pair.includes(currencyIdB);
     });

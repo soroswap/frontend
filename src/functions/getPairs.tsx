@@ -13,16 +13,16 @@ import { getPairAddress } from './getPairAddress';
 import { getTotalLpShares } from './getTotalLpShares';
 
 export const getPairsFromFactory = async (sorobanContext: SorobanContextType) => {
-  const factory_address = await fetchFactory(sorobanContext.activeChain?.id!)
-  let pairs = []  
+  const factory_address = await fetchFactory(sorobanContext.activeChain?.id!);
+  let pairs = [];
   let allpairs_length = await contractInvoke({
     contractAddress: factory_address.address,
     method: 'all_pairs_length',
     args: [],
     sorobanContext,
   });
-  
-  allpairs_length = scValToJs(allpairs_length as xdr.ScVal)
+
+  allpairs_length = scValToJs(allpairs_length as xdr.ScVal);
 
   for (let index = 0; index < Number(allpairs_length); index++) {
     let pairAddress = await contractInvoke({
@@ -32,37 +32,38 @@ export const getPairsFromFactory = async (sorobanContext: SorobanContextType) =>
       sorobanContext,
     });
 
-    pairs.push(await getPairsFromPairAddress(scValToJs(pairAddress as xdr.ScVal), sorobanContext)) 
+    pairs.push(await getPairsFromPairAddress(scValToJs(pairAddress as xdr.ScVal), sorobanContext));
   }
 
-  return pairs
-}
+  return pairs;
+};
 
-export const getPairsFromPairAddress = async (pair_address: string, sorobanContext: SorobanContextType) => {
-
+export const getPairsFromPairAddress = async (
+  pair_address: string,
+  sorobanContext: SorobanContextType,
+) => {
   let token_a_id = await contractInvoke({
     contractAddress: pair_address,
     method: 'token_0',
     sorobanContext,
   });
-  token_a_id = scValToJs(token_a_id as xdr.ScVal)
+  token_a_id = scValToJs(token_a_id as xdr.ScVal);
 
   let token_b_id = await contractInvoke({
     contractAddress: pair_address,
     method: 'token_1',
     sorobanContext,
   });
-  token_b_id = scValToJs(token_b_id as xdr.ScVal)
+  token_b_id = scValToJs(token_b_id as xdr.ScVal);
 
   return {
     token_a_id: String(token_a_id),
     token_b_id: String(token_b_id),
     pair_address,
     token_a_address: String(token_a_id),
-    token_b_address: String(token_b_id)
-  }
-
-}
+    token_b_address: String(token_b_id),
+  };
+};
 
 export const getPairsInfo = async (
   currencies: [TokenType | undefined, TokenType | undefined][],
@@ -90,16 +91,14 @@ export const getPairsInfo = async (
 
         const liquidityToken = {
           token: {
-            address: pairAddresses[i],
+            contract: pairAddresses[i],
             name: await getTokenName(pairAddresses[i], sorobanContext),
-            symbol: await getTokenSymbol(pairAddresses[i], sorobanContext),
+            code: await getTokenSymbol(pairAddresses[i], sorobanContext),
             decimals: await getTokenDecimals(pairAddresses[i], sorobanContext),
           },
-          userBalance: await tokenBalance(
-            pairAddresses[i],
-            sorobanContext.address ?? '',
-            sorobanContext,
-          ) ?? '0',
+          userBalance:
+            (await tokenBalance(pairAddresses[i], sorobanContext.address ?? '', sorobanContext)) ??
+            '0',
           totalSupply,
         };
 

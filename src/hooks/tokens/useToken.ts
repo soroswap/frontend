@@ -48,10 +48,10 @@ export function useToken(tokenAddress: string | undefined) {
     ([key, tokenAddress, tokensAsMap, sorobanContext]) =>
       findToken(tokenAddress, tokensAsMap, sorobanContext),
   );
-  
+
   const handleTokenRefresh = () => {
     mutate((key: any) => revalidateKeysCondition(key), undefined, { revalidate: true });
-  }
+  };
 
   const {
     data: isStellarClassicAsset,
@@ -72,9 +72,9 @@ export function useToken(tokenAddress: string | undefined) {
     if (sorobanAddress || (stellarAsset && typeof sorobanAddress === 'string')) {
       if (stellarAsset && typeof stellarAsset !== 'boolean') {
         newTokenData = {
-          address: sorobanAddress,
+          contract: sorobanAddress,
           name: stellarAsset.asset,
-          symbol: stellarAsset.assetCode,
+          code: stellarAsset.assetCode,
           decimals: 7,
           logoURI: '',
         };
@@ -88,6 +88,6 @@ export function useToken(tokenAddress: string | undefined) {
     needsWrapping,
     isLoading: bothLoading,
     isError: error,
-    handleTokenRefresh
+    handleTokenRefresh,
   };
 }

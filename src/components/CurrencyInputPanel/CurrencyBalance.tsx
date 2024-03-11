@@ -42,7 +42,8 @@ export default function CurrencyBalance({
 }: CurrencyBalanceProps) {
   const { tokenBalancesResponse } = useGetMyBalances();
   const balance =
-    tokenBalancesResponse?.balances?.find((b) => b?.contract === currency?.address)?.balance || '0';
+    tokenBalancesResponse?.balances?.find((b) => b?.contract === currency?.contract)?.balance ||
+    '0';
 
   const theme = useTheme();
   return (

@@ -324,8 +324,8 @@ export default function AddLiquidityComponent({
       new StellarSdk.Address(sorobanContext.address ?? '').toScVal(),
       bigNumberToU64(BigNumber(getCurrentTimePlusOneHour())),
     ];
- 
-    try { 
+
+    try {
       const fees = await calculateLiquidityFees(sorobanContext, args, RouterMethod.ADD_LIQUIDITY);
       if (fees) {
         return Number(fees) / 10 ** 7;
@@ -340,7 +340,7 @@ export default function AddLiquidityComponent({
     const { amount, percentage } = await getLpAmountAndPercentage();
 
     const fee = await getNetworkFees();
-    setNetworkFees(fee);
+    setNetworkFees(fee ?? 0);
 
     setAmountOfLpTokensToReceive(`${amount}`);
 

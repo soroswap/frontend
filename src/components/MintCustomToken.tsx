@@ -74,7 +74,7 @@ export function MintCustomToken() {
       let result = await contractInvoke({
         contractAddress: token?.contract as string,
         method: 'mint',
-        args: [new StellarSdk.contract(address).toScVal(), amountScVal],
+        args: [new StellarSdk.Address(address).toScVal(), amountScVal],
         sorobanContext,
         signAndSend: true,
         secretKey: admin_account.secret(),
@@ -169,9 +169,9 @@ export function MintCustomToken() {
       } else {
         console.log('Invalid address || token || asset');
       }
-    } 
-  }
-  
+    }
+  };
+
   useEffect(() => {
     const updateTokenInfo = async () => {
       const sorobanAddress = getClassicAssetSorobanAddress(tokenAddress, sorobanContext);
@@ -179,7 +179,9 @@ export function MintCustomToken() {
       if (isAddress(newTokenAddress)) {
         const tokenInfo = await findToken(newTokenAddress, tokensAsMap, sorobanContext);
         setTokenSymbol(tokenInfo?.code as string);
-        const requiresTrust = sorobanContext.address ? true : await requiresTrustline(newTokenAddress, sorobanContext);
+        const requiresTrust = sorobanContext.address
+          ? true
+          : await requiresTrustline(newTokenAddress, sorobanContext);
         if (requiresTrust) {
           setButtonText('Set Trustline');
           setNeedToSetTrustline(true);
