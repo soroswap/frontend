@@ -324,9 +324,16 @@ export default function AddLiquidityComponent({
       new StellarSdk.Address(sorobanContext.address ?? '').toScVal(),
       bigNumberToU64(BigNumber(getCurrentTimePlusOneHour())),
     ];
-
-    const fee = await calculateLiquidityFees(sorobanContext, args, RouterMethod.ADD_LIQUIDITY);
-    return Number(fee) / 10 ** 7;
+ 
+    try { 
+      const fees = await calculateLiquidityFees(sorobanContext, args, RouterMethod.ADD_LIQUIDITY);
+      if (fees) {
+        return Number(fees) / 10 ** 7;
+      }
+    } catch (error) {
+      console.error('Error fetching network fees:', error);
+      return 0;
+    }
   };
 
   const handleClickMainButton = async () => {
