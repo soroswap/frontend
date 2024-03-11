@@ -1,18 +1,17 @@
-import { getPriceImpactNew2 } from 'functions/getPriceImpact';
-import { BodySmall } from 'components/Text';
-import { formatTokenAmount, twoDecimalsPercentage } from 'helpers/format';
-import { InterfaceTrade } from 'state/routing/types';
-import { LoadingRows } from 'components/Loader/styled';
-import { MouseoverTooltip } from 'components/Tooltip';
-import { RowBetween, RowFixed } from 'components/Row';
-import { Separator } from 'components/SearchModal/styleds';
-import { useEffect, useState } from 'react';
 import { useSorobanReact } from '@soroban-react/core';
 import BigNumber from 'bignumber.js';
 import Column from 'components/Column';
+import { LoadingRows } from 'components/Loader/styled';
 import CurrencyLogo from 'components/Logo/CurrencyLogo';
+import { RowBetween, RowFixed } from 'components/Row';
+import { Separator } from 'components/SearchModal/styleds';
+import { BodySmall } from 'components/Text';
+import { MouseoverTooltip } from 'components/Tooltip';
+import { getPriceImpactNew2 } from 'functions/getPriceImpact';
+import { formatTokenAmount, twoDecimalsPercentage } from 'helpers/format';
 import useGetReservesByPair from 'hooks/useGetReservesByPair';
-import { calculateSwapFees } from 'functions/getNetworkFees';
+import { useEffect, useState } from 'react';
+import { InterfaceTrade } from 'state/routing/types';
 
 interface AdvancedSwapDetailsProps {
   trade: InterfaceTrade | undefined;
@@ -50,13 +49,13 @@ export function AdvancedSwapDetails({
   // const txCount = getTransactionCount(trade)
   const sorobanContext = useSorobanReact();
 
-  const supportsGasEstimate = true; //chainId && SUPPORTED_GAS_ESTIMATE_CHAIN_IDS.includes(chainId)
+  // const supportsGasEstimate = true; //chainId && SUPPORTED_GAS_ESTIMATE_CHAIN_IDS.includes(chainId)
 
   // {twoDecimalsPercentage().toString())
   // }%
 
   // const priceImpact = async () => {
-  //   const pairAddress = await getPairAddress(trade?.inputAmount.currency.address, trade?.outputAmount.currency.address, sorobanContext)
+  //   const pairAddress = await getPairAddress(trade?.inputAmount.currency.contract, trade?.outputAmount.currency.contract, sorobanContext)
   //   const reserves = await reservesBNWithTokens(pairAddress, sorobanContext)
   //   const { token0, token1 } = reserves
   //
@@ -65,8 +64,8 @@ export function AdvancedSwapDetails({
   //     const priceImpactTemp = getPriceImpact(
   //       pairAddress,
   //       BigNumber(trade?.inputAmount.value).shiftedBy(7),
-  //       token0 === trade.inputAmount.currency.address ? reserves.reserve0 : reserves.reserve1,
-  //       token1 === trade.outputAmount.currency.address ? reserves.reserve1 : reserves.reserve0,
+  //       token0 === trade.inputAmount.currency.contract ? reserves.reserve0 : reserves.reserve1,
+  //       token1 === trade.outputAmount.currency.contract ? reserves.reserve1 : reserves.reserve0,
   //       sorobanContext
   //     )
   //
@@ -83,8 +82,8 @@ export function AdvancedSwapDetails({
   // })
 
   const { reserves } = useGetReservesByPair({
-    baseAddress: trade?.inputAmount?.currency?.address,
-    otherAddress: trade?.outputAmount?.currency.address,
+    baseAddress: trade?.inputAmount?.currency?.contract,
+    otherAddress: trade?.outputAmount?.currency.contract,
   });
 
   const [priceImpact, setPriceImpact] = useState<number>(0);
@@ -115,7 +114,7 @@ export function AdvancedSwapDetails({
   return (
     <Column gap="md">
       <Separator />
-      {supportsGasEstimate && (
+      {(networkFees != 0) && (
         <RowBetween>
           <MouseoverTooltip
             title={'The fee paid to miners who process your transaction. This must be paid in XLM.'}
@@ -151,7 +150,7 @@ export function AdvancedSwapDetails({
         <TextWithLoadingPlaceholder syncing={syncing} width={65}>
           <BodySmall style={{ display: 'flex', alignItems: 'center' }} component="div">
             {formatTokenAmount(trade?.outputAmount?.value ?? '0')}{' '}
-            {trade?.outputAmount?.currency.symbol}{' '}
+            {trade?.outputAmount?.currency.code}{' '}
             <CurrencyLogo
               currency={trade?.outputAmount?.currency}
               size="16px"

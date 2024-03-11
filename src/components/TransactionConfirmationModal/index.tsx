@@ -112,11 +112,11 @@ function TransactionSubmittedContent({
   const [success, setSuccess] = useState<boolean | undefined>();
 
   // const addToken = useCallback(() => {
-  //   if (!token?.symbol || !connector.watchAsset) return
+  //   if (!token?.code || !connector.watchAsset) return
   //   connector
   //     .watchAsset({
-  //       address: token.address,
-  //       symbol: token.symbol,
+  //       address: token.contract,
+  //       symbol: token.code,
   //       decimals: token.decimals,
   //       image: logoURL,
   //     })
@@ -146,10 +146,10 @@ function TransactionSubmittedContent({
               onClick={() => null}
             >
               {!success ? (
-                <RowFixed>Add {currencyToAdd.symbol}</RowFixed>
+                <RowFixed>Add {currencyToAdd.code}</RowFixed>
               ) : (
                 <RowFixed>
-                  Added {currencyToAdd.symbol}
+                  Added {currencyToAdd.code}
                   <CheckCircle
                     size="16px"
                     stroke={theme.palette.customBackground.accentSuccess}

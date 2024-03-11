@@ -1,9 +1,8 @@
-import { CurrencyAmount, TokenType } from 'interfaces';
 import { useRouterSDK } from 'functions/generateRoute';
-import { InterfaceTrade, QuoteState, TradeState, TradeType } from 'state/routing/types';
-import { ReservesType } from 'functions/getExpectedAmount';
-import { TradeType as SdkTradeType } from 'soroswap-router-sdk';
+import { CurrencyAmount, TokenType } from 'interfaces';
 import { useEffect, useMemo, useState } from 'react';
+import { TradeType as SdkTradeType } from 'soroswap-router-sdk';
+import { InterfaceTrade, QuoteState, TradeState, TradeType } from 'state/routing/types';
 import useSWR from 'swr';
 
 const TRADE_NOT_FOUND = {
@@ -36,7 +35,7 @@ export function useBestTrade(
     isValidating,
   } = useSWR(
     amountSpecified && otherCurrency
-      ? [amountSpecified.currency.address, otherCurrency.address, tradeType, amountSpecified.value]
+      ? [amountSpecified.currency.contract, otherCurrency.contract, tradeType, amountSpecified.value]
       : null,
     ([amountTokenAddress, quoteTokenAddress, tradeType, amount]) =>
       generateRoute({

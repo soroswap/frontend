@@ -1,24 +1,23 @@
-import { useContext, useEffect, useState } from 'react';
 import { contractInvoke, setTrustline } from '@soroban-react/contracts';
+import { useContext, useEffect, useState } from 'react';
 import * as StellarSdk from 'stellar-sdk';
 
 import { AppContext, SnackbarIconType } from 'contexts';
 
 import { Box, CircularProgress, Stack, Typography } from '@mui/material';
 import CardContent from '@mui/material/CardContent';
-import WrapStellarAssetModal from './Modals/WrapStellarAssetModal';
 import { ButtonPrimary } from './Buttons/Button';
 import { TextInput } from './Inputs/TextInput';
+import WrapStellarAssetModal from './Modals/WrapStellarAssetModal';
 import { BodySmall } from './Text';
 
 import { getClassicAssetSorobanAddress } from 'functions/getClassicAssetSorobanAddress';
 import { sendNotification } from 'functions/sendNotification';
 
-import { isAddress, shortenAddress } from 'helpers/address';
-import { getClassicStellarAsset } from 'helpers/address';
+import BigNumber from 'bignumber.js';
+import { getClassicStellarAsset, isAddress, shortenAddress } from 'helpers/address';
 import { requiresTrustline } from 'helpers/stellar';
 import { bigNumberToI128 } from 'helpers/utils';
-import BigNumber from 'bignumber.js';
 
 import { useAllTokens } from 'hooks/tokens/useAllTokens';
 import { findToken, useToken } from 'hooks/tokens/useToken';
@@ -73,7 +72,7 @@ export function MintCustomToken() {
 
     try {
       let result = await contractInvoke({
-        contractAddress: token?.address as string,
+        contractAddress: token?.contract as string,
         method: 'mint',
         args: [new StellarSdk.Address(address).toScVal(), amountScVal],
         sorobanContext,
@@ -84,7 +83,7 @@ export function MintCustomToken() {
       if (result) {
         setIsMinting(false);
         sendNotification(
-          `Minted ${tokenAmount} ${shortenAddress(token?.address as string)}`,
+          `Minted ${tokenAmount} ${shortenAddress(token?.contract as string)}`,
           'Minted',
           SnackbarIconType.MINT,
           SnackbarContext,
@@ -157,7 +156,7 @@ export function MintCustomToken() {
   };
 
   const handleSubmit = async () => {
-    const isSCA = await getClassicStellarAsset(tokenAddress);
+    const isSCA = getClassicStellarAsset(tokenAddress);
     if (isSCA) {
       handleSCA();
       return;
@@ -170,17 +169,19 @@ export function MintCustomToken() {
       } else {
         console.log('Invalid address || token || asset');
       }
-    } 
-  }
-  
+    }
+  };
+
   useEffect(() => {
     const updateTokenInfo = async () => {
       const sorobanAddress = getClassicAssetSorobanAddress(tokenAddress, sorobanContext);
       const newTokenAddress = sorobanAddress ? sorobanAddress : tokenAddress;
       if (isAddress(newTokenAddress)) {
         const tokenInfo = await findToken(newTokenAddress, tokensAsMap, sorobanContext);
-        setTokenSymbol(tokenInfo?.symbol as string);
-        const requiresTrust = await requiresTrustline(newTokenAddress, sorobanContext);
+        setTokenSymbol(tokenInfo?.code as string);
+        const requiresTrust = sorobanContext.address
+          ? true
+          : await requiresTrustline(newTokenAddress, sorobanContext);
         if (requiresTrust) {
           setButtonText('Set Trustline');
           setNeedToSetTrustline(true);

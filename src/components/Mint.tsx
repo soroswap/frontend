@@ -14,9 +14,9 @@ import React, { useEffect, useState } from 'react';
 import BigNumber from 'bignumber.js';
 import { formatTokenAmount } from 'helpers/format';
 import { tokenBalance } from 'hooks';
+import { useApiTokens } from 'hooks/tokens/useApiTokens';
 import { MintButton } from '../components/Buttons/MintButton';
 import { TokenType } from '../interfaces';
-import { useApiTokens } from 'hooks/tokens/useApiTokens';
 
 export function Mint() {
   const sorobanContext: SorobanContextType = useSorobanReact();
@@ -27,11 +27,11 @@ export function Mint() {
   const [amount, setAmount] = useState(BigNumber(0));
 
   const handleInputTokenChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedToken = tokensList.find((token) => token.symbol == event.target.value);
+    const selectedToken = tokensList.find((token) => token.code == event.target.value);
 
     if (selectedToken) {
       setInputToken(selectedToken);
-      setMintTokenId(selectedToken.address);
+      setMintTokenId(selectedToken.contract);
     }
   };
 
@@ -41,7 +41,7 @@ export function Mint() {
 
   useEffect(() => {
     setInputToken(tokensList[0]);
-    setMintTokenId(tokensList[0]?.address);
+    setMintTokenId(tokensList[0]?.contract);
   }, [tokensList]);
 
   return (
@@ -60,8 +60,8 @@ export function Mint() {
               onChange={handleInputTokenChange}
             >
               {tokensList.map((option) => (
-                <MenuItem key={option.address} value={option.symbol}>
-                  {`${option.name} (${option.symbol})`}
+                <MenuItem key={option.contract} value={option.code}>
+                  {`${option.name} (${option.code})`}
                 </MenuItem>
               ))}
             </TextField>
@@ -72,7 +72,7 @@ export function Mint() {
                 id="outlined-adornment-amount"
                 onChange={handleAmountChange}
                 startAdornment={
-                  <InputAdornment position="start">{inputToken?.symbol}</InputAdornment>
+                  <InputAdornment position="start">{inputToken?.code}</InputAdornment>
                 }
                 label="Amount"
               />
@@ -109,16 +109,16 @@ export function MintTokens({
 
   useEffect(() => {
     if (sorobanContext.activeChain && sorobanContext.address) {
-      tokenBalance(inputToken.address, sorobanContext.address, sorobanContext).then((resp) => {
+      tokenBalance(inputToken.contract, sorobanContext.address, sorobanContext).then((resp) => {
         setBalance(formatTokenAmount(resp as BigNumber));
       });
     }
-  }, [inputToken.address, sorobanContext]);
+  }, [inputToken.contract, sorobanContext]);
 
   return (
     <div>
       <p>
-        Your current balance: {balance} {inputToken.symbol}
+        Your current balance: {balance} {inputToken.code}
       </p>
       <CardActions>
         <MintButton

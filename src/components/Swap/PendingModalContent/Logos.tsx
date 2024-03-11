@@ -106,7 +106,7 @@ export function CurrencyLoader({
   return (
     <CurrencyLoaderContainer
       asBadge={asBadge}
-      data-testid={`pending-modal-currency-logo-${currency?.symbol}`}
+      data-testid={`pending-modal-currency-logo-${currency?.code}`}
     >
       <RaisedCurrencyLogo currency={currency} size="100%" />
     </CurrencyLoaderContainer>

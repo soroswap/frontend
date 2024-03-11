@@ -2,10 +2,11 @@ import { SorobanContextType, useSorobanReact } from '@soroban-react/core';
 import { getClassicAssetSorobanAddress } from 'functions/getClassicAssetSorobanAddress';
 import { getClassicStellarAsset, isAddress } from 'helpers/address';
 import { TokenMapType, TokenType } from 'interfaces';
+import useSWR, { useSWRConfig } from 'swr';
 import useSWRImmutable from 'swr/immutable';
 import { useAllTokens } from './useAllTokens';
 import { getToken, isClassicStellarAsset } from './utils';
-import { useSWRConfig } from 'swr';
+import { getTokenName } from 'helpers/soroban';
 
 export const findToken = async (
   tokenAddress: string | undefined,
@@ -14,7 +15,7 @@ export const findToken = async (
 ) => {
   if (!tokenAddress || tokenAddress === '') return undefined;
 
-  const classicAssetSearch = await getClassicAssetSorobanAddress(tokenAddress!, sorobanContext);
+  const classicAssetSearch = getClassicAssetSorobanAddress(tokenAddress!, sorobanContext);
   console.log('classicAssetSearch', classicAssetSearch);
 
   const formattedAddress = isAddress(classicAssetSearch ? classicAssetSearch : tokenAddress);
@@ -26,13 +27,13 @@ export const findToken = async (
 
   const token = await getToken(sorobanContext, formattedAddress);
 
-  if (!token?.name || !token?.symbol) return undefined;
+  if (!token?.name || !token?.code) return undefined;
 
   return token;
 };
 
 const revalidateKeysCondition = (key: any) => {
-  const revalidateKeys = new Set(['token', 'isStellarClassicAsset']);
+  const revalidateKeys = new Set(['token', 'isStellarClassicAsset', 'tokenName']);
 
   return Array.isArray(key) && key.some((k) => revalidateKeys.has(k));
 };
@@ -40,18 +41,23 @@ const revalidateKeysCondition = (key: any) => {
 //Returns token from map (user added + api) or network
 export function useToken(tokenAddress: string | undefined) {
   const sorobanContext = useSorobanReact();
-
   const { tokensAsMap } = useAllTokens();
+
+  const { data: name } = useSWR(
+    tokenAddress && sorobanContext ? ['tokenName', tokenAddress, sorobanContext] : null,
+    ([key, tokenAddress, sorobanContext]) => getTokenName(tokenAddress!, sorobanContext),
+  );
+
   const { mutate } = useSWRConfig();
   const { data, isLoading, error } = useSWRImmutable(
     ['token', tokenAddress, tokensAsMap, sorobanContext],
     ([key, tokenAddress, tokensAsMap, sorobanContext]) =>
       findToken(tokenAddress, tokensAsMap, sorobanContext),
   );
-  
+
   const handleTokenRefresh = () => {
     mutate((key: any) => revalidateKeysCondition(key), undefined, { revalidate: true });
-  }
+  };
 
   const {
     data: isStellarClassicAsset,
@@ -62,7 +68,10 @@ export function useToken(tokenAddress: string | undefined) {
     ([key, tokenAddress, sorobanContext]) => isClassicStellarAsset(tokenAddress!, sorobanContext),
   );
   const bothLoading = isLoading || isStellarClassicAssetLoading;
+
   const needsWrapping = !data && isStellarClassicAsset;
+
+  const needsWrappingOnAddLiquidity = (!data && isStellarClassicAsset) || !name;
 
   let newTokenData: TokenType | undefined = undefined;
 
@@ -72,9 +81,10 @@ export function useToken(tokenAddress: string | undefined) {
     if (sorobanAddress || (stellarAsset && typeof sorobanAddress === 'string')) {
       if (stellarAsset && typeof stellarAsset !== 'boolean') {
         newTokenData = {
-          address: sorobanAddress,
+          issuer: stellarAsset.issuer,
+          contract: sorobanAddress,
           name: stellarAsset.asset,
-          symbol: stellarAsset.assetCode,
+          code: stellarAsset.assetCode,
           decimals: 7,
           logoURI: '',
         };
@@ -88,6 +98,7 @@ export function useToken(tokenAddress: string | undefined) {
     needsWrapping,
     isLoading: bothLoading,
     isError: error,
-    handleTokenRefresh
+    handleTokenRefresh,
+    needsWrappingOnAddLiquidity,
   };
 }

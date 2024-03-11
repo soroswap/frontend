@@ -1,11 +1,5 @@
-import * as React from 'react';
 import { Card, Stack, Switch, Tooltip, Typography } from '@mui/material';
-import { isClassicStellarAssetFormat, shortenAddress } from 'helpers/address';
-import { relevantTokensType } from 'hooks';
-import { useRouter } from 'next/router';
-import { visuallyHidden } from '@mui/utils';
 import Box from '@mui/material/Box';
-import CurrencyLogo from 'components/Logo/CurrencyLogo';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -14,10 +8,16 @@ import TableHead from '@mui/material/TableHead';
 import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import TableSortLabel from '@mui/material/TableSortLabel';
+import { visuallyHidden } from '@mui/utils';
+import ClipboardComponent from 'components/Clipboard/ClipboardComponent';
+import CurrencyLogo from 'components/Logo/CurrencyLogo';
+import { shortenAddress } from 'helpers/address';
+import { relevantTokensType } from 'hooks';
 import useBoolean, { UseBooleanReturnProps } from 'hooks/useBoolean';
 import useGetMyBalances from 'hooks/useGetMyBalances';
 import useTable from 'hooks/useTable';
-import ClipboardComponent from 'components/Clipboard/ClipboardComponent';
+import { useRouter } from 'next/router';
+import * as React from 'react';
 
 const shortenStellarClassicAddress = (address: string) => {
   const [first, last] = address.split(':');
@@ -33,14 +33,14 @@ interface HeadCell {
 
 const headCells: readonly HeadCell[] = [
   {
-    id: 'symbol',
+    id: 'code',
     numeric: false,
     label: 'Token',
     align: 'left',
   },
 
   {
-    id: 'address',
+    id: 'contract',
     numeric: false,
     label: 'Address',
     align: 'left',
@@ -86,7 +86,7 @@ function BalancesTableHead(props: BalancesTableProps) {
             align={headCell.align}
             sortDirection={orderBy === headCell.id ? order : false}
           >
-            {headCell.id === 'address' && (
+            {headCell.id === 'contract' && (
               <Tooltip title="Toggle Address for Stellar Classic Assets" placement="top">
                 <Stack direction="row" alignItems="center" mb={1}>
                   <Typography fontSize={12}>Wrapped</Typography>
@@ -125,7 +125,11 @@ export default function BalancesTable() {
   const rows =
     tokenBalancesResponse?.balances?.map((x) => ({
       ...x,
-      type: isClassicStellarAssetFormat(x.name) ? 'Stellar Classic Asset' : 'Soroban Token',
+      type: x.issuer
+        ? 'Stellar Classic Asset'
+        : x.name == 'Stellar Lumens'
+        ? 'Native'
+        : 'Soroban Token',
     })) ?? [];
 
   const showStellarClassicAddresses = useBoolean();
@@ -170,16 +174,16 @@ export default function BalancesTable() {
           {visibleRows.map((row, index) => {
             const isStellarClassicAsset = row.type === 'Stellar Classic Asset';
             return (
-              <TableRow onClick={() => onClickRow(row.address)} key={index}>
+              <TableRow onClick={() => onClickRow(row.contract)} key={index}>
                 <TableCell>{index + 1 + page * rowsPerPage}</TableCell>
                 <TableCell align="left">
                   <Box display="flex" gap="2px" alignItems="center">
                     <CurrencyLogo
-                      currency={tokens.find((token) => token.address === row.address)}
+                      currency={tokens.find((token) => token.contract === row.contract)}
                       size={'16px'}
                       style={{ marginRight: '8px' }}
                     />
-                    {row.symbol}
+                    {row.code}
                   </Box>
                 </TableCell>
                 <TableCell align="left" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
@@ -188,8 +192,8 @@ export default function BalancesTable() {
                     onClick={() => {
                       const copyText =
                         isStellarClassicAsset && showStellarClassicAddresses.value
-                          ? row.name
-                          : row.address;
+                          ? `${row.code}:${row.issuer}`
+                          : row.contract;
                       navigator.clipboard.writeText(copyText);
                     }}
                   />
@@ -197,21 +201,21 @@ export default function BalancesTable() {
                     title={
                       isStellarClassicAsset && showStellarClassicAddresses.value
                         ? row.name
-                        : row.address
+                        : row.contract
                     }
                     placement="top"
                   >
                     <div>
                       {isStellarClassicAsset && showStellarClassicAddresses.value
-                        ? shortenStellarClassicAddress(row.name)
-                        : shortenAddress(row.address)}
+                        ? shortenStellarClassicAddress(`${row.code}:${row.issuer}`)
+                        : shortenAddress(row.contract)}
                     </div>
                   </Tooltip>
                 </TableCell>
                 <TableCell align="left">{row.type}</TableCell>
                 <TableCell align="right">
                   {' '}
-                  {Number(row.balance).toLocaleString('en') as string}
+                  {Number(row.balance).toLocaleString('en', { maximumFractionDigits: 7 }) as string}
                 </TableCell>
               </TableRow>
             );

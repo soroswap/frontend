@@ -27,7 +27,8 @@ export function isClassicStellarAssetFormat(value: string): boolean {
   }
 
   const [assetCode, issuer] = parts;
-  return isValidSymbol(assetCode) && isAddress(issuer) !== false;
+  const toReturn = isValidSymbol(assetCode) && isAddress(issuer) !== false
+  return toReturn;
 }
 
 //Receives the name of the token must be SYMBOL:ISSUER

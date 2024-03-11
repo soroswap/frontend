@@ -8,8 +8,8 @@ import SwapDetailsDropdown from 'components/Swap/SwapDetailsDropdown';
 import { ButtonText } from 'components/Text';
 import { TransactionFailedContent } from 'components/TransactionConfirmationModal';
 import { AppContext, SnackbarIconType } from 'contexts';
+import { calculateSwapFees } from 'functions/getNetworkFees';
 import { sendNotification } from 'functions/sendNotification';
-import { getClassicStellarAsset } from 'helpers/address';
 import { formatTokenAmount } from 'helpers/format';
 import { requiresTrustline } from 'helpers/stellar';
 import { relevantTokensType } from 'hooks';
@@ -35,8 +35,6 @@ import { opacify } from 'themes/utils';
 import SwapCurrencyInputPanel from '../CurrencyInputPanel/SwapCurrencyInputPanel';
 import SwapHeader from './SwapHeader';
 import { ArrowWrapper, SwapWrapper } from './styleds';
-import { calculateSwapFees } from 'functions/getNetworkFees';
-import { N } from 'vitest/dist/reporters-MmQN-57K';
 
 const SwapSection = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -280,14 +278,14 @@ export function SwapComponent({
   };
 
   const handleTrustline = () => {
-    const asset = getClassicStellarAsset(trade?.outputAmount?.currency.name!);
-    if (!asset) return;
+    const asset = trade?.outputAmount?.currency;
+    if (!asset?.issuer) return;
 
-    setTrustline({ tokenSymbol: asset.assetCode, tokenAdmin: asset.issuer, sorobanContext })
+    setTrustline({ tokenSymbol: asset.code, tokenAdmin: asset.issuer, sorobanContext })
       .then((result) => {
         setNeedTrustline(false);
         sendNotification(
-          `for ${asset.assetCode}`,
+          `for ${asset.code}`,
           'Trustline set',
           SnackbarIconType.MINT,
           SnackbarContext,
@@ -339,17 +337,22 @@ export function SwapComponent({
 
     const checkTrustline = async () => {
       if (!trade) return;
+      if (sorobanContext.address) {
+        // Check if we need trustline
+        const needTrustline = await requiresTrustline(
+          trade?.outputAmount?.currency.contract!,
+          sorobanContext,
+        );
+        const requiresTrustlineAdjust = await checkRequiresTrustlineAdjust();
 
-      const needTrustline = await requiresTrustline(
-        trade?.outputAmount?.currency.address!,
-        sorobanContext,
-      );
-      const requiresTrustlineAdjust = await checkRequiresTrustlineAdjust();
-
-      if (needTrustline || requiresTrustlineAdjust) {
-        setNeedTrustline(true);
+        if (needTrustline || requiresTrustlineAdjust) {
+          setNeedTrustline(true);
+        } else {
+          setNeedTrustline(false);
+        }
       } else {
-        setNeedTrustline(false);
+        // Until the user does not connects the wallet, we will think that we need trustline
+        setNeedTrustline(true);
       }
     };
 
@@ -519,7 +522,7 @@ export function SwapComponent({
             >
               <ButtonText fontSize={20} fontWeight={600}>
                 {routeIsLoading ? (
-                  <Box display="flex" alignItems="center">
+                  <Box display="flex" alignItems="center" component="span">
                     <CircularProgress size="24px" />
                   </Box>
                 ) : (

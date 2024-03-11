@@ -36,11 +36,11 @@ export default function LiquidityPoolInfoModal({
   if (!selectedLP) return null;
 
   const handleAddClick = () => {
-    router.push(`/liquidity/add/${selectedLP.token_0?.address}/${selectedLP.token_1?.address}`);
+    router.push(`/liquidity/add/${selectedLP.token_0?.contract}/${selectedLP.token_1?.contract}`);
   };
 
   const handleRemoveClick = () => {
-    router.push(`/liquidity/remove/${selectedLP.token_0?.address}/${selectedLP.token_1?.address}`);
+    router.push(`/liquidity/remove/${selectedLP.token_0?.contract}/${selectedLP.token_1?.contract}`);
   };
 
   return (
@@ -57,7 +57,7 @@ export default function LiquidityPoolInfoModal({
                   size={isMobile ? '16px' : '24px'}
                 />
                 <SubHeader style={{ whiteSpace: 'nowrap' }}>
-                  {selectedLP?.token_0?.symbol} - {selectedLP?.token_1?.symbol}
+                  {selectedLP?.token_0?.code} - {selectedLP?.token_1?.code}
                 </SubHeader>
               </AutoRow>
               <CloseButton onClick={onDismiss} data-testid="confirmation-close-icon" />
@@ -74,14 +74,14 @@ export default function LiquidityPoolInfoModal({
               <Row justify="space-between">
                 <Row gap="6px">
                   <CurrencyLogo currency={selectedLP.token_0} size="16px" />
-                  <BodyPrimary>{selectedLP?.token_0?.symbol}</BodyPrimary>
+                  <BodyPrimary>{selectedLP?.token_0?.code}</BodyPrimary>
                 </Row>
                 <BodyPrimary>{formatTokenAmount(selectedLP?.reserve0 as BigNumber)}</BodyPrimary>
               </Row>
               <Row justify="space-between">
                 <Row gap="6px">
                   <CurrencyLogo currency={selectedLP.token_1} size="16px" />
-                  <BodyPrimary>{selectedLP?.token_1?.symbol}</BodyPrimary>
+                  <BodyPrimary>{selectedLP?.token_1?.code}</BodyPrimary>
                 </Row>
                 <BodyPrimary>{formatTokenAmount(selectedLP?.reserve1 as BigNumber)}</BodyPrimary>
               </Row>

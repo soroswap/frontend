@@ -9,7 +9,7 @@ export function getTokenFilter<T extends TokenType>(query: string): (token: T) =
 
   if (searchingAddress) {
     const address = searchingAddress.toLowerCase();
-    return (t: T) => 'address' in t && address === t.address.toLowerCase();
+    return (t: T) => 'address' in t && address === t.contract.toLowerCase();
   }
 
   const queryParts = query
@@ -30,6 +30,5 @@ export function getTokenFilter<T extends TokenType>(query: string): (token: T) =
     );
   };
 
-  return ({ name, symbol }: T): boolean =>
-    Boolean((symbol && match(symbol)) || (name && match(name)));
+  return ({ name, code }: T): boolean => Boolean((code && match(code)) || (name && match(name)));
 }

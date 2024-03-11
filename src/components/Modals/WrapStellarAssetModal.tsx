@@ -1,7 +1,7 @@
 import { Box, CircularProgress, Modal, useTheme } from '@mui/material';
 import { wrapStellarAsset } from '@soroban-react/contracts';
 import { useSorobanReact } from '@soroban-react/core';
-import { ButtonLight, ButtonPrimary } from 'components/Buttons/Button';
+import { ButtonPrimary } from 'components/Buttons/Button';
 import { CloseButton } from 'components/Buttons/CloseButton';
 import { WalletButton } from 'components/Buttons/WalletButton';
 import { AutoColumn } from 'components/Column';
@@ -11,7 +11,6 @@ import { SubHeaderLarge, SubHeaderSmall } from 'components/Text';
 import { Wrapper } from 'components/TransactionConfirmationModal/ModalStyles';
 import { AppContext, SnackbarIconType } from 'contexts';
 import { sendNotification } from 'functions/sendNotification';
-import { getClassicStellarAsset } from 'helpers/address';
 import useGetNativeTokenBalance from 'hooks/useGetNativeTokenBalance';
 import { TokenType } from 'interfaces';
 import Link from 'next/link';
@@ -34,19 +33,18 @@ const WrapStellarAssetModal = ({ isOpen, asset, onDismiss, onSuccess }: Props) =
   const { data } = useGetNativeTokenBalance();
 
   const handleConfirm = () => {
-    const stellarAsset = getClassicStellarAsset(asset?.name!);
-    if (!stellarAsset) return;
+    if (!asset?.issuer || asset.issuer == undefined) return;
     setIsWrapping(true);
 
     wrapStellarAsset({
-      code: stellarAsset.assetCode,
-      issuer: stellarAsset.issuer,
+      code: asset.code,
+      issuer: asset.issuer,
       sorobanContext
     })
       .then((result: any) => {
         if (!result) throw new Error("No result");
         setIsWrapping(false);
-        sendNotification(`${asset?.symbol} wrapped successfully`, "Token wrapped", SnackbarIconType.MINT, SnackbarContext)
+        sendNotification(`${asset?.code} wrapped successfully`, "Token wrapped", SnackbarIconType.MINT, SnackbarContext)
         onSuccess();
       })
       .catch((error) => {
@@ -92,7 +90,7 @@ const WrapStellarAssetModal = ({ isOpen, asset, onDismiss, onSuccess }: Props) =
               disabled={isWrapping || !data?.validAccount}
               style={{ gap: "1rem"}}
             >
-              {isWrapping ? `Wrapping ${asset?.symbol}` : !data?.validAccount ? "Insufficient balance" : `Wrap ${asset?.symbol}`}
+              {isWrapping ? `Wrapping ${asset?.code}` : !data?.validAccount ? "Insufficient balance" : `Wrap ${asset?.code}`}
               {isWrapping && (
                 <CircularProgress size="18px" />
               )}

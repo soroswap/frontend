@@ -18,14 +18,14 @@ export function AllPairs({
   sorobanContext: SorobanContextType;
 }) {
   const pairExist = usePairExist(
-    selectedToken.address,
-    selectedOutputToken.address,
+    selectedToken.contract,
+    selectedOutputToken.contract,
     sorobanContext,
   );
 
   const pairAddress = usePairContractAddress(
-    selectedToken.address,
-    selectedOutputToken.address,
+    selectedToken.contract,
+    selectedOutputToken.contract,
     sorobanContext,
   );
 

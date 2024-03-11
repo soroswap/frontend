@@ -1,7 +1,8 @@
 export interface TokenType {
-  address: string;
+  issuer?: string;
+  contract: string;
   name: string;
-  symbol: string;
+  code: string;
   decimals?: number;
   logoURI?: string;
 }

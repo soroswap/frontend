@@ -48,8 +48,8 @@ export default function TradePrice({ trade }: TradePriceProps) {
   );
 
   const text = `${
-    '1 ' + otherCurrency?.symbol + ' = ' + getExpectedAmountOfOne(trade, showInverted) ?? '-'
-  } ${mainCurrency?.symbol}`;
+    '1 ' + otherCurrency?.code + ' = ' + getExpectedAmountOfOne(trade, showInverted) ?? '-'
+  } ${mainCurrency?.code}`;
 
   return (
     <StyledPriceContainer

@@ -16,7 +16,7 @@ export default function SwapPage() {
 
   useEffect(() => {
     const newXlmToken =
-      xlmTokenList.find((tList) => tList.network === activeChain?.id)?.tokens[0].address ?? null;
+      xlmTokenList.find((tList) => tList.network === activeChain?.id)?.tokens[0].contract ?? null;
     setXlmToken(newXlmToken);
 
     const newPrefilledState = {

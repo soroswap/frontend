@@ -26,8 +26,8 @@ export async function getExpectedAmount(
 
   try {
     const pairAddress = await getPairAddress(
-      currencyIn.address,
-      currencyOut.address,
+      currencyIn.contract,
+      currencyOut.contract,
       sorobanContext,
     );
     const reserves = customReserves ?? (await reservesBNWithTokens(pairAddress, sorobanContext));
@@ -69,10 +69,10 @@ export async function getExpectedAmountNew(
 ) {
   if (!currencyIn || !currencyOut) return BigNumber('0');
 
-  reserves.token0 == currencyIn.address;
+  reserves.token0 == currencyIn.contract;
   let reserveIn: BigNumber | undefined, reserveOut: BigNumber | undefined;
 
-  if (reserves.token0 == currencyIn.address) {
+  if (reserves.token0 == currencyIn.contract) {
     reserveIn = reserves.reserve0;
     reserveOut = reserves.reserve1;
   } else {

@@ -6,12 +6,14 @@ import { xdr } from 'stellar-sdk';
 import { formatTokenAmount } from '../helpers/format';
 import { accountToScVal } from '../helpers/utils';
 import { TokenMapType, TokenType } from '../interfaces';
+import { AccountResponse } from 'stellar-sdk/lib/horizon';
 
 export type relevantTokensType = {
   balance: number | string | BigNumber;
   usdValue: number;
-  symbol: string;
-  address: string;
+  issuer?: string;
+  code: string;
+  contract: string;
   name: string;
   decimals: number;
   formatted: boolean | undefined;
@@ -44,7 +46,7 @@ export async function tokenBalance(
     return scValToJs(tokenBalance as xdr.ScVal) as BigNumber;
   } catch (error) {
     // console.log("Token address doesnt exist", error);
-    return null
+    return null;
   }
 }
 
@@ -67,8 +69,9 @@ const notFoundReturn = (token: TokenType) => {
   return {
     balance: 0,
     usdValue: 0,
-    symbol: token.symbol,
-    address: token.address,
+    issuer: token.issuer,
+    code: token.code,
+    contract: token.contract,
     name: token.name,
     decimals: 0,
     formatted: false,
@@ -79,6 +82,7 @@ export async function tokenBalances(
   userAddress: string,
   tokens: TokenType[] | TokenMapType | undefined,
   sorobanContext: SorobanContextType,
+  account: AccountResponse | undefined,
   formatted?: boolean,
 ): Promise<tokenBalancesType | undefined> {
   if (!tokens || !sorobanContext) return;
@@ -88,24 +92,33 @@ export async function tokenBalances(
   const balances = await Promise.all(
     Object.values(tokens).map(async (token) => {
       try {
-        //if not found, should skip and return 0 for all tokens
-        if (notFound) return notFoundReturn(token);
-
-        const balanceResponse = await tokenBalance(token.address, userAddress, sorobanContext);
-        if (!balanceResponse) return notFoundReturn(token);
-        const decimalsResponse = await tokenDecimals(token.address, sorobanContext);
         let balance: number | string | BigNumber;
-        if (formatted) {
-          balance = formatTokenAmount(BigNumber(balanceResponse), decimalsResponse);
+        let decimalsResponse = 18;
+
+        if (token.issuer) {
+          balance =
+            account?.balances?.find(
+              (b: any) => b?.asset_issuer === token.issuer && b?.asset_code === token.code,
+            )?.balance ?? '0';
         } else {
-          balance = balanceResponse;
+          const balanceResponse = await tokenBalance(token.contract, userAddress, sorobanContext);
+          if (!balanceResponse) return notFoundReturn(token);
+
+          decimalsResponse = await tokenDecimals(token.contract, sorobanContext);
+
+          if (formatted) {
+            balance = formatTokenAmount(BigNumber(balanceResponse), decimalsResponse);
+          } else {
+            balance = balanceResponse;
+          }
         }
 
         return {
           balance: balance,
           usdValue: 0, //TODO: should get usd value
-          symbol: token.symbol,
-          address: token.address,
+          issuer: token.issuer,
+          code: token.code,
+          contract: token.contract,
           name: token.name,
           decimals: decimalsResponse,
           formatted: formatted,

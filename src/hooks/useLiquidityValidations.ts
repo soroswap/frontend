@@ -1,12 +1,9 @@
 import { useSorobanReact } from '@soroban-react/core';
-import BigNumber from 'bignumber.js';
-import { formatTokenAmount } from 'helpers/format';
 import { TokenType } from 'interfaces';
-import { useEffect, useState } from 'react';
 import { Field } from 'state/mint/actions';
-import { tokenBalance } from './useBalances';
 import useGetLpTokens from './useGetLpTokens';
 import useGetNativeTokenBalance from './useGetNativeTokenBalance';
+import useGetMyBalances from './useGetMyBalances';
 
 interface useLiquidityValidationsProps {
   currencies: {
@@ -19,6 +16,8 @@ interface useLiquidityValidationsProps {
   currencyIdA?: string;
   currencyIdB?: string;
   pairAddress?: string;
+  needsWrappingA?: boolean;
+  needsWrappingB?: boolean;
 }
 
 const useLiquidityValidations = ({
@@ -27,24 +26,21 @@ const useLiquidityValidations = ({
   currencyIdA,
   currencyIdB,
   pairAddress,
+  needsWrappingA,
+  needsWrappingB,
 }: useLiquidityValidationsProps) => {
   const sorobanContext = useSorobanReact();
   const { address } = sorobanContext;
   const { lpTokens } = useGetLpTokens();
 
   const { data } = useGetNativeTokenBalance();
-  const [myCurrencyABalance, setMyCurrencyABalance] = useState<string>();
-  const [myCurrencyBBalance, setMyCurrencyBBalance] = useState<string>();
+  const { tokenBalancesResponse } = useGetMyBalances();
 
-  useEffect(() => {
-    if (!sorobanContext.address) return;
-    tokenBalance(currencyIdA as string, address as string, sorobanContext).then((resp) => {
-      setMyCurrencyABalance(formatTokenAmount(resp as BigNumber));
-    });
-    tokenBalance(currencyIdB as string, address as string, sorobanContext).then((resp) => {
-      setMyCurrencyBBalance(formatTokenAmount(resp as BigNumber));
-    });
-  }, [address, currencyIdA, currencyIdB, sorobanContext]);
+  const myCurrencyABalance =
+    tokenBalancesResponse?.balances.find((token) => token.contract === currencyIdA)?.balance ?? '0';
+
+  const myCurrencyBBalance =
+    tokenBalancesResponse?.balances.find((token) => token.contract === currencyIdB)?.balance ?? '0';
 
   const hasEnoughBalance = () => {
     const currentCurrencyAValue = formattedAmounts[Field.CURRENCY_A];
@@ -76,7 +72,7 @@ const useLiquidityValidations = ({
 
   const getPairInfo = () => {
     const pair = lpTokens?.find((obj) => {
-      const pair = [obj.token_0?.address, obj.token_1?.address];
+      const pair = [obj.token_0?.contract, obj.token_1?.contract];
 
       return pair.includes(currencyIdA) && pair.includes(currencyIdB);
     });
@@ -84,10 +80,18 @@ const useLiquidityValidations = ({
     return { exists: !!pairAddress, balance: pair?.balance };
   };
 
+  const needsWrap = needsWrappingA || needsWrappingB;
+
+  const getNeedsWrappingToken = () => {
+    if (needsWrappingA) return currencies[Field.CURRENCY_A];
+    if (needsWrappingB) return currencies[Field.CURRENCY_B];
+  };
+
   const getSupplyButtonText = () => {
     if (!data?.validAccount) return 'Fund account';
     if (!hasSelectedTokens()) return 'Select tokens';
     if (!hasValidInputValues()) return 'Enter an amount';
+    if (needsWrap) return `Wrap ${getNeedsWrappingToken()?.code}` || 'Wrap token';
     if (!hasEnoughBalance()) return 'Insufficient balance';
     if (!getPairInfo().exists) return 'Create';
     return 'Supply';
@@ -117,6 +121,8 @@ const useLiquidityValidations = ({
     getPairInfo,
     getModalTitleText,
     isButtonDisabled,
+    getNeedsWrappingToken,
+    needsWrap,
   };
 };
 

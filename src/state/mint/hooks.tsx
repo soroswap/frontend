@@ -90,7 +90,7 @@ export function useDerivedMintInfo(
   useEffect(() => {
     if (!currencyA || !currencyB) return;
     if (factoryAddress !== '' && currencyA && currencyB) {
-      getPairAddress(currencyA.address, currencyB.address, sorobanContext)
+      getPairAddress(currencyA.contract, currencyB.contract, sorobanContext)
         .then((response) => {
           setPairAddress(response);
         })
@@ -144,7 +144,7 @@ export function useDerivedMintInfo(
       // this is supposing that pair exists
       let reserve0, reserve1;
 
-      if (independentAmount.currency.address == reservesBNToken.token0) {
+      if (independentAmount.currency.contract == reservesBNToken.token0) {
         reserve0 = reservesBNToken.reserve0;
         reserve1 = reservesBNToken.reserve1;
       } else {
@@ -154,7 +154,7 @@ export function useDerivedMintInfo(
 
       const calculatedPoolTokenOptimalAmount = calculatePoolTokenOptimalAmount(
         BigNumber(independentAmount.value),
-        reserve0, // it should be reserve0 if idependentAmount.currency.address ==
+        reserve0, // it should be reserve0 if idependentAmount.currency.contract ==
         reserve1,
       );
       //

@@ -1,10 +1,10 @@
-import { AppContext } from 'contexts';
-import { Field } from 'state/swap/actions';
-import { formatTokenAmount } from 'helpers/format';
-import { InterfaceTrade } from 'state/routing/types';
-import { relevantTokensType } from './useBalances';
-import { useContext } from 'react';
 import { useSorobanReact } from '@soroban-react/core';
+import { AppContext } from 'contexts';
+import { formatTokenAmount } from 'helpers/format';
+import { useContext } from 'react';
+import { InterfaceTrade } from 'state/routing/types';
+import { Field } from 'state/swap/actions';
+import { relevantTokensType } from './useBalances';
 import useGetNativeTokenBalance from './useGetNativeTokenBalance';
 
 interface Props {
@@ -49,7 +49,7 @@ const useSwapMainButton = ({
     const insufficientBalance = Number(inputA) > Number(balanceA);
 
     const insufficientBalanceToken =
-      Number(inputA) > Number(balanceA) ? currencyA?.symbol : undefined;
+      Number(inputA) > Number(balanceA) ? currencyA?.code : undefined;
 
     const invalidAmount = Number(inputA) < 0 || Number(inputB) < 0;
 

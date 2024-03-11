@@ -1,10 +1,10 @@
 import { Divider, styled } from '@mui/material';
 import Column, { AutoColumn } from 'components/Column';
+import { Caption } from 'components/Text';
 import { TokenType } from 'interfaces';
 import { InterfaceTrade, TradeType } from 'state/routing/types';
-import { SwapModalHeaderAmount } from './SwapModalHeaderAmount';
 import { Field } from 'state/swap/actions';
-import { Caption } from 'components/Text';
+import { SwapModalHeaderAmount } from './SwapModalHeaderAmount';
 
 // import { SwapModalHeaderAmount } from './SwapModalHeaderAmount'
 
@@ -53,7 +53,7 @@ export default function SwapModalHeader({
                   Output is estimated. You will receive at least{' '}
                   <b>
                     1
-                    {/* {trade.minimumAmountOut(allowedSlippage).toSignificant(6)} {trade.outputAmount.currency.symbol} */}
+                    {/* {trade.minimumAmountOut(allowedSlippage).toSignificant(6)} {trade.outputAmount.currency.code} */}
                   </b>{' '}
                   or the transaction will revert.
                 </>
@@ -64,7 +64,7 @@ export default function SwapModalHeader({
                   Input is estimated. You will sell at most{' '}
                   <b>
                     1
-                    {/* {trade.maximumAmountIn(allowedSlippage).toSignificant(6)} {trade.inputAmount.currency.symbol} */}
+                    {/* {trade.maximumAmountIn(allowedSlippage).toSignificant(6)} {trade.inputAmount.currency.code} */}
                   </b>{' '}
                   or the transaction will revert.
                 </>

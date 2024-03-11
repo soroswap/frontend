@@ -136,7 +136,7 @@ export default function LiquidityPage() {
                   <CurrencyLogo currency={obj.token_0} size={isMobile ? '16px' : '24px'} />
                   <CurrencyLogo currency={obj.token_1} size={isMobile ? '16px' : '24px'} />
                   <SubHeader>
-                    {obj.token_0.symbol} - {obj.token_1.symbol}
+                    {obj.token_0.code} - {obj.token_1.code}
                   </SubHeader>
                   <LPPercentage>{obj.lpPercentage}%</LPPercentage>
                 </AutoRow>

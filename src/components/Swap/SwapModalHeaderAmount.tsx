@@ -4,7 +4,6 @@ import CurrencyLogo from 'components/Logo/CurrencyLogo';
 import Row from 'components/Row';
 import { BodySecondary, BodySmall, ResponsiveMediumText } from 'components/Text';
 import { MouseoverTooltip } from 'components/Tooltip';
-import { isClassicStellarAssetFormat } from 'helpers/address';
 import { formatTokenAmount } from 'helpers/format';
 import { TokenType } from 'interfaces';
 import { ReactNode } from 'react';
@@ -81,9 +80,9 @@ export function SwapModalHeaderAmount({
         <Box alignItems="start" display="flex" flexDirection="column">
           <CurrencyWrapper>
             <CurrencyLogo currency={currency} size="24px" />
-            {currency?.symbol}
+            {currency?.code}
           </CurrencyWrapper>
-          <Label>{isClassicStellarAssetFormat(currency?.name!) ? currency?.symbol : currency?.name}</Label>
+          <Label>{currency?.issuer ? currency?.code : currency?.name}</Label>
         </Box>
       </Column>
       <Column gap="4px" alignItems={isSmallDevice ? 'flex-start' : 'flex-end'}>

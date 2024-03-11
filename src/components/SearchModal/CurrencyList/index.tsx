@@ -5,23 +5,22 @@ import Column, { AutoColumn } from 'components/Column';
 import Loader from 'components/Icons/LoadingSpinner';
 import CurrencyLogo from 'components/Logo/CurrencyLogo';
 import Row, { RowFixed } from 'components/Row';
-import { isClassicStellarAssetFormat } from 'helpers/address';
+import { isAddress } from 'helpers/address';
 import { formatTokenAmount } from 'helpers/format';
 import { tokenBalance, tokenBalancesType } from 'hooks';
-import { CSSProperties, MutableRefObject, useCallback, useMemo, useState } from 'react';
+import useGetMyBalances from 'hooks/useGetMyBalances';
+import useHorizonLoadAccount from 'hooks/useHorizonLoadAccount';
+import { CSSProperties, MutableRefObject, useCallback, useMemo } from 'react';
 import { Check } from 'react-feather';
 import { FixedSizeList } from 'react-window';
+import { AccountResponse } from 'stellar-sdk/lib/horizon';
+import useSWRImmutable from 'swr/immutable';
 import { TokenType } from '../../../interfaces';
 import StyledRow from '../../Row';
 import { LoadingRows, MenuItem } from '../styleds';
-import { useAllTokens } from 'hooks/tokens/useAllTokens';
-import useGetMyBalances from 'hooks/useGetMyBalances';
-import useSWRImmutable from 'swr/immutable';
-import useHorizonLoadAccount from 'hooks/useHorizonLoadAccount';
-import { AccountResponse } from 'stellar-sdk/lib/horizon';
 
 function currencyKey(currency: TokenType): string {
-  return currency.address ? currency.address : 'ETHER';
+  return currency.contract ? currency.contract : 'ETHER';
 }
 
 const CheckIcon = styled(Check)`
@@ -63,14 +62,16 @@ function Balance({ balance }: { balance: string }) {
   return <StyledBalanceText title={String(balance)}>{formatBalance()}</StyledBalanceText>;
 }
 
-const getCurrencyBalance = async (
+export const getCurrencyBalance = async (
   tokenBalancesResponse: tokenBalancesType | null | undefined,
   currency: TokenType,
   sorobanContext: SorobanContextType,
   account: AccountResponse,
 ) => {
+  if (!sorobanContext.address) return '0';
+
   const findInBalances = tokenBalancesResponse?.balances.find(
-    (token) => token.address === currency.address,
+    (token) => token.contract === currency.contract,
   );
 
   //First find if balance is already in the "my balances" list
@@ -78,23 +79,18 @@ const getCurrencyBalance = async (
     return findInBalances.balance as string;
   }
 
-  //If not, then we need to check if its a classic stellar asset and if it's not in the tokens list
-  const isClasicStellarAsset = isClassicStellarAssetFormat(currency.name);
-
-  const shouldUseHorizon = isClasicStellarAsset;
+  const shouldUseHorizon = isAddress(currency?.issuer!);
 
   //If it's a classic stellar asset and it's not in the tokens list, then we need to fetch the balance from the horizon server
   if (shouldUseHorizon) {
-    const [assetCode, issuer] = currency.name.split(':');
-
     const currencyBalance = account?.balances?.find(
-      (b: any) => b?.asset_issuer === issuer && b?.asset_code === assetCode,
+      (b: any) => b?.asset_issuer === currency.issuer && b?.asset_code === currency.code,
     )?.balance;
 
     return currencyBalance;
   } else {
     //Otherwise, we can fetch the balance with contract call
-    tokenBalance(currency.address, sorobanContext.address!, sorobanContext).then((resp) => {
+    tokenBalance(currency.contract, sorobanContext.address, sorobanContext).then((resp) => {
       return formatTokenAmount(resp as BigNumber);
     });
   }
@@ -156,11 +152,11 @@ export function CurrencyRow({
       <AutoColumn style={{ opacity: isBlockedToken ? blockedTokenOpacity : '1' }}>
         <Row>
           <CurrencyName title={currency.name}>
-            {isClassicStellarAssetFormat(currency.name) ? currency.symbol : currency.name}
+            {currency.issuer ? currency.code : currency.name}
           </CurrencyName>
         </Row>
         <Typography ml="0px" fontSize="12px" fontWeight={300}>
-          {currency.symbol}
+          {currency.code}
         </Typography>
       </AutoColumn>
       {showCurrencyAmount ? (
@@ -192,8 +188,8 @@ export const formatAnalyticsEventProperties = (
   searchQuery: string,
   isAddressSearch: string | false,
 ) => ({
-  symbol: token?.symbol,
-  address: token?.address,
+  symbol: token?.code,
+  address: token?.contract,
   is_suggested_token: false,
   is_selected_from_list: true,
   scroll_position: '',
@@ -251,10 +247,10 @@ export default function CurrencyList({
       const currency = row;
 
       const isSelected = Boolean(
-        currency && selectedCurrency && selectedCurrency.address == currency.address,
+        currency && selectedCurrency && selectedCurrency.contract == currency.contract,
       );
       const otherSelected = Boolean(
-        currency && otherCurrency && otherCurrency.address == currency.address,
+        currency && otherCurrency && otherCurrency.contract == currency.contract,
       );
       const handleSelect = (hasWarning: boolean) =>
         currency && onCurrencySelect(currency, hasWarning);
