@@ -33,7 +33,7 @@ export const findToken = async (
 };
 
 const revalidateKeysCondition = (key: any) => {
-  const revalidateKeys = new Set(['token', 'isStellarClassicAsset']);
+  const revalidateKeys = new Set(['token', 'isStellarClassicAsset', 'tokenName']);
 
   return Array.isArray(key) && key.some((k) => revalidateKeys.has(k));
 };
