@@ -16,6 +16,8 @@ interface useLiquidityValidationsProps {
   currencyIdA?: string;
   currencyIdB?: string;
   pairAddress?: string;
+  needsWrappingA?: boolean;
+  needsWrappingB?: boolean;
 }
 
 const useLiquidityValidations = ({
@@ -24,6 +26,8 @@ const useLiquidityValidations = ({
   currencyIdA,
   currencyIdB,
   pairAddress,
+  needsWrappingA,
+  needsWrappingB,
 }: useLiquidityValidationsProps) => {
   const sorobanContext = useSorobanReact();
   const { address } = sorobanContext;
@@ -76,10 +80,18 @@ const useLiquidityValidations = ({
     return { exists: !!pairAddress, balance: pair?.balance };
   };
 
+  const needsWrap = needsWrappingA || needsWrappingB;
+
+  const getNeedsWrappingToken = () => {
+    if (needsWrappingA) return currencies[Field.CURRENCY_A];
+    if (needsWrappingB) return currencies[Field.CURRENCY_B];
+  };
+
   const getSupplyButtonText = () => {
     if (!data?.validAccount) return 'Fund account';
     if (!hasSelectedTokens()) return 'Select tokens';
     if (!hasValidInputValues()) return 'Enter an amount';
+    if (needsWrap) return `Wrap ${getNeedsWrappingToken()?.code}` || 'Wrap token';
     if (!hasEnoughBalance()) return 'Insufficient balance';
     if (!getPairInfo().exists) return 'Create';
     return 'Supply';
@@ -109,6 +121,8 @@ const useLiquidityValidations = ({
     getPairInfo,
     getModalTitleText,
     isButtonDisabled,
+    getNeedsWrappingToken,
+    needsWrap,
   };
 };
 

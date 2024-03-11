@@ -33,6 +33,8 @@ import { opacify } from 'themes/utils';
 import { AddRemoveTabs } from '../AddRemoveHeader';
 import AddModalFooter from './AddModalFooter';
 import AddModalHeader from './AddModalHeader';
+import WrapStellarAssetModal from 'components/Modals/WrapStellarAssetModal';
+import useBoolean from 'hooks/useBoolean';
 
 export const PageWrapper = styled('main')`
   position: relative;
@@ -115,8 +117,16 @@ export default function AddLiquidityComponent({
   const [totalShares, setTotalShares] = useState<string>('');
   const [networkFees, setNetworkFees] = useState<number>(0);
 
-  const { token: baseCurrency } = useToken(currencyIdA);
-  const { token: currencyB } = useToken(currencyIdB);
+  const {
+    token: baseCurrency,
+    needsWrappingOnAddLiquidity: needsWrappingA,
+    handleTokenRefresh: handleTokenRefreshA,
+  } = useToken(currencyIdA);
+  const {
+    token: currencyB,
+    needsWrappingOnAddLiquidity: needsWrappingB,
+    handleTokenRefresh: handleTokenRefreshB,
+  } = useToken(currencyIdB);
 
   const derivedMintInfo = useDerivedMintInfo(baseCurrency ?? undefined, currencyB ?? undefined);
   const { dependentField, currencies, parsedAmounts, noLiquidity, pairAddress } = derivedMintInfo;
@@ -336,7 +346,31 @@ export default function AddLiquidityComponent({
     }
   };
 
+  const wrapModal = useBoolean();
+
+  const {
+    isButtonDisabled,
+    getSupplyButtonText,
+    getModalTitleText,
+    needsWrap,
+    getNeedsWrappingToken,
+  } = useLiquidityValidations({
+    currencies,
+    currencyIdA,
+    currencyIdB,
+    formattedAmounts,
+    pairAddress,
+    needsWrappingA,
+    needsWrappingB,
+  });
+
   const handleClickMainButton = async () => {
+    if (needsWrap) {
+      wrapModal.setTrue();
+
+      return;
+    }
+
     const { amount, percentage } = await getLpAmountAndPercentage();
 
     const fee = await getNetworkFees();
@@ -353,14 +387,6 @@ export default function AddLiquidityComponent({
     setShowConfirm(true);
   };
 
-  const { isButtonDisabled, getSupplyButtonText, getModalTitleText } = useLiquidityValidations({
-    currencies,
-    currencyIdA,
-    currencyIdB,
-    formattedAmounts,
-    pairAddress,
-  });
-
   const pendingText = (
     <BodySmall>
       Adding {formattedAmounts[Field.CURRENCY_A]} {baseCurrency?.code} and{' '}
@@ -370,6 +396,16 @@ export default function AddLiquidityComponent({
 
   return (
     <>
+      <WrapStellarAssetModal
+        isOpen={wrapModal.value}
+        asset={getNeedsWrappingToken()}
+        onDismiss={wrapModal.setFalse}
+        onSuccess={() => {
+          handleTokenRefreshB();
+          handleTokenRefreshA();
+          wrapModal.setFalse();
+        }}
+      />
       <PageWrapper>
         <AddRemoveTabs
           creating={false}
