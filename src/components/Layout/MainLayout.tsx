@@ -29,7 +29,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
   const [isDrawerOpen, setDrawerOpen] = useState<boolean>(false);
   const isMobile = useMediaQuery(theme.breakpoints.down(1220));
 
-  const [showBanner, setShowBanner] = useState<boolean>(true);
+  const [showBanner, setShowBanner] = useState<boolean>(false);
 
   return (
     <>
@@ -42,7 +42,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
           bgcolor: theme.palette.background.default,
         }}
       >
-        <Banner show={showBanner} setShow={setShowBanner} />
+        {/* <Banner show={showBanner} setShow={setShowBanner} /> */}
 
         <Toolbar>
           <Header isDrawerOpen={isDrawerOpen} setDrawerOpen={setDrawerOpen} />

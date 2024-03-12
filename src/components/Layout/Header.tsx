@@ -179,13 +179,25 @@ export default function Header({ isDrawerOpen, setDrawerOpen }: HeaderProps) {
         {!isMobile ? (
           <>
             <NavBar data-testid="nav">
-              <NavItem href={'/balance'} active={pathname.includes('/balance')} data-testid='nav-link'>
+              <NavItem
+                href={'/balance'}
+                active={pathname.includes('/balance')}
+                data-testid="nav-link"
+              >
                 Balance
               </NavItem>
-              <NavItem href={'/swap'} active={pathname.includes('/swap')} data-testid='nav-link'>
+              <NavItem
+                href={'/swap'}
+                active={pathname.includes('/swap') || pathname === '/'}
+                data-testid="nav-link"
+              >
                 Swap
               </NavItem>
-              <NavItem href={'/liquidity'} active={pathname.includes('/liquidity')} data-testid='nav-link'>
+              <NavItem
+                href={'/liquidity'}
+                active={pathname.includes('/liquidity')}
+                data-testid="nav-link"
+              >
                 Liquidity
               </NavItem>
               {/* <NavItem href={'/mint'} active={pathname.includes('/mint')}>
@@ -217,7 +229,10 @@ export default function Header({ isDrawerOpen, setDrawerOpen }: HeaderProps) {
                 <NavItemMobile href={'/balance'} active={pathname.includes('/balance')}>
                   Balance
                 </NavItemMobile>
-                <NavItemMobile href={'/swap'} active={pathname.includes('/swap')}>
+                <NavItemMobile
+                  href={'/swap'}
+                  active={pathname.includes('/swap') || pathname === '/'}
+                >
                   Swap
                 </NavItemMobile>
                 <NavItemMobile href={'/liquidity'} active={pathname.includes('/liquidity')}>
