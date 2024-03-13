@@ -16,6 +16,7 @@ import { TokenType } from 'interfaces';
 import Link from 'next/link';
 import { useContext, useState } from 'react';
 import { AlertTriangle } from 'react-feather';
+import { useSWRConfig } from 'swr';
 
 interface Props {
   isOpen: boolean;
@@ -32,6 +33,8 @@ const WrapStellarAssetModal = ({ isOpen, asset, onDismiss, onSuccess }: Props) =
   const { setConnectWalletModalOpen } = ConnectWalletModal;
   const { data } = useGetNativeTokenBalance();
 
+  const { mutate } = useSWRConfig();
+
   const handleConfirm = () => {
     if (!asset?.issuer || asset.issuer == undefined) return;
     setIsWrapping(true);
@@ -39,20 +42,33 @@ const WrapStellarAssetModal = ({ isOpen, asset, onDismiss, onSuccess }: Props) =
     wrapStellarAsset({
       code: asset.code,
       issuer: asset.issuer,
-      sorobanContext
+      sorobanContext,
     })
       .then((result: any) => {
-        if (!result) throw new Error("No result");
+        if (!result) throw new Error('No result');
+        mutate(
+          (key: any) => {
+            //refresh balance since wrap costs xlm
+            return key.includes('balance');
+          },
+          undefined,
+          { revalidate: true },
+        );
         setIsWrapping(false);
-        sendNotification(`${asset?.code} wrapped successfully`, "Token wrapped", SnackbarIconType.MINT, SnackbarContext)
+        sendNotification(
+          `${asset?.code} wrapped successfully`,
+          'Token wrapped',
+          SnackbarIconType.MINT,
+          SnackbarContext,
+        );
         onSuccess();
       })
       .catch((error) => {
         setIsWrapping(false);
-      })      
-  }
+      });
+  };
   return (
-    <Modal open={isOpen} onClose={onDismiss}>    
+    <Modal open={isOpen} onClose={onDismiss}>
       <Wrapper>
         <AutoColumn gap="12px">
           <RowBetween>
@@ -64,39 +80,49 @@ const WrapStellarAssetModal = ({ isOpen, asset, onDismiss, onSuccess }: Props) =
               <LogoContainer>
                 <LoadingIndicatorOverlay />
               </LogoContainer>
-            ) : ( 
+            ) : (
               <AlertTriangle size="64px" stroke={theme.palette.customBackground.accentWarning} />
             )}
           </Box>
           <AutoColumn gap="12px" justify="center">
             <SubHeaderLarge color="textPrimary" textAlign="center">
-            {isWrapping ? "Wrapping" : "Wrap Required"}
+              {isWrapping ? 'Wrapping' : 'Wrap Required'}
             </SubHeaderLarge>
             {isWrapping ? (
               <SubHeaderSmall color="textSecondary" textAlign="center" marginBottom="12px">
                 Confirm transaction in your wallet
               </SubHeaderSmall>
-            ): (    
+            ) : (
               <SubHeaderSmall color="textSecondary" textAlign="center" marginBottom="12px">
-                This token isn&apos;t yet wrapped for the Soroban network. Wrap it now for full trading capabilities.
-                {' '}
-                <Link href={'https://docs.soroswap.finance/05-tutorial/summary/01-wrapping-stellar-classic-assets'} target='_blank' style={{ color: '#8866DD' }}>Learn more</Link>
+                This token isn&apos;t yet wrapped for the Soroban network. Wrap it now for full
+                trading capabilities.{' '}
+                <Link
+                  href={
+                    'https://docs.soroswap.finance/05-tutorial/summary/01-wrapping-stellar-classic-assets'
+                  }
+                  target="_blank"
+                  style={{ color: '#8866DD' }}
+                >
+                  Learn more
+                </Link>
               </SubHeaderSmall>
             )}
           </AutoColumn>
           {sorobanContext.address ? (
             <ButtonPrimary
-              onClick={handleConfirm} 
+              onClick={handleConfirm}
               disabled={isWrapping || !data?.validAccount}
-              style={{ gap: "1rem"}}
+              style={{ gap: '1rem' }}
             >
-              {isWrapping ? `Wrapping ${asset?.code}` : !data?.validAccount ? "Insufficient balance" : `Wrap ${asset?.code}`}
-              {isWrapping && (
-                <CircularProgress size="18px" />
-              )}
+              {isWrapping
+                ? `Wrapping ${asset?.code}`
+                : !data?.validAccount
+                ? 'Insufficient balance'
+                : `Wrap ${asset?.code}`}
+              {isWrapping && <CircularProgress size="18px" />}
             </ButtonPrimary>
-          ): (
-            <WalletButton/>
+          ) : (
+            <WalletButton />
           )}
         </AutoColumn>
       </Wrapper>
