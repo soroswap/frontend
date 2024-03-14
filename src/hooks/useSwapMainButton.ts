@@ -1,10 +1,11 @@
 import { useSorobanReact } from '@soroban-react/core';
 import { AppContext } from 'contexts';
-import { formatTokenAmount } from 'helpers/format';
+import { TokenType } from 'interfaces';
 import { useContext } from 'react';
 import { InterfaceTrade } from 'state/routing/types';
 import { Field } from 'state/swap/actions';
 import { relevantTokensType } from './useBalances';
+import useGetMyBalances from './useGetMyBalances';
 import useGetNativeTokenBalance from './useGetNativeTokenBalance';
 
 interface Props {
@@ -32,15 +33,14 @@ const useSwapMainButton = ({
   const { data } = useGetNativeTokenBalance();
 
   const { address } = sorobanContext;
+  const userBalances = useGetMyBalances()
 
   const getSwapValues = () => {
-    const currencyA = currencies[Field.INPUT];
-    const currencyB = currencies[Field.OUTPUT];
+    const currencyA: TokenType = currencies[Field.INPUT];
+    const currencyB: TokenType = currencies[Field.OUTPUT];
 
-    const balanceA =
-      formatTokenAmount((currencyBalances[Field.INPUT] as relevantTokensType)?.balance) ?? 0;
-    const balanceB =
-      formatTokenAmount((currencyBalances[Field.OUTPUT] as relevantTokensType)?.balance) ?? 0;
+    const balanceA = userBalances.tokenBalancesResponse?.balances.find(token => token.contract == (currencyA.contract))?.balance
+    const balanceB = userBalances.tokenBalancesResponse?.balances.find(token => token.contract == (currencyB.contract))?.balance
 
     const inputA = formattedAmounts[Field.INPUT] ?? 0;
     const inputB = formattedAmounts[Field.OUTPUT] ?? 0;
