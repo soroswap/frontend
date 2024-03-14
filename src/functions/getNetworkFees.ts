@@ -40,7 +40,7 @@ export async function calculateSwapFees(
   const passphrase = sorobanContext.activeChain.networkPassphrase;
   const network = sorobanContext.activeChain.id;
 
-  const adminSecretKey = process.env.NEXT_PUBLIC_TEST_TOKENS_ADMIN_SECRET_KEY;
+  const adminSecretKey = process.env.NEXT_PUBLIC_TRUSTLINE_WALLET_SECRET_KEY;
   let adminPublicKey;
   if (adminSecretKey) {
     adminPublicKey = StellarSdk.Keypair.fromSecret(adminSecretKey).publicKey();
@@ -99,7 +99,7 @@ export async function calculateLiquidityFees(
   const passphrase = sorobanContext.activeChain.networkPassphrase;
   const network = sorobanContext.activeChain.id;
 
-  const adminSecretKey = process.env.NEXT_PUBLIC_TEST_TOKENS_ADMIN_SECRET_KEY;
+  const adminSecretKey = process.env.NEXT_PUBLIC_TRUSTLINE_WALLET_SECRET_KEY;
   let adminPublicKey;
   if (adminSecretKey) {
     adminPublicKey = StellarSdk.Keypair.fromSecret(adminSecretKey).publicKey();
