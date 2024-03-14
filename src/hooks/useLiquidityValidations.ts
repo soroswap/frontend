@@ -4,6 +4,7 @@ import { Field } from 'state/mint/actions';
 import useGetLpTokens from './useGetLpTokens';
 import useGetNativeTokenBalance from './useGetNativeTokenBalance';
 import useGetMyBalances from './useGetMyBalances';
+import { useSWRConfig } from 'swr';
 
 interface useLiquidityValidationsProps {
   currencies: {
@@ -34,6 +35,7 @@ const useLiquidityValidations = ({
   const { lpTokens } = useGetLpTokens();
 
   const { data } = useGetNativeTokenBalance();
+
   const { tokenBalancesResponse } = useGetMyBalances();
 
   const myCurrencyABalance =
@@ -45,15 +47,16 @@ const useLiquidityValidations = ({
   const hasEnoughBalance = () => {
     const currentCurrencyAValue = formattedAmounts[Field.CURRENCY_A];
     const currentCurrencyBValue = formattedAmounts[Field.CURRENCY_B];
+
     if (Number(currentCurrencyAValue) > Number(myCurrencyABalance)) {
-      return false;
+      return [false, currencies[Field.CURRENCY_A]];
     }
 
     if (Number(currentCurrencyBValue) > Number(myCurrencyBBalance)) {
-      return false;
+      return [false, currencies[Field.CURRENCY_B]];
     }
 
-    return true;
+    return [true, null];
   };
 
   const hasSelectedTokens = () => {
@@ -88,19 +91,21 @@ const useLiquidityValidations = ({
   };
 
   const getSupplyButtonText = () => {
+    const [enoughBalance, token] = hasEnoughBalance();
+
     if (!data?.validAccount) return 'Fund account';
     if (!hasSelectedTokens()) return 'Select tokens';
     if (!hasValidInputValues()) return 'Enter an amount';
     if (needsWrap) return `Wrap ${getNeedsWrappingToken()?.code}` || 'Wrap token';
-    if (!hasEnoughBalance()) return 'Insufficient balance';
+    if (!enoughBalance) return `Insufficient ${(token as TokenType)?.code} balance`;
     if (!getPairInfo().exists) return 'Create';
     return 'Supply';
   };
 
   const isButtonDisabled = () => {
-    return (
-      !hasValidInputValues() || !hasEnoughBalance() || !hasSelectedTokens() || !data?.validAccount
-    );
+    const [enoughBalance, token] = hasEnoughBalance();
+
+    return !hasValidInputValues() || !enoughBalance || !hasSelectedTokens() || !data?.validAccount;
   };
 
   const getModalTitleText = () => {
