@@ -6,6 +6,7 @@ import { CurrencyAmount, Networks, Protocols, Router, Token, TradeType } from 's
 const backendUrl = process.env.NEXT_PUBLIC_SOROSWAP_BACKEND_URL;
 const backendApiKey = process.env.NEXT_PUBLIC_SOROSWAP_BACKEND_API_KEY;
 const shouldUseBackend = process.env.NEXT_PUBLIC_SOROSWAP_BACKEND_ENABLED === 'true';
+console.log('🚀 « shouldUseBackend:', shouldUseBackend);
 
 export interface GenerateRouteProps {
   amountTokenAddress: string;
