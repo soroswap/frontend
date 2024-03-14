@@ -39,8 +39,8 @@ const useSwapMainButton = ({
     const currencyA: TokenType = currencies[Field.INPUT];
     const currencyB: TokenType = currencies[Field.OUTPUT];
 
-    const balanceA = userBalances.tokenBalancesResponse?.balances.find(token => token.contract == (currencyA.contract))?.balance
-    const balanceB = userBalances.tokenBalancesResponse?.balances.find(token => token.contract == (currencyB.contract))?.balance
+    const balanceA = userBalances.tokenBalancesResponse?.balances.find(token => token.contract == (currencyA?.contract))?.balance
+    const balanceB = userBalances.tokenBalancesResponse?.balances.find(token => token.contract == (currencyB?.contract))?.balance
 
     const inputA = formattedAmounts[Field.INPUT] ?? 0;
     const inputB = formattedAmounts[Field.OUTPUT] ?? 0;
