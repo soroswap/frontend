@@ -130,8 +130,9 @@ export function CurrencySearch({
   const searchCurrencies = useSortTokensByQuery(debouncedQuery, filteredTokens);
 
   const handleConfirmAddUserToken = () => {
-    addUserToken(searchToken!, sorobanContext);
-    onCurrencySelect(searchToken!);
+    if (!searchToken) return;
+    addUserToken(searchToken, sorobanContext);
+    onCurrencySelect(searchToken);
   };
 
   const handleSuccessStellarAssetWrap = () => {

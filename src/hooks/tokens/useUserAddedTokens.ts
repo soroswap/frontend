@@ -11,6 +11,8 @@ export const useUserAddedTokens = () => {
   const [tokensFromActiveChain, setTokensFromActiveChain] = useState<TokenType[]>([]);
   const [tokensAsMap, setTokensAsMap] = useState<TokenMapType>({});
 
+  const userAddedTokensLocalStorage = localStorage.getItem(`userAddedTokens`);
+
   useEffect(() => {
     const userAddedTokensStr = localStorage.getItem(`userAddedTokens`) || '[]';
     const userAddedTokens = (JSON.parse(userAddedTokensStr) ?? []) as tokensResponse[];
@@ -20,9 +22,14 @@ export const useUserAddedTokens = () => {
     const tokensAsMap = tokensToMap(tokensFromActiveChain);
 
     setUserAddedTokens(userAddedTokens);
+
     setTokensFromActiveChain(tokensFromActiveChain);
     setTokensAsMap(tokensAsMap);
-  }, [sorobanContext]);
+  }, [sorobanContext, userAddedTokensLocalStorage]);
 
-  return { allUserAddedTokens: userAddedTokens, tokens: tokensFromActiveChain, tokensAsMap };
+  return {
+    allUserAddedTokens: userAddedTokens,
+    tokens: tokensFromActiveChain,
+    tokensAsMap,
+  };
 };

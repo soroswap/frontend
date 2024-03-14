@@ -31,7 +31,7 @@ const useGetMyBalances = () => {
 
   const { data, isLoading, mutate, error } = useSWRImmutable(
     address && account && tokens.length > 0
-      ? ['balance', address, tokens, sorobanContext, account]
+      ? ['balance', address, tokens, sorobanContext, account, tokens.length]
       : null,
     ([key, address, tokens, sorobanContext, account]) =>
       fetchBalances({ address, tokens, sorobanContext, account }),

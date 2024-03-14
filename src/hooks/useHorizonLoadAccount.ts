@@ -5,7 +5,7 @@ const useHorizonLoadAccount = () => {
   const sorobanContext = useSorobanReact();
 
   const { data, isLoading, error } = useSWRImmutable(
-    sorobanContext.address ? ['horizon-account', sorobanContext.address] : null,
+    sorobanContext.address ? ['horizon-account', sorobanContext.address, sorobanContext] : null,
     ([_, address]) => sorobanContext.serverHorizon?.loadAccount(address),
   );
 
