@@ -280,13 +280,13 @@ export default function AddLiquidityComponent({
   const handleCurrencyBSelect = useCallback(
     (currencyB: TokenType) => {
       const newCurrencyIdB = currencyB.contract;
-      let path = `/${currencyIdA}/${newCurrencyIdB}`;
+      let path = `${currencyIdA}/${newCurrencyIdB}`;
       if (currencyIdA === undefined) {
-        path = `/${newCurrencyIdB}`;
+        path = `${newCurrencyIdB}`;
       } else if (currencyIdA === newCurrencyIdB && currencyIdB === undefined) {
-        path = `/undefined/${newCurrencyIdB}`;
+        path = `undefined/${newCurrencyIdB}`;
       } else if (currencyIdA === newCurrencyIdB) {
-        path = `/${currencyIdB}/${newCurrencyIdB}`;
+        path = `${currencyIdB}/${newCurrencyIdB}`;
       }
       router.push(baseRoute + path);
     },
