@@ -115,25 +115,20 @@ export const getTokenLogo = async (address: string, sorobanContext: SorobanConte
 //Checks if the stellar asset is wrapped
 export async function isClassicStellarAsset(value: string, sorobanContext: SorobanContextType) {
   if (!value) return false;
-
   const { serverHorizon } = sorobanContext;
   const classicAsset = getClassicStellarAsset(value);
-
   try {
-    if (!classicAsset) throw new Error('Invalid asset format');
+    if (!classicAsset) return false;
+
     const assets = await serverHorizon
       ?.assets()
       .forCode(classicAsset.assetCode)
       .forIssuer(classicAsset.issuer)
       .call();
-
-    if (assets?.records && assets.records.length > 0) {
-      return true;
-    } else {
-      throw new Error('Asset not found');
-    }
+    const exists = assets?.records && assets.records.length > 0;
+    return !!exists;
   } catch (error) {
-    console.error('Error checking asset:', error);
+    console.log('Error checking asset:', error);
     return false;
   }
 }
