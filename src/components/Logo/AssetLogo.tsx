@@ -33,7 +33,7 @@ export type AssetLogoBaseProps = {
   size?: string
   style?: React.CSSProperties
   hideL2Icon?: boolean
-  logoURI?: string | null
+  icon?: string | null
 }
 type AssetLogoProps = AssetLogoBaseProps & { isNative?: boolean; address?: string | null; chainId?: number }
 
@@ -50,14 +50,14 @@ export default function AssetLogo({
   symbol,
   size = '24px',
   style,
-  logoURI,
+  icon,
 }: AssetLogoProps) {
   const imageProps = {
     alt: `${symbol ?? 'token'} logo`,
     size,
   }
 
-  const src = logoURI
+  const src = icon
 
   return (
     <LogoContainer style={style}>
