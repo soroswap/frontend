@@ -3,10 +3,10 @@ import { SorobanContextType } from '@soroban-react/core';
 import BigNumber from 'bignumber.js';
 import { scValToJs } from 'helpers/convert';
 import { xdr } from 'stellar-sdk';
+import { AccountResponse } from 'stellar-sdk/lib/horizon';
 import { formatTokenAmount } from '../helpers/format';
 import { accountToScVal } from '../helpers/utils';
 import { TokenMapType, TokenType } from '../interfaces';
-import { AccountResponse } from 'stellar-sdk/lib/horizon';
 
 export type relevantTokensType = {
   balance: number | string | BigNumber;
@@ -14,7 +14,8 @@ export type relevantTokensType = {
   issuer?: string;
   code: string;
   contract: string;
-  name: string;
+  name?: string;
+  domain?: string;
   decimals: number;
   formatted: boolean | undefined;
 };
@@ -73,6 +74,7 @@ const notFoundReturn = (token: TokenType) => {
     code: token.code,
     contract: token.contract,
     name: token.name,
+    domain: token.domain,
     decimals: 0,
     formatted: false,
   };
@@ -120,6 +122,7 @@ export async function tokenBalances(
           code: token.code,
           contract: token.contract,
           name: token.name,
+          domain: token.domain,
           decimals: decimalsResponse,
           formatted: formatted,
         };

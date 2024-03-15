@@ -71,7 +71,7 @@ export async function getToken(
       name: name as string,
       code: symbol as string,
       decimals,
-      logoURI: logo,
+      icon: logo,
     };
 
     return token;
@@ -105,7 +105,7 @@ export const getTokenLogo = async (address: string, sorobanContext: SorobanConte
     );
     if (!token) return undefined;
 
-    return token.logoURI;
+    return token.icon;
   } catch (error) {
     return undefined;
   }
