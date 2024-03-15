@@ -9,11 +9,14 @@ import { BodySmall, HeadlineSmall, SubHeaderSmall } from 'components/Text';
 import { MouseoverTooltip } from 'components/Tooltip';
 import { getPriceImpactNew2 } from 'functions/getPriceImpact';
 import { formatTokenAmount, twoDecimalsPercentage } from 'helpers/format';
+import { useAllTokens } from 'hooks/tokens/useAllTokens';
+import { findToken } from 'hooks/tokens/useToken';
 import useGetReservesByPair from 'hooks/useGetReservesByPair';
 import { getSwapAmounts } from 'hooks/useSwapCallback';
 import { ReactNode, useEffect, useState } from 'react';
-import { AlertTriangle } from 'react-feather';
+import { AlertTriangle, ChevronRight } from 'react-feather';
 import { InterfaceTrade, TradeType } from 'state/routing/types';
+import { PathBox, TextWithLoadingPlaceholder } from './AdvancedSwapDetails';
 import { Label } from './SwapModalHeaderAmount';
 import { getExpectedAmountOfOne } from './TradePrice';
 import { SwapCallbackError, SwapShowAcceptChanges } from './styleds';
@@ -73,6 +76,7 @@ export default function SwapModalFooter({
   // const routes = isClassicTrade(trade) ? getRoutingDiagramEntries(trade) : undefined
   // const { chainId } = useWeb3React()
   // const nativeCurrency = useNativeCurrency(chainId)
+  const {tokensAsMap, isLoading} = useAllTokens()
 
   const label = `${trade?.inputAmount?.currency.code}`;
   const labelInverted = `${trade?.outputAmount?.currency.code}`;
@@ -100,14 +104,14 @@ export default function SwapModalFooter({
     });
   }, [
     trade?.inputAmount?.currency,
-    trade.outputAmount?.currency,
+    trade?.outputAmount?.currency,
     trade?.inputAmount?.value,
-    trade.tradeType,
+    trade?.tradeType,
     reserves,
   ]);
 
   const getSwapValues = () => {
-    if (!trade || !trade.tradeType) return { formattedAmount0: '0', formattedAmount1: '0' };
+    if (!trade || !trade?.tradeType) return { formattedAmount0: '0', formattedAmount1: '0' };
 
     const { amount0, amount1 } = getSwapAmounts({
       tradeType: trade.tradeType,
@@ -121,6 +125,28 @@ export default function SwapModalFooter({
 
     return { formattedAmount0, formattedAmount1 };
   };
+
+  const [pathArray, setPathArray] = useState<string[]>([])
+
+  useEffect(() => {  
+    (async () => {
+      if (!trade?.path || isLoading) return
+  
+      const promises = trade.path.map(async (contract) => {
+        const asset = await findToken(contract, tokensAsMap, sorobanContext);
+        const code = asset?.code == 'native' ? "XLM" : asset?.code
+        return code;
+      });
+  
+      const results = await Promise.allSettled(promises);
+  
+      const fulfilledValues = results
+        .filter((result) => result.status === 'fulfilled' && result.value)
+        .map((result) => result.status === 'fulfilled' && result.value ? result.value : "");
+  
+      setPathArray(fulfilledValues)
+    })();
+  }, [trade?.path, isLoading, sorobanContext])
 
   return (
     <>
@@ -195,6 +221,30 @@ export default function SwapModalFooter({
             </DetailRowValue>
           </Row>
         </BodySmall>
+        <RowBetween>
+          <RowFixed>
+            <MouseoverTooltip
+              title={`
+                  Routing through these assets resulted in the best price for your trade
+                `}
+            >
+              <Label cursor="help">
+                Path
+              </Label>
+            </MouseoverTooltip>
+          </RowFixed>
+          <TextWithLoadingPlaceholder syncing={isLoading} width={150}>
+            <PathBox>
+              {pathArray?.map((contract, index) => (
+                <>
+                  {contract}
+                  {index !== pathArray.length - 1 && <ChevronRight style={{opacity: "50%"}}/>}
+                </>
+                )
+              )}
+            </PathBox>
+          </TextWithLoadingPlaceholder>
+        </RowBetween>
       </DetailsContainer>
       {showAcceptChanges ? (
         <SwapShowAcceptChanges data-testid="show-accept-changes">

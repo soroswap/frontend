@@ -31,7 +31,7 @@ interface AdvancedSwapDetailsProps {
   networkFees: number | null;
 }
 
-function TextWithLoadingPlaceholder({
+export function TextWithLoadingPlaceholder({
   syncing,
   width,
   children,
@@ -179,7 +179,7 @@ export function AdvancedSwapDetails({
             <BodySmall color="textSecondary">Expected output</BodySmall>
           </MouseoverTooltip>
         </RowFixed>
-        <TextWithLoadingPlaceholder syncing={syncing} width={65}>
+        <TextWithLoadingPlaceholder syncing={isLoading} width={65}>
           <BodySmall style={{ display: 'flex', alignItems: 'center' }} component="div">
             {formatTokenAmount(trade?.outputAmount?.value ?? '0')}{' '}
             {trade?.outputAmount?.currency.code}{' '}
