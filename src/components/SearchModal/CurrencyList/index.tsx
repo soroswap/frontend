@@ -1,23 +1,27 @@
-import { CircularProgress, Typography, styled } from '@mui/material';
+import { CSSProperties, MutableRefObject, useCallback, useMemo } from 'react';
 import { SorobanContextType, useSorobanReact } from '@soroban-react/core';
+import { FixedSizeList } from 'react-window';
+import { AccountResponse } from 'stellar-sdk/lib/horizon';
+import { Check } from 'react-feather';
+import useSWRImmutable from 'swr/immutable';
 import BigNumber from 'bignumber.js';
+
+import { CircularProgress, Typography, styled } from '@mui/material';
+import { TokenType } from '../../../interfaces';
+import StyledRow from '../../Row';
+import { LoadingRows, MenuItem } from '../styleds';
 import Column, { AutoColumn } from 'components/Column';
 import Loader from 'components/Icons/LoadingSpinner';
 import CurrencyLogo from 'components/Logo/CurrencyLogo';
 import Row, { RowFixed } from 'components/Row';
-import { isAddress } from 'helpers/address';
-import { formatTokenAmount } from 'helpers/format';
+
 import { tokenBalance, tokenBalancesType } from 'hooks';
 import useGetMyBalances from 'hooks/useGetMyBalances';
 import useHorizonLoadAccount from 'hooks/useHorizonLoadAccount';
-import { CSSProperties, MutableRefObject, useCallback, useMemo } from 'react';
-import { Check } from 'react-feather';
-import { FixedSizeList } from 'react-window';
-import { AccountResponse } from 'stellar-sdk/lib/horizon';
-import useSWRImmutable from 'swr/immutable';
-import { TokenType } from '../../../interfaces';
-import StyledRow from '../../Row';
-import { LoadingRows, MenuItem } from '../styleds';
+
+import { isAddress } from 'helpers/address';
+import { formatTokenAmount } from 'helpers/format';
+import { shortenAddress } from 'helpers/address';
 
 function currencyKey(currency: TokenType): string {
   return currency.contract ? currency.contract : 'ETHER';
@@ -126,7 +130,19 @@ export function CurrencyRow({
     ([_, tokenBalancesResponse, currency, sorobanContext, account]) =>
       getCurrencyBalance(tokenBalancesResponse, currency, sorobanContext, account),
   );
+  const shortenSorobanClassicAsset = (currency: TokenType) => {
+    if (!currency) return '';
+    const parts = currency.name.split(':');
+    if (parts.length !== 2) {
+      return currency;
+    }
 
+    const [assetCode, issuer] = parts;
+
+    if (!isAddress(issuer)) return currency;
+
+    return `${assetCode}:${shortenAddress(issuer)}`;
+  };
   const warning = false;
   const isBlockedToken = false;
   const blockedTokenOpacity = '0.6';
@@ -152,7 +168,7 @@ export function CurrencyRow({
       <AutoColumn style={{ opacity: isBlockedToken ? blockedTokenOpacity : '1' }}>
         <Row>
           <CurrencyName title={currency.name}>
-            {currency.issuer ? currency.code : currency.name}
+            {currency && currency?.name.length > 60 ? `${shortenSorobanClassicAsset(currency)}` : currency.name}
           </CurrencyName>
         </Row>
         <Typography ml="0px" fontSize="12px" fontWeight={300}>
