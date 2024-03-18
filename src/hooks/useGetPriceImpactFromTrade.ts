@@ -35,10 +35,10 @@ const getCurrentAndAfterAmount = async (
 
   const expectedCurrent = expectedAmount(reserve0, reserve1, BigNumber(amount));
 
-  const reserve0AfterPair2 = reserve0.plus(expectedCurrent);
-  const reserve1AfterPair2 = reserve1.minus(expectedCurrent);
+  const reserve0After = reserve0.plus(expectedCurrent);
+  const reserve1After = reserve1.minus(expectedCurrent);
 
-  const expectedAfter = expectedAmount(reserve0AfterPair2, reserve1AfterPair2, amountAfter);
+  const expectedAfter = expectedAmount(reserve0After, reserve1After, amountAfter);
 
   return { expectedCurrent, expectedAfter };
 };
