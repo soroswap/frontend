@@ -5,12 +5,19 @@ import { SnackbarIconType } from 'contexts';
 import { testnet, mainnet } from '@soroban-react/chains';
 import { useEffect, useState } from 'react';
 import { useSorobanReact } from '@soroban-react/core';
+import { WalletChain } from '@soroban-react/types';
 import CopyToClipboard from 'react-copy-to-clipboard';
 import Row from 'components/Row';
 import useNotification from 'hooks/useNotification';
 
-const getExplorerUrl = ({ chain, txHash }: { chain: string; txHash: string }) => {
-  return `https://stellar.expert/explorer/${chain}/tx/${txHash}`;
+const getExplorerUrl = ({ chain, txHash }: { chain: WalletChain; txHash: string }) => {
+  if (chain.name === testnet.name) {
+    return `https://testnet.stellarchain.io/transactions/${txHash}`;
+  }
+
+  if (chain.name === mainnet.name) {
+    return `https://stellarchain.io/transactions/${txHash}`;
+  }
 };
 
 const CopyTxHash = ({ txHash }: { txHash: string }) => {
@@ -28,7 +35,7 @@ const CopyTxHash = ({ txHash }: { txHash: string }) => {
     if (!activeChain) return;
 
     if (activeChain.name === testnet.name || activeChain.name === mainnet.name) {
-      setExplorerLink(getExplorerUrl({ chain: activeChain.name?.toLowerCase() as string, txHash }));
+      setExplorerLink(getExplorerUrl({ chain: activeChain, txHash }));
     }
   }, [sorobanContext, txHash]);
 
