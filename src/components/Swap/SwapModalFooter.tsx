@@ -1,4 +1,4 @@
-import { styled, useTheme } from '@mui/material';
+import { CircularProgress, styled, useTheme } from '@mui/material';
 import { useSorobanReact } from '@soroban-react/core';
 import BigNumber from 'bignumber.js';
 import { ButtonError, SmallButtonPrimary } from 'components/Buttons/Button';
@@ -20,6 +20,7 @@ import { PathBox, TextWithLoadingPlaceholder } from './AdvancedSwapDetails';
 import { Label } from './SwapModalHeaderAmount';
 import { getExpectedAmountOfOne } from './TradePrice';
 import { SwapCallbackError, SwapShowAcceptChanges } from './styleds';
+import useGetPriceImpactFromTrade from 'hooks/useGetPriceImpactFromTrade';
 
 const DetailsContainer = styled(Column)`
   padding: 0 8px;
@@ -76,39 +77,15 @@ export default function SwapModalFooter({
   // const routes = isClassicTrade(trade) ? getRoutingDiagramEntries(trade) : undefined
   // const { chainId } = useWeb3React()
   // const nativeCurrency = useNativeCurrency(chainId)
-  const {tokensAsMap, isLoading} = useAllTokens()
+  const { tokensAsMap, isLoading } = useAllTokens();
 
   const label = `${trade?.inputAmount?.currency.code}`;
   const labelInverted = `${trade?.outputAmount?.currency.code}`;
 
-  const { reserves } = useGetReservesByPair({
-    baseAddress: trade?.inputAmount?.currency?.contract,
-    otherAddress: trade?.outputAmount?.currency.contract,
-  });
-
   const sorobanContext = useSorobanReact();
 
-  const [priceImpact, setPriceImpact] = useState<number>(0);
-
-  useEffect(() => {
-    if (!reserves) return;
-
-    getPriceImpactNew2(
-      trade?.inputAmount?.currency,
-      trade?.outputAmount?.currency,
-      BigNumber(trade?.inputAmount?.value ?? '0'),
-      reserves,
-      trade.tradeType,
-    ).then((resp) => {
-      setPriceImpact(twoDecimalsPercentage(resp.toString()));
-    });
-  }, [
-    trade?.inputAmount?.currency,
-    trade?.outputAmount?.currency,
-    trade?.inputAmount?.value,
-    trade?.tradeType,
-    reserves,
-  ]);
+  const { formatted: priceImpact, isLoading: isLoadingPriceImpact } =
+    useGetPriceImpactFromTrade(trade);
 
   const getSwapValues = () => {
     if (!trade || !trade?.tradeType) return { formattedAmount0: '0', formattedAmount1: '0' };
@@ -126,27 +103,27 @@ export default function SwapModalFooter({
     return { formattedAmount0, formattedAmount1 };
   };
 
-  const [pathArray, setPathArray] = useState<string[]>([])
+  const [pathArray, setPathArray] = useState<string[]>([]);
 
-  useEffect(() => {  
+  useEffect(() => {
     (async () => {
-      if (!trade?.path || isLoading) return
-  
+      if (!trade?.path || isLoading) return;
+
       const promises = trade.path.map(async (contract) => {
         const asset = await findToken(contract, tokensAsMap, sorobanContext);
-        const code = asset?.code == 'native' ? "XLM" : asset?.code
+        const code = asset?.code == 'native' ? 'XLM' : asset?.code;
         return code;
       });
-  
+
       const results = await Promise.allSettled(promises);
-  
+
       const fulfilledValues = results
         .filter((result) => result.status === 'fulfilled' && result.value)
-        .map((result) => result.status === 'fulfilled' && result.value ? result.value : "");
-  
-      setPathArray(fulfilledValues)
+        .map((result) => (result.status === 'fulfilled' && result.value ? result.value : ''));
+
+      setPathArray(fulfilledValues);
     })();
-  }, [trade?.path, isLoading, sorobanContext])
+  }, [trade?.path, isLoading, sorobanContext]);
 
   return (
     <>
@@ -159,12 +136,12 @@ export default function SwapModalFooter({
             } ${labelInverted}`}</DetailRowValue>
           </Row>
         </BodySmall>
-        {(networkFees != 0) && 
+        {networkFees != 0 && (
           <BodySmall component="div">
             <Row align="flex-start" justify="space-between" gap="sm">
               <MouseoverTooltip
                 title={
-                  "The fee paid to miners who process your transaction. This must be paid in XLM."
+                  'The fee paid to miners who process your transaction. This must be paid in XLM.'
                 }
               >
                 <Label cursor="help">Network fees</Label>
@@ -174,15 +151,14 @@ export default function SwapModalFooter({
               </MouseoverTooltip> */}
             </Row>
           </BodySmall>
-        
-        }
+        )}
         {true && (
           <BodySmall component="div">
             <Row align="flex-start" justify="space-between" gap="sm">
               <MouseoverTooltip title="The impact your trade has on the market price of this pool.">
                 <Label cursor="help">Price impact</Label>
               </MouseoverTooltip>
-              <DetailRowValue>{priceImpact}%</DetailRowValue>
+              {isLoadingPriceImpact ? <CircularProgress size="12px" /> : <>{priceImpact}%</>}
             </Row>
           </BodySmall>
         )}
@@ -228,9 +204,7 @@ export default function SwapModalFooter({
                   Routing through these assets resulted in the best price for your trade
                 `}
             >
-              <Label cursor="help">
-                Path
-              </Label>
+              <Label cursor="help">Path</Label>
             </MouseoverTooltip>
           </RowFixed>
           <TextWithLoadingPlaceholder syncing={isLoading} width={150}>
@@ -238,10 +212,9 @@ export default function SwapModalFooter({
               {pathArray?.map((contract, index) => (
                 <>
                   {contract}
-                  {index !== pathArray.length - 1 && <ChevronRight style={{opacity: "50%"}}/>}
+                  {index !== pathArray.length - 1 && <ChevronRight style={{ opacity: '50%' }} />}
                 </>
-                )
-              )}
+              ))}
             </PathBox>
           </TextWithLoadingPlaceholder>
         </RowBetween>
