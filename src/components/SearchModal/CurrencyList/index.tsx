@@ -131,12 +131,26 @@ export function CurrencyRow({
   );
   const shortenSorobanClassicAsset = (currency: TokenType) => {
     if (!currency) return '';
-
-    if (currency.issuer && !isAddress(currency.issuer)) return currency;
-
-    if(currency.issuer) return `${currency.code}:${shortenAddress(currency.issuer)}`;
-    return `${currency.code}`;
+    if(currency?.name && currency.name.toString().length > 56) {
+      const addressAsArray = currency.name.toString().split(':');
+      if (addressAsArray.length > 1 && isAddress(addressAsArray[1])){
+        const shortAddr: string = shortenAddress(addressAsArray[1]);
+        return `${currency.code}:${shortAddr}`;
+      }
+      return currency.code;
+    }
+    else return `${currency.code}`;
   };
+
+  const formattedCurrencyName = (currency: TokenType) => {
+    if (!currency.name) return '';
+
+    if (currency.name.length > 12) {
+      const formattedName = shortenSorobanClassicAsset(currency);
+      return formattedName;
+    }
+    return currency?.name
+  }
   const warning = false;
   const isBlockedToken = false;
   const blockedTokenOpacity = '0.6';
@@ -166,7 +180,7 @@ export function CurrencyRow({
           </CurrencyName>
         </Row>
         <Typography ml="0px" fontSize="12px" fontWeight={300}>
-          {currency.domain ? currency.domain : currency.name}
+          {currency.domain ? currency.domain : formattedCurrencyName(currency as TokenType)}
         </Typography>
       </AutoColumn>
       {showCurrencyAmount ? (
