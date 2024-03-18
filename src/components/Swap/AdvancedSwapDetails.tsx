@@ -1,3 +1,5 @@
+import { ChevronRight } from '@mui/icons-material';
+import { Box, styled } from '@mui/material';
 import { useSorobanReact } from '@soroban-react/core';
 import BigNumber from 'bignumber.js';
 import Column from 'components/Column';
@@ -9,9 +11,18 @@ import { BodySmall } from 'components/Text';
 import { MouseoverTooltip } from 'components/Tooltip';
 import { getPriceImpactNew2 } from 'functions/getPriceImpact';
 import { formatTokenAmount, twoDecimalsPercentage } from 'helpers/format';
+import { useAllTokens } from 'hooks/tokens/useAllTokens';
+import { findToken } from 'hooks/tokens/useToken';
 import useGetReservesByPair from 'hooks/useGetReservesByPair';
 import { useEffect, useState } from 'react';
 import { InterfaceTrade } from 'state/routing/types';
+
+export const PathBox = styled(Box)`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: row;
+`
 
 interface AdvancedSwapDetailsProps {
   trade: InterfaceTrade | undefined;
@@ -20,7 +31,7 @@ interface AdvancedSwapDetailsProps {
   networkFees: number | null;
 }
 
-function TextWithLoadingPlaceholder({
+export function TextWithLoadingPlaceholder({
   syncing,
   width,
   children,
@@ -48,6 +59,7 @@ export function AdvancedSwapDetails({
   // const nativeCurrency = useNativeCurrency(chainId)
   // const txCount = getTransactionCount(trade)
   const sorobanContext = useSorobanReact();
+  const {tokensAsMap, isLoading} = useAllTokens()
 
   // const supportsGasEstimate = true; //chainId && SUPPORTED_GAS_ESTIMATE_CHAIN_IDS.includes(chainId)
 
@@ -109,7 +121,27 @@ export function AdvancedSwapDetails({
     reserves,
   ]);
 
-  // twoDecimalsPercentage()}%
+  const [pathArray, setPathArray] = useState<string[]>([])
+  
+  useEffect(() => {  
+    (async () => {
+      if (!trade?.path || isLoading) return
+  
+      const promises = trade.path.map(async (contract) => {
+        const asset = await findToken(contract, tokensAsMap, sorobanContext);
+        const code = asset?.code == 'native' ? "XLM" : asset?.code
+        return code;
+      });
+  
+      const results = await Promise.allSettled(promises);
+  
+      const fulfilledValues = results
+        .filter((result) => result.status === 'fulfilled' && result.value)
+        .map((result) => result.status === 'fulfilled' && result.value ? result.value : "");
+  
+      setPathArray(fulfilledValues)
+    })();
+  }, [trade?.path, isLoading, sorobanContext])
 
   return (
     <Column gap="md">
@@ -147,7 +179,7 @@ export function AdvancedSwapDetails({
             <BodySmall color="textSecondary">Expected output</BodySmall>
           </MouseoverTooltip>
         </RowFixed>
-        <TextWithLoadingPlaceholder syncing={syncing} width={65}>
+        <TextWithLoadingPlaceholder syncing={isLoading} width={65}>
           <BodySmall style={{ display: 'flex', alignItems: 'center' }} component="div">
             {formatTokenAmount(trade?.outputAmount?.value ?? '0')}{' '}
             {trade?.outputAmount?.currency.code}{' '}
@@ -159,6 +191,30 @@ export function AdvancedSwapDetails({
           </BodySmall>
         </TextWithLoadingPlaceholder>
       </RowBetween>
+      {pathArray.length > 0 && (
+        <RowBetween>
+          <RowFixed>
+            <MouseoverTooltip
+              title={`
+                  Routing through these assets resulted in the best price for your trade
+                `}
+            >
+              <BodySmall color="textSecondary">Path</BodySmall>
+            </MouseoverTooltip>
+          </RowFixed>
+          <TextWithLoadingPlaceholder syncing={syncing} width={65}>
+            <PathBox>
+              {pathArray?.map((contract, index) => (
+                <>
+                  {contract}
+                  {index !== pathArray.length - 1 && <ChevronRight style={{opacity: "50%"}}/>}
+                </>
+                )
+              )}
+            </PathBox>
+          </TextWithLoadingPlaceholder>
+        </RowBetween>
+      )}
     </Column>
   );
 }

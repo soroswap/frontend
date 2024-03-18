@@ -1,12 +1,12 @@
-import React, { useState } from 'react';
 import { keyframes, styled, useTheme } from '@mui/material';
+import AnimatedDropdown from 'components/AnimatedDropdown';
 import Column from 'components/Column';
+import { LoadingOpacityContainer } from 'components/Loader/styled';
 import { RowBetween, RowFixed } from 'components/Row';
+import { SubHeaderSmall } from 'components/Text';
+import { useState } from 'react';
 import { ChevronDown } from 'react-feather';
 import { InterfaceTrade } from 'state/routing/types';
-import { LoadingOpacityContainer } from 'components/Loader/styled';
-import { SubHeaderSmall } from 'components/Text';
-import AnimatedDropdown from 'components/AnimatedDropdown';
 import { AdvancedSwapDetails } from './AdvancedSwapDetails';
 import TradePrice from './TradePrice';
 
@@ -77,6 +77,7 @@ const Wrapper = styled(Column)`
   background: ${({ theme }) => theme.palette.background.default};
   border-radius: 16px;
   padding: 12px 16px;
+  overflow: hidden;
 `;
 
 interface SwapDetailsInlineProps {
