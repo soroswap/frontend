@@ -1,4 +1,4 @@
-import { Modal, styled, useMediaQuery, useTheme } from '@mui/material';
+import { Modal, Typography, styled, useMediaQuery, useTheme } from '@mui/material';
 import BigNumber from 'bignumber.js';
 import { ButtonOutlined, ButtonPrimary } from 'components/Buttons/Button';
 import { CloseButton } from 'components/Buttons/CloseButton';
@@ -17,7 +17,8 @@ const ContentWrapper = styled('div')<{ isMobile: boolean }>`
   flex-direction: column;
   gap: 24px;
   font-family: Inter;
-  text-align: ${({ isMobile }) => (isMobile ? 'center' : 'left')};
+  text-align: left;
+  width: ${({ isMobile }) => (isMobile ? '300px' : '360px')};
 `;
 
 export default function LiquidityPoolInfoModal({
@@ -40,7 +41,9 @@ export default function LiquidityPoolInfoModal({
   };
 
   const handleRemoveClick = () => {
-    router.push(`/liquidity/remove/${selectedLP.token_0?.contract}/${selectedLP.token_1?.contract}`);
+    router.push(
+      `/liquidity/remove/${selectedLP.token_0?.contract}/${selectedLP.token_1?.contract}`,
+    );
   };
 
   return (
@@ -62,14 +65,12 @@ export default function LiquidityPoolInfoModal({
               </AutoRow>
               <CloseButton onClick={onDismiss} data-testid="confirmation-close-icon" />
             </Row>
-            <Column gap="4px">
+            <Column gap="8px">
+              <Typography variant="h6">Liquidity Pool</Typography>
+
               <Row justify="space-between">
-                <BodyPrimary>Share of pool</BodyPrimary>
-                <LPPercentage>{selectedLP.lpPercentage}%</LPPercentage>
-              </Row>
-              <Row justify="space-between">
-                <BodyPrimary>LP Balance</BodyPrimary>
-                <BodyPrimary>{formatTokenAmount(selectedLP.balance)}</BodyPrimary>
+                <BodyPrimary>Total LP</BodyPrimary>
+                <BodyPrimary>{formatTokenAmount(selectedLP.totalShares)}</BodyPrimary>
               </Row>
               <Row justify="space-between">
                 <Row gap="6px">
@@ -84,6 +85,30 @@ export default function LiquidityPoolInfoModal({
                   <BodyPrimary>{selectedLP?.token_1?.code}</BodyPrimary>
                 </Row>
                 <BodyPrimary>{formatTokenAmount(selectedLP?.reserve1 as BigNumber)}</BodyPrimary>
+              </Row>
+              <Typography variant="h6">Your Liquidity</Typography>
+              <Row justify="space-between">
+                <BodyPrimary>Share of pool</BodyPrimary>
+                <LPPercentage>{selectedLP.lpPercentage}%</LPPercentage>
+              </Row>
+              <Row justify="space-between">
+                <BodyPrimary>LP Balance</BodyPrimary>
+                <BodyPrimary>{formatTokenAmount(selectedLP.balance)}</BodyPrimary>
+              </Row>
+
+              <Row justify="space-between">
+                <Row gap="6px">
+                  <CurrencyLogo currency={selectedLP.token_0} size="16px" />
+                  <BodyPrimary>{selectedLP?.token_0?.code}</BodyPrimary>
+                </Row>
+                <BodyPrimary>{formatTokenAmount(selectedLP?.myReserve0 as BigNumber)}</BodyPrimary>
+              </Row>
+              <Row justify="space-between">
+                <Row gap="6px">
+                  <CurrencyLogo currency={selectedLP.token_1} size="16px" />
+                  <BodyPrimary>{selectedLP?.token_1?.code}</BodyPrimary>
+                </Row>
+                <BodyPrimary>{formatTokenAmount(selectedLP?.myReserve1 as BigNumber)}</BodyPrimary>
               </Row>
             </Column>
             <ButtonPrimary onClick={handleAddClick}>Add</ButtonPrimary>
