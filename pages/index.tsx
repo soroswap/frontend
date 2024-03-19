@@ -1,3 +1,4 @@
+import ReactGA from 'react-ga';
 import { useSorobanReact } from '@soroban-react/core';
 import { SwapComponent } from 'components/Swap/SwapComponent';
 import { xlmTokenList } from 'constants/xlmToken';
@@ -5,6 +6,11 @@ import { useEffect, useState } from 'react';
 import { Field } from 'state/swap/actions';
 import { SwapState } from 'state/swap/reducer';
 import SEO from '../src/components/SEO';
+
+const TAG_ID = process.env.NEXT_PUBLIC_TAG_ID;
+if (TAG_ID && TAG_ID != ''){
+  ReactGA.initialize(TAG_ID);
+}
 
 export default function Home() {
   const { activeChain } = useSorobanReact();
