@@ -160,7 +160,7 @@ export default function LiquidityPage() {
             + Add Liquidity
           </ButtonPrimary>
         ) : (
-          <WalletButton/>
+          <WalletButton />
         )}
       </PageWrapper>
       <LiquidityPoolInfoModal
