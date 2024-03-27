@@ -24,6 +24,7 @@ import useGetPriceImpactFromTrade from 'hooks/useGetPriceImpactFromTrade';
 
 const DetailsContainer = styled(Column)`
   padding: 0 8px;
+  min-height: 100%;
 `;
 
 const StyledAlertTriangle = styled(AlertTriangle)`
@@ -166,7 +167,7 @@ export default function SwapModalFooter({
           <Row align="flex-start" justify="space-between" gap="sm">
             <MouseoverTooltip
               title={
-                trade.tradeType === TradeType.EXACT_INPUT ? (
+                trade?.tradeType === TradeType.EXACT_INPUT ? (
                   <>
                     The minimum amount you are guaranteed to receive. If the price slips any
                     further, your transaction will revert.
@@ -180,7 +181,7 @@ export default function SwapModalFooter({
               }
             >
               <Label cursor="help">
-                {trade.tradeType === TradeType.EXACT_INPUT ? (
+                {trade?.tradeType === TradeType.EXACT_INPUT ? (
                   <>Receive at least</>
                 ) : (
                   <>Pay at Most</>
@@ -241,7 +242,7 @@ export default function SwapModalFooter({
             id={'CONFIRM_SWAP_BUTTON'}
           >
             <HeadlineSmall color={theme.palette.custom.accentTextLightPrimary}>
-              {trustline ? `Set ${trade.outputAmount?.currency.code} trustline` : 'Confirm swap'}
+              {trustline ? `Set ${trade?.outputAmount?.currency.code} trustline` : 'Confirm swap'}
             </HeadlineSmall>
           </ConfirmButton>
           {swapErrorMessage ? <SwapCallbackError error={swapErrorMessage} /> : null}
