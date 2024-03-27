@@ -12,6 +12,8 @@ export const Wrapper = styled('div')`
   width: calc(100% - 40px);
   max-width: 420px;
   padding: 32px;
+  overflow-y: auto;
+  max-height: 80vh;
   background: ${({ theme }) => `linear-gradient(${theme.palette.customBackground.bg1}, ${
     theme.palette.customBackground.bg1
   }) padding-box,
@@ -21,9 +23,24 @@ export const Wrapper = styled('div')`
                 theme.palette.mode == 'dark' ? '33,29,50,1' : '255,255,255,1'
               }) 65%, rgba(136,102,221,1) 100%) border-box`};
   border: 1px solid transparent;
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.25);        /* color of the tracking area */
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background-color: rgb(136, 102, 221, 0.25);    /* color of the scroll thumb */
+    border-radius: 6px;
+    border: solid 1px rgba(0, 0, 0, 1);
+  }
 `;
 
 export const BottomSection = styled(AutoColumn)`
+  display: flex;
+  flex-direction: column;
   border-bottom-left-radius: 20px;
   border-bottom-right-radius: 20px;
 `;
@@ -32,6 +49,7 @@ export const CustomWrapper = styled(AutoColumn)`
   display: flex;
   flex-direction: column;
   gap: 8px;
+  max-height: 45vh;
 `;
 
 export const ConfirmedIcon = styled(ColumnCenter)<{ inline?: boolean }>`
