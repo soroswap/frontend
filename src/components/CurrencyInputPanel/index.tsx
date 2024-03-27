@@ -191,7 +191,8 @@ interface CurrencyInputPanelProps {
   renderBalance?: (amount: any) => ReactNode;
   loading?: boolean;
   transparent?: boolean;
-  networkFees: number;
+  networkFees?: number | undefined | null;
+  subentryCount?: number | undefined | null;
 }
 
 export default function CurrencyInputPanel({
@@ -213,6 +214,7 @@ export default function CurrencyInputPanel({
   hideInput = false,
   loading = false,
   networkFees,
+  subentryCount,
   ...rest
 }: CurrencyInputPanelProps) {
   const [modalOpen, setModalOpen] = useState(false);
@@ -220,17 +222,17 @@ export default function CurrencyInputPanel({
   const selectedCurrencyBalance = 0; //useCurrencyBalance(address ?? undefined, currency ?? undefined)
   const theme = useTheme();
 
-  const [fee, setFee] = useState<number>(0);
+  // const [fee, setFee] = useState<number>(0);
 
-  useEffect(() => {
-    const setNetworkFeeVar = async () => {
-      if (networkFees) {
-        setFee(networkFees);
-      }
-    };
+  // useEffect(() => {
+  //   const setNetworkFeeVar = async () => {
+  //     if (networkFees) {
+  //       setFee(networkFees);
+  //     }
+  //   };
 
-    setNetworkFeeVar();
-  }, [networkFees, fee, setFee]);
+  //   setNetworkFeeVar();
+  // }, [networkFees, fee, setFee]);
 
   const handleDismissSearch = useCallback(() => {
     setModalOpen(false);
@@ -293,6 +295,7 @@ export default function CurrencyInputPanel({
                   hideBalance={hideBalance}
                   showMaxButton={showMaxButton}
                   networkFees={networkFees}
+                  subentryCount={subentryCount}
                 />
               ) : (
                 <span />

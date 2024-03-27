@@ -127,6 +127,7 @@ export function SwapComponent({
   const { typedValue, recipient, independentField } = state;
 
   const [networkFees, setNetworkFees] = useState<number>(0);
+  const [subentryCount, setSubentryCount] = useState<number>(0);
 
   const { onSwitchTokens, onCurrencySelection, onUserInput, onChangeRecipient } =
     useSwapActionHandlers(dispatch);
@@ -370,6 +371,15 @@ export function SwapComponent({
       }
     };
 
+    const getSubentryCount = async () => {
+      if (sorobanContext.address) {
+        const account = await sorobanContext.serverHorizon?.loadAccount(sorobanContext.address);
+        const count = account?.subentry_count ?? 0;
+        setSubentryCount(count);
+      }
+    };
+
+    getSubentryCount();
     fetchNetworkFees();
     checkTrustline();
   }, [sorobanContext, swapCallback, trade]);
@@ -456,6 +466,7 @@ export function SwapComponent({
               onCurrencySelect={handleInputSelect}
               otherCurrency={currencies[Field.OUTPUT]}
               networkFees={networkFees}
+              subentryCount={subentryCount}
               // showCommonBases
               // id={InterfaceSectionName.CURRENCY_INPUT_PANEL}
               loading={independentField === Field.OUTPUT && routeIsSyncing}
@@ -502,6 +513,8 @@ export function SwapComponent({
                 //id={InterfaceSectionName.CURRENCY_OUTPUT_PANEL}
                 loading={independentField === Field.INPUT && routeIsSyncing}
                 disableInput={getSwapValues().noCurrencySelected}
+                networkFees={networkFees}
+                subentryCount={subentryCount}
               />
             </OutputSwapSection>
           </div>

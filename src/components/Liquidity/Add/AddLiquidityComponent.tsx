@@ -116,6 +116,7 @@ export default function AddLiquidityComponent({
   const [lpPercentage, setLpPercentage] = useState<string>('');
   const [totalShares, setTotalShares] = useState<string>('');
   const [networkFees, setNetworkFees] = useState<number>(0);
+  const [subentryCount, setSubentryCount] = useState<number>(0);
 
   const {
     token: baseCurrency,
@@ -300,18 +301,26 @@ export default function AddLiquidityComponent({
   });
 
   useEffect(() => {
+    const getSubentryCount = async () => {
+      if (sorobanContext.address) {
+        const account = await sorobanContext.serverHorizon?.loadAccount(sorobanContext.address);
+        const count = account?.subentry_count ?? 0;
+        setSubentryCount(count);
+      }
+    };
+
     const fetchNetworkFees = async () => {
       let desired0BN: BigNumber;
       let desired1BN: BigNumber;
       let valDependent: string;
-      if (formattedAmounts[dependentField] === '0') {
+      if (Number(formattedAmounts[dependentField]) === 0) {
         valDependent = '30';
       } else {
         valDependent = formattedAmounts[dependentField];
       }
 
       let valIndependent: string;
-      if (formattedAmounts[independentField] === '0') {
+      if (Number(formattedAmounts[independentField]) === 0) {
         valIndependent = '30';
       } else {
         valIndependent = formattedAmounts[dependentField];
@@ -373,6 +382,7 @@ export default function AddLiquidityComponent({
       }
     };
 
+    getSubentryCount();
     fetchNetworkFees();
   }, [
     sorobanContext,
@@ -410,9 +420,6 @@ export default function AddLiquidityComponent({
     }
 
     const { amount, percentage } = await getLpAmountAndPercentage();
-
-    // const fee = await getNetworkFees();
-    // setNetworkFees(fee ?? 0);
 
     setAmountOfLpTokensToReceive(`${amount}`);
 
@@ -498,6 +505,7 @@ export default function AddLiquidityComponent({
             transparent
             otherCurrency={currencies[Field.CURRENCY_B] ?? null}
             networkFees={networkFees}
+            subentryCount={subentryCount}
 
             // showCommonBases
           />
@@ -515,6 +523,7 @@ export default function AddLiquidityComponent({
             currency={currencies[Field.CURRENCY_B] ?? null}
             otherCurrency={currencies[Field.CURRENCY_A] ?? null}
             networkFees={networkFees}
+            subentryCount={subentryCount}
             // showCommonBases
           />
           {!sorobanContext.address ? (

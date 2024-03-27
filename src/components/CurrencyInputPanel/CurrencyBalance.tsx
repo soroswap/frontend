@@ -2,7 +2,7 @@ import { styled, useTheme } from '@mui/material';
 import { RowFixed } from 'components/Row';
 import { BodySmall } from 'components/Text';
 import useGetMyBalances from 'hooks/useGetMyBalances';
-import { useEffect, useState } from 'react';
+import { MouseoverTooltip } from 'components/Tooltip';
 
 import { TokenType } from 'interfaces/tokens';
 
@@ -32,7 +32,8 @@ interface CurrencyBalanceProps {
   onMax: (maxValue: string) => void;
   hideBalance: any;
   showMaxButton: any;
-  networkFees?: number;
+  networkFees?: number | undefined | null;
+  subentryCount?: number | undefined | null;
 }
 
 export default function CurrencyBalance({
@@ -42,44 +43,57 @@ export default function CurrencyBalance({
   hideBalance,
   showMaxButton,
   networkFees,
+  subentryCount,
 }: CurrencyBalanceProps) {
-  const [fee, setFee] = useState<number>(0);
-  const [adjustedBalance, setAdjustedBalance] = useState<number>(0);
+  // const [fee, setFee] = useState<number>(0);
+  // const [adjustedBalance, setAdjustedBalance] = useState<number>(0);
   const { tokenBalancesResponse } = useGetMyBalances();
   const balance =
     tokenBalancesResponse?.balances?.find((b) => b?.contract === currency?.contract)?.balance ||
     '0';
 
-  useEffect(() => {
-    const setNetworkFeeVar = () => {
-      if (networkFees) {
-        setFee(networkFees);
-      }
-      if (currency.code != 'XLM') {
-        setAdjustedBalance(Number(balance));
-      } else {
-        const baseReserve = 1;
-        const availableBalance = Number(balance) - fee - baseReserve;
-        if (adjustedBalance < 0) {
-          setAdjustedBalance(0);
-          showMaxButton = false;
-        } else {
-          setAdjustedBalance(availableBalance);
-        }
-      }
-    };
-
-    setNetworkFeeVar();
-  }, [networkFees, fee, setFee, adjustedBalance, setAdjustedBalance]);
+  let availableBalance;
+  if (currency.code === 'XLM') {
+    availableBalance =
+      Number(balance) - Number(networkFees) - 1 - 0.5 * Number(subentryCount) > 0
+        ? Number(balance) - Number(networkFees) - 1 - 0.5 * Number(subentryCount)
+        : 0;
+  } else {
+    availableBalance = Number(balance);
+  }
 
   const theme = useTheme();
+
   return (
     <RowFixed style={{ height: '17px' }}>
-      <BodySmall color={theme.palette.secondary.main}>
-        {!hideBalance && currency ? `Available balance: ${Number(balance) - 1}` : null}
-      </BodySmall>
-      {showMaxButton ? (
-        <StyledBalanceMax onClick={() => onMax(adjustedBalance.toString())}>Max</StyledBalanceMax>
+      {currency.code === 'XLM' ? (
+        <MouseoverTooltip
+          title={
+            <span>
+              All Stellar accounts must maintain a minimum balance of lumens.{' '}
+              <a
+                href="https://developers.stellar.org/docs/learn/fundamentals/lumens#minimum-balance"
+                style={{ textDecoration: 'underline' }}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Learn More
+              </a>
+            </span>
+          }
+        >
+          <BodySmall color={theme.palette.secondary.main}>
+            {!hideBalance && currency ? `Available balance: ${availableBalance}` : null}
+          </BodySmall>
+        </MouseoverTooltip>
+      ) : (
+        <BodySmall color={theme.palette.secondary.main}>
+          {!hideBalance && currency ? `Balance: ${availableBalance}` : null}
+        </BodySmall>
+      )}
+
+      {showMaxButton && availableBalance > 0 ? (
+        <StyledBalanceMax onClick={() => onMax(availableBalance.toString())}>Max</StyledBalanceMax>
       ) : null}
     </RowFixed>
   );
