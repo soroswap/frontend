@@ -42,7 +42,7 @@ export const DEFAULT_SLIPPAGE_INPUT_VALUE = 0.5;
 export default function MaxSlippageSettings({ autoSlippage }: { autoSlippage: number }) {
   const theme = useTheme();
   const [userSlippageTolerance, setUserSlippageTolerance] = useUserSlippageTolerance();
-  const isAuto = userSlippageTolerance === SlippageTolerance.Auto
+  const isAuto = userSlippageTolerance === SlippageTolerance.Auto;
 
   // If user has previously entered a custom slippage, we want to show that value in the input field
   // instead of a placeholder.
@@ -92,29 +92,33 @@ export default function MaxSlippageSettings({ autoSlippage }: { autoSlippage: nu
       ? userSlippageTolerance > MAXIMUM_RECOMMENDED_SLIPPAGE
       : false;
 
-  const slippageInputRef = useRef()
+  const slippageInputRef = useRef<HTMLInputElement>(null);
 
   function selectSlippageInput() {
     if (slippageInputRef.current) {
-      slippageInputRef.current.focus()
-      slippageInputRef.current.select()
+      slippageInputRef.current.focus();
+      slippageInputRef.current.select();
     }
   }
 
   function setCustomSlippage() {
     // When switching to custom slippage, use `auto` value as a default.
     setUserSlippageTolerance(autoSlippage);
-    selectSlippageInput()
+    selectSlippageInput();
   }
 
-  const removeTrailingZeroes = num =>
-    num.toFixed(2).toString().replace(/0{1,}$/, "")
+  const removeTrailingZeroes = (num: number) => {
+    return num
+      .toFixed(2)
+      .toString()
+      .replace(/0{1,}$/, '');
+  };
 
-  useEffect(function() {
+  useEffect(function () {
     if (!isAuto) {
-      selectSlippageInput()
+      selectSlippageInput();
     }
-  }, [])
+  }, []);
 
   return (
     <Expand
@@ -136,11 +140,7 @@ export default function MaxSlippageSettings({ autoSlippage }: { autoSlippage: nu
       }
       button={
         <Typography color={theme.palette.primary.main}>
-          {isAuto ? (
-            <>Auto</>
-          ) : (
-            `${removeTrailingZeroes(userSlippageTolerance)}%`
-          )}
+          {isAuto ? <>Auto</> : `${removeTrailingZeroes(userSlippageTolerance)}%`}
         </Typography>
       }
     >
@@ -158,10 +158,7 @@ export default function MaxSlippageSettings({ autoSlippage }: { autoSlippage: nu
               Auto
             </Typography>
           </Option>
-          <Option
-            onClick={setCustomSlippage}
-            isActive={!isAuto}
-          >
+          <Option onClick={setCustomSlippage} isActive={!isAuto}>
             <Typography color={theme.palette.primary.main} component="div">
               Custom
             </Typography>
@@ -171,7 +168,7 @@ export default function MaxSlippageSettings({ autoSlippage }: { autoSlippage: nu
           <Input
             ref={slippageInputRef}
             data-testid="slippage-input"
-            placeholder={autoSlippage}
+            placeholder={autoSlippage.toString()}
             value={isAuto ? '' : slippageInput}
             onChange={(e) => parseSlippageInput(e.target.value)}
             onBlur={() => {
