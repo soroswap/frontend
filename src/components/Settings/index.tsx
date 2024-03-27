@@ -1,6 +1,5 @@
 // import { Percent } from '@uniswap/sdk-core'
 import { styled } from "@mui/material"
-import { useSorobanReact } from '@soroban-react/core'
 import AnimatedDropdown from 'components/AnimatedDropdown'
 import { AutoColumn } from 'components/Column'
 import { useOnClickOutside } from 'hooks/useOnClickOutside'
@@ -55,8 +54,6 @@ export default function SettingsTab({
   autoSlippage: number
   chainId?: number
 }) {
-  const { address } = useSorobanReact()
-
   const node = useRef<HTMLDivElement | null>(null)
   const [isOpen, setIsOpen] = useState(false)
   const toggleMenu = () => {
@@ -67,7 +64,7 @@ export default function SettingsTab({
 
   return (
     <Menu ref={node}>
-      <MenuButton disabled={!address} isActive={isOpen} onClick={toggleMenu} />
+      <MenuButton isActive={isOpen} onClick={toggleMenu} />
       {isOpen && (
         <MenuFlyout>
           <AnimatedDropdown open={true}>
