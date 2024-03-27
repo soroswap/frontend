@@ -14,6 +14,8 @@ const Rule = styled(Divider)`
 
 const HeaderContainer = styled(AutoColumn)`
   display: flex;
+  width: 100%;
+  height: 100%;
   flex-direction: column;
   margin-top: 16px;
 `;

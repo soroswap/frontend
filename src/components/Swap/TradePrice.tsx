@@ -25,7 +25,7 @@ const StyledPriceContainer = styled('button')`
 `;
 
 export const getExpectedAmountOfOne = (trade: InterfaceTrade, showInverted: boolean) => {
-  const { inputAmount, outputAmount } = trade;
+  const { inputAmount, outputAmount } = trade ? trade : { inputAmount: null, outputAmount: null };
 
   if (!inputAmount || !outputAmount) return;
 
