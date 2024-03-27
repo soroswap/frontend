@@ -60,17 +60,14 @@ const ButtonContent = () => {
 }
 
 export default function MenuButton({
-  disabled,
   onClick,
   isActive,
 }: {
-  disabled: boolean
   onClick: () => void
   isActive: boolean
 }) {
   return (
     <Button
-      disabled={disabled}
       onClick={onClick}
       isActive={isActive}
       id="open-settings-dialog-button"
