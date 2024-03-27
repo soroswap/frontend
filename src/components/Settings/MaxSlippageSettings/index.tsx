@@ -1,7 +1,7 @@
 import Expand from 'components/Expand';
 import QuestionHelper from 'components/QuestionHelper';
 import Row, { RowBetween } from 'components/Row';
-import React, { useState, useRef, useEffect, LegacyRef, MutableRefObject } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { styled, Typography, useTheme } from '@mui/material';
 import { Alert } from '@mui/material';
 import { Input, InputContainer } from '../Input';
