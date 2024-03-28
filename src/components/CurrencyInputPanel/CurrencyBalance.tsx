@@ -52,7 +52,7 @@ export default function CurrencyBalance({
     tokenBalancesResponse?.balances?.find((b) => b?.contract === currency?.contract)?.balance ||
     '0';
 
-  let availableBalance;
+  let availableBalance: number;
   if (currency.code === 'XLM') {
     availableBalance =
       Number(balance) - Number(networkFees) - 1 - 0.5 * Number(subentryCount) > 0
@@ -92,7 +92,7 @@ export default function CurrencyBalance({
         </BodySmall>
       )}
 
-      {showMaxButton && availableBalance > 0 ? (
+      {showMaxButton && availableBalance > 0 && networkFees && networkFees > 0 ? (
         <StyledBalanceMax onClick={() => onMax(availableBalance.toString())}>Max</StyledBalanceMax>
       ) : null}
     </RowFixed>
