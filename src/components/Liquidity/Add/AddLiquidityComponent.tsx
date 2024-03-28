@@ -23,7 +23,7 @@ import useLiquidityValidations from 'hooks/useLiquidityValidations';
 import { RouterMethod, useRouterCallback } from 'hooks/useRouterCallback';
 import { TokenType } from 'interfaces';
 import { useRouter } from 'next/router';
-import { useCallback, useContext, useMemo, useState } from 'react';
+import { useCallback, useContext, useMemo, useState, useEffect } from 'react';
 import { Plus } from 'react-feather';
 import { Field } from 'state/mint/actions';
 import { useDerivedMintInfo, useMintActionHandlers, useMintState } from 'state/mint/hooks';
@@ -116,6 +116,7 @@ export default function AddLiquidityComponent({
   const [lpPercentage, setLpPercentage] = useState<string>('');
   const [totalShares, setTotalShares] = useState<string>('');
   const [networkFees, setNetworkFees] = useState<number>(0);
+  const [subentryCount, setSubentryCount] = useState<number>(0);
 
   const {
     token: baseCurrency,
@@ -299,52 +300,99 @@ export default function AddLiquidityComponent({
     baseCurrency,
   });
 
-  const getNetworkFees = async () => {
-    let desired0BN: BigNumber;
-    let desired1BN: BigNumber;
-
-    if (independentField === Field.CURRENCY_A) {
-      desired0BN = new BigNumber(formattedAmounts[independentField]).shiftedBy(7);
-      desired1BN = new BigNumber(formattedAmounts[dependentField]).shiftedBy(7);
-    } else {
-      // if (independentField === Field.CURRENCY_B)
-      // menas that the user is typing the currency on bottom
-      desired0BN = new BigNumber(formattedAmounts[dependentField]).shiftedBy(7);
-      desired1BN = new BigNumber(formattedAmounts[independentField]).shiftedBy(7);
-    }
-
-    const desiredAScVal = bigNumberToI128(desired0BN);
-    const desiredBScVal = bigNumberToI128(desired1BN);
-
-    // Here we are implementint the slippage: which will be in the "0.5" format when is 0.5%
-    const factor = BigNumber(100).minus(userSlippage).dividedBy(100);
-    const min0BN = desired0BN.multipliedBy(factor).decimalPlaces(0); // we dont want to have decimals after applying the factor
-    const min1BN = desired1BN.multipliedBy(factor).decimalPlaces(0);
-
-    const minAScVal = bigNumberToI128(min0BN);
-    const minBScVal = bigNumberToI128(min1BN);
-
-    const args = [
-      new StellarSdk.Address(baseCurrency?.contract ?? '').toScVal(),
-      new StellarSdk.Address(currencyB?.contract ?? '').toScVal(),
-      desiredAScVal,
-      desiredBScVal,
-      minAScVal,
-      minBScVal,
-      new StellarSdk.Address(sorobanContext.address ?? '').toScVal(),
-      bigNumberToU64(BigNumber(getCurrentTimePlusOneHour())),
-    ];
-
-    try {
-      const fees = await calculateLiquidityFees(sorobanContext, args, RouterMethod.ADD_LIQUIDITY);
-      if (fees) {
-        return Number(fees) / 10 ** 7;
+  useEffect(() => {
+    const getSubentryCount = async () => {
+      if (sorobanContext.address) {
+        const account = await sorobanContext.serverHorizon?.loadAccount(sorobanContext.address);
+        const count = account?.subentry_count ?? 0;
+        setSubentryCount(count);
       }
-    } catch (error) {
-      console.error('Error fetching network fees:', error);
-      return 0;
-    }
-  };
+    };
+
+    const fetchNetworkFees = async () => {
+      let desired0BN: BigNumber;
+      let desired1BN: BigNumber;
+      let valDependent: string;
+      if (Number(formattedAmounts[dependentField]) === 0) {
+        valDependent = '30';
+      } else {
+        valDependent = formattedAmounts[dependentField];
+      }
+
+      let valIndependent: string;
+      if (Number(formattedAmounts[independentField]) === 0) {
+        valIndependent = '30';
+      } else {
+        valIndependent = formattedAmounts[dependentField];
+      }
+
+      if (independentField === Field.CURRENCY_A) {
+        desired0BN = new BigNumber(valIndependent).shiftedBy(7);
+        desired1BN = new BigNumber(valDependent).shiftedBy(7);
+      } else {
+        desired0BN = new BigNumber(valDependent).shiftedBy(7);
+        desired1BN = new BigNumber(valIndependent).shiftedBy(7);
+      }
+
+      if (
+        desired0BN.isNaN() ||
+        desired1BN.isNaN() ||
+        !baseCurrency ||
+        !currencyB ||
+        !sorobanContext.address
+      ) {
+        // setNetworkFees(0);
+        return;
+      } else {
+        const desiredAScVal = bigNumberToI128(desired0BN);
+        const desiredBScVal = bigNumberToI128(desired1BN);
+
+        // Here we are implementint the slippage: which will be in the "0.5" format when is 0.5%
+        const factor = BigNumber(100).minus(userSlippage).dividedBy(100);
+        const min0BN = desired0BN.multipliedBy(factor).decimalPlaces(0); // we dont want to have decimals after applying the factor
+        const min1BN = desired1BN.multipliedBy(factor).decimalPlaces(0);
+
+        const minAScVal = bigNumberToI128(min0BN);
+        const minBScVal = bigNumberToI128(min1BN);
+
+        const args = [
+          new StellarSdk.Address(baseCurrency?.contract ?? '').toScVal(),
+          new StellarSdk.Address(currencyB?.contract ?? '').toScVal(),
+          desiredAScVal,
+          desiredBScVal,
+          minAScVal,
+          minBScVal,
+          new StellarSdk.Address(sorobanContext.address ?? '').toScVal(),
+          bigNumberToU64(BigNumber(getCurrentTimePlusOneHour())),
+        ];
+
+        try {
+          const fees = await calculateLiquidityFees(
+            sorobanContext,
+            args,
+            RouterMethod.ADD_LIQUIDITY,
+          );
+          if (fees) {
+            setNetworkFees(Number(fees) / 10 ** 7);
+          }
+        } catch (error) {
+          console.error('Error fetching network fees:', error);
+          setNetworkFees(-1);
+        }
+      }
+    };
+
+    getSubentryCount();
+    fetchNetworkFees();
+  }, [
+    sorobanContext,
+    formattedAmounts,
+    userSlippage,
+    baseCurrency,
+    currencyB,
+    independentField,
+    dependentField,
+  ]);
 
   const wrapModal = useBoolean();
 
@@ -372,9 +420,6 @@ export default function AddLiquidityComponent({
     }
 
     const { amount, percentage } = await getLpAmountAndPercentage();
-
-    const fee = await getNetworkFees();
-    setNetworkFees(fee ?? 0);
 
     setAmountOfLpTokensToReceive(`${amount}`);
 
@@ -459,6 +504,8 @@ export default function AddLiquidityComponent({
             currency={currencies[Field.CURRENCY_A] ?? null}
             transparent
             otherCurrency={currencies[Field.CURRENCY_B] ?? null}
+            networkFees={networkFees}
+            subentryCount={subentryCount}
 
             // showCommonBases
           />
@@ -475,6 +522,8 @@ export default function AddLiquidityComponent({
             showMaxButton
             currency={currencies[Field.CURRENCY_B] ?? null}
             otherCurrency={currencies[Field.CURRENCY_A] ?? null}
+            networkFees={networkFees}
+            subentryCount={subentryCount}
             // showCommonBases
           />
           {!sorobanContext.address ? (
