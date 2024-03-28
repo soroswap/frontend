@@ -8,7 +8,7 @@ const useGetLpTokens = () => {
   const { tokensAsMap } = useAllTokens();
 
   const { data, isLoading, error, mutate } = useSWRImmutable(
-    ['lp-tokens', sorobanContext],
+    ['lp-tokens', sorobanContext, tokensAsMap],
     ([key, sorobanContext]) => getLpTokens(sorobanContext, tokensAsMap),
   );
 

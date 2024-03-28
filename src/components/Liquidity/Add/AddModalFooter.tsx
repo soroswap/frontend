@@ -102,7 +102,7 @@ export default function AddModalFooter({
         <BodySmall component="div">
           <Row align="flex-start" justify="space-between" gap="sm">
             <Label>
-              {currencyA && currencyA?.name?.length > 60? currencyA?.code : currencyA?.name}{' '}
+              {currencyA && currencyA.code}{' '}
               to deposit
             </Label>
             <DetailRowValue style={{ display: 'flex', alignItems: 'center' }}>
@@ -114,7 +114,7 @@ export default function AddModalFooter({
         <BodySmall component="div">
           <Row align="flex-start" justify="space-between" gap="sm">
             <Label>
-              {currencyB && currencyB?.name?.length > 60? currencyB?.code : currencyB?.name}{' '}
+              {currencyB && currencyB?.code}{' '}
               to deposit
             </Label>
             <DetailRowValue style={{ display: 'flex', alignItems: 'center' }}>

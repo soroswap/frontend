@@ -1,27 +1,26 @@
-import { CSSProperties, MutableRefObject, useCallback, useMemo } from 'react';
 import { SorobanContextType, useSorobanReact } from '@soroban-react/core';
+import BigNumber from 'bignumber.js';
+import { CSSProperties, MutableRefObject, useCallback, useMemo } from 'react';
+import { Check } from 'react-feather';
 import { FixedSizeList } from 'react-window';
 import { AccountResponse } from 'stellar-sdk/lib/horizon';
-import { Check } from 'react-feather';
 import useSWRImmutable from 'swr/immutable';
-import BigNumber from 'bignumber.js';
 
 import { CircularProgress, Typography, styled } from '@mui/material';
-import { TokenType } from '../../../interfaces';
-import StyledRow from '../../Row';
-import { LoadingRows, MenuItem } from '../styleds';
 import Column, { AutoColumn } from 'components/Column';
 import Loader from 'components/Icons/LoadingSpinner';
 import CurrencyLogo from 'components/Logo/CurrencyLogo';
 import Row, { RowFixed } from 'components/Row';
+import { TokenType } from '../../../interfaces';
+import StyledRow from '../../Row';
+import { LoadingRows, MenuItem } from '../styleds';
 
 import { tokenBalance, tokenBalancesType } from 'hooks';
 import useGetMyBalances from 'hooks/useGetMyBalances';
 import useHorizonLoadAccount from 'hooks/useHorizonLoadAccount';
 
-import { isAddress } from 'helpers/address';
+import { isAddress, shortenAddress } from 'helpers/address';
 import { formatTokenAmount } from 'helpers/format';
-import { shortenAddress } from 'helpers/address';
 
 function currencyKey(currency: TokenType): string {
   return currency.contract ? currency.contract : 'ETHER';
@@ -132,17 +131,26 @@ export function CurrencyRow({
   );
   const shortenSorobanClassicAsset = (currency: TokenType) => {
     if (!currency) return '';
-    const parts = currency.name.split(':');
-    if (parts.length !== 2) {
-      return currency;
+    if(currency?.name && currency.name.toString().length > 56) {
+      const addressAsArray = currency.name.toString().split(':');
+      if (addressAsArray.length > 1 && isAddress(addressAsArray[1])){
+        const shortAddr: string = shortenAddress(addressAsArray[1]);
+        return `${currency.code}:${shortAddr}`;
+      }
+      return currency.code;
     }
-
-    const [assetCode, issuer] = parts;
-
-    if (!isAddress(issuer)) return currency;
-
-    return `${assetCode}:${shortenAddress(issuer)}`;
+    else return `${currency.code}`;
   };
+
+  const formattedCurrencyName = (currency: TokenType) => {
+    if (!currency.name) return '';
+
+    if (currency.name.length > 12) {
+      const formattedName = shortenSorobanClassicAsset(currency);
+      return formattedName;
+    }
+    return currency?.name
+  }
   const warning = false;
   const isBlockedToken = false;
   const blockedTokenOpacity = '0.6';
@@ -168,11 +176,11 @@ export function CurrencyRow({
       <AutoColumn style={{ opacity: isBlockedToken ? blockedTokenOpacity : '1' }}>
         <Row>
           <CurrencyName title={currency.name}>
-            {currency && currency?.name.length > 60 ? `${shortenSorobanClassicAsset(currency)}` : currency.name}
+            {currency.code}
           </CurrencyName>
         </Row>
         <Typography ml="0px" fontSize="12px" fontWeight={300}>
-          {currency.code}
+          {currency.domain ? currency.domain : formattedCurrencyName(currency as TokenType)}
         </Typography>
       </AutoColumn>
       {showCurrencyAmount ? (

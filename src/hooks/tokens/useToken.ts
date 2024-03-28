@@ -1,12 +1,12 @@
 import { SorobanContextType, useSorobanReact } from '@soroban-react/core';
 import { getClassicAssetSorobanAddress } from 'functions/getClassicAssetSorobanAddress';
 import { getClassicStellarAsset, isAddress } from 'helpers/address';
+import { getTokenName } from 'helpers/soroban';
 import { TokenMapType, TokenType } from 'interfaces';
 import useSWR, { useSWRConfig } from 'swr';
 import useSWRImmutable from 'swr/immutable';
 import { useAllTokens } from './useAllTokens';
 import { getToken, isClassicStellarAsset } from './utils';
-import { getTokenName } from 'helpers/soroban';
 
 export const findToken = async (
   tokenAddress: string | undefined,
@@ -16,7 +16,6 @@ export const findToken = async (
   if (!tokenAddress || tokenAddress === '') return undefined;
 
   const classicAssetSearch = getClassicAssetSorobanAddress(tokenAddress!, sorobanContext);
-  console.log('classicAssetSearch', classicAssetSearch);
 
   const formattedAddress = isAddress(classicAssetSearch ? classicAssetSearch : tokenAddress);
   if (!formattedAddress) return undefined;
@@ -86,7 +85,7 @@ export function useToken(tokenAddress: string | undefined) {
           name: stellarAsset.asset,
           code: stellarAsset.assetCode,
           decimals: 7,
-          logoURI: '',
+          icon: '',
         };
       }
     }

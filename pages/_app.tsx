@@ -1,3 +1,4 @@
+import { Analytics } from '@vercel/analytics/react'; 
 import { CssBaseline, ThemeProvider } from '@mui/material';
 import type { AppProps } from 'next/app';
 import { useMemo, useState } from 'react';
@@ -53,6 +54,7 @@ export default function App({ Component, pageProps }: AppProps) {
             <AppContext.Provider value={appContextValues}>
               <MainLayout>
                 <Component {...pageProps} />
+                <Analytics />
               </MainLayout>
             </AppContext.Provider>
           </MySorobanReactProvider>

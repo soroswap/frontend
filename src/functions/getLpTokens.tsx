@@ -21,7 +21,6 @@ export async function getLpTokens(sorobanContext: SorobanContextType, tokensAsMa
   if (!sorobanContext.activeChain) return;
   // const pairs = await getPairs(sorobanContext); // This one uses pairs from the API
   const pairs = await getPairsFromFactory(sorobanContext); // This one uses pairs from factory
-  console.log('🚀 « pairs:', pairs);
 
   const results: LpTokensObj[] = [];
 

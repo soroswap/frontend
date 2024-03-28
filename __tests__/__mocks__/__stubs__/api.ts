@@ -3,59 +3,59 @@ const tokens = [
     "network": "standalone",
     "tokens": [
       {
-        "address": "CA2UABZJZ5FXD3MRTVCYPBTPD677TRNHBFB7PWYUMRXM23X4LFBGES4Z",
+        "contract": "CA2UABZJZ5FXD3MRTVCYPBTPD677TRNHBFB7PWYUMRXM23X4LFBGES4Z",
         "name": "StellarLumens",
-        "symbol": "XLM",
-        "logoURI": "https://assets.coingecko.com/coins/images/100/standard/Stellar_symbol_black_RGB.png",
+        "code": "XLM",
+        "icon": "https://assets.coingecko.com/coins/images/100/standard/Stellar_symbol_black_RGB.png",
         "decimals": 7
       },
       {
-        "address": "CAL4VRF2RD7QSHBKK6S2DNERQ4Y7J6N66IFSIWOK2EGH4OGIN77XSYJH",
+        "contract": "CAL4VRF2RD7QSHBKK6S2DNERQ4Y7J6N66IFSIWOK2EGH4OGIN77XSYJH",
         "name": "Dogstar",
-        "symbol": "XTAR",
-        "logoURI": "https://www.dogstarcoin.com/assets/img/dogstarcoin-logo.png",
+        "code": "XTAR",
+        "icon": "https://www.dogstarcoin.com/assets/img/dogstarcoin-logo.png",
         "decimals": 7
       },
       {
-        "address": "CAVQEAWCOTDHRRCK3JZ3XD54AJ4Z2LMWTU2RH4EULOPHG2A4ECHOOIAV",
+        "contract": "CAVQEAWCOTDHRRCK3JZ3XD54AJ4Z2LMWTU2RH4EULOPHG2A4ECHOOIAV",
         "name": "USDCoin",
-        "symbol": "USDC",
-        "logoURI": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png",
+        "code": "USDC",
+        "icon": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png",
         "decimals": 7
       },
       {
-        "address": "CBYI3XOCDNMIHP5LDO2JIHXA3MXHOHSG7CJXTNLDYB4QXYGZEMI7BTOV",
+        "contract": "CBYI3XOCDNMIHP5LDO2JIHXA3MXHOHSG7CJXTNLDYB4QXYGZEMI7BTOV",
         "name": "Ripple",
-        "symbol": "XRP",
-        "logoURI": "https://static.ultrastellar.com/media/assets/img/4ab58d77-b70f-4a6c-9944-6f273d549cd5.png",
+        "code": "XRP",
+        "icon": "https://static.ultrastellar.com/media/assets/img/4ab58d77-b70f-4a6c-9944-6f273d549cd5.png",
         "decimals": 7
       },
       {
-        "address": "CDDXGR5IB6ZQ6E7YK5KVUQQ44F4POK3MNUCTE7OGSNH5XNTCL2ZSMHMB",
+        "contract": "CDDXGR5IB6ZQ6E7YK5KVUQQ44F4POK3MNUCTE7OGSNH5XNTCL2ZSMHMB",
         "name": "ArgentinePeso",
-        "symbol": "ARST",
-        "logoURI": "https://static.ultrastellar.com/media/assets/img/648754b5-f91d-46c4-97f9-557642976a75.png",
+        "code": "ARST",
+        "icon": "https://static.ultrastellar.com/media/assets/img/648754b5-f91d-46c4-97f9-557642976a75.png",
         "decimals": 7
       },
       {
-        "address": "CCZMBCTNYRFDWQ25YFMB2WN47SAN2HAPT5OKQLKFMUQ2BFFDJMTQP6Q7",
+        "contract": "CCZMBCTNYRFDWQ25YFMB2WN47SAN2HAPT5OKQLKFMUQ2BFFDJMTQP6Q7",
         "name": "Aquarius",
-        "symbol": "AQUA",
-        "logoURI": "https://static.ultrastellar.com/media/assets/img/1878ee2d-2fd1-4e31-89a7-5a430f1596f8.png",
+        "code": "AQUA",
+        "icon": "https://static.ultrastellar.com/media/assets/img/1878ee2d-2fd1-4e31-89a7-5a430f1596f8.png",
         "decimals": 7
       },
       {
-        "address": "CCU66OMX3BFVRZBH7OBC26ZQE7CN5MKTRUR6LRIXY2TRPY7OMKBIZLCZ",
+        "contract": "CCU66OMX3BFVRZBH7OBC26ZQE7CN5MKTRUR6LRIXY2TRPY7OMKBIZLCZ",
         "name": "EURoCoin",
-        "symbol": "EURC",
-        "logoURI": "https://static.ultrastellar.com/media/assets/img/f8b00dbf-64b3-488f-bcd2-354f29e2cdc8.png",
+        "code": "EURC",
+        "icon": "https://static.ultrastellar.com/media/assets/img/f8b00dbf-64b3-488f-bcd2-354f29e2cdc8.png",
         "decimals": 7
       },
       {
-        "address": "CA5HLEVUZDWEVCLQH5GDW4EOCQWLWDJ75VX2XVUE5XHCIWXJQ3OZGM3P",
+        "contract": "CA5HLEVUZDWEVCLQH5GDW4EOCQWLWDJ75VX2XVUE5XHCIWXJQ3OZGM3P",
         "name": "Bitcoin",
-        "symbol": "BTC",
-        "logoURI": "https://static.ultrastellar.com/media/assets/img/c3380651-52e5-4054-9121-a438c60a1ec4.png",
+        "code": "BTC",
+        "icon": "https://static.ultrastellar.com/media/assets/img/c3380651-52e5-4054-9121-a438c60a1ec4.png",
         "decimals": 7
       }
     ]
@@ -279,4 +279,4 @@ const keys = [
   }
 ]
 
-export {tokens, factory, pairs, keys}
+export { factory, keys, pairs, tokens }
