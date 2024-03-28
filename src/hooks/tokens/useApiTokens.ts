@@ -18,7 +18,6 @@ export const useApiTokens = () => {
 
   useEffect(() => {
     if (data && sorobanContext.activeChain?.id == 'mainnet') {
-      console.log("A")
       setTokens(data.assets)
     }
     if (data && data.length > 0) {
