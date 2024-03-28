@@ -1,6 +1,6 @@
 import { useContext, useState, useEffect } from 'react';
 
-import { Box, Modal, useMediaQuery } from '@mui/material';
+import { Box, CircularProgress, Modal, useMediaQuery } from '@mui/material';
 import { styled, useTheme } from '@mui/material/styles';
 import { useSorobanReact } from '@soroban-react/core';
 import { AppContext } from 'contexts';
@@ -90,9 +90,11 @@ const ConnectWalletContent = ({
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const sorobanContext = useSorobanReact();
   const { setActiveConnectorAndConnect } = sorobanContext;
-  const [walletsStatus, setWalletsStatus] = useState<any[]>([
-    { name: 'freighter', isInstalled: false },
-    { name: 'xbull', isInstalled: false },
+  const [walletsStatus, setWalletsStatus] = useState<
+    { name: string; isInstalled: boolean; isLoading: boolean }[]
+  >([
+    { name: 'freighter', isInstalled: false, isLoading: true },
+    { name: 'xbull', isInstalled: false, isLoading: true },
   ]);
   const browser = Bowser.getParser(window.navigator.userAgent).getBrowserName();
 
@@ -141,11 +143,15 @@ const ConnectWalletContent = ({
       }
     }
   };
-  const handleClick = async (wallet: Connector) => {
+  const handleClick = async (
+    wallet: Connector,
+    walletStatus: { name: string; isInstalled: boolean; isLoading: boolean } | undefined,
+  ) => {
+    if (!walletStatus) return;
+    if (walletStatus.isLoading) return;
+
     if (!isMobile) {
-      const isWalletInstalled = walletsStatus.filter(
-        (walletStatus) => walletStatus.name === wallet.id,
-      )[0].isInstalled;
+      const isWalletInstalled = walletStatus.isInstalled;
       if (isWalletInstalled) {
         connectWallet(wallet);
       } else {
@@ -160,14 +166,14 @@ const ConnectWalletContent = ({
     const newWalletsStatus = walletsStatus.map(async (walletStatus) => {
       if (walletStatus.name === 'freighter') {
         const connected = await isConnected();
-        return { name: walletStatus.name, isInstalled: connected };
+        return { name: walletStatus.name, isInstalled: connected, isLoading: false };
       }
       if (walletStatus.name === 'xbull') {
         if ((window as any).xBullSDK) {
-          return { name: walletStatus.name, isInstalled: true };
+          return { name: walletStatus.name, isInstalled: true, isLoading: false };
         }
       }
-      return walletStatus;
+      return { ...walletStatus, isLoading: false };
     });
 
     Promise.all(newWalletsStatus).then((updatedWalletsStatus) => {
@@ -185,27 +191,36 @@ const ConnectWalletContent = ({
               Choose how you want to connect.{' '}
               <span>If you don’t have a wallet, you can select a provider and create one.</span>
             </Subtitle>
-            {wallets?.map((wallet, index) => (
-              <WalletBox key={index} onClick={() => handleClick(wallet)}>
-                <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
-                  <Image
-                    src={
-                      theme.palette.mode == 'dark' ? freighterLogoWhite.src : freighterLogoBlack.src
-                    }
-                    width={24}
-                    height={24}
-                    alt={wallet.name + ' Wallet'}
-                  />
-                  <span>{wallet.name} Wallet</span>
-                </div>
-                {walletsStatus.filter((walletStatus) => walletStatus.name === wallet.id)[0]
-                  .isInstalled ? (
-                  <span style={{ color: theme.palette.custom.textQuaternary }}>Detected</span>
-                ) : (
-                  <span style={{ color: theme.palette.warning.main }}>Install</span>
-                )}
-              </WalletBox>
-            ))}
+            {wallets?.map((wallet, index) => {
+              const walletStatus = walletsStatus.find(
+                (walletStatus) => walletStatus.name === wallet.id,
+              );
+
+              return (
+                <WalletBox key={index} onClick={() => handleClick(wallet, walletStatus)}>
+                  <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+                    <Image
+                      src={
+                        theme.palette.mode == 'dark'
+                          ? freighterLogoWhite.src
+                          : freighterLogoBlack.src
+                      }
+                      width={24}
+                      height={24}
+                      alt={wallet.name + ' Wallet'}
+                    />
+                    <span>{wallet.name} Wallet</span>
+                  </div>
+                  {walletStatus?.isInstalled ? (
+                    <span style={{ color: theme.palette.custom.textQuaternary }}>Detected</span>
+                  ) : walletStatus?.isLoading ? (
+                    <CircularProgress size={16} />
+                  ) : (
+                    <span style={{ color: theme.palette.error.main }}>Install</span>
+                  )}
+                </WalletBox>
+              );
+            })}
           </ContentWrapper>
           {/* TODO: add link to terms of service */}
           <FooterText isMobile={isMobile}>
@@ -221,26 +236,33 @@ const ConnectWalletContent = ({
               Choose how you want to connect.{' '}
               <span>If you don’t have a wallet, you can select a provider and create one.</span>
             </Subtitle>
-            {wallets?.map((wallet, index) => (
-              <WalletBox key={index} onClick={() => handleClick(wallet)}>
-                <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
-                  <Image
-                    src={
-                      theme.palette.mode == 'dark' ? freighterLogoWhite.src : freighterLogoBlack.src
-                    }
-                    width={24}
-                    height={24}
-                    alt={wallet.name + ' Wallet'}
-                  />
-                  <span>{wallet.name} Wallet</span>
-                </div>
-                {wallet.id == 'xbull' ? (
-                  <span style={{ color: theme.palette.custom.textQuaternary }}>Connect</span>
-                ) : (
-                  <span style={{ color: theme.palette.error.main }}>Not available</span>
-                )}
-              </WalletBox>
-            ))}
+            {wallets?.map((wallet, index) => {
+              const walletStatus = walletsStatus.find(
+                (walletStatus) => walletStatus.name === wallet.id,
+              );
+              return (
+                <WalletBox key={index} onClick={() => handleClick(wallet, walletStatus)}>
+                  <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+                    <Image
+                      src={
+                        theme.palette.mode == 'dark'
+                          ? freighterLogoWhite.src
+                          : freighterLogoBlack.src
+                      }
+                      width={24}
+                      height={24}
+                      alt={wallet.name + ' Wallet'}
+                    />
+                    <span>{wallet.name} Wallet</span>
+                  </div>
+                  {wallet.id == 'xbull' ? (
+                    <span style={{ color: theme.palette.custom.textQuaternary }}>Connect</span>
+                  ) : (
+                    <span style={{ color: theme.palette.error.main }}>Not available</span>
+                  )}
+                </WalletBox>
+              );
+            })}
           </ContentWrapper>
           {/* TODO: add link to terms of service */}
           <FooterText isMobile={isMobile}>
