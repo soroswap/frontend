@@ -26,7 +26,7 @@ export const useApiTokens = () => {
       );
 
       if (filtered?.length > 0) {
-        const tokens = filtered[0].tokens;
+        const tokens = filtered[0].assets;
         setTokens(tokens);
       }
     }

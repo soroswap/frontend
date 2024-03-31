@@ -7,7 +7,7 @@ export const fetchTokens = async (network: string) => {
   if (network === 'mainnet') {
     const xlmToken = xlmTokenList.find((set) => set.network === network)?.tokens
     const { data } = await axios.get(
-      'https://raw.githubusercontent.com/soroswap/token-list/main/tokenList.json',
+      'https://raw.githubusercontent.com/soroswap/token-list/feat/sep0042/tokenList.json',
     );
 
     if (xlmToken) {
