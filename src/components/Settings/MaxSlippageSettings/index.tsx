@@ -1,11 +1,11 @@
 import Expand from 'components/Expand';
 import QuestionHelper from 'components/QuestionHelper';
 import Row, { RowBetween } from 'components/Row';
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { styled, Typography, useTheme } from '@mui/material';
 import { Alert } from '@mui/material';
 import { Input, InputContainer } from '../Input';
-import { useUserSlippageTolerance } from 'state/user/hooks';
+import { useUserSlippageTolerance, SlippageTolerance } from 'state/user/hooks';
 
 enum SlippageError {
   InvalidInput = 'InvalidInput',
@@ -42,6 +42,7 @@ export const DEFAULT_SLIPPAGE_INPUT_VALUE = 0.5;
 export default function MaxSlippageSettings({ autoSlippage }: { autoSlippage: number }) {
   const theme = useTheme();
   const [userSlippageTolerance, setUserSlippageTolerance] = useUserSlippageTolerance();
+  const isAuto = userSlippageTolerance === SlippageTolerance.Auto;
 
   // If user has previously entered a custom slippage, we want to show that value in the input field
   // instead of a placeholder.
@@ -49,7 +50,7 @@ export default function MaxSlippageSettings({ autoSlippage }: { autoSlippage: nu
   const [slippageError, setSlippageError] = useState<SlippageError | false>(false);
 
   // If user has previously entered a custom slippage, we want to show the settings expanded by default.
-  const [isOpen, setIsOpen] = useState(DEFAULT_SLIPPAGE_INPUT_VALUE !== userSlippageTolerance);
+  const [isOpen, setIsOpen] = useState(!isAuto);
 
   const parseSlippageInput = (value: string) => {
     // Do not allow non-numerical characters in the input field or more than two decimals
@@ -91,6 +92,34 @@ export default function MaxSlippageSettings({ autoSlippage }: { autoSlippage: nu
       ? userSlippageTolerance > MAXIMUM_RECOMMENDED_SLIPPAGE
       : false;
 
+  const slippageInputRef = useRef<HTMLInputElement>(null);
+
+  function selectSlippageInput() {
+    if (slippageInputRef.current) {
+      slippageInputRef.current.focus();
+      slippageInputRef.current.select();
+    }
+  }
+
+  function setCustomSlippage() {
+    // When switching to custom slippage, use `auto` value as a default.
+    setUserSlippageTolerance(autoSlippage);
+    selectSlippageInput();
+  }
+
+  const removeTrailingZeroes = (num: number) => {
+    return num
+      .toFixed(2)
+      .toString()
+      .replace(/0{1,}$/, '');
+  };
+
+  useEffect(function () {
+    if (!isAuto) {
+      selectSlippageInput();
+    }
+  }, []);
+
   return (
     <Expand
       testId="max-slippage-settings"
@@ -111,11 +140,7 @@ export default function MaxSlippageSettings({ autoSlippage }: { autoSlippage: nu
       }
       button={
         <Typography color={theme.palette.primary.main}>
-          {userSlippageTolerance === DEFAULT_SLIPPAGE_INPUT_VALUE ? (
-            <>Auto</>
-          ) : (
-            `${typeof userSlippageTolerance === 'number' ? userSlippageTolerance.toFixed(2) : 0.5}%`
-          )}
+          {isAuto ? <>Auto</> : `${removeTrailingZeroes(userSlippageTolerance)}%`}
         </Typography>
       }
     >
@@ -125,21 +150,15 @@ export default function MaxSlippageSettings({ autoSlippage }: { autoSlippage: nu
             onClick={() => {
               // Reset the input field when switching to auto
               setSlippageInput(DEFAULT_SLIPPAGE_INPUT_VALUE);
-              setUserSlippageTolerance(DEFAULT_SLIPPAGE_INPUT_VALUE);
+              setUserSlippageTolerance(SlippageTolerance.Auto);
             }}
-            isActive={userSlippageTolerance === DEFAULT_SLIPPAGE_INPUT_VALUE}
+            isActive={isAuto}
           >
             <Typography color={theme.palette.primary.main} component="div">
               Auto
             </Typography>
           </Option>
-          <Option
-            onClick={() => {
-              // When switching to custom slippage, use `auto` value as a default.
-              setUserSlippageTolerance(autoSlippage);
-            }}
-            isActive={userSlippageTolerance !== DEFAULT_SLIPPAGE_INPUT_VALUE}
-          >
+          <Option onClick={setCustomSlippage} isActive={!isAuto}>
             <Typography color={theme.palette.primary.main} component="div">
               Custom
             </Typography>
@@ -147,15 +166,19 @@ export default function MaxSlippageSettings({ autoSlippage }: { autoSlippage: nu
         </Switch>
         <InputContainer gap="md" error={!!slippageError}>
           <Input
+            ref={slippageInputRef}
             data-testid="slippage-input"
-            placeholder={autoSlippage.toFixed(2)}
-            value={slippageInput}
+            placeholder={autoSlippage.toString()}
+            value={isAuto ? '' : slippageInput}
             onChange={(e) => parseSlippageInput(e.target.value)}
             onBlur={() => {
               // When the input field is blurred, reset the input field to the default value
               setSlippageInput(DEFAULT_SLIPPAGE_INPUT_VALUE);
               setSlippageError(false);
             }}
+            onFocus={setCustomSlippage}
+            type="number"
+            step="0.1"
           />
           <Typography color={theme.palette.primary.main}>%</Typography>
         </InputContainer>
