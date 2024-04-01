@@ -6,14 +6,7 @@ import useSWRImmutable from 'swr/immutable';
 import { tokensToMap } from './utils';
 
 //Returns tokens from the API
-export const useApiTokens = (): {
-  tokens: TokenType[];
-  mutate: () => void;
-  isLoading: boolean;
-  isError: any;
-  data: any;
-  tokensAsMap: TokenMapType;
-} => {
+export const useApiTokens = () => {
   const sorobanContext = useSorobanReact();
   const { data, mutate, isLoading, error } = useSWRImmutable(
     ['tokens', sorobanContext?.activeChain?.id],
@@ -25,7 +18,6 @@ export const useApiTokens = (): {
 
   useEffect(() => {
     if (data && sorobanContext.activeChain?.id == 'mainnet') {
-      console.log('data', data.assets)
       setTokens(data.assets)
     }
     if (data && data.length > 0) {
@@ -41,6 +33,5 @@ export const useApiTokens = (): {
     const mappedTokens = tokensToMap(tokens);
     setTokensAsMap(mappedTokens);
   }, [data, sorobanContext?.activeChain?.id, tokens]);
- // console.log('tokens', tokens)
   return { tokens, mutate, isLoading, isError: error, data, tokensAsMap };
 };
