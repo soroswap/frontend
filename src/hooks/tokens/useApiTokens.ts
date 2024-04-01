@@ -34,7 +34,6 @@ export const useApiTokens = (): {
       );
 
       if (filtered?.length > 0) {
-        console.log('🚧filtered assets', filtered[0])
         const tokens = filtered[0].assets;
         setTokens(tokens);
       }
