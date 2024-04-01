@@ -1,8 +1,8 @@
-import ReactGA from 'react-ga';
 import { useSorobanReact } from '@soroban-react/core';
 import { SwapComponent } from 'components/Swap/SwapComponent';
 import { xlmTokenList } from 'constants/xlmToken';
 import { useEffect, useState } from 'react';
+import ReactGA from 'react-ga';
 import { Field } from 'state/swap/actions';
 import { SwapState } from 'state/swap/reducer';
 import SEO from '../src/components/SEO';
@@ -22,7 +22,7 @@ export default function Home() {
 
   useEffect(() => {
     const newXlmToken =
-      xlmTokenList.find((tList) => tList.network === activeChain?.id)?.tokens[0].contract ?? null;
+      xlmTokenList.find((tList) => tList.network === activeChain?.id)?.assets[0].contract ?? null;
     setXlmToken(newXlmToken);
 
     const newPrefilledState = {
