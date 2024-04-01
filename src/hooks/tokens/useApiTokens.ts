@@ -18,7 +18,7 @@ export const useApiTokens = () => {
 
   useEffect(() => {
     if (data && sorobanContext.activeChain?.id == 'mainnet') {
-      setTokens(data.tokens)
+      setTokens(data.assets)
     }
     if (data && data.length > 0) {
       const filtered = data?.filter(
@@ -26,7 +26,7 @@ export const useApiTokens = () => {
       );
 
       if (filtered?.length > 0) {
-        const tokens = filtered[0].tokens;
+        const tokens = filtered[0].assets;
         setTokens(tokens);
       }
     }
