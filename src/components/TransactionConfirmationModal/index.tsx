@@ -201,7 +201,7 @@ export function ConfirmationModalContent({
           </Row>
           <CloseButton onClick={onDismiss} data-testid="confirmation-close-icon" />
         </Row>
-          {topContent()}
+        {topContent()}
       </CustomWrapper>
       {bottomContent && <BottomSection gap="12px">{bottomContent()}</BottomSection>}
     </Wrapper>
