@@ -190,10 +190,10 @@ export function ConfirmationModalContent({
   bottomContent?: () => ReactNode;
   headerContent?: () => ReactNode;
 }) {
-  const isSmallDevice = useMediaQuery('(max-width: 400px)');
+  const isSmallDevice = useMediaQuery('(max-height: 600px)');
   return (
-    <Wrapper style={isSmallDevice ? {overflowY:'auto'}: {overflowY:'hidden'}}>
-      <CustomWrapper>
+    <Wrapper>
+      <CustomWrapper style={isSmallDevice ? {overflowY:'scroll'}: {overflowY:'visible'}}>
         <Row>
           {headerContent?.()}
           <Row justify="left">
@@ -201,7 +201,7 @@ export function ConfirmationModalContent({
           </Row>
           <CloseButton onClick={onDismiss} data-testid="confirmation-close-icon" />
         </Row>
-        {topContent()}
+          {topContent()}
       </CustomWrapper>
       {bottomContent && <BottomSection gap="12px">{bottomContent()}</BottomSection>}
     </Wrapper>

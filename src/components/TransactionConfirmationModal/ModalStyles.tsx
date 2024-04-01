@@ -3,6 +3,7 @@ import { styled } from '@mui/material';
 import { AutoColumn, ColumnCenter } from 'components/Column';
 
 export const Wrapper = styled('div')`
+  display: block;
   overflow: hidden;
   border-radius: 20px;
   position: absolute;
@@ -12,8 +13,6 @@ export const Wrapper = styled('div')`
   width: calc(100% - 40px);
   max-width: 420px;
   padding: 32px;
-  overflow-y: hidden;
-  max-height: 80vh;
   background: ${({ theme }) => `linear-gradient(${theme.palette.customBackground.bg1}, ${
     theme.palette.customBackground.bg1
   }) padding-box,
@@ -23,6 +22,8 @@ export const Wrapper = styled('div')`
                 theme.palette.mode == 'dark' ? '33,29,50,1' : '255,255,255,1'
               }) 65%, rgba(136,102,221,1) 100%) border-box`};
   border: 1px solid transparent;
+  overflow-y: visible;
+  max-height: 100%;
   ::-webkit-scrollbar {
     width: 8px;
   }
@@ -39,8 +40,6 @@ export const Wrapper = styled('div')`
 `;
 
 export const BottomSection = styled(AutoColumn)`
-  display: flex;
-  flex-direction: column;
   border-bottom-left-radius: 20px;
   border-bottom-right-radius: 20px;
 `;
@@ -49,7 +48,7 @@ export const CustomWrapper = styled(AutoColumn)`
   display: flex;
   flex-direction: column;
   gap: 8px;
-  max-height: 45vh;
+  height: 100%;
 `;
 
 export const ConfirmedIcon = styled(ColumnCenter)<{ inline?: boolean }>`
