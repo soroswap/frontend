@@ -12,7 +12,7 @@ export const Wrapper = styled('div')`
   width: calc(100% - 40px);
   max-width: 420px;
   padding: 32px;
-  overflow-y: auto;
+  overflow-y: hidden;
   max-height: 80vh;
   background: ${({ theme }) => `linear-gradient(${theme.palette.customBackground.bg1}, ${
     theme.palette.customBackground.bg1
@@ -28,11 +28,11 @@ export const Wrapper = styled('div')`
   }
   
   ::-webkit-scrollbar-track {
-    background: rgba(0, 0, 0, 0.25);        /* color of the tracking area */
+    background: rgba(0, 0, 0, 0.15);        /* color of the tracking area */
   }
   
   ::-webkit-scrollbar-thumb {
-    background-color: rgb(136, 102, 221, 0.25);    /* color of the scroll thumb */
+    background-color: rgb(100, 102, 108, 0.25);    /* color of the scroll thumb */
     border-radius: 6px;
     border: solid 1px rgba(0, 0, 0, 1);
   }

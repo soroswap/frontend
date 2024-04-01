@@ -1,4 +1,4 @@
-import { Box, Modal, useTheme } from '@mui/material';
+import { Box, Modal, useMediaQuery, useTheme } from '@mui/material';
 import { useSorobanReact } from '@soroban-react/core';
 import { ButtonLight, ButtonPrimary } from 'components/Buttons/Button';
 import { CloseButton } from 'components/Buttons/CloseButton';
@@ -190,8 +190,9 @@ export function ConfirmationModalContent({
   bottomContent?: () => ReactNode;
   headerContent?: () => ReactNode;
 }) {
+  const isSmallDevice = useMediaQuery('(max-width: 400px)');
   return (
-    <Wrapper>
+    <Wrapper style={isSmallDevice ? {overflowY:'auto'}: {overflowY:'hidden'}}>
       <CustomWrapper>
         <Row>
           {headerContent?.()}
