@@ -66,9 +66,9 @@ export function SwapModalHeaderAmount({
 
   return (
     <CustomRow
-      align={isSmallDevice ? 'start' : 'end'}
+      align='end'
       justify="space-between"
-      flexDirection={isSmallDevice ? 'column' : 'row'}
+      flexDirection='row'
       gap="8px"
     >
       <Column gap="4px" alignItems="flex-start">
@@ -88,7 +88,7 @@ export function SwapModalHeaderAmount({
       <Column gap="4px" alignItems={isSmallDevice ? 'flex-start' : 'flex-end'}>
         <ResponsiveMediumText>{formattedAmount}</ResponsiveMediumText>
         {usdAmount !== undefined && (
-          <BodySmall color={theme.palette.custom.textTertiary}>{usdAmount}</BodySmall>
+          <BodySmall alignSelf={'end'} color={theme.palette.custom.textTertiary}>{usdAmount}</BodySmall>
         )}
       </Column>
     </CustomRow>

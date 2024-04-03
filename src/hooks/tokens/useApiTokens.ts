@@ -33,6 +33,5 @@ export const useApiTokens = () => {
     const mappedTokens = tokensToMap(tokens);
     setTokensAsMap(mappedTokens);
   }, [data, sorobanContext?.activeChain?.id, tokens]);
-
   return { tokens, mutate, isLoading, isError: error, data, tokensAsMap };
 };
