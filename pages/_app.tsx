@@ -1,4 +1,4 @@
-import { Analytics } from '@vercel/analytics/react'; 
+import { Analytics } from '@vercel/analytics/react';
 import { CssBaseline, ThemeProvider } from '@mui/material';
 import type { AppProps } from 'next/app';
 import { useMemo, useState } from 'react';
@@ -9,6 +9,7 @@ import MySorobanReactProvider from '../src/soroban/MySorobanReactProvider';
 import store from '../src/state';
 import { theme } from '../src/themes';
 import '../styles/globals.css';
+import InkathonProvider from 'inkathon/InkathonProvider';
 
 export default function App({ Component, pageProps }: AppProps) {
   const [isConnectWalletModal, setConnectWalletModal] = useState<boolean>(false);
@@ -51,12 +52,14 @@ export default function App({ Component, pageProps }: AppProps) {
         <ThemeProvider theme={theme(mode)}>
           <CssBaseline />
           <MySorobanReactProvider>
-            <AppContext.Provider value={appContextValues}>
-              <MainLayout>
-                <Component {...pageProps} />
-                <Analytics />
-              </MainLayout>
-            </AppContext.Provider>
+            <InkathonProvider>
+              <AppContext.Provider value={appContextValues}>
+                <MainLayout>
+                  <Component {...pageProps} />
+                  <Analytics />
+                </MainLayout>
+              </AppContext.Provider>
+            </InkathonProvider>
           </MySorobanReactProvider>
         </ThemeProvider>
       </ColorModeContext.Provider>

@@ -9,6 +9,7 @@ import BalancesTable from './BalancesTable/BalancesTable';
 import { ButtonPrimary } from './Buttons/Button';
 import { WalletButton } from './Buttons/WalletButton';
 import { MintCustomToken } from './MintCustomToken';
+
 const PageWrapper = styled(Paper)`
   background: ${({ theme }) => `linear-gradient(${theme.palette.customBackground.bg2}, ${
     theme.palette.customBackground.bg2
