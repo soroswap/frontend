@@ -25,6 +25,7 @@ export function useDerivedBurnInfo(
     [Field.CURRENCY_B]?: CurrencyAmount | undefined;
   };
   error?: ReactNode;
+  isLoadingPairInfo: boolean;
 } {
   const sorobanContext = useSorobanReact();
   const { address } = sorobanContext;
@@ -33,11 +34,17 @@ export function useDerivedBurnInfo(
 
   // pair + totalsupply
   const [pair, setPair] = useState<PairInfo | undefined>();
+  const [isLoadingPairInfo, setIsLoadingPairInfo] = useState(false);
   useEffect(() => {
     if (address) {
-      getPairInfo(currencyA, currencyB, sorobanContext).then((resp) => {
-        setPair(resp as PairInfo);
-      });
+      setIsLoadingPairInfo(true);
+      getPairInfo(currencyA, currencyB, sorobanContext)
+        .then((resp) => {
+          setPair(resp as PairInfo);
+        })
+        .finally(() => {
+          setIsLoadingPairInfo(false);
+        });
     }
   }, [sorobanContext, address, currencyA, currencyB]);
 
@@ -146,7 +153,7 @@ export function useDerivedBurnInfo(
   //   error = error ?? <Trans>Enter an amount</Trans>
   // }
 
-  return { pair, parsedAmounts, error };
+  return { pair, parsedAmounts, error, isLoadingPairInfo };
 }
 
 export function useBurnActionHandlers(): {

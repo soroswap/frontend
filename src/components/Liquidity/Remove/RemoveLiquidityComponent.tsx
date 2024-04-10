@@ -1,4 +1,4 @@
-import { Button, Slider, styled, useTheme } from '@mui/material';
+import { Button, CircularProgress, Slider, styled, useTheme } from '@mui/material';
 import { TxResponse } from '@soroban-react/contracts';
 import { useSorobanReact } from '@soroban-react/core';
 import BigNumber from 'bignumber.js';
@@ -113,10 +113,12 @@ export default function RemoveLiquidityComponent() {
 
   // Burn State
   const { independentField, typedValue } = useBurnState();
-  const { pair, parsedAmounts, error } = useDerivedBurnInfo(
+
+  const { pair, parsedAmounts, error, isLoadingPairInfo } = useDerivedBurnInfo(
     currencyA ?? undefined,
     currencyB ?? undefined,
   );
+
   const { onUserInput: _onUserInput } = useBurnActionHandlers();
   const isValid = !error;
 
@@ -145,9 +147,9 @@ export default function RemoveLiquidityComponent() {
     // if there was a tx hash, we want to clear the input
     if (txHash) {
       onUserInput(Field.LIQUIDITY_PERCENT, '');
+      router.push('/liquidity');
     }
     setTxHash(undefined);
-    router.push('/liquidity');
   }, [onUserInput, router, txHash]);
 
   const handleButtonClick = (newValue: number) => {
@@ -159,19 +161,20 @@ export default function RemoveLiquidityComponent() {
   const [txError, setTxError] = useState<boolean>(false);
 
   const [networkFees, setNetworkFees] = useState<number>(0);
-
   useEffect(() => {
-    getExpectedAmount(currencyA!, currencyB!, BigNumber(1).shiftedBy(7), sorobanContext).then(
-      (resp) => {
-        setCurrencyAtoB(formatTokenAmount(resp));
-      },
-    );
-    getExpectedAmount(currencyB!, currencyA!, BigNumber(1).shiftedBy(7), sorobanContext).then(
-      (resp) => {
-        setCurrencyBtoA(formatTokenAmount(resp));
-      },
-    );
-  }, [currencyA, currencyB, sorobanContext]);
+    const amountA =
+      pair?.tokenAmounts.find((token) => token.currency?.contract === currencyA?.contract)
+        ?.balance ?? BigNumber(0);
+    const amountB =
+      pair?.tokenAmounts.find((token) => token.currency?.contract === currencyB?.contract)
+        ?.balance ?? BigNumber(0);
+
+    const aToB = amountA.dividedBy(amountB).toFixed(7);
+    const bToA = amountB.dividedBy(amountA).toFixed(7);
+
+    setCurrencyAtoB(aToB);
+    setCurrencyBtoA(bToA);
+  }, [currencyA, currencyB, pair]);
 
   const pendingText = (
     <BodySmall>
@@ -245,6 +248,7 @@ export default function RemoveLiquidityComponent() {
   };
 
   const handleClickMainButton = async () => {
+    setTxError(false);
     const fee = await getNetworkFees();
     setNetworkFees(fee);
     setShowConfirm(true);
@@ -390,7 +394,11 @@ export default function RemoveLiquidityComponent() {
                     currencyA.code.slice(currencyA.code.length - 5, currencyA.code.length)
                   : currencyA?.code}
               </StyledTokenName>
-              {formatTokenAmount(parsedAmounts[Field.CURRENCY_A]?.value ?? '')}
+              {isLoadingPairInfo ? (
+                <CircularProgress size="12px" />
+              ) : (
+                formatTokenAmount(parsedAmounts[Field.CURRENCY_A]?.value ?? '')
+              )}
             </RowFixed>
             <RowFixed>
               <CurrencyLogo
@@ -408,17 +416,25 @@ export default function RemoveLiquidityComponent() {
                     currencyB.code.slice(currencyB.code.length - 5, currencyB.code.length)
                   : currencyB?.code}
               </StyledTokenName>
-              {formatTokenAmount(parsedAmounts[Field.CURRENCY_B]?.value ?? '')}
+              {isLoadingPairInfo ? (
+                <CircularProgress size="12px" />
+              ) : (
+                formatTokenAmount(parsedAmounts[Field.CURRENCY_B]?.value ?? '')
+              )}
             </RowFixed>
           </Container>
           <SubHeaderSmall>Prices</SubHeaderSmall>
           <Container>
             <Column>
               <div>
-                1 {currencyA?.code} = {currencyAtoB} {currencyB?.code}
+                1 {currencyA?.code} ={' '}
+                {isLoadingPairInfo ? <CircularProgress size="12px" /> : currencyAtoB}{' '}
+                {currencyB?.code}
               </div>
               <div>
-                1 {currencyB?.code} = {currencyBtoA} {currencyA?.code}
+                1 {currencyB?.code} ={' '}
+                {isLoadingPairInfo ? <CircularProgress size="12px" /> : currencyBtoA}{' '}
+                {currencyA?.code}
               </div>
             </Column>
           </Container>
@@ -427,7 +443,11 @@ export default function RemoveLiquidityComponent() {
             <ButtonLight onClick={() => setConnectWalletModalOpen(true)}>{error}</ButtonLight>
           ) : (
             <AutoColumn gap="md">
-              <ButtonError onClick={handleClickMainButton} disabled={false} error={false}>
+              <ButtonError
+                onClick={handleClickMainButton}
+                disabled={Number(typedValue) === 0 || isLoadingPairInfo}
+                error={false}
+              >
                 <ButtonText fontSize={20} fontWeight={600}>
                   Remove
                 </ButtonText>

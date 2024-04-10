@@ -22,7 +22,7 @@ import { RowBetween, RowFixed } from 'components/Row';
 import CurrencySearchModal from 'components/SearchModal/CurrencySearchModal';
 import { TokenType } from 'interfaces';
 import { darken } from 'polished';
-import { ReactNode, useCallback, useState } from 'react';
+import { ReactNode, useCallback, useState, useEffect } from 'react';
 import { ChevronDown } from 'react-feather';
 import { flexColumnNoWrap, flexRowNoWrap } from 'themes/styles';
 import CurrencyBalance from './CurrencyBalance';
@@ -191,6 +191,8 @@ interface CurrencyInputPanelProps {
   renderBalance?: (amount: any) => ReactNode;
   loading?: boolean;
   transparent?: boolean;
+  networkFees?: number | undefined | null;
+  subentryCount?: number | undefined | null;
 }
 
 export default function CurrencyInputPanel({
@@ -211,6 +213,8 @@ export default function CurrencyInputPanel({
   hideBalance = false,
   hideInput = false,
   loading = false,
+  networkFees,
+  subentryCount,
   ...rest
 }: CurrencyInputPanelProps) {
   const [modalOpen, setModalOpen] = useState(false);
@@ -278,6 +282,8 @@ export default function CurrencyInputPanel({
                   onMax={onMax}
                   hideBalance={hideBalance}
                   showMaxButton={showMaxButton}
+                  networkFees={networkFees}
+                  subentryCount={subentryCount}
                 />
               ) : (
                 <span />
