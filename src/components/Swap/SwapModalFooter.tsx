@@ -16,11 +16,10 @@ import { getSwapAmounts } from 'hooks/useSwapCallback';
 import { ReactNode, useEffect, useState } from 'react';
 import { AlertTriangle, ChevronRight } from 'react-feather';
 import { InterfaceTrade, TradeType } from 'state/routing/types';
-import { PathBox, TextWithLoadingPlaceholder } from './AdvancedSwapDetails';
+import { PathBox, TextWithLoadingPlaceholder, formattedPriceImpact } from './AdvancedSwapDetails';
 import { Label } from './SwapModalHeaderAmount';
 import { getExpectedAmountOfOne } from './TradePrice';
 import { SwapCallbackError, SwapShowAcceptChanges } from './styleds';
-import useGetPriceImpactFromTrade from 'hooks/useGetPriceImpactFromTrade';
 
 const DetailsContainer = styled(Column)`
   padding: 0 8px;
@@ -85,9 +84,6 @@ export default function SwapModalFooter({
 
   const sorobanContext = useSorobanReact();
 
-  const { formatted: priceImpact, isLoading: isLoadingPriceImpact } =
-    useGetPriceImpactFromTrade(trade);
-
   const getSwapValues = () => {
     if (!trade || !trade?.tradeType) return { formattedAmount0: '0', formattedAmount1: '0' };
 
@@ -106,9 +102,13 @@ export default function SwapModalFooter({
 
   const [pathArray, setPathArray] = useState<string[]>([]);
 
+  const [pathTokensIsLoading, setPathTokensIsLoading] = useState(false);
+
   useEffect(() => {
     (async () => {
       if (!trade?.path || isLoading) return;
+
+      setPathTokensIsLoading(true);
 
       const promises = trade.path.map(async (contract) => {
         const asset = await findToken(contract, tokensAsMap, sorobanContext);
@@ -123,6 +123,7 @@ export default function SwapModalFooter({
         .map((result) => (result.status === 'fulfilled' && result.value ? result.value : ''));
 
       setPathArray(fulfilledValues);
+      setPathTokensIsLoading(false);
     })();
   }, [trade?.path, isLoading, sorobanContext]);
 
@@ -159,7 +160,7 @@ export default function SwapModalFooter({
               <MouseoverTooltip title="The impact your trade has on the market price of this pool.">
                 <Label cursor="help">Price impact</Label>
               </MouseoverTooltip>
-              {isLoadingPriceImpact ? <CircularProgress size="12px" /> : <>{priceImpact}%</>}
+              {formattedPriceImpact(trade?.priceImpact)}
             </Row>
           </BodySmall>
         )}
@@ -208,7 +209,7 @@ export default function SwapModalFooter({
               <Label cursor="help">Path</Label>
             </MouseoverTooltip>
           </RowFixed>
-          <TextWithLoadingPlaceholder syncing={isLoading} width={150}>
+          <TextWithLoadingPlaceholder syncing={pathTokensIsLoading} width={100}>
             <PathBox>
               {pathArray?.map((contract, index) => (
                 <>
