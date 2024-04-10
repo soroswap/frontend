@@ -58,10 +58,8 @@ export default function CurrencyBalance({
 
   let availableBalance: number;
   const xlmTokenContract = useMemo(() => {
-    console.log('🚀 ~ xlmTokenContract ~ xlmTokenList:', xlmTokenList);
     return xlmTokenList.find((tList) => tList.network === activeChain?.id)?.assets[0].contract;
   },[activeChain]);
-  console.log('🚀 ~ xlmTokenContract ~ xlmTokenContract:', xlmTokenContract);
   
   if (currency.contract === xlmTokenContract) {
     availableBalance =

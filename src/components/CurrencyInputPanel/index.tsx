@@ -222,18 +222,6 @@ export default function CurrencyInputPanel({
   const selectedCurrencyBalance = 0; //useCurrencyBalance(address ?? undefined, currency ?? undefined)
   const theme = useTheme();
 
-  // const [fee, setFee] = useState<number>(0);
-
-  // useEffect(() => {
-  //   const setNetworkFeeVar = async () => {
-  //     if (networkFees) {
-  //       setFee(networkFees);
-  //     }
-  //   };
-
-  //   setNetworkFeeVar();
-  // }, [networkFees, fee, setFee]);
-
   const handleDismissSearch = useCallback(() => {
     setModalOpen(false);
   }, [setModalOpen]);
