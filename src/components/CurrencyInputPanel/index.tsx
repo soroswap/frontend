@@ -22,7 +22,7 @@ import { RowBetween, RowFixed } from 'components/Row';
 import CurrencySearchModal from 'components/SearchModal/CurrencySearchModal';
 import { TokenType } from 'interfaces';
 import { darken } from 'polished';
-import { ReactNode, useCallback, useState } from 'react';
+import { ReactNode, useCallback, useState, useEffect } from 'react';
 import { ChevronDown } from 'react-feather';
 import { flexColumnNoWrap, flexRowNoWrap } from 'themes/styles';
 import CurrencyBalance from './CurrencyBalance';
@@ -191,6 +191,8 @@ interface CurrencyInputPanelProps {
   renderBalance?: (amount: any) => ReactNode;
   loading?: boolean;
   transparent?: boolean;
+  networkFees?: number | undefined | null;
+  subentryCount?: number | undefined | null;
 }
 
 export default function CurrencyInputPanel({
@@ -211,12 +213,26 @@ export default function CurrencyInputPanel({
   hideBalance = false,
   hideInput = false,
   loading = false,
+  networkFees,
+  subentryCount,
   ...rest
 }: CurrencyInputPanelProps) {
   const [modalOpen, setModalOpen] = useState(false);
   const { address, activeChain } = useSorobanReact();
   const selectedCurrencyBalance = 0; //useCurrencyBalance(address ?? undefined, currency ?? undefined)
   const theme = useTheme();
+
+  // const [fee, setFee] = useState<number>(0);
+
+  // useEffect(() => {
+  //   const setNetworkFeeVar = async () => {
+  //     if (networkFees) {
+  //       setFee(networkFees);
+  //     }
+  //   };
+
+  //   setNetworkFeeVar();
+  // }, [networkFees, fee, setFee]);
 
   const handleDismissSearch = useCallback(() => {
     setModalOpen(false);
@@ -278,6 +294,8 @@ export default function CurrencyInputPanel({
                   onMax={onMax}
                   hideBalance={hideBalance}
                   showMaxButton={showMaxButton}
+                  networkFees={networkFees}
+                  subentryCount={subentryCount}
                 />
               ) : (
                 <span />

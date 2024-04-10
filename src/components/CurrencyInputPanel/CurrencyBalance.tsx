@@ -2,8 +2,12 @@ import { styled, useTheme } from '@mui/material';
 import { RowFixed } from 'components/Row';
 import { BodySmall } from 'components/Text';
 import useGetMyBalances from 'hooks/useGetMyBalances';
+import { MouseoverTooltip } from 'components/Tooltip';
 
 import { TokenType } from 'interfaces/tokens';
+import { xlmTokenList } from 'constants/xlmToken';
+import { useMemo } from 'react';
+import { useSorobanReact } from '@soroban-react/core';
 
 const StyledBalanceMax = styled('button')<{ disabled?: boolean }>`
   background-color: transparent;
@@ -31,6 +35,8 @@ interface CurrencyBalanceProps {
   onMax: (maxValue: string) => void;
   hideBalance: any;
   showMaxButton: any;
+  networkFees?: number | undefined | null;
+  subentryCount?: number | undefined | null;
 }
 
 export default function CurrencyBalance({
@@ -39,20 +45,65 @@ export default function CurrencyBalance({
   onMax,
   hideBalance,
   showMaxButton,
+  networkFees,
+  subentryCount,
 }: CurrencyBalanceProps) {
+  // const [fee, setFee] = useState<number>(0);
+  // const [adjustedBalance, setAdjustedBalance] = useState<number>(0);
   const { tokenBalancesResponse } = useGetMyBalances();
   const balance =
     tokenBalancesResponse?.balances?.find((b) => b?.contract === currency?.contract)?.balance ||
     '0';
+  const {activeChain} = useSorobanReact();
+
+  let availableBalance: number;
+  const xlmTokenContract = useMemo(() => {
+    console.log('🚀 ~ xlmTokenContract ~ xlmTokenList:', xlmTokenList);
+    return xlmTokenList.find((tList) => tList.network === activeChain?.id)?.assets[0].contract;
+  },[activeChain]);
+  console.log('🚀 ~ xlmTokenContract ~ xlmTokenContract:', xlmTokenContract);
+  
+  if (currency.contract === xlmTokenContract) {
+    availableBalance =
+      Number(balance) - Number(networkFees) - 1 - 0.5 * Number(subentryCount) > 0
+        ? Number(balance) - Number(networkFees) - 1 - 0.5 * Number(subentryCount)
+        : 0;
+  } else {
+    availableBalance = Number(balance);
+  }
 
   const theme = useTheme();
+
   return (
     <RowFixed style={{ height: '17px' }}>
-      <BodySmall color={theme.palette.secondary.main}>
-        {!hideBalance && currency ? `Balance: ${balance}` : null}
-      </BodySmall>
-      {showMaxButton ? (
-        <StyledBalanceMax onClick={() => onMax(balance as string)}>Max</StyledBalanceMax>
+      {currency.contract === xlmTokenContract ? (
+        <MouseoverTooltip
+          title={
+            <span>
+              All Stellar accounts must maintain a minimum balance of lumens.{' '}
+              <a
+                href="https://developers.stellar.org/docs/learn/fundamentals/lumens#minimum-balance"
+                style={{ textDecoration: 'underline' }}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Learn More
+              </a>
+            </span>
+          }
+        >
+          <BodySmall color={theme.palette.secondary.main}>
+            {!hideBalance && currency ? `Available balance: ${availableBalance}` : null}
+          </BodySmall>
+        </MouseoverTooltip>
+      ) : (
+        <BodySmall color={theme.palette.secondary.main}>
+          {!hideBalance && currency ? `Balance: ${availableBalance}` : null}
+        </BodySmall>
+      )}
+
+      {showMaxButton && availableBalance > 0 && networkFees && networkFees > 0 ? (
+        <StyledBalanceMax onClick={() => onMax(availableBalance.toString())}>Max</StyledBalanceMax>
       ) : null}
     </RowFixed>
   );
