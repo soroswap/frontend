@@ -41,8 +41,6 @@ export default function BalancesPage() {
     activeSigner,
     api
   } = useInkathon();
-  console.log('🚀 « activeSigner:', activeSigner);
-  
 
   const { balanceFormatted } = useBalance(activeAccount?.address, true);
 
@@ -79,12 +77,6 @@ export default function BalancesPage() {
       }
     }
   };
-
-  const handleTest = () => {
-    console.log("api", api?.tx)
-  }
-
-  handleTest()
 
   return (
     <>

@@ -15,34 +15,34 @@ export function useIssuePallet() {
 
   const memo = useMemo(() => {
     return {
-      // async getIssueRequests() {
-      //   const entries = await api?.query.issue.issueRequests.entries();
-      //   if (!entries) {
-      //     return [];
-      //   }
+      async getIssueRequests() {
+        const entries = await api?.query.issue.issueRequests.entries();
+        if (!entries) {
+          return [];
+        }
 
-      //   return entries.map(([key, value]) => {
-      //     const request = value.unwrap();
+        return entries.map(([key, value]) => {
+          const request = value.toHuman();
 
-      //     const issueRequest: RichIssueRequest = {
-      //       id: key.args[0] as H256,
-      //       request,
-      //     };
+          const issueRequest: RichIssueRequest = {
+            id: key.args[0] as H256,
+            request,
+          };
 
-      //     return issueRequest;
-      //   });
-      // },
-      // async getIssueRequest(issueId: H256) {
-      //   const request = await api?.query.issue.issueRequests(issueId);
-      //   if (request && request.isSome) {
-      //     return {
-      //       id: issueId,
-      //       request: request.unwrap(),
-      //     };
-      //   } else {
-      //     return undefined;
-      //   }
-      // },
+          return issueRequest;
+        });
+      },
+      async getIssueRequest(issueId: H256) {
+        const request = await api?.query.issue.issueRequests(issueId);
+        if (request && !request.isEmpty) {
+          return {
+            id: issueId,
+            request: request.toHuman(),
+          };
+        } else {
+          return undefined;
+        }
+      },
       createIssueRequestExtrinsic(amount: string, vaultId: any) {
         if (!api) {
           return undefined;
