@@ -200,6 +200,13 @@ export default function Header({ isDrawerOpen, setDrawerOpen }: HeaderProps) {
               >
                 Liquidity
               </NavItem>
+              <NavItem
+                href={'/bridge'}
+                active={pathname.includes('/bridge')}
+                data-testid="nav-link"
+              >
+                Bridge
+              </NavItem>
               {/* <NavItem href={'/mint'} active={pathname.includes('/mint')}>
                 Mint
               </NavItem> */}
@@ -237,6 +244,9 @@ export default function Header({ isDrawerOpen, setDrawerOpen }: HeaderProps) {
                 </NavItemMobile>
                 <NavItemMobile href={'/liquidity'} active={pathname.includes('/liquidity')}>
                   Liquidity
+                </NavItemMobile>
+                <NavItemMobile href={'/bridge'} active={pathname.includes('/bridge')}>
+                  Bridge
                 </NavItemMobile>
                 {/* <NavItemMobile href={'/mint'} active={pathname.includes('/mint')}>
                   Mint
