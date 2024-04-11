@@ -7,6 +7,8 @@ import {
   useBalance,
   useInkathon,
 } from '@scio-labs/use-inkathon';
+import { IssueComponent } from 'components/Bridge/Pendulum/Issue';
+import { RedeemComponent } from 'components/Bridge/Pendulum/Redeem';
 import { ButtonPrimary } from 'components/Buttons/Button';
 import { useState } from 'react';
 
@@ -36,7 +38,11 @@ export default function BalancesPage() {
     disconnect,
     switchActiveChain,
     isConnecting,
+    activeSigner,
+    api
   } = useInkathon();
+  console.log('🚀 « activeSigner:', activeSigner);
+  
 
   const { balanceFormatted } = useBalance(activeAccount?.address, true);
 
@@ -44,7 +50,7 @@ export default function BalancesPage() {
 
   const handleConnect = async () => {
     const substrateChain = getSubstrateChain(selectedNetwork);
-
+    
     await connect?.(substrateChain);
   };
 
@@ -73,6 +79,12 @@ export default function BalancesPage() {
       }
     }
   };
+
+  const handleTest = () => {
+    console.log("api", api?.tx)
+  }
+
+  handleTest()
 
   return (
     <>
@@ -124,6 +136,8 @@ export default function BalancesPage() {
             </ButtonPrimary>
           </>
         )}
+        <IssueComponent />
+        <RedeemComponent />
       </PageWrapper>
     </>
   );
