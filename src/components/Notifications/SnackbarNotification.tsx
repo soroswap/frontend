@@ -9,7 +9,9 @@ import React, { useContext } from 'react';
 import { AppContext, SnackbarIconType } from 'contexts';
 import { AlertTriangle, MinusCircle, Plus, PlusCircle, Triangle } from 'react-feather';
 
-const CustomSnackbarContent = styled(SnackbarContent)<{ error?: boolean }>`
+const CustomSnackbarContent = styled(SnackbarContent, {
+  shouldForwardProp: (prop) => prop !== 'error',
+})<{ error?: boolean }>`
   border-radius: 16px;
   background: ${({ error, theme }) =>
     error

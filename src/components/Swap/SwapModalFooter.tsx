@@ -13,7 +13,7 @@ import { useAllTokens } from 'hooks/tokens/useAllTokens';
 import { findToken } from 'hooks/tokens/useToken';
 import useGetReservesByPair from 'hooks/useGetReservesByPair';
 import { getSwapAmounts } from 'hooks/useSwapCallback';
-import { ReactNode, useEffect, useState } from 'react';
+import React, { ReactNode, useEffect, useState } from 'react';
 import { AlertTriangle, ChevronRight } from 'react-feather';
 import { InterfaceTrade, TradeType } from 'state/routing/types';
 import { PathBox, TextWithLoadingPlaceholder } from './AdvancedSwapDetails';
@@ -211,10 +211,10 @@ export default function SwapModalFooter({
           <TextWithLoadingPlaceholder syncing={isLoading} width={150}>
             <PathBox>
               {pathArray?.map((contract, index) => (
-                <>
+                <React.Fragment key={index}>
                   {contract}
                   {index !== pathArray.length - 1 && <ChevronRight style={{ opacity: '50%' }} />}
-                </>
+                </React.Fragment>
               ))}
             </PathBox>
           </TextWithLoadingPlaceholder>
