@@ -69,11 +69,12 @@ export function IssueComponent() {
   }, [amountRaw, createIssueRequestExtrinsic, xlmVaultId]);
 
   // console.log('🚀 « requestIssueExtrinsic:', requestIssueExtrinsic);
-  const createStellarPayment = async (recipient: string, memo: string) => {
+  const createStellarPayment = async (recipient: string, memo: Memo) => {
     console.log("address", address)
     if(!address) console.log("Stellar Wallet not connected")
     const sourceAccount = await serverHorizon?.loadAccount(address!)
     if(!sourceAccount) throw new Error("Couldnt load stellar account")
+    console.log('Chain pass', activeChain?.networkPassphrase);
     const transaction = new TransactionBuilder(sourceAccount, {
       fee: BASE_FEE,
       networkPassphrase: activeChain?.networkPassphrase,
@@ -85,14 +86,14 @@ export function IssueComponent() {
           amount: "1",
         }),
       )
-      .addMemo(Memo.text(memo))
+      .addMemo(memo)
       // Wait a maximum of three minutes for the transaction
       .setTimeout(180)
       .build();
     // Sign the transaction to prove you are actually the person sending it.
     const signed = await activeConnector?.signTransaction(
       transaction.toXDR(),
-      {
+      {        
         networkPassphrase: activeChain?.networkPassphrase,
       }
     );
@@ -159,7 +160,9 @@ export function IssueComponent() {
 
             getIssueRequest(issueId).then((issueRequest) => {
               console.log('🚀 « issueRequest:', issueRequest);
-              createStellarPayment(stellarVaultAddress, memo)
+              const textMemo = Memo.text(memo);
+              console.log('🚀 « stellarVaultAddress:', stellarVaultAddress);
+              createStellarPayment(stellarVaultAddress, textMemo)
               // setSubmittedIssueRequest(issueRequest);
             });
           }
@@ -183,11 +186,17 @@ export function IssueComponent() {
     },
     [activeAccount, activeSigner, api, getIssueRequest, requestIssueExtrinsic],
   );
+  const testStellarPayment = async () => {
+    const recipient = "GA3V3GL3MCIVCQCEC5CFRC7VPROQVU3QQ4ELELR4HIZVO2XAHPIU3KSW"
+    const memo = Memo.text("1234567890")
+    createStellarPayment(recipient, memo)
+  }
     
   return (
     <Box>  
       Issuer, testing sending 1 XLM
       <ButtonPrimary width="40%" onClick={() => submitRequestIssueExtrinsic()} disabled={isBridging || !address}>{isBridging ? <ButtonLoadingSpinner /> : "TEST ISSUANCE"}</ButtonPrimary>
+      <ButtonPrimary width="40%" onClick={() => testStellarPayment()} disabled={isBridging || !address}>{isBridging ? <ButtonLoadingSpinner /> : "TEST Stellar"}</ButtonPrimary>
     </Box>
   );
 }
