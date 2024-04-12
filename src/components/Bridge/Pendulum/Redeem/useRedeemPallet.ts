@@ -1,21 +1,22 @@
-/* import type { SpacewalkPrimitivesRedeemRedeemRequest, SpacewalkPrimitivesVaultId } from '@polkadot/types/lookup'; */
-import {
-  useInkathon,
-} from '@scio-labs/use-inkathon';
+import { useInkathon } from '@scio-labs/use-inkathon';
+import { H256 } from '@polkadot/types/interfaces';
 import { useMemo } from 'react';
 import { convertPublicKeyToRaw } from '../helpers/stellar';
+import { SpacewalkPrimitivesVaultId } from '../types/index';
 
-/* export interface RichRedeemRequest {
+
+
+export interface RichRedeemRequest {
   id: H256;
-  request: SpacewalkPrimitivesRedeemRedeemRequest;
-} */
+  request: any;
+}
 
 export function useRedeemPallet() {
   const { api } = useInkathon();
 
   const memo = useMemo(() => {
     return {
-          /*async getRedeemRequests() {
+        async getRedeemRequests() {
         const entries = await api?.query.redeem.redeemRequests.entries();
         if (!entries) {
           return [];
@@ -34,7 +35,7 @@ export function useRedeemPallet() {
       },
       async getRedeemRequest(redeemId: H256) {
         const request = await api?.query.redeem.redeemRequests(redeemId);
-        if (request && request.isSome) {
+        if (request && !request.isEmpty) {
           return {
             id: redeemId,
             request: request.toHuman(),
@@ -42,7 +43,7 @@ export function useRedeemPallet() {
         } else {
           return undefined;
         }
-      }, */
+      },
       createRedeemRequestExtrinsic(amount: string, stellarAddress: string, vaultId: any) {
         if (!api) {
           return undefined;

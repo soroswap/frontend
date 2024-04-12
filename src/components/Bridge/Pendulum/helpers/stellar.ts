@@ -3,7 +3,9 @@ import { Asset, Keypair, StrKey } from 'stellar-sdk';
 
 // Applying this assignment to the global object here - because Buffer is used only in this file. If Buffer is to be used in several places - it should be added to the global object in the entry file of the application.
 // Ref: https://github.com/pendulum-chain/portal/issues/344
-window.Buffer = Buffer;
+if (typeof window !== 'undefined') {
+  window.Buffer = Buffer;
+}
 
 export const StellarPublicKeyPattern = /^G[A-Z0-9]{55}$/;
 
