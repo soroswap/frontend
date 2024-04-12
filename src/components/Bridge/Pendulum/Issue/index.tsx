@@ -70,44 +70,50 @@ export function IssueComponent() {
 
   // console.log('🚀 « requestIssueExtrinsic:', requestIssueExtrinsic);
   const createStellarPayment = async (recipient: string, memo: string) => {
-    console.log("address", address)
-    if(!address) console.log("Stellar Wallet not connected")
-    const sourceAccount = await serverHorizon?.loadAccount(address!)
-    if(!sourceAccount) throw new Error("Couldnt load stellar account")
+    console.log("netowrk url", activeChain?.networkUrl)
+    console.log("address", address);
+    if (!address) {
+      console.log("Stellar Wallet not connected");
+      return;
+    }
+    
+    const sourceAccount = await serverHorizon?.loadAccount(address);
+    console.log('🚀 « sourceAccount:', sourceAccount);
+    if (!sourceAccount) throw new Error("Couldn't load stellar account");
+    
+    const fee = await serverHorizon?.fetchBaseFee();
+    console.log('🚀 « fee:', fee);
     const transaction = new TransactionBuilder(sourceAccount, {
-      fee: BASE_FEE,
+      fee: fee ? String(fee) : BASE_FEE,
       networkPassphrase: activeChain?.networkPassphrase,
     })
-      .addOperation(
-        Operation.payment({
-          destination: recipient,
-          asset: Asset.native(),
-          amount: "1",
-        }),
-      )
+      .addOperation(Operation.payment({
+        destination: recipient,
+        asset: Asset.native(),
+        amount: "1",
+      }))
       .addMemo(Memo.text(memo))
-      // Wait a maximum of three minutes for the transaction
       .setTimeout(180)
       .build();
-    // Sign the transaction to prove you are actually the person sending it.
-    const signed = await activeConnector?.signTransaction(
-      transaction.toXDR(),
-      {
-        networkPassphrase: activeChain?.networkPassphrase,
-      }
-    );
-    console.log("🚀 « signed:", signed);
+      
+    const signedXDR = await activeConnector?.signTransaction(transaction.toXDR(), {
+      networkPassphrase: activeChain?.networkPassphrase,
+    });
 
-    const transactionToSubmit = TransactionBuilder.fromXDR(
-      signed!,
-      activeChain?.networkPassphrase!
-    );
-    console.log("🚀 « transactionToSubmit:", transactionToSubmit);
-
-    let response = await serverHorizon?.submitTransaction(transaction);
-    console.log('🚀 « response:', response);
+    if (!signedXDR) throw new Error("Couldn't sign transaction");
+    console.log("🚀 « signedXDR:", signedXDR);
     
-  }
+    const transactionToSubmit = TransactionBuilder.fromXDR(signedXDR, activeChain?.networkPassphrase ?? "");
+    console.log("🚀 « transactionToSubmit:", transactionToSubmit);
+  
+    try {
+      let response = await serverHorizon?.submitTransaction(transactionToSubmit);
+      console.log('🚀 « response:', response);
+    } catch (error) {
+      console.error('Error submitting transaction:', error);
+    }
+  };
+  
 
   const submitRequestIssueExtrinsic = useCallback(() => {
     if (!requestIssueExtrinsic) {
@@ -143,7 +149,7 @@ export function IssueComponent() {
             console.log('🚀 « requestIssueEvent:', requestIssueEvent);
             // We do not have a proper type for this event, so we have to cast it to any
             const issueId = (requestIssueEvent.data as any).issueId;
-            const memo = deriveShortenedRequestId(issueId);
+            const memo = deriveShortenedRequestId(issueId.toString());
             console.log("🚀 « memo:", memo);
           
             let stellarVaultAccountFromEventHex = (requestIssueEvent.data as any)?.vaultStellarPublicKey;

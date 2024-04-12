@@ -1,12 +1,12 @@
-import { useMemo, useCallback, useState } from "react";
-import { useSorobanReact } from "@soroban-react/core";
 import { EventRecord } from "@polkadot/types/interfaces";
 import { useInkathon } from "@scio-labs/use-inkathon";
+import { useSorobanReact } from "@soroban-react/core";
 import BigNumber from "bignumber.js";
+import { useCallback, useMemo, useState } from "react";
 
-import { useRedeemPallet, RichRedeemRequest } from "./useRedeemPallet";
-import { getEventBySectionAndMethod } from '../helpers/substrate';
 import { isPublicKey } from '../helpers/stellar';
+import { getEventBySectionAndMethod } from '../helpers/substrate';
+import { useRedeemPallet } from "./useRedeemPallet";
 
 import { Box } from "@mui/material";
 import { ButtonPrimary } from "components/Buttons/Button";
@@ -57,7 +57,7 @@ export function RedeemComponent() {
     }
 
     return createRedeemRequestExtrinsic(amountRaw, stellarAddress, xlmVaultId);
-  }, [amountRaw, createRedeemRequestExtrinsic, xlmVaultId]);
+  }, [amountRaw, api, createRedeemRequestExtrinsic, stellarAddress, xlmVaultId]);
   
   const submitRequestRedeemExtrinsic = useCallback(() => {
     if (!requestRedeemExtrinsic || !api || !xlmVaultId) {
@@ -72,7 +72,6 @@ export function RedeemComponent() {
     setSubmissionPending(true);
 
     requestRedeemExtrinsic
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .signAndSend(activeAccount.address, { signer: activeSigner as any }, (result: any) => {
         const { status, events } = result;
 
@@ -89,10 +88,8 @@ export function RedeemComponent() {
           // We only expect one event but loop over all of them just in case
           for (const requestRedeemEvent of requestRedeemEvents) {
             // We do not have a proper type for this event, so we have to cast it to any
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const redeemId = (requestRedeemEvent.data as any).redeemId;
 
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             getRedeemRequest(redeemId).then((redeemRequest) => {
               console.log("request", redeemRequest);
             });
@@ -109,7 +106,7 @@ export function RedeemComponent() {
         console.error("Transaction submission failed", error);
         setSubmissionPending(false);
       });
-  }, [api, getRedeemRequest, requestRedeemExtrinsic, xlmVaultId, address]);
+  }, [requestRedeemExtrinsic, api, xlmVaultId, activeAccount?.address, activeSigner, getRedeemRequest]);
 
   
   async function handleRedeem() {
