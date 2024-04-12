@@ -35,6 +35,7 @@ import { opacify } from 'themes/utils';
 import SwapCurrencyInputPanel from '../CurrencyInputPanel/SwapCurrencyInputPanel';
 import SwapHeader from './SwapHeader';
 import { ArrowWrapper, SwapWrapper } from './styleds';
+import useSwapNetworkFees from 'hooks/useSwapNetworkFees';
 
 const SwapSection = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -126,7 +127,6 @@ export function SwapComponent({
   const [state, dispatch] = useReducer(swapReducer, { ...initialSwapState, ...prefilledState });
   const { typedValue, recipient, independentField } = state;
 
-  const [networkFees, setNetworkFees] = useState<number>(0);
   const [subentryCount, setSubentryCount] = useState<number>(0);
 
   const { onSwitchTokens, onCurrencySelection, onUserInput, onChangeRecipient } =
@@ -357,20 +357,6 @@ export function SwapComponent({
       }
     };
 
-    const fetchNetworkFees = async () => {
-      if (trade) {
-        try {
-          const fees = await calculateSwapFees(sorobanContext, trade);
-          if (fees) {
-            setNetworkFees(Number(fees) / 10 ** 7);
-          }
-        } catch (error) {
-          console.error('Error fetching network fees:', error);
-          setNetworkFees(0);
-        }
-      }
-    };
-
     const getSubentryCount = async () => {
       if (sorobanContext.address) {
         const account = await sorobanContext.serverHorizon?.loadAccount(sorobanContext.address);
@@ -380,9 +366,10 @@ export function SwapComponent({
     };
 
     getSubentryCount();
-    fetchNetworkFees();
     checkTrustline();
   }, [sorobanContext, swapCallback, trade]);
+
+  const { networkFees } = useSwapNetworkFees(trade);
 
   const useConfirmModal = useConfirmModalState({
     trade: trade!,

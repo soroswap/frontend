@@ -33,6 +33,7 @@ export const revalidateKeysCondition = (key: any) => {
     'subscribed-pairs',
     'currencyBalance',
     'horizon-account',
+    'swap-network-fees',
   ]);
 
   return Array.isArray(key) && key.some((k) => revalidateKeys.has(k));
