@@ -8,7 +8,6 @@ import SwapDetailsDropdown from 'components/Swap/SwapDetailsDropdown';
 import { ButtonText } from 'components/Text';
 import { TransactionFailedContent } from 'components/TransactionConfirmationModal';
 import { AppContext, SnackbarIconType } from 'contexts';
-import { calculateSwapFees } from 'functions/getNetworkFees';
 import { sendNotification } from 'functions/sendNotification';
 import { formatTokenAmount } from 'helpers/format';
 import { requiresTrustline } from 'helpers/stellar';
@@ -36,6 +35,7 @@ import SwapCurrencyInputPanel from '../CurrencyInputPanel/SwapCurrencyInputPanel
 import SwapHeader from './SwapHeader';
 import { ArrowWrapper, SwapWrapper } from './styleds';
 import useSwapNetworkFees from 'hooks/useSwapNetworkFees';
+import useGetNativeTokenBalance from 'hooks/useGetNativeTokenBalance';
 
 const SwapSection = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -320,6 +320,8 @@ export function SwapComponent({
       trade,
     });
 
+  const nativeBalance = useGetNativeTokenBalance();
+
   useEffect(() => {
     const checkRequiresTrustlineAdjust = async () => {
       if (!swapCallback) {
@@ -358,7 +360,7 @@ export function SwapComponent({
     };
 
     const getSubentryCount = async () => {
-      if (sorobanContext.address) {
+      if (sorobanContext.address && nativeBalance.data?.validAccount) {
         const account = await sorobanContext.serverHorizon?.loadAccount(sorobanContext.address);
         const count = account?.subentry_count ?? 0;
         setSubentryCount(count);
@@ -367,7 +369,7 @@ export function SwapComponent({
 
     getSubentryCount();
     checkTrustline();
-  }, [sorobanContext, swapCallback, trade]);
+  }, [sorobanContext, swapCallback, trade, nativeBalance.data?.validAccount]);
 
   const { networkFees } = useSwapNetworkFees(trade);
 

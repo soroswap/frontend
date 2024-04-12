@@ -16,8 +16,8 @@ const fetchNetworkFees = async (
 const useSwapNetworkFees = (trade: InterfaceTrade | undefined) => {
   const sorobanContext = useSorobanReact();
   const { data, error, isLoading, mutate } = useSWRImmutable(
-    ['swap-network-fees', trade, sorobanContext],
-    ([key, trade, sorobanContext]) => fetchNetworkFees(trade, sorobanContext),
+    trade ? ['swap-network-fees', sorobanContext] : null,
+    ([key, sorobanContext]) => fetchNetworkFees(trade, sorobanContext),
   );
 
   return { networkFees: data || 0, isLoading, isError: error, mutate };
