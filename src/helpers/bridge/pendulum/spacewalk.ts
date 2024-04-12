@@ -5,13 +5,7 @@ import bs58 from 'bs58';
 import { DateTime } from 'luxon';
 import { Asset, Keypair } from 'stellar-sdk';
 import { convertRawHexKeyToPublicKey } from './stellar';
-
-export enum TenantName {
-  Amplitude = 'amplitude',
-  Pendulum = 'pendulum',
-  Foucoco = 'foucoco',
-  Local = 'local',
-}
+import { TenantName } from 'BridgeStateProvider/models';
 
 interface SpacewalkPrimitivesCurrencyId extends Enum {
   readonly isNative: boolean;
