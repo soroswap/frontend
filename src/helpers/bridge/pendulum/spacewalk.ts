@@ -1,7 +1,6 @@
 import { ApiPromise } from '@polkadot/api';
-import { U8aFixed } from '@polkadot/types-codec';
-import { H256 } from '@polkadot/types/interfaces';
 import type { Enum, Struct, u8 } from '@polkadot/types-codec';
+import { U8aFixed } from '@polkadot/types-codec';
 import bs58 from 'bs58';
 import { DateTime } from 'luxon';
 import { Asset, Keypair } from 'stellar-sdk';
@@ -48,13 +47,6 @@ function hex_to_ascii(hexString: string, leading0x = true) {
     str += String.fromCharCode(parseInt(hex.substr(n, 2), 16));
   }
   return str;
-}
-
-// This function is used to derive a shorter identifier that can be used as a TEXT MEMO by a user when creating a Stellar transaction
-// to fulfill an issue request. This is only used for _issue_ requests, not for redeem or replace requests.
-export function deriveShortenedRequestId(requestId: H256 | Uint8Array) {
-  // This derivation matches the one used in the Spacewalk pallets
-  return bs58.encode(requestId).slice(0, 28);
 }
 
 export function convertCurrencyToStellarAsset(currency: SpacewalkPrimitivesCurrencyId): Asset | null {
@@ -235,4 +227,16 @@ export function shouldFilterOut(tenantName: TenantName, asset: Asset) {
   return assetsToFilterByTenant[tenantName]?.find(({ code, issuer }) => {
     return asset.code === code && asset.issuer == issuer;
   });
+}
+
+// This function is used to derive a shorter identifier that can be used as a TEXT MEMO by a user when creating a Stellar transaction
+// to fulfill an issue request. This is only used for _issue_ requests, not for redeem or replace requests.
+export const deriveShortenedRequestId = (requestIdHex: string) => {
+  // Remove the 0x prefix
+  requestIdHex = requestIdHex.slice(2);
+  // Convert the hex string to a buffer
+  const requestId = Uint8Array.from(Buffer.from(requestIdHex, "hex"));
+
+  // This derivation matches the one used in the Spacewalk pallets
+  return bs58.encode(requestId).slice(0, 28);
 }

@@ -1,16 +1,13 @@
-import { useMemo, useCallback, useState } from "react";
-import { useSorobanReact } from "@soroban-react/core";
-import { EventRecord } from "@polkadot/types/interfaces";
+import { Box, TextField } from "@mui/material";
 import { useInkathon } from "@scio-labs/use-inkathon";
+import { useSorobanReact } from "@soroban-react/core";
 import BigNumber from "bignumber.js";
-
-import { useRedeemPallet, RichRedeemRequest } from "./useRedeemPallet";
-import { getEventBySectionAndMethod } from '../helpers/substrate';
-import { isPublicKey } from '../helpers/stellar';
-
-import { Box } from "@mui/material";
-import { ButtonPrimary } from "components/Buttons/Button";
-import ButtonLoadingSpinner from "components/Buttons/LoadingButtonSpinner";
+import { xlmVaultId } from "helpers/bridge/configs";
+import { decimalToStellarNative, isPublicKey } from "helpers/bridge/pendulum/stellar";
+import { getEventBySectionAndMethod, getSubstrateErrors } from "helpers/bridge/pendulum/substrate";
+import { useRedeemPallet } from "hooks/bridge/pendulum/useRedeemPallet";
+import { useCallback, useMemo, useState } from "react";
+import { BridgeButton } from "../BridgeButton";
 
 export type RedeemFormValues = {
   amount: number;
@@ -21,32 +18,10 @@ export function RedeemComponent() {
   const { activeAccount, activeSigner, api } = useInkathon();
   const { createRedeemRequestExtrinsic, getRedeemRequest } = useRedeemPallet();
   const { address } = useSorobanReact();
-  const [ submissionPending, setSubmissionPending ] = useState(false);
-  
-  const XLM_VAULT_ACCOUNT_ID =
-  "6cKoXRGxqpXQZavYAXPuXYFKNAev8QuHJ2zhh9rnWc3XMmTr";
+  const [submissionPending, setSubmissionPending] = useState(false);
+  const [amount, setAmount] = useState<string>('');
+  // const [selectedNetwork, setSelectedNetwork] = useState<string>('pendulum');
 
-  let xlmVaultId = useMemo(() => {
-    return {
-      accountId: XLM_VAULT_ACCOUNT_ID,
-      currencies: {
-        collateral: { XCM: 0 },
-        wrapped: { Stellar: "StellarNative" },
-      },
-    };
-  }, [])
-
-  const decimalToStellarNative = (value: string) => {
-    let bigIntValue;
-    try {
-      bigIntValue = new BigNumber(value);
-    } catch (error) {
-      bigIntValue = new BigNumber(0);
-    }
-    const multiplier = new BigNumber(10).pow(12);
-    return bigIntValue.times(multiplier);
-  };
-  const amount = '1';
   const amountRaw = useMemo(() => {
     return amount ? decimalToStellarNative(amount).toString() : new BigNumber(0).toString();
   }, [amount]);
@@ -57,7 +32,7 @@ export function RedeemComponent() {
     }
 
     return createRedeemRequestExtrinsic(amountRaw, stellarAddress, xlmVaultId);
-  }, [amountRaw, createRedeemRequestExtrinsic, xlmVaultId]);
+  }, [amountRaw, api, createRedeemRequestExtrinsic, stellarAddress]);
   
   const submitRequestRedeemExtrinsic = useCallback(() => {
     if (!requestRedeemExtrinsic || !api || !xlmVaultId) {
@@ -72,11 +47,10 @@ export function RedeemComponent() {
     setSubmissionPending(true);
 
     requestRedeemExtrinsic
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .signAndSend(activeAccount.address, { signer: activeSigner as any }, (result: any) => {
         const { status, events } = result;
 
-        const errors = getErrors(events, api);
+        const errors = getSubstrateErrors(events, api);
         if (status.isInBlock) {
           if (errors.length > 0) {
             const errorMessage = `Transaction failed with errors: ${errors.join('\n')}`;
@@ -89,10 +63,8 @@ export function RedeemComponent() {
           // We only expect one event but loop over all of them just in case
           for (const requestRedeemEvent of requestRedeemEvents) {
             // We do not have a proper type for this event, so we have to cast it to any
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const redeemId = (requestRedeemEvent.data as any).redeemId;
 
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             getRedeemRequest(redeemId).then((redeemRequest) => {
               console.log("request", redeemRequest);
             });
@@ -109,7 +81,7 @@ export function RedeemComponent() {
         console.error("Transaction submission failed", error);
         setSubmissionPending(false);
       });
-  }, [api, getRedeemRequest, requestRedeemExtrinsic, xlmVaultId, address]);
+  }, [requestRedeemExtrinsic, api, activeAccount?.address, activeSigner, getRedeemRequest]);
 
   
   async function handleRedeem() {
@@ -118,32 +90,29 @@ export function RedeemComponent() {
   }
   
   return (
-    <Box>
-      Test Redeem
-      <ButtonPrimary width="40%" onClick={() => handleRedeem()} disabled={submissionPending || !address}>{submissionPending ? <ButtonLoadingSpinner /> : "REDEEM"}</ButtonPrimary>
+    <Box component="form" noValidate autoComplete="off" sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+      {/* <Box mb={2}>
+        <Select value={selectedNetwork} onChange={(e) => setSelectedNetwork(e.target.value)}>
+          {availableNetworks.map((chain) => (
+            <MenuItem key={chain} value={chain}>
+              {chain}
+            </MenuItem>
+          ))}
+        </Select>
+      </Box> */}
+      <TextField
+        label="Amount to Bridge back to Stellar"
+        variant="outlined"
+        value={amount}
+        onChange={(e) => setAmount(e.target.value)}
+        placeholder="Enter amount"
+        fullWidth
+        type="number"
+      />
+      <Box>
+        You will receive: {amount} XLM
+      </Box>
+      <BridgeButton isLoading={submissionPending} callback={handleRedeem} />
     </Box>
-  );
-}
-
-export function getErrors(events: EventRecord[], api: any) {
-  return (
-    events
-      .filter(({ event }) => api.events.system.ExtrinsicFailed.is(event))
-      .map(
-        ({
-          event: {
-            data: [error],
-          },
-        }) => {
-          if ((error as any).isModule) {
-            const decoded = api.registry.findMetaError((error as any).asModule);
-            const { docs, method, section } = decoded;
-
-            return `${section}.${method}: ${docs.join(' ')}`;
-          } else {
-            return error.toString();
-          }
-        },
-      )
   );
 }

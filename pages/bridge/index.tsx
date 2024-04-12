@@ -1,15 +1,12 @@
-import SEO from 'components/SEO';
-
-import { Box, MenuItem, Paper, Select, SelectChangeEvent, Typography, styled } from '@mui/material';
+import { Box, Button, Paper, Tab, Tabs, Typography, styled } from '@mui/material';
 import {
-  allSubstrateChains,
-  getSubstrateChain,
   useBalance,
-  useInkathon,
+  useInkathon
 } from '@scio-labs/use-inkathon';
-import { IssueComponent } from 'components/Bridge/Pendulum/Issue';
-import { RedeemComponent } from 'components/Bridge/Pendulum/Redeem';
-import { ButtonPrimary } from 'components/Buttons/Button';
+import { useSorobanReact } from '@soroban-react/core';
+import { IssueComponent } from 'components/Bridge/Issue';
+import { RedeemComponent } from 'components/Bridge/Redeem';
+import SEO from 'components/SEO';
 import { useState } from 'react';
 
 const PageWrapper = styled(Paper)`
@@ -28,7 +25,34 @@ const PageWrapper = styled(Paper)`
   max-width: 860px;
 `;
 
+interface TabPanelProps {
+  children?: React.ReactNode;
+  index: number;
+  value: number;
+}
+
+function CustomTabPanel(props: TabPanelProps) {
+  const { children, value, index, ...other } = props;
+
+  return (
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`simple-tabpanel-${index}`}
+      aria-labelledby={`simple-tab-${index}`}
+      {...other}
+    >
+      {value === index && (
+        <Box sx={{ p: 3 }}>
+          <Typography>{children}</Typography>
+        </Box>
+      )}
+    </div>
+  );
+}
+
 export default function BalancesPage() {
+  const sorobanContext = useSorobanReact();
   const {
     connect,
     isConnected,
@@ -44,12 +68,10 @@ export default function BalancesPage() {
 
   const { balanceFormatted } = useBalance(activeAccount?.address, true);
 
-  const [selectedNetwork, setSelectedNetwork] = useState(allSubstrateChains[0].network);
+  const [value, setValue] = useState(0);
 
-  const handleConnect = async () => {
-    const substrateChain = getSubstrateChain(selectedNetwork);
-    
-    await connect?.(substrateChain);
+  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+    setValue(newValue);
   };
 
   const getStatusMessage = () => {
@@ -64,38 +86,24 @@ export default function BalancesPage() {
     }
   };
 
-  const handleNetworkChange = (event: SelectChangeEvent) => {
-    const value = event.target.value as string;
-
-    setSelectedNetwork(value);
-
-    if (isConnected) {
-      const chain = getSubstrateChain(value);
-
-      if (chain) {
-        switchActiveChain?.(chain);
-      }
-    }
-  };
-
   return (
     <>
       <SEO title="Bridge - Soroswap" description="Soroswap" />
       <PageWrapper>
-        <Box mb={2}>
-          <Typography variant="h6">Network</Typography>
-          <Select value={selectedNetwork} onChange={handleNetworkChange}>
-            {allSubstrateChains.map((chain) => (
-              <MenuItem key={chain.network} value={chain.network}>
-                {chain.name}
-              </MenuItem>
-            ))}
-          </Select>
+        <Box sx={{ width: '100%' }}>
+          <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+            <Tabs value={value} onChange={handleTabChange} aria-label="basic tabs example">
+              <Tab label="to Pendulum" />
+              <Tab label="back to stellar"/>
+            </Tabs>
+          </Box>
+          <CustomTabPanel value={value} index={0}>
+            <IssueComponent />
+          </CustomTabPanel>
+          <CustomTabPanel value={value} index={1}>
+            <RedeemComponent />
+          </CustomTabPanel>
         </Box>
-
-        <ButtonPrimary disabled={isConnected || isConnecting} onClick={handleConnect}>
-          Connect Polkadot Wallet
-        </ButtonPrimary>
 
         <Typography variant="h6" mt={2}>
           {getStatusMessage()}
@@ -122,14 +130,9 @@ export default function BalancesPage() {
               </Typography>
               <Typography variant="body1">{balanceFormatted}</Typography>
             </Box>
-
-            <ButtonPrimary sx={{ mt: 2 }} onClick={disconnect}>
-              Disconnect
-            </ButtonPrimary>
           </>
         )}
-        <IssueComponent />
-        <RedeemComponent />
+        <Button onClick={() => console.log(sorobanContext)}>TEST</Button>
       </PageWrapper>
     </>
   );
