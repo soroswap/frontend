@@ -1,10 +1,10 @@
-import { Analytics } from '@vercel/analytics/react'; 
+import { Analytics } from '@vercel/analytics/react';
 import { CssBaseline, ThemeProvider } from '@mui/material';
 import type { AppProps } from 'next/app';
 import { useMemo, useState } from 'react';
 import { Provider } from 'react-redux';
 import MainLayout from '../src/components/Layout/MainLayout';
-import { AppContext, ColorModeContext, SnackbarIconType } from '../src/contexts';
+import { AppContext, AppContextType, ColorModeContext, SnackbarIconType } from '../src/contexts';
 import MySorobanReactProvider from '../src/soroban/MySorobanReactProvider';
 import store from '../src/state';
 import { theme } from '../src/themes';
@@ -12,6 +12,8 @@ import '../styles/globals.css';
 
 export default function App({ Component, pageProps }: AppProps) {
   const [isConnectWalletModal, setConnectWalletModal] = useState<boolean>(false);
+
+  const [maxHops, setMaxHops] = useState<number>(2);
 
   const [openSnackbar, setOpenSnackbar] = useState<boolean>(false);
   const [snackbarMessage, setSnackbarMessage] = useState<string>('');
@@ -28,7 +30,7 @@ export default function App({ Component, pageProps }: AppProps) {
     [],
   );
 
-  const appContextValues = {
+  const appContextValues: AppContextType = {
     ConnectWalletModal: {
       isConnectWalletModalOpen: isConnectWalletModal,
       setConnectWalletModalOpen: setConnectWalletModal,
@@ -42,6 +44,10 @@ export default function App({ Component, pageProps }: AppProps) {
       setSnackbarMessage,
       setSnackbarTitle,
       setSnackbarType,
+    },
+    Settings: {
+      maxHops,
+      setMaxHops,
     },
   };
 

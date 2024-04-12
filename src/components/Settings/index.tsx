@@ -1,30 +1,33 @@
 // import { Percent } from '@uniswap/sdk-core'
-import { styled } from "@mui/material"
-import AnimatedDropdown from 'components/AnimatedDropdown'
-import { AutoColumn } from 'components/Column'
-import { useOnClickOutside } from 'hooks/useOnClickOutside'
-import { useRef, useState } from 'react'
+import { styled } from '@mui/material';
+import AnimatedDropdown from 'components/AnimatedDropdown';
+import { AutoColumn } from 'components/Column';
+import { useOnClickOutside } from 'hooks/useOnClickOutside';
+import { useRef, useState } from 'react';
 
-import MaxSlippageSettings from './MaxSlippageSettings'
-import MenuButton from './MenuButton'
+import MaxSlippageSettings from './MaxSlippageSettings';
+import MenuButton from './MenuButton';
+import MaxHopsSettings from './MaxHopsSettings';
 
-const Menu = styled("div")`
+const Menu = styled('div')`
   position: relative;
-`
-export const Divider = styled("div")(({ theme }) => ({
-  width: "100%",
-  height: "1px",
+`;
+export const Divider = styled('div')(({ theme }) => ({
+  width: '100%',
+  height: '1px',
   borderWidth: 0,
   margin: 0,
   backgroundColor: theme.palette.secondary.main,
-}))
-
+}));
 
 const MenuFlyout = styled(AutoColumn)`
   min-width: 20.125rem;
   background-color: ${({ theme }) => theme.palette.customBackground.surface};
   border: 1px solid ${({ theme }) => theme.palette.customBackground.outline};
-  box-shadow: 0px 0px 1px rgba(0, 0, 0, 0.01), 0px 4px 8px rgba(0, 0, 0, 0.04), 0px 16px 24px rgba(0, 0, 0, 0.04),
+  box-shadow:
+    0px 0px 1px rgba(0, 0, 0, 0.01),
+    0px 4px 8px rgba(0, 0, 0, 0.04),
+    0px 16px 24px rgba(0, 0, 0, 0.04),
     0px 24px 32px rgba(0, 0, 0, 0.01);
   border-radius: 12px;
   position: absolute;
@@ -35,7 +38,7 @@ const MenuFlyout = styled(AutoColumn)`
   color: ${({ theme }) => theme.palette.primary.main};
   user-select: none;
   padding: 16px;
-  `
+`;
 
 // TODO: Check if menu is showing for mobile
 // ${({ theme }) => theme.deprecated_mediaWidth.deprecated_upToMedium`
@@ -45,22 +48,22 @@ const MenuFlyout = styled(AutoColumn)`
 const ExpandColumn = styled(AutoColumn)`
   gap: 16px;
   padding-top: 16px;
-`
+`;
 
 export default function SettingsTab({
   autoSlippage,
   chainId,
 }: {
-  autoSlippage: number
-  chainId?: number
+  autoSlippage: number;
+  chainId?: number;
 }) {
-  const node = useRef<HTMLDivElement | null>(null)
-  const [isOpen, setIsOpen] = useState(false)
+  const node = useRef<HTMLDivElement | null>(null);
+  const [isOpen, setIsOpen] = useState(false);
   const toggleMenu = () => {
-    setIsOpen(!isOpen)
-  }
+    setIsOpen(!isOpen);
+  };
 
-  useOnClickOutside(node, isOpen ? toggleMenu : undefined)
+  useOnClickOutside(node, isOpen ? toggleMenu : undefined);
 
   return (
     <Menu ref={node}>
@@ -70,10 +73,11 @@ export default function SettingsTab({
           <AnimatedDropdown open={true}>
             <ExpandColumn>
               <MaxSlippageSettings autoSlippage={autoSlippage} />
+              <MaxHopsSettings />
             </ExpandColumn>
           </AnimatedDropdown>
         </MenuFlyout>
       )}
     </Menu>
-  )
+  );
 }

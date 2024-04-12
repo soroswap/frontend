@@ -13,7 +13,7 @@ import React, { useEffect, useState } from 'react';
 import { useSorobanReact } from '@soroban-react/core';
 import Column from 'components/Column';
 import CurrencyLogo from 'components/Logo/CurrencyLogo';
-import useGetPriceImpactFromTrade from 'hooks/useGetPriceImpactFromTrade';
+import { Percent } from 'soroswap-router-sdk';
 
 export const PathBox = styled(Box)`
   display: flex;
@@ -47,6 +47,22 @@ export function TextWithLoadingPlaceholder({
   );
 }
 
+export const formattedPriceImpact = (priceImpact: Percent | undefined) => {
+  if (!priceImpact) return 0;
+
+  const value = priceImpact?.toFixed(3);
+
+  if (!value) {
+    return 0;
+  }
+
+  if (Number(value) < 0.01) {
+    return '<0.01%';
+  }
+
+  return `~${priceImpact?.toFixed(2)}%`;
+};
+
 export function AdvancedSwapDetails({
   trade,
   allowedSlippage,
@@ -59,14 +75,15 @@ export function AdvancedSwapDetails({
   const sorobanContext = useSorobanReact();
   const { tokensAsMap, isLoading } = useAllTokens();
 
-  const { formatted: priceImpact, isLoading: isLoadingPriceImpact } =
-    useGetPriceImpactFromTrade(trade);
-
   const [pathArray, setPathArray] = useState<string[]>([]);
+
+  const [pathTokensIsLoading, setPathTokensIsLoading] = useState(false);
 
   useEffect(() => {
     (async () => {
       if (!trade?.path || isLoading) return;
+
+      setPathTokensIsLoading(true);
 
       const promises = trade.path.map(async (contract) => {
         const asset = await findToken(contract, tokensAsMap, sorobanContext);
@@ -81,6 +98,7 @@ export function AdvancedSwapDetails({
         .map((result) => (result.status === 'fulfilled' && result.value ? result.value : ''));
 
       setPathArray(fulfilledValues);
+      setPathTokensIsLoading(false);
     })();
   }, [trade?.path, isLoading, sorobanContext]);
 
@@ -104,9 +122,7 @@ export function AdvancedSwapDetails({
           <MouseoverTooltip title={'The impact your trade has on the market price of this pool.'}>
             <BodySmall color="textSecondary">Price Impact</BodySmall>
           </MouseoverTooltip>
-          <TextWithLoadingPlaceholder syncing={isLoadingPriceImpact} width={50}>
-            <BodySmall>~{priceImpact}%</BodySmall>
-          </TextWithLoadingPlaceholder>
+          <BodySmall>{formattedPriceImpact(trade?.priceImpact)}</BodySmall>
         </RowBetween>
       )}
       <RowBetween>
@@ -132,7 +148,7 @@ export function AdvancedSwapDetails({
           </BodySmall>
         </TextWithLoadingPlaceholder>
       </RowBetween>
-      {pathArray.length > 0 && (
+      {
         <RowBetween>
           <RowFixed>
             <MouseoverTooltip
@@ -143,7 +159,7 @@ export function AdvancedSwapDetails({
               <BodySmall color="textSecondary">Path</BodySmall>
             </MouseoverTooltip>
           </RowFixed>
-          <TextWithLoadingPlaceholder syncing={syncing} width={65}>
+          <TextWithLoadingPlaceholder syncing={pathTokensIsLoading} width={100}>
             <PathBox>
               {pathArray?.map((contract, index) => (
                 <React.Fragment key={index}>
@@ -154,7 +170,7 @@ export function AdvancedSwapDetails({
             </PathBox>
           </TextWithLoadingPlaceholder>
         </RowBetween>
-      )}
+      }
     </Column>
   );
 }

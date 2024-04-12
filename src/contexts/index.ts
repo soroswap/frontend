@@ -24,9 +24,15 @@ export type SnackbarContextType = {
   setSnackbarType: React.Dispatch<React.SetStateAction<SnackbarIconType>>;
 };
 
-type AppContextType = {
+export type Settings = {
+  maxHops: number;
+  setMaxHops: React.Dispatch<React.SetStateAction<number>>;
+};
+
+export type AppContextType = {
   ConnectWalletModal: ConnectWalletModalType;
   SnackbarContext: SnackbarContextType;
+  Settings: Settings;
 };
 
 export const ColorModeContext = React.createContext({
@@ -47,5 +53,9 @@ export const AppContext = React.createContext<AppContextType>({
     setSnackbarMessage: () => {},
     setSnackbarTitle: () => {},
     setSnackbarType: () => {},
+  },
+  Settings: {
+    maxHops: 2,
+    setMaxHops: () => {},
   },
 });
