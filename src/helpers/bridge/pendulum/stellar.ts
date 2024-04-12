@@ -1,3 +1,4 @@
+import BigNumber from 'bignumber.js';
 import { Buffer } from 'buffer';
 import { Asset, Keypair, StrKey } from 'stellar-sdk';
 
@@ -36,3 +37,14 @@ export function convertPublicKeyToRaw(pubKey: string): string {
 export function stringifyStellarAsset(asset: Asset): string {
   return asset.isNative() ? 'XLM' : `${asset.getCode()}:${asset.getIssuer()}`;
 }
+
+export const decimalToStellarNative = (value: string) => {
+  let bigIntValue;
+  try {
+    bigIntValue = new BigNumber(value);
+  } catch (error) {
+    bigIntValue = new BigNumber(0);
+  }
+  const multiplier = new BigNumber(10).pow(12);
+  return bigIntValue.times(multiplier);
+};

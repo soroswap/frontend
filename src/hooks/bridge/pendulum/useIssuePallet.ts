@@ -1,9 +1,6 @@
 import { H256 } from '@polkadot/types/interfaces';
 import { useInkathon } from '@scio-labs/use-inkathon';
 import { useMemo } from 'react';
-// import type { SpacewalkPrimitivesIssueIssueRequest, SpacewalkPrimitivesVaultId } from '@polkadot/types/lookup';
-// import { useMemo } from 'preact/hooks';
-// import { useNodeInfoState } from '../../NodeInfoProvider';
 
 export interface RichIssueRequest {
   id: H256;

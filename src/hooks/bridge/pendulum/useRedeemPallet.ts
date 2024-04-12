@@ -1,10 +1,7 @@
-import { useInkathon } from '@scio-labs/use-inkathon';
 import { H256 } from '@polkadot/types/interfaces';
+import { useInkathon } from '@scio-labs/use-inkathon';
+import { convertPublicKeyToRaw } from 'helpers/bridge/pendulum/stellar';
 import { useMemo } from 'react';
-import { convertPublicKeyToRaw } from '../helpers/stellar';
-import { SpacewalkPrimitivesVaultId } from '../types/index';
-
-
 
 export interface RichRedeemRequest {
   id: H256;

@@ -1,5 +1,5 @@
-import { EventRecord } from '@polkadot/types/interfaces';
 import { ApiPromise } from '@polkadot/api';
+import { EventRecord } from '@polkadot/types/interfaces';
 
 export function containsError(events: EventRecord[], api: ApiPromise): boolean {
   const errorEvents = events
@@ -10,7 +10,7 @@ export function containsError(events: EventRecord[], api: ApiPromise): boolean {
 }
 
 // Adapted from https://polkadot.js.org/docs/api/cookbook/tx#how-do-i-get-the-decoded-enum-for-an-extrinsicfailed-event
-export function getErrors(events: EventRecord[], api: ApiPromise) {
+export function getSubstrateErrors(events: EventRecord[], api: ApiPromise) {
   return (
     events
       // find/filter for failed events
@@ -23,10 +23,8 @@ export function getErrors(events: EventRecord[], api: ApiPromise) {
             data: [error],
           },
         }) => {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           if ((error as any).isModule) {
             // for module errors, we have the section indexed, lookup
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const decoded = api.registry.findMetaError((error as any).asModule);
             const { docs, method, section } = decoded;
 
