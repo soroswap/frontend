@@ -356,7 +356,7 @@ export function SwapComponent({
     checkTrustline();
   }, [sorobanContext, swapCallback, trade, nativeBalance.data?.validAccount]);
 
-  const { networkFees } = useSwapNetworkFees(trade);
+  const { networkFees, isLoading: isLoadingNetworkFees } = useSwapNetworkFees(trade, currencies);
 
   const useConfirmModal = useConfirmModalState({
     trade: trade!,
@@ -441,6 +441,7 @@ export function SwapComponent({
               otherCurrency={currencies[Field.OUTPUT]}
               networkFees={networkFees}
               subentryCount={subentryCount}
+              isLoadingNetworkFees={isLoadingNetworkFees}
               // showCommonBases
               // id={InterfaceSectionName.CURRENCY_INPUT_PANEL}
               loading={independentField === Field.OUTPUT && routeIsSyncing}

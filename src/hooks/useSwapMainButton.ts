@@ -33,14 +33,18 @@ const useSwapMainButton = ({
   const { data } = useGetNativeTokenBalance();
 
   const { address } = sorobanContext;
-  const userBalances = useGetMyBalances()
+  const userBalances = useGetMyBalances();
 
   const getSwapValues = () => {
     const currencyA: TokenType = currencies[Field.INPUT];
     const currencyB: TokenType = currencies[Field.OUTPUT];
 
-    const balanceA = userBalances.tokenBalancesResponse?.balances.find(token => token.contract == (currencyA?.contract))?.balance
-    const balanceB = userBalances.tokenBalancesResponse?.balances.find(token => token.contract == (currencyB?.contract))?.balance
+    const balanceA = userBalances.tokenBalancesResponse?.balances.find(
+      (token) => token.contract == currencyA?.contract,
+    )?.balance;
+    const balanceB = userBalances.tokenBalancesResponse?.balances.find(
+      (token) => token.contract == currencyB?.contract,
+    )?.balance;
 
     const inputA = formattedAmounts[Field.INPUT] ?? 0;
     const inputB = formattedAmounts[Field.OUTPUT] ?? 0;
@@ -83,7 +87,7 @@ const useSwapMainButton = ({
     if (!address) return 'Connect Wallet';
     if (noCurrencySelected) return 'Select a token';
     if (insufficientLiquidity) return 'Insufficient liquidity';
-    if (!data?.validAccount) return 'Fund wallet to sign Transaction';
+    if (data && !data?.validAccount) return 'Fund wallet to sign Transaction';
     if (noAmountTyped) return 'Enter an amount';
     if (insufficientBalance) return 'Insufficient ' + insufficientBalanceToken + ' balance';
     if (invalidAmount) return 'Invalid amount';
