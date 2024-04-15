@@ -80,7 +80,7 @@ export default function CurrencyBalance({
 
   return (
     <TextWithLoadingPlaceholder
-      syncing={(isXLM && Boolean(isLoadingNetworkFees)) || isLoadingMyBalances}
+      syncing={(isXLM && Boolean(isLoadingNetworkFees)) || isLoadingMyBalances || !tokenBalancesResponse}
       width={150}
     >
       <RowFixed style={{ height: '17px' }}>
