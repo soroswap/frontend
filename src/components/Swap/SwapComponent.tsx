@@ -13,8 +13,10 @@ import { formatTokenAmount } from 'helpers/format';
 import { requiresTrustline } from 'helpers/stellar';
 import { relevantTokensType } from 'hooks';
 import { useToken } from 'hooks/tokens/useToken';
+import useGetNativeTokenBalance from 'hooks/useGetNativeTokenBalance';
 import { useSwapCallback } from 'hooks/useSwapCallback';
 import useSwapMainButton from 'hooks/useSwapMainButton';
+import useSwapNetworkFees from 'hooks/useSwapNetworkFees';
 import { TokenType } from 'interfaces';
 import {
   ReactNode,
@@ -34,8 +36,6 @@ import { opacify } from 'themes/utils';
 import SwapCurrencyInputPanel from '../CurrencyInputPanel/SwapCurrencyInputPanel';
 import SwapHeader from './SwapHeader';
 import { ArrowWrapper, SwapWrapper } from './styleds';
-import useSwapNetworkFees from 'hooks/useSwapNetworkFees';
-import useGetNativeTokenBalance from 'hooks/useGetNativeTokenBalance';
 
 const SwapSection = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -323,32 +323,17 @@ export function SwapComponent({
   const nativeBalance = useGetNativeTokenBalance();
 
   useEffect(() => {
-    const checkRequiresTrustlineAdjust = async () => {
-      if (!swapCallback) {
-        return;
-      }
-
-      try {
-        const simulatedTransaction = await swapCallback(true);
-        if (simulatedTransaction) {
-          return false;
-        }
-      } catch (error) {
-        return true;
-      }
-    };
-
     const checkTrustline = async () => {
       if (!trade) return;
       if (sorobanContext.address) {
         // Check if we need trustline
         const needTrustline = await requiresTrustline(
-          trade?.outputAmount?.currency.contract!,
           sorobanContext,
+          trade?.outputAmount?.currency,
+          trade?.outputAmount?.value,
         );
-        const requiresTrustlineAdjust = await checkRequiresTrustlineAdjust();
 
-        if (needTrustline || requiresTrustlineAdjust) {
+        if (needTrustline) {
           setNeedTrustline(true);
         } else {
           setNeedTrustline(false);
