@@ -118,6 +118,8 @@ export function CurrencyRow({
 }) {
   const sorobanContext = useSorobanReact();
 
+  const { address } = sorobanContext;
+
   const { tokenBalancesResponse } = useGetMyBalances();
 
   const { account } = useHorizonLoadAccount();
@@ -131,15 +133,14 @@ export function CurrencyRow({
   );
   const shortenSorobanClassicAsset = (currency: TokenType) => {
     if (!currency) return '';
-    if(currency?.name && currency.name.toString().length > 56) {
+    if (currency?.name && currency.name.toString().length > 56) {
       const addressAsArray = currency.name.toString().split(':');
-      if (addressAsArray.length > 1 && isAddress(addressAsArray[1])){
+      if (addressAsArray.length > 1 && isAddress(addressAsArray[1])) {
         const shortAddr: string = shortenAddress(addressAsArray[1]);
         return `${currency.code}:${shortAddr}`;
       }
       return currency.code;
-    }
-    else return `${currency.code}`;
+    } else return `${currency.code}`;
   };
 
   const formattedCurrencyName = (currency: TokenType) => {
@@ -149,8 +150,8 @@ export function CurrencyRow({
       const formattedName = shortenSorobanClassicAsset(currency);
       return formattedName;
     }
-    return currency?.name
-  }
+    return currency?.name;
+  };
   const warning = false;
   const isBlockedToken = false;
   const blockedTokenOpacity = '0.6';
@@ -175,9 +176,7 @@ export function CurrencyRow({
       </Column>
       <AutoColumn style={{ opacity: isBlockedToken ? blockedTokenOpacity : '1' }}>
         <Row>
-          <CurrencyName title={currency.name}>
-            {currency.code}
-          </CurrencyName>
+          <CurrencyName title={currency.name}>{currency.code}</CurrencyName>
         </Row>
         <Typography ml="0px" fontSize="12px" fontWeight={300}>
           {currency.domain ? currency.domain : formattedCurrencyName(currency as TokenType)}
@@ -185,7 +184,7 @@ export function CurrencyRow({
       </AutoColumn>
       {showCurrencyAmount ? (
         <RowFixed style={{ justifySelf: 'flex-end' }}>
-          {isLoading ? <Loader /> : <Balance balance={data || '0'} />}
+          {isLoading ? <Loader /> : address ? <Balance balance={data || '0'} /> : null}
           {isSelected && <CheckIcon />}
         </RowFixed>
       ) : (

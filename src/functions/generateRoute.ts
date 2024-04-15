@@ -1,12 +1,12 @@
 import { useSorobanReact } from '@soroban-react/core';
 import { useFactory } from 'hooks';
-import { useMemo } from 'react';
+import { useContext, useMemo } from 'react';
 import { CurrencyAmount, Networks, Protocols, Router, Token, TradeType } from 'soroswap-router-sdk';
+import { AppContext } from 'contexts';
 
 const backendUrl = process.env.NEXT_PUBLIC_SOROSWAP_BACKEND_URL;
 const backendApiKey = process.env.NEXT_PUBLIC_SOROSWAP_BACKEND_API_KEY;
 const shouldUseBackend = process.env.NEXT_PUBLIC_SOROSWAP_BACKEND_ENABLED === 'true';
-console.log('🚀 « shouldUseBackend:', shouldUseBackend);
 
 export interface GenerateRouteProps {
   amountTokenAddress: string;
@@ -18,6 +18,9 @@ export interface GenerateRouteProps {
 export const useRouterSDK = () => {
   const sorobanContext = useSorobanReact();
   const { factory } = useFactory(sorobanContext);
+
+  const { Settings } = useContext(AppContext);
+  const { maxHops } = Settings;
 
   const network = sorobanContext.activeChain?.networkPassphrase as Networks;
 
@@ -35,8 +38,9 @@ export const useRouterSDK = () => {
       protocols: [Protocols.SOROSWAP],
       network,
       shouldUseBackend,
+      maxHops,
     });
-  }, [network]);
+  }, [network, maxHops]);
 
   const fromAddressToToken = (address: string) => {
     return new Token(network, address, 18);
@@ -62,8 +66,8 @@ export const useRouterSDK = () => {
     const currencyAmount = fromAddressAndAmountToCurrencyAmount(amountTokenAddress, amount);
     const quoteCurrency = fromAddressToToken(quoteTokenAddress);
 
-    return router.route(currencyAmount, quoteCurrency, tradeType, factory, sorobanContext);
+    return router.route(currencyAmount, quoteCurrency, tradeType, factory, sorobanContext as any);
   };
 
-  return { generateRoute, resetRouterSdkCache };
+  return { generateRoute, resetRouterSdkCache, maxHops };
 };

@@ -13,17 +13,17 @@ import { useAllTokens } from 'hooks/tokens/useAllTokens';
 import { findToken } from 'hooks/tokens/useToken';
 import useGetReservesByPair from 'hooks/useGetReservesByPair';
 import { getSwapAmounts } from 'hooks/useSwapCallback';
-import { ReactNode, useEffect, useState } from 'react';
+import React, { ReactNode, useEffect, useState } from 'react';
 import { AlertTriangle, ChevronRight } from 'react-feather';
 import { InterfaceTrade, TradeType } from 'state/routing/types';
-import { PathBox, TextWithLoadingPlaceholder } from './AdvancedSwapDetails';
+import { PathBox, TextWithLoadingPlaceholder, formattedPriceImpact } from './AdvancedSwapDetails';
 import { Label } from './SwapModalHeaderAmount';
 import { getExpectedAmountOfOne } from './TradePrice';
 import { SwapCallbackError, SwapShowAcceptChanges } from './styleds';
-import useGetPriceImpactFromTrade from 'hooks/useGetPriceImpactFromTrade';
 
 const DetailsContainer = styled(Column)`
   padding: 0 8px;
+  min-height: 100%;
 `;
 
 const StyledAlertTriangle = styled(AlertTriangle)`
@@ -84,9 +84,6 @@ export default function SwapModalFooter({
 
   const sorobanContext = useSorobanReact();
 
-  const { formatted: priceImpact, isLoading: isLoadingPriceImpact } =
-    useGetPriceImpactFromTrade(trade);
-
   const getSwapValues = () => {
     if (!trade || !trade?.tradeType) return { formattedAmount0: '0', formattedAmount1: '0' };
 
@@ -105,9 +102,13 @@ export default function SwapModalFooter({
 
   const [pathArray, setPathArray] = useState<string[]>([]);
 
+  const [pathTokensIsLoading, setPathTokensIsLoading] = useState(false);
+
   useEffect(() => {
     (async () => {
       if (!trade?.path || isLoading) return;
+
+      setPathTokensIsLoading(true);
 
       const promises = trade.path.map(async (contract) => {
         const asset = await findToken(contract, tokensAsMap, sorobanContext);
@@ -122,6 +123,7 @@ export default function SwapModalFooter({
         .map((result) => (result.status === 'fulfilled' && result.value ? result.value : ''));
 
       setPathArray(fulfilledValues);
+      setPathTokensIsLoading(false);
     })();
   }, [trade?.path, isLoading, sorobanContext]);
 
@@ -158,7 +160,7 @@ export default function SwapModalFooter({
               <MouseoverTooltip title="The impact your trade has on the market price of this pool.">
                 <Label cursor="help">Price impact</Label>
               </MouseoverTooltip>
-              {isLoadingPriceImpact ? <CircularProgress size="12px" /> : <>{priceImpact}%</>}
+              {formattedPriceImpact(trade?.priceImpact)}
             </Row>
           </BodySmall>
         )}
@@ -166,7 +168,7 @@ export default function SwapModalFooter({
           <Row align="flex-start" justify="space-between" gap="sm">
             <MouseoverTooltip
               title={
-                trade.tradeType === TradeType.EXACT_INPUT ? (
+                trade?.tradeType === TradeType.EXACT_INPUT ? (
                   <>
                     The minimum amount you are guaranteed to receive. If the price slips any
                     further, your transaction will revert.
@@ -180,7 +182,7 @@ export default function SwapModalFooter({
               }
             >
               <Label cursor="help">
-                {trade.tradeType === TradeType.EXACT_INPUT ? (
+                {trade?.tradeType === TradeType.EXACT_INPUT ? (
                   <>Receive at least</>
                 ) : (
                   <>Pay at Most</>
@@ -207,13 +209,13 @@ export default function SwapModalFooter({
               <Label cursor="help">Path</Label>
             </MouseoverTooltip>
           </RowFixed>
-          <TextWithLoadingPlaceholder syncing={isLoading} width={150}>
+          <TextWithLoadingPlaceholder syncing={pathTokensIsLoading} width={100}>
             <PathBox>
               {pathArray?.map((contract, index) => (
-                <>
+                <React.Fragment key={index}>
                   {contract}
                   {index !== pathArray.length - 1 && <ChevronRight style={{ opacity: '50%' }} />}
-                </>
+                </React.Fragment>
               ))}
             </PathBox>
           </TextWithLoadingPlaceholder>
@@ -241,7 +243,7 @@ export default function SwapModalFooter({
             id={'CONFIRM_SWAP_BUTTON'}
           >
             <HeadlineSmall color={theme.palette.custom.accentTextLightPrimary}>
-              {trustline ? `Set ${trade.outputAmount?.currency.code} trustline` : 'Confirm swap'}
+              {trustline ? `Set ${trade?.outputAmount?.currency.code} trustline` : 'Confirm swap'}
             </HeadlineSmall>
           </ConfirmButton>
           {swapErrorMessage ? <SwapCallbackError error={swapErrorMessage} /> : null}

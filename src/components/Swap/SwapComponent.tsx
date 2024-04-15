@@ -8,7 +8,6 @@ import SwapDetailsDropdown from 'components/Swap/SwapDetailsDropdown';
 import { ButtonText } from 'components/Text';
 import { TransactionFailedContent } from 'components/TransactionConfirmationModal';
 import { AppContext, SnackbarIconType } from 'contexts';
-import { calculateSwapFees } from 'functions/getNetworkFees';
 import { sendNotification } from 'functions/sendNotification';
 import { formatTokenAmount } from 'helpers/format';
 import { requiresTrustline } from 'helpers/stellar';
@@ -35,6 +34,8 @@ import { opacify } from 'themes/utils';
 import SwapCurrencyInputPanel from '../CurrencyInputPanel/SwapCurrencyInputPanel';
 import SwapHeader from './SwapHeader';
 import { ArrowWrapper, SwapWrapper } from './styleds';
+import useSwapNetworkFees from 'hooks/useSwapNetworkFees';
+import useGetNativeTokenBalance from 'hooks/useGetNativeTokenBalance';
 
 const SwapSection = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -126,7 +127,7 @@ export function SwapComponent({
   const [state, dispatch] = useReducer(swapReducer, { ...initialSwapState, ...prefilledState });
   const { typedValue, recipient, independentField } = state;
 
-  const [networkFees, setNetworkFees] = useState<number | null>(0);
+  const [subentryCount, setSubentryCount] = useState<number>(0);
 
   const { onSwitchTokens, onCurrencySelection, onUserInput, onChangeRecipient } =
     useSwapActionHandlers(dispatch);
@@ -319,6 +320,8 @@ export function SwapComponent({
       trade,
     });
 
+  const nativeBalance = useGetNativeTokenBalance();
+
   useEffect(() => {
     const checkRequiresTrustlineAdjust = async () => {
       if (!swapCallback) {
@@ -356,23 +359,19 @@ export function SwapComponent({
       }
     };
 
-    const fetchNetworkFees = async () => {
-      if (trade) {
-        try {
-          const fees = await calculateSwapFees(sorobanContext, trade);
-          if (fees) {
-            setNetworkFees(Number(fees) / 10 ** 7);
-          }
-        } catch (error) {
-          console.error('Error fetching network fees:', error);
-          setNetworkFees(0);
-        }
+    const getSubentryCount = async () => {
+      if (sorobanContext.address && nativeBalance.data?.validAccount) {
+        const account = await sorobanContext.serverHorizon?.loadAccount(sorobanContext.address);
+        const count = account?.subentry_count ?? 0;
+        setSubentryCount(count);
       }
     };
 
-    fetchNetworkFees();
+    getSubentryCount();
     checkTrustline();
-  }, [sorobanContext, swapCallback, trade]);
+  }, [sorobanContext, swapCallback, trade, nativeBalance.data?.validAccount]);
+
+  const { networkFees } = useSwapNetworkFees(trade);
 
   const useConfirmModal = useConfirmModalState({
     trade: trade!,
@@ -455,6 +454,8 @@ export function SwapComponent({
               fiatValue={showFiatValueInput ? fiatValueInput : undefined}
               onCurrencySelect={handleInputSelect}
               otherCurrency={currencies[Field.OUTPUT]}
+              networkFees={networkFees}
+              subentryCount={subentryCount}
               // showCommonBases
               // id={InterfaceSectionName.CURRENCY_INPUT_PANEL}
               loading={independentField === Field.OUTPUT && routeIsSyncing}
@@ -501,6 +502,8 @@ export function SwapComponent({
                 //id={InterfaceSectionName.CURRENCY_OUTPUT_PANEL}
                 loading={independentField === Field.INPUT && routeIsSyncing}
                 disableInput={getSwapValues().noCurrencySelected}
+                networkFees={networkFees}
+                subentryCount={subentryCount}
               />
             </OutputSwapSection>
           </div>

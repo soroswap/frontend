@@ -3,6 +3,7 @@ import { styled } from '@mui/material';
 import { AutoColumn, ColumnCenter } from 'components/Column';
 
 export const Wrapper = styled('div')`
+  display: block;
   overflow: hidden;
   border-radius: 20px;
   position: absolute;
@@ -21,6 +22,21 @@ export const Wrapper = styled('div')`
                 theme.palette.mode == 'dark' ? '33,29,50,1' : '255,255,255,1'
               }) 65%, rgba(136,102,221,1) 100%) border-box`};
   border: 1px solid transparent;
+  overflow-y: visible;
+  max-height: 100%;
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.15);        /* color of the tracking area */
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background-color: rgb(100, 102, 108, 0.25);    /* color of the scroll thumb */
+    border-radius: 6px;
+    border: solid 1px rgba(0, 0, 0, 1);
+  }
 `;
 
 export const BottomSection = styled(AutoColumn)`
@@ -32,6 +48,7 @@ export const CustomWrapper = styled(AutoColumn)`
   display: flex;
   flex-direction: column;
   gap: 8px;
+  height: 100%;
 `;
 
 export const ConfirmedIcon = styled(ColumnCenter)<{ inline?: boolean }>`
