@@ -85,8 +85,8 @@ const useSwapMainButton = ({
       insufficientBalanceToken,
     } = getSwapValues();
     if (noCurrencySelected) return 'Select a token';
-    if (noAmountTyped) return 'Enter an amount';
     if (!address) return 'Connect Wallet';
+    if (noAmountTyped) return 'Enter an amount';
     if (insufficientLiquidity) return 'Insufficient liquidity';
     if (data && !data?.validAccount) return 'Fund wallet to sign Transaction';
     if (insufficientBalance) return 'Insufficient ' + insufficientBalanceToken + ' balance';
