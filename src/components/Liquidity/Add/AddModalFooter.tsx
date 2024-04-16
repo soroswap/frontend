@@ -14,6 +14,7 @@ import { AlertTriangle } from 'react-feather';
 import { Field } from 'state/mint/actions';
 import { useUserSlippageToleranceWithDefault } from 'state/user/hooks';
 import { Label } from './AddModalHeader';
+import { TextWithLoadingPlaceholder } from 'components/Swap/AdvancedSwapDetails';
 
 const DetailsContainer = styled(Column)`
   padding: 0 8px;
@@ -57,6 +58,7 @@ export default function AddModalFooter({
   onConfirm,
   shareOfPool,
   networkFees,
+  isLoadingNetworkFees,
 }: {
   currencies: { [field in Field]?: TokenType };
   formattedAmounts: { [field in Field]?: string };
@@ -64,6 +66,7 @@ export default function AddModalFooter({
   onConfirm: () => void;
   shareOfPool?: string;
   networkFees: number;
+  isLoadingNetworkFees?: boolean;
 }) {
   const theme = useTheme();
 
@@ -101,10 +104,7 @@ export default function AddModalFooter({
       <DetailsContainer gap="md">
         <BodySmall component="div">
           <Row align="flex-start" justify="space-between" gap="sm">
-            <Label>
-              {currencyA && currencyA.code}{' '}
-              to deposit
-            </Label>
+            <Label>{currencyA && currencyA.code} to deposit</Label>
             <DetailRowValue style={{ display: 'flex', alignItems: 'center' }}>
               {`${formattedAmounts.CURRENCY_A} ${currencyA?.code}`}{' '}
               <CurrencyLogo currency={currencyA} size="16px" style={{ marginLeft: '6px' }} />
@@ -113,10 +113,7 @@ export default function AddModalFooter({
         </BodySmall>
         <BodySmall component="div">
           <Row align="flex-start" justify="space-between" gap="sm">
-            <Label>
-              {currencyB && currencyB?.code}{' '}
-              to deposit
-            </Label>
+            <Label>{currencyB && currencyB?.code} to deposit</Label>
             <DetailRowValue style={{ display: 'flex', alignItems: 'center' }}>
               {`${formattedAmounts.CURRENCY_B} ${currencyB?.code}`}{' '}
               <CurrencyLogo currency={currencyB} size="16px" style={{ marginLeft: '6px' }} />
@@ -166,7 +163,9 @@ export default function AddModalFooter({
             >
               <Label cursor="help">Network fee</Label>
             </MouseoverTooltip>
-            <DetailRowValue>~{networkFees} XLM</DetailRowValue>
+            <TextWithLoadingPlaceholder syncing={!!isLoadingNetworkFees} width={100}>
+              <DetailRowValue>~{networkFees} XLM</DetailRowValue>
+            </TextWithLoadingPlaceholder>
           </Row>
         </BodySmall>
       </DetailsContainer>
