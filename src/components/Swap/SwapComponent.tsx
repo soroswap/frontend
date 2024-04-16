@@ -8,14 +8,15 @@ import SwapDetailsDropdown from 'components/Swap/SwapDetailsDropdown';
 import { ButtonText } from 'components/Text';
 import { TransactionFailedContent } from 'components/TransactionConfirmationModal';
 import { AppContext, SnackbarIconType } from 'contexts';
-import { calculateSwapFees } from 'functions/getNetworkFees';
 import { sendNotification } from 'functions/sendNotification';
 import { formatTokenAmount } from 'helpers/format';
 import { requiresTrustline } from 'helpers/stellar';
 import { relevantTokensType } from 'hooks';
 import { useToken } from 'hooks/tokens/useToken';
+import useGetNativeTokenBalance from 'hooks/useGetNativeTokenBalance';
 import { useSwapCallback } from 'hooks/useSwapCallback';
 import useSwapMainButton from 'hooks/useSwapMainButton';
+import useSwapNetworkFees from 'hooks/useSwapNetworkFees';
 import { TokenType } from 'interfaces';
 import {
   ReactNode,
@@ -126,7 +127,6 @@ export function SwapComponent({
   const [state, dispatch] = useReducer(swapReducer, { ...initialSwapState, ...prefilledState });
   const { typedValue, recipient, independentField } = state;
 
-  const [networkFees, setNetworkFees] = useState<number>(0);
   const [subentryCount, setSubentryCount] = useState<number>(0);
 
   const { onSwitchTokens, onCurrencySelection, onUserInput, onChangeRecipient } =
@@ -320,33 +320,20 @@ export function SwapComponent({
       trade,
     });
 
+  const nativeBalance = useGetNativeTokenBalance();
+
   useEffect(() => {
-    const checkRequiresTrustlineAdjust = async () => {
-      if (!swapCallback) {
-        return;
-      }
-
-      try {
-        const simulatedTransaction = await swapCallback(true);
-        if (simulatedTransaction) {
-          return false;
-        }
-      } catch (error) {
-        return true;
-      }
-    };
-
     const checkTrustline = async () => {
       if (!trade) return;
       if (sorobanContext.address) {
         // Check if we need trustline
         const needTrustline = await requiresTrustline(
-          trade?.outputAmount?.currency.contract!,
           sorobanContext,
+          trade?.outputAmount?.currency,
+          trade?.outputAmount?.value,
         );
-        const requiresTrustlineAdjust = await checkRequiresTrustlineAdjust();
 
-        if (needTrustline || requiresTrustlineAdjust) {
+        if (needTrustline) {
           setNeedTrustline(true);
         } else {
           setNeedTrustline(false);
@@ -357,22 +344,8 @@ export function SwapComponent({
       }
     };
 
-    const fetchNetworkFees = async () => {
-      if (trade) {
-        try {
-          const fees = await calculateSwapFees(sorobanContext, trade);
-          if (fees) {
-            setNetworkFees(Number(fees) / 10 ** 7);
-          }
-        } catch (error) {
-          console.error('Error fetching network fees:', error);
-          setNetworkFees(0);
-        }
-      }
-    };
-
     const getSubentryCount = async () => {
-      if (sorobanContext.address) {
+      if (sorobanContext.address && nativeBalance.data?.validAccount) {
         const account = await sorobanContext.serverHorizon?.loadAccount(sorobanContext.address);
         const count = account?.subentry_count ?? 0;
         setSubentryCount(count);
@@ -380,9 +353,10 @@ export function SwapComponent({
     };
 
     getSubentryCount();
-    fetchNetworkFees();
     checkTrustline();
-  }, [sorobanContext, swapCallback, trade]);
+  }, [sorobanContext, swapCallback, trade, nativeBalance.data?.validAccount]);
+
+  const { networkFees } = useSwapNetworkFees(trade);
 
   const useConfirmModal = useConfirmModalState({
     trade: trade!,

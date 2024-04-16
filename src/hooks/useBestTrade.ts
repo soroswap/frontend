@@ -27,7 +27,7 @@ export function useBestTrade(
   trade?: InterfaceTrade;
   resetRouterSdkCache: () => void;
 } {
-  const { generateRoute, resetRouterSdkCache } = useRouterSDK();
+  const { generateRoute, resetRouterSdkCache, maxHops } = useRouterSDK();
 
   const {
     data,
@@ -35,9 +35,15 @@ export function useBestTrade(
     isValidating,
   } = useSWR(
     amountSpecified && otherCurrency
-      ? [amountSpecified.currency.contract, otherCurrency.contract, tradeType, amountSpecified.value]
+      ? [
+          amountSpecified.currency.contract,
+          otherCurrency.contract,
+          tradeType,
+          amountSpecified.value,
+          maxHops,
+        ]
       : null,
-    ([amountTokenAddress, quoteTokenAddress, tradeType, amount]) =>
+    ([amountTokenAddress, quoteTokenAddress, tradeType, amount, maxHops]) =>
       generateRoute({
         amountTokenAddress,
         quoteTokenAddress,
@@ -120,6 +126,7 @@ export function useBestTrade(
       path: data?.trade.path,
       tradeType: tradeType,
       rawRoute: data,
+      priceImpact: data?.priceImpact,
     };
   }, [expectedAmount, inputAmount, outputAmount, tradeType, data]);
 

@@ -1,4 +1,5 @@
 import { TokenType, CurrencyAmount } from 'interfaces';
+import { Percent } from 'soroswap-router-sdk';
 
 export enum TradeState {
   LOADING,
@@ -236,6 +237,7 @@ export type InterfaceTrade = {
   outputAmount: CurrencyAmount | undefined;
   tradeType: TradeType | undefined;
   path: string[] | undefined;
+  priceImpact?: Percent | undefined;
   [x: string]: any;
 };
 
