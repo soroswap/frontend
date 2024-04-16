@@ -1,11 +1,11 @@
 import { Box, MenuItem, Select, TextField } from "@mui/material";
 import { useInkathon } from "@scio-labs/use-inkathon";
 import { useSorobanReact } from "@soroban-react/core";
-import { availableNetworks, xlmVaultId } from "helpers/bridge/configs";
 import { deriveShortenedRequestId } from "helpers/bridge/pendulum/spacewalk";
 import { convertRawHexKeyToPublicKey, decimalToStellarNative } from "helpers/bridge/pendulum/stellar";
 import { getEventBySectionAndMethod, getSubstrateErrors } from "helpers/bridge/pendulum/substrate";
 import { useIssuePallet } from "hooks/bridge/pendulum/useIssuePallet";
+import useSpacewalkBridge from "hooks/bridge/pendulum/useSpacewalkBridge";
 import { useCallback, useMemo, useState } from "react";
 import { Asset, BASE_FEE, Memo, Operation, TransactionBuilder } from "stellar-sdk";
 import { BridgeButton } from "../BridgeButton";
@@ -19,20 +19,20 @@ export type IssueFormValues = {
 export function IssueComponent() {
   const { address, serverHorizon, activeChain, activeConnector } = useSorobanReact();
   const { activeAccount, activeSigner, api } = useInkathon();
+  const { selectedVault, vaults, setSelectedVault } = useSpacewalkBridge()
   const { createIssueRequestExtrinsic, getIssueRequest } = useIssuePallet();
   const [isBridging, setIsBridging] = useState<boolean>(false)
   const [amount, setAmount] = useState<string>('');
-  const [selectedNetwork, setSelectedNetwork] = useState<string>('pendulum');
 
   const amountRaw = decimalToStellarNative(amount).toString();
 
   const requestIssueExtrinsic = useMemo(() => {
-    if (!xlmVaultId || !amount) {
+    if (!selectedVault || !amount) {
       return undefined;
     }
 
-    return createIssueRequestExtrinsic(amountRaw, xlmVaultId);
-  }, [amount, amountRaw, createIssueRequestExtrinsic]);
+    return createIssueRequestExtrinsic(amountRaw, selectedVault);
+  }, [amount, amountRaw, createIssueRequestExtrinsic, selectedVault]);
 
   const createStellarPayment = useCallback(async (recipient: string, memo: string) => {
     if (!address) {
@@ -144,18 +144,25 @@ export function IssueComponent() {
     },
     [activeAccount, activeSigner, amount, api, createStellarPayment, getIssueRequest, requestIssueExtrinsic],
   );
+
+  const handleVaultSelection = (accountId: any) => {
+    console.log('🚀 « accountId:', accountId);
+
+  }
     
   return (
     <Box component="form" noValidate autoComplete="off" sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-      <Box mb={2}>
-        <Select value={selectedNetwork} onChange={(e) => setSelectedNetwork(e.target.value)}>
-          {availableNetworks.map((chain) => (
-            <MenuItem key={chain} value={chain}>
-              {chain}
-            </MenuItem>
-          ))}
-        </Select>
-      </Box>
+      {vaults && vaults.length > 0 && (   
+        <Box mb={2}>
+          <Select value={selectedVault} onChange={(e) => handleVaultSelection(e.target.value)}>
+            {vaults?.map((vault, index) => (
+              <MenuItem key={index} value={JSON.stringify(vault.id)}>
+                {vault.asset?.code}
+              </MenuItem>
+            ))}
+          </Select>
+        </Box>
+      )}
       <TextField
         label="Amount to Bridge to Pendulum"
         variant="outlined"

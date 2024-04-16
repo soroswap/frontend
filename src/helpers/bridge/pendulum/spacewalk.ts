@@ -1,11 +1,11 @@
 import { ApiPromise } from '@polkadot/api';
 import type { Enum, Struct, u8 } from '@polkadot/types-codec';
 import { U8aFixed } from '@polkadot/types-codec';
+import { TenantName } from 'BridgeStateProvider/models';
 import bs58 from 'bs58';
 import { DateTime } from 'luxon';
 import { Asset, Keypair } from 'stellar-sdk';
 import { convertRawHexKeyToPublicKey } from './stellar';
-import { TenantName } from 'BridgeStateProvider/models';
 
 interface SpacewalkPrimitivesCurrencyId extends Enum {
   readonly isNative: boolean;
@@ -43,7 +43,7 @@ function hex_to_ascii(hexString: string, leading0x = true) {
   return str;
 }
 
-export function convertCurrencyToStellarAsset(currency: SpacewalkPrimitivesCurrencyId): Asset | null {
+export function convertCurrencyToStellarAsset(currency: any): Asset | null {
   if (!currency.isStellar) {
     return null;
   }
@@ -163,7 +163,7 @@ export function currencyToString(currency: SpacewalkPrimitivesCurrencyId, tenant
   }
 }
 
-function tryConvertCodeToAscii(code: U8aFixed) {
+export function tryConvertCodeToAscii(code: U8aFixed) {
   const ascii = hex_to_ascii(code.toHex());
   if (ascii !== ascii.trim()) {
     throw Error('Asset code contains invalid space characters');

@@ -3,6 +3,7 @@ import { AccountId32 } from '@polkadot/types/interfaces';
 import { useInkathon } from '@scio-labs/use-inkathon';
 import { convertRawHexKeyToPublicKey } from 'helpers/bridge/pendulum/stellar';
 import { useEffect, useMemo, useState } from 'react';
+import { Asset } from 'stellar-sdk';
 
 interface StellarAssetType {
   AlphaNum4: {
@@ -11,7 +12,7 @@ interface StellarAssetType {
   }
 }
 
-interface VaultId {
+export interface VaultId {
   accountId: AccountId32,
   currencies: {
     collateral: {
@@ -41,6 +42,12 @@ export interface SpacewalkVault {
   liquidatedCollateral: string
 }
 
+export interface ExtendedSpacewalkVault extends SpacewalkVault {
+  asset?: Asset;
+  issuableTokens?: string;
+  redeemableTokens?: string;
+}
+
 export function useSpacewalkVaults() {
   const { api } = useInkathon();
 
@@ -61,7 +68,7 @@ export function useSpacewalkVaults() {
     api.query.vaultRegistry.vaults.entries().then((entries) => {
 
       const typedEntries: SpacewalkVault[] = entries.map(([, value]): SpacewalkVault => {
-        const humanReadableValue = value.toHuman(true);
+        const humanReadableValue = value.toHuman();
         
         //this is a workaround for the type 
         return humanReadableValue as unknown as SpacewalkVault;

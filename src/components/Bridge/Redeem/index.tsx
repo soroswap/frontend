@@ -2,10 +2,10 @@ import { Box, TextField } from "@mui/material";
 import { useInkathon } from "@scio-labs/use-inkathon";
 import { useSorobanReact } from "@soroban-react/core";
 import BigNumber from "bignumber.js";
-import { xlmVaultId } from "helpers/bridge/configs";
 import { decimalToStellarNative, isPublicKey } from "helpers/bridge/pendulum/stellar";
 import { getEventBySectionAndMethod, getSubstrateErrors } from "helpers/bridge/pendulum/substrate";
 import { useRedeemPallet } from "hooks/bridge/pendulum/useRedeemPallet";
+import useSpacewalkBridge from "hooks/bridge/pendulum/useSpacewalkBridge";
 import { useCallback, useMemo, useState } from "react";
 import { BridgeButton } from "../BridgeButton";
 
@@ -18,24 +18,24 @@ export function RedeemComponent() {
   const { activeAccount, activeSigner, api } = useInkathon();
   const { createRedeemRequestExtrinsic, getRedeemRequest } = useRedeemPallet();
   const { address } = useSorobanReact();
+  const { selectedVault } = useSpacewalkBridge()
   const [submissionPending, setSubmissionPending] = useState(false);
   const [amount, setAmount] = useState<string>('');
-  // const [selectedNetwork, setSelectedNetwork] = useState<string>('pendulum');
 
   const amountRaw = useMemo(() => {
     return amount ? decimalToStellarNative(amount).toString() : new BigNumber(0).toString();
   }, [amount]);
   const stellarAddress = address;
   const requestRedeemExtrinsic = useMemo(() => {
-    if (!xlmVaultId || !api || !stellarAddress || !isPublicKey(stellarAddress)) {
+    if (!selectedVault || !api || !stellarAddress || !isPublicKey(stellarAddress)) {
       return undefined;
     }
 
-    return createRedeemRequestExtrinsic(amountRaw, stellarAddress, xlmVaultId);
-  }, [amountRaw, api, createRedeemRequestExtrinsic, stellarAddress]);
+    return createRedeemRequestExtrinsic(amountRaw, stellarAddress, selectedVault);
+  }, [amountRaw, api, createRedeemRequestExtrinsic, selectedVault, stellarAddress]);
   
   const submitRequestRedeemExtrinsic = useCallback(() => {
-    if (!requestRedeemExtrinsic || !api || !xlmVaultId) {
+    if (!requestRedeemExtrinsic || !api || !selectedVault) {
       return;
     }
 
@@ -81,7 +81,7 @@ export function RedeemComponent() {
         console.error("Transaction submission failed", error);
         setSubmissionPending(false);
       });
-  }, [requestRedeemExtrinsic, api, activeAccount?.address, activeSigner, getRedeemRequest]);
+  }, [requestRedeemExtrinsic, api, selectedVault, activeAccount?.address, activeSigner, getRedeemRequest]);
 
   
   async function handleRedeem() {

@@ -1,4 +1,3 @@
-// import _ from 'lodash';
 // import { useContext, useEffect, useMemo, useState } from 'preact/compat';
 // import { StateUpdater } from 'preact/hooks';
 // import { useGlobalState } from '../../GlobalStateProvider';
@@ -10,55 +9,83 @@
 // import { Balance } from '@polkadot/types/interfaces';
 
 import { useSorobanReact } from "@soroban-react/core";
-import { useEffect } from "react";
-import { useSpacewalkVaults } from "./useSpacewalkVaults";
+import { xlmVaultId } from "helpers/bridge/configs";
+import { convertRawHexKeyToPublicKey } from "helpers/bridge/pendulum/stellar";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { Asset } from "stellar-sdk";
+import { ExtendedSpacewalkVault, VaultId, useSpacewalkVaults } from "./useSpacewalkVaults";
 
 
 export interface SpacewalkBridge {
-  // selectedVault?: ExtendedRegistryVault;
+  selectedVault?: VaultId;
   // manualVaultSelection: boolean;
-  // vaults?: ExtendedRegistryVault[];
+  vaults?: ExtendedSpacewalkVault[];
   // vaultsForCurrency?: ExtendedRegistryVault[];
   // wrappedAssets?: Asset[];
   // selectedAsset?: Asset;
   // setSelectedAsset: Dispatch<SetStateAction<Asset | undefined>>;
-  // setSelectedVault: Dispatch<SetStateAction<ExtendedRegistryVault | undefined>>;
+  setSelectedVault: Dispatch<SetStateAction<VaultId | undefined>>;
   // setManualVaultSelection: Dispatch<SetStateAction<boolean>>;
 }
 
 function useSpacewalkBridge(): SpacewalkBridge {
   const { serverHorizon } = useSorobanReact()
-  // const [vaults, setExtendedVaults] = useState<ExtendedRegistryVault[]>();
+  const [vaults, setExtendedVaults] = useState<ExtendedSpacewalkVault[]>([]);
   // const [manualVaultSelection, setManualVaultSelection] = useState(false);
   const { getVaults, getVaultStellarPublicKey } = useSpacewalkVaults();
-  // const [selectedVault, setSelectedVault] = useState<ExtendedRegistryVault>();
+  const [selectedVault, setSelectedVault] = useState<VaultId | undefined>(xlmVaultId);
   // const { selectedAsset, setSelectedAsset } = (useContext(BridgeContext) || {}) as any;
 
   useEffect(() => {
-    const combinedVaults: any[] = [];
+    const combinedVaults: ExtendedSpacewalkVault[] = [];
     Promise.all(getVaults())
       .then((data) => {
         data.forEach(async (vault) => {
-          console.log('🚀 « vault:', vault);
+          const extended: ExtendedSpacewalkVault = vault
+          
+          // Getting max redeemable amounts from stellar to pendulum //
           const stellarAccount = await getVaultStellarPublicKey(vault.id.accountId);
           if (stellarAccount) {
-            const accountloaded = await serverHorizon?.loadAccount(stellarAccount.publicKey())
-            console.log('🚀 « account balances:', accountloaded?.balances);
+            const accountLoaded = await serverHorizon?.loadAccount(stellarAccount.publicKey());
+            let vaultAssetBalance;
+
+            if (typeof vault.id.currencies.wrapped.Stellar === 'string') {
+              // Case when Stellar is native asset
+              vaultAssetBalance = accountLoaded?.balances.find((bal) =>
+                bal.asset_type === 'native'
+              )?.balance;
+              const vaultAsset = Asset.native()
+              extended.asset = vaultAsset
+            } else if (vault.id.currencies.wrapped.Stellar?.AlphaNum4) {
+              // Case when Stellar is an object with AlphaNum4 details
+              let { code } = vault.id.currencies.wrapped.Stellar.AlphaNum4;
+              switch (code) {
+                case "0x42524c00":
+                  code = "BRL"
+                  break;
+              
+                case "0x545a5300":
+                  code = "TZS"
+                  break;
+              }
+              vaultAssetBalance = accountLoaded?.balances.find((bal) => {
+                return 'asset_code' in bal && bal.asset_code === code
+              }
+              )?.balance;
+              const vaultAsset = new Asset(code, convertRawHexKeyToPublicKey(vault.id.currencies.wrapped.Stellar.AlphaNum4.issuer).publicKey())
+              extended.asset = vaultAsset
+            }
+            
+            extended.redeemableTokens = vaultAssetBalance
           }
+          // End of getting redeemable amount //
+          //TODO: Should get issuable amount by getting the balance on the pendulum side?
+          combinedVaults.push(extended) 
         })
-        // getVaults().forEach((vaultFromRegistry: any) => {
-        //   const vaultWithIssuable = data[0]?.find(([id, _]) => id.eq(vaultFromRegistry.id));
-        //   const vaultWithRedeemable = data[1]?.find(([id, _]) => id.eq(vaultFromRegistry.id));
-        //   const extended: ExtendedRegistryVault = vaultFromRegistry;
-        //   extended.issuableTokens = vaultWithIssuable ? (vaultWithIssuable[1] as unknown as Balance) : undefined;
-        //   extended.redeemableTokens = vaultWithRedeemable ? (vaultWithRedeemable[1] as unknown as Balance) : undefined;
-        //   combinedVaults.push(extended);
-        // });
-        // setExtendedVaults(combinedVaults);
+        setExtendedVaults(combinedVaults);
       })
       .catch(() => {
         console.log("BRIDGE CONNECTION ERROR")
-        // showToast(ToastMessage.BRIDGE_CONNECTION_ERROR);
       });
   }, [getVaultStellarPublicKey, getVaults, serverHorizon]);
 
@@ -109,15 +136,12 @@ function useSpacewalkBridge(): SpacewalkBridge {
   // }, [manualVaultSelection, selectedAsset, selectedVault, setSelectedAsset, vaultsForCurrency, wrappedAssets]);
 
   return {
-    // selectedVault,
+    selectedVault,
     // manualVaultSelection,
-    // vaults,
+    vaults,
     // vaultsForCurrency,
     // wrappedAssets,
-    // selectedAsset,
-    // setSelectedAsset,
-    // setSelectedVault,
-    // setManualVaultSelection,
+    setSelectedVault,
   };
 }
 
