@@ -1,6 +1,5 @@
-import { Box, Button, Paper, Typography, styled } from '@mui/material';
+import { Box, Paper, Typography, styled } from '@mui/material';
 import { useBalance, useInkathon } from '@scio-labs/use-inkathon';
-import { useSorobanReact } from '@soroban-react/core';
 import BridgeComponent from 'components/Bridge/BridgeComponent';
 
 import SEO from 'components/SEO';
@@ -22,18 +21,12 @@ const PageWrapper = styled(Paper)`
 `;
 
 export default function BridgePage() {
-  const sorobanContext = useSorobanReact();
   const {
-    connect,
     isConnected,
     activeAccount,
     error,
     activeChain,
-    disconnect,
-    switchActiveChain,
     isConnecting,
-    activeSigner,
-    api,
   } = useInkathon();
 
   const { balanceFormatted } = useBalance(activeAccount?.address, true);
@@ -83,7 +76,6 @@ export default function BridgePage() {
             </Box>
           </>
         )}
-        <Button onClick={() => console.log(sorobanContext)}>TEST</Button>
       </PageWrapper>
     </>
   );
