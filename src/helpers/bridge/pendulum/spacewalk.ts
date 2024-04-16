@@ -3,6 +3,7 @@ import type { Enum, Struct, u8 } from '@polkadot/types-codec';
 import { U8aFixed } from '@polkadot/types-codec';
 import { TenantName } from 'BridgeStateProvider/models';
 import bs58 from 'bs58';
+import { SpacewalkStellarAssetType } from 'hooks/bridge/pendulum/useSpacewalkVaults';
 import { DateTime } from 'luxon';
 import { Asset, Keypair } from 'stellar-sdk';
 import { convertRawHexKeyToPublicKey } from './stellar';
@@ -43,29 +44,21 @@ function hex_to_ascii(hexString: string, leading0x = true) {
   return str;
 }
 
-export function convertCurrencyToStellarAsset(currency: any): Asset | null {
-  if (!currency.isStellar) {
-    return null;
-  }
-
-  const stellarAsset = currency.asStellar;
-
+export function convertCurrencyToStellarAsset(currency: SpacewalkStellarAssetType | string): Asset | null {
   try {
-    if (stellarAsset.isStellarNative) {
+    if (typeof currency == "string") {
       return Asset.native();
-    } else if (stellarAsset.isAlphaNum4) {
-      const code = tryConvertCodeToAscii(stellarAsset.asAlphaNum4.code);
-      const issuer = convertRawHexKeyToPublicKey(stellarAsset.asAlphaNum4.issuer.toHex());
-      return new Asset(code, issuer.publicKey());
-    } else if (stellarAsset.isAlphaNum12) {
-      const code = tryConvertCodeToAscii(stellarAsset.asAlphaNum12.code);
-      const issuer = convertRawHexKeyToPublicKey(stellarAsset.asAlphaNum12.issuer.toHex());
-      return new Asset(code, issuer.publicKey());
+    } else if (currency.AlphaNum4) {
+      const issuer = convertRawHexKeyToPublicKey(currency.AlphaNum4.issuer);
+      return new Asset(currency.AlphaNum4.code, issuer.publicKey());
+    } else if (currency.AlphaNum12) {
+      const issuer = convertRawHexKeyToPublicKey(currency.AlphaNum12.issuer);
+      return new Asset(currency.AlphaNum12.code, issuer.publicKey());
     } else {
       return null;
     }
-  } catch {
-    return null;
+  } catch (error) {
+    return null
   }
 }
 
@@ -73,9 +66,9 @@ export function addSuffix(s: string) {
   return s + SpacewalkConstants.WrappedCurrencySuffix;
 }
 
-export function currencyToStellarAssetCode(currency: SpacewalkPrimitivesCurrencyId) {
-  return convertCurrencyToStellarAsset(currency)?.getCode() + SpacewalkConstants.WrappedCurrencySuffix;
-}
+// export function currencyToStellarAssetCode(currency: SpacewalkPrimitivesCurrencyId) {
+//   return convertCurrencyToStellarAsset(currency)?.getCode() + SpacewalkConstants.WrappedCurrencySuffix;
+// }
 
 export function convertStellarAssetToCurrency(asset: Asset, api: ApiPromise): SpacewalkPrimitivesCurrencyId {
   if (asset.isNative()) {
@@ -165,6 +158,7 @@ export function currencyToString(currency: SpacewalkPrimitivesCurrencyId, tenant
 
 export function tryConvertCodeToAscii(code: U8aFixed) {
   const ascii = hex_to_ascii(code.toHex());
+  console.log('🚀 « ascii:', ascii);
   if (ascii !== ascii.trim()) {
     throw Error('Asset code contains invalid space characters');
   }

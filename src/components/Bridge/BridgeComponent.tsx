@@ -1,6 +1,5 @@
 import { Box, Tab, Tabs, Typography } from '@mui/material';
 // import useBridgeSettings from 'hooks/bridge/pendulum/useBridgeSettings';
-import useSpacewalkBridge from 'hooks/bridge/pendulum/useSpacewalkBridge';
 import React, { useState } from 'react';
 import { IssueComponent } from './Issue';
 import { RedeemComponent } from './Redeem';
@@ -37,12 +36,6 @@ const BridgeComponent = () => {
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
   };
-
-  const { vaults } = useSpacewalkBridge();
-  // Available vaults with redeemable balance included
-  console.log('🚀 « vaults:', vaults);
-  // This is the maximum amount that can be redeemed
-  // vault.redeemableTokens
 
   return (
     <>

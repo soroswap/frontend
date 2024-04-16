@@ -1,4 +1,4 @@
-import { Box, MenuItem, Select, TextField } from "@mui/material";
+import { Box, Button, MenuItem, Select, TextField } from "@mui/material";
 import { useInkathon } from "@scio-labs/use-inkathon";
 import { useSorobanReact } from "@soroban-react/core";
 import { deriveShortenedRequestId } from "helpers/bridge/pendulum/spacewalk";
@@ -19,7 +19,7 @@ export type IssueFormValues = {
 export function IssueComponent() {
   const { address, serverHorizon, activeChain, activeConnector } = useSorobanReact();
   const { activeAccount, activeSigner, api } = useInkathon();
-  const { selectedVault, vaults, setSelectedVault } = useSpacewalkBridge()
+  const { selectedVault, setSelectedAsset, wrappedAssets, selectedAsset } = useSpacewalkBridge()
   const { createIssueRequestExtrinsic, getIssueRequest } = useIssuePallet();
   const [isBridging, setIsBridging] = useState<boolean>(false)
   const [amount, setAmount] = useState<string>('');
@@ -145,19 +145,19 @@ export function IssueComponent() {
     [activeAccount, activeSigner, amount, api, createStellarPayment, getIssueRequest, requestIssueExtrinsic],
   );
 
-  const handleVaultSelection = (accountId: any) => {
-    console.log('🚀 « accountId:', accountId);
-
+  const handleAssetSelection = (assetCode: string) => {
+    const newAsset = wrappedAssets?.find((ast) => ast.code == assetCode)
+    setSelectedAsset(newAsset)
   }
     
   return (
     <Box component="form" noValidate autoComplete="off" sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-      {vaults && vaults.length > 0 && (   
+      {wrappedAssets && wrappedAssets.length > 0 && (   
         <Box mb={2}>
-          <Select value={selectedVault} onChange={(e) => handleVaultSelection(e.target.value)}>
-            {vaults?.map((vault, index) => (
-              <MenuItem key={index} value={JSON.stringify(vault.id)}>
-                {vault.asset?.code}
+          <Select value={selectedAsset?.code} onChange={(e) => handleAssetSelection(e.target.value)}>
+            {wrappedAssets?.map((asset, index) => (
+              <MenuItem key={index} value={asset.code}>
+                {asset.code}
               </MenuItem>
             ))}
           </Select>
@@ -173,9 +173,10 @@ export function IssueComponent() {
         type="number"
       />
       <Box>
-        You will receive: {amount} XLM.s
+        You will receive: {amount} {selectedAsset?.code}.s
       </Box>
       <BridgeButton isLoading={isBridging} callback={submitRequestIssueExtrinsic} />
+      <Button onClick={() => console.log("selectedVault", selectedVault)}>TEST</Button>
     </Box>
   );
 }

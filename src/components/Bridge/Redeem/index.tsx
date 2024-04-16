@@ -1,4 +1,4 @@
-import { Box, TextField } from "@mui/material";
+import { Box, MenuItem, Select, TextField } from "@mui/material";
 import { useInkathon } from "@scio-labs/use-inkathon";
 import { useSorobanReact } from "@soroban-react/core";
 import BigNumber from "bignumber.js";
@@ -18,7 +18,7 @@ export function RedeemComponent() {
   const { activeAccount, activeSigner, api } = useInkathon();
   const { createRedeemRequestExtrinsic, getRedeemRequest } = useRedeemPallet();
   const { address } = useSorobanReact();
-  const { selectedVault } = useSpacewalkBridge()
+  const { selectedVault, wrappedAssets, selectedAsset, setSelectedAsset } = useSpacewalkBridge()
   const [submissionPending, setSubmissionPending] = useState(false);
   const [amount, setAmount] = useState<string>('');
 
@@ -88,18 +88,25 @@ export function RedeemComponent() {
     const res = await submitRequestRedeemExtrinsic()
     console.log(res)
   }
-  
+
+  const handleAssetSelection = (assetCode: string) => {
+    const newAsset = wrappedAssets?.find((ast) => ast.code == assetCode)
+    setSelectedAsset(newAsset)
+  }
+
   return (
     <Box component="form" noValidate autoComplete="off" sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-      {/* <Box mb={2}>
-        <Select value={selectedNetwork} onChange={(e) => setSelectedNetwork(e.target.value)}>
-          {availableNetworks.map((chain) => (
-            <MenuItem key={chain} value={chain}>
-              {chain}
-            </MenuItem>
-          ))}
-        </Select>
-      </Box> */}
+      {wrappedAssets && wrappedAssets.length > 0 && (   
+        <Box mb={2}>
+          <Select value={selectedAsset?.code} onChange={(e) => handleAssetSelection(e.target.value)}>
+            {wrappedAssets?.map((asset, index) => (
+              <MenuItem key={index} value={asset.code}>
+                {asset.code}
+              </MenuItem>
+            ))}
+          </Select>
+        </Box>
+      )}
       <TextField
         label="Amount to Bridge back to Stellar"
         variant="outlined"

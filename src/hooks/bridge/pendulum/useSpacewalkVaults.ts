@@ -1,16 +1,25 @@
-
 import { AccountId32 } from '@polkadot/types/interfaces';
 import { useInkathon } from '@scio-labs/use-inkathon';
 import { convertRawHexKeyToPublicKey } from 'helpers/bridge/pendulum/stellar';
-import { useEffect, useMemo, useState } from 'react';
-import { Asset } from 'stellar-sdk';
+import { useCallback, useEffect, useState } from 'react';
 
-interface StellarAssetType {
-  AlphaNum4: {
-    code: string,
-    issuer: string
-  }
+interface AlphaNum4 {
+  code: string;
+  issuer: string;
 }
+
+interface AlphaNum12 {
+  code: string;
+  issuer: string;
+}
+
+export type SpacewalkStellarAssetType = {
+  AlphaNum4: AlphaNum4;
+  AlphaNum12?: never;
+} | {
+  AlphaNum4?: never;
+  AlphaNum12: AlphaNum12;
+};
 
 export interface VaultId {
   accountId: AccountId32,
@@ -19,7 +28,7 @@ export interface VaultId {
       XCM: string
     },
     wrapped: {
-      Stellar: StellarAssetType | string
+      Stellar: SpacewalkStellarAssetType | string
     }
   }
 }
@@ -43,62 +52,76 @@ export interface SpacewalkVault {
 }
 
 export interface ExtendedSpacewalkVault extends SpacewalkVault {
-  asset?: Asset;
   issuableTokens?: string;
   redeemableTokens?: string;
 }
 
 export function useSpacewalkVaults() {
   const { api } = useInkathon();
-
   const [vaults, setVaults] = useState<SpacewalkVault[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (!api) {
+      setLoading(false);
       return;
     }
     
-    // Check that the pallet is available
+    // Check if the vaultRegistry API is available
     if (!api.query.vaultRegistry || !api.tx.vaultRegistry) {
+      setLoading(false);
       return;
     }
 
-    let unsubscribe: () => void;
-
     api.query.vaultRegistry.vaults.entries().then((entries) => {
+      const typedEntries = entries.map(([, value]) => {
+        const newValue = value.toHuman() as unknown as SpacewalkVault
 
-      const typedEntries: SpacewalkVault[] = entries.map(([, value]): SpacewalkVault => {
-        const humanReadableValue = value.toHuman();
-        
-        //this is a workaround for the type 
-        return humanReadableValue as unknown as SpacewalkVault;
+        if (typeof newValue.id.currencies.wrapped.Stellar !== "string" && newValue.id.currencies.wrapped.Stellar.AlphaNum4?.code.includes("0x")) {
+          switch (newValue.id.currencies.wrapped.Stellar.AlphaNum4.code) {
+            case "0x42524c00": newValue.id.currencies.wrapped.Stellar.AlphaNum4.code = "BRL"; break;
+            case "0x545a5300": newValue.id.currencies.wrapped.Stellar.AlphaNum4.code = "TZS"; break;
+          }
+        } else if (typeof newValue.id.currencies.wrapped.Stellar !== "string" && newValue.id.currencies.wrapped.Stellar.AlphaNum12?.code.includes("0x")) {
+          switch (newValue.id.currencies.wrapped.Stellar.AlphaNum12.code) {
+            case "0x42524c00": newValue.id.currencies.wrapped.Stellar.AlphaNum12.code = "BRL"; break;
+            case "0x545a5300": newValue.id.currencies.wrapped.Stellar.AlphaNum12.code = "TZS"; break;
+          }
+        }
+        return newValue
       });
-
       setVaults(typedEntries);
+      setLoading(false);
     });
 
-    return () => unsubscribe && unsubscribe();
+    return () => {};
   }, [api]);
 
-  const memo = useMemo(() => {
-    return {
-      getVaults() {
-        return vaults;
-      },
-      async getVaultStellarPublicKey(accountId: AccountId32) {
-        if (!api) {
-          return undefined;
-        }
-        const publicKeyBinary = await api.query.vaultRegistry?.vaultStellarPublicKey(accountId);
+  const getVaults = useCallback(() => {
+    return new Promise<SpacewalkVault[]>((resolve) => {
+      if (!loading) {
+        resolve(vaults);
+      } else {
+        const checkData = setInterval(() => {
+          if (!loading) {
+            clearInterval(checkData);
+            resolve(vaults);
+          }
+        }, 100);
+      }
+    });
+  }, [vaults, loading]);
 
-        if (!publicKeyBinary) {
-          return undefined;
-        } else {
-          return convertRawHexKeyToPublicKey(publicKeyBinary.toHex());
-        }
-      },
-    };
-  }, [api, vaults]);
+  const getVaultStellarPublicKey = useCallback(async (accountId: AccountId32) => {
+    if (!api) {
+      return undefined;
+    }
+    const publicKeyBinary = await api.query.vaultRegistry?.vaultStellarPublicKey(accountId);
+    return publicKeyBinary ? convertRawHexKeyToPublicKey(publicKeyBinary.toHex()) : undefined;
+  }, [api]);
 
-  return memo;
+  return {
+    getVaults,
+    getVaultStellarPublicKey
+  };
 }
