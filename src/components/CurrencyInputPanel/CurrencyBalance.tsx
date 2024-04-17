@@ -8,6 +8,7 @@ import { TokenType } from 'interfaces/tokens';
 import { xlmTokenList } from 'constants/xlmToken';
 import { useMemo } from 'react';
 import { useSorobanReact } from '@soroban-react/core';
+import { TextWithLoadingPlaceholder } from 'components/Swap/AdvancedSwapDetails';
 
 const StyledBalanceMax = styled('button')<{ disabled?: boolean }>`
   background-color: transparent;
@@ -37,6 +38,7 @@ interface CurrencyBalanceProps {
   showMaxButton: any;
   networkFees?: number | undefined | null;
   subentryCount?: number | undefined | null;
+  isLoadingNetworkFees?: boolean;
 }
 
 export default function CurrencyBalance({
@@ -47,21 +49,25 @@ export default function CurrencyBalance({
   showMaxButton,
   networkFees,
   subentryCount,
+  isLoadingNetworkFees,
 }: CurrencyBalanceProps) {
   // const [fee, setFee] = useState<number>(0);
   // const [adjustedBalance, setAdjustedBalance] = useState<number>(0);
-  const { tokenBalancesResponse } = useGetMyBalances();
+  const { tokenBalancesResponse, isLoading: isLoadingMyBalances } = useGetMyBalances();
+
   const balance =
     tokenBalancesResponse?.balances?.find((b) => b?.contract === currency?.contract)?.balance ||
     '0';
-  const {activeChain} = useSorobanReact();
+  const { activeChain } = useSorobanReact();
 
   let availableBalance: number;
   const xlmTokenContract = useMemo(() => {
     return xlmTokenList.find((tList) => tList.network === activeChain?.id)?.assets[0].contract;
-  },[activeChain]);
-  
-  if (currency.contract === xlmTokenContract) {
+  }, [activeChain]);
+
+  const isXLM = currency.contract === xlmTokenContract;
+
+  if (isXLM) {
     availableBalance =
       Number(balance) - Number(networkFees) - 1 - 0.5 * Number(subentryCount) > 0
         ? Number(balance) - Number(networkFees) - 1 - 0.5 * Number(subentryCount)
@@ -73,36 +79,43 @@ export default function CurrencyBalance({
   const theme = useTheme();
 
   return (
-    <RowFixed style={{ height: '17px' }}>
-      {currency.contract === xlmTokenContract ? (
-        <MouseoverTooltip
-          title={
-            <span>
-              All Stellar accounts must maintain a minimum balance of lumens.{' '}
-              <a
-                href="https://developers.stellar.org/docs/learn/fundamentals/lumens#minimum-balance"
-                style={{ textDecoration: 'underline' }}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Learn More
-              </a>
-            </span>
-          }
-        >
+    <TextWithLoadingPlaceholder
+      syncing={(isXLM && Boolean(isLoadingNetworkFees)) || isLoadingMyBalances || !tokenBalancesResponse}
+      width={150}
+    >
+      <RowFixed style={{ height: '17px' }}>
+        {isXLM ? (
+          <MouseoverTooltip
+            title={
+              <span>
+                All Stellar accounts must maintain a minimum balance of lumens.{' '}
+                <a
+                  href="https://developers.stellar.org/docs/learn/fundamentals/lumens#minimum-balance"
+                  style={{ textDecoration: 'underline' }}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Learn More
+                </a>
+              </span>
+            }
+          >
+            <BodySmall color={theme.palette.secondary.main}>
+              {!hideBalance && currency ? `Available balance: ${availableBalance}` : null}
+            </BodySmall>
+          </MouseoverTooltip>
+        ) : (
           <BodySmall color={theme.palette.secondary.main}>
-            {!hideBalance && currency ? `Available balance: ${availableBalance}` : null}
+            {!hideBalance && currency ? `Balance: ${availableBalance}` : null}
           </BodySmall>
-        </MouseoverTooltip>
-      ) : (
-        <BodySmall color={theme.palette.secondary.main}>
-          {!hideBalance && currency ? `Balance: ${availableBalance}` : null}
-        </BodySmall>
-      )}
+        )}
 
-      {showMaxButton && availableBalance > 0 && networkFees && networkFees > 0 ? (
-        <StyledBalanceMax onClick={() => onMax(availableBalance.toString())}>Max</StyledBalanceMax>
-      ) : null}
-    </RowFixed>
+        {showMaxButton && availableBalance > 0 && ((isXLM && Number(networkFees) > 0) || !isXLM) ? (
+          <StyledBalanceMax onClick={() => onMax(availableBalance.toString())}>
+            Max
+          </StyledBalanceMax>
+        ) : null}
+      </RowFixed>
+    </TextWithLoadingPlaceholder>
   );
 }
