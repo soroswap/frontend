@@ -37,7 +37,7 @@ import SwapCurrencyInputPanel from '../CurrencyInputPanel/SwapCurrencyInputPanel
 import SwapHeader from './SwapHeader';
 import { ArrowWrapper, SwapWrapper } from './styleds';
 
-const SwapSection = styled('div')(({ theme }) => ({
+export const SwapSection = styled('div')(({ theme }) => ({
   position: 'relative',
   backgroundColor: theme.palette.customBackground.module,
   borderRadius: 12,
@@ -66,7 +66,7 @@ const SwapSection = styled('div')(({ theme }) => ({
   },
 }));
 
-const OutputSwapSection = styled(SwapSection)`
+export const OutputSwapSection = styled(SwapSection)`
   border-bottom: ${({ theme }) => `1px solid ${theme.palette.customBackground.module}`};
   border-radius: 16px;
   border: 1px solid rgba(180, 239, 175, 0.2);

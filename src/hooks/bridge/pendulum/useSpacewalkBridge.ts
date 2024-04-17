@@ -1,12 +1,12 @@
-import { useSorobanReact } from "@soroban-react/core";
-import { TenantName } from "BridgeStateProvider/models";
-import { xlmVaultId } from "helpers/bridge/configs";
-import { convertCurrencyToStellarAsset, shouldFilterOut } from "helpers/bridge/pendulum/spacewalk";
-import { stringifyStellarAsset } from "helpers/bridge/pendulum/stellar";
+import { useSorobanReact } from '@soroban-react/core';
+import { TenantName } from 'BridgeStateProvider/models';
+import { xlmVaultId } from 'helpers/bridge/configs';
+import { convertCurrencyToStellarAsset, shouldFilterOut } from 'helpers/bridge/pendulum/spacewalk';
+import { stringifyStellarAsset } from 'helpers/bridge/pendulum/stellar';
 import _ from 'lodash-es';
-import { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
-import { Asset } from "stellar-sdk";
-import { ExtendedSpacewalkVault, VaultId, useSpacewalkVaults } from "./useSpacewalkVaults";
+import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
+import { Asset } from 'stellar-sdk';
+import { ExtendedSpacewalkVault, VaultId, useSpacewalkVaults } from './useSpacewalkVaults';
 
 export interface SpacewalkBridge {
   selectedVault?: VaultId;
@@ -21,40 +21,46 @@ function useSpacewalkBridge(): SpacewalkBridge {
   const { serverHorizon } = useSorobanReact();
   const [vaults, setExtendedVaults] = useState<ExtendedSpacewalkVault[]>([]);
   const { getVaults, getVaultStellarPublicKey } = useSpacewalkVaults();
-  const [selectedVault, setSelectedVault] = useState<VaultId | undefined>(xlmVaultId);
-  const [selectedAsset, setSelectedAsset] = useState<Asset | undefined>(Asset.native());
+  const [selectedVault, setSelectedVault] = useState<VaultId | undefined>(undefined);
+  const [selectedAsset, setSelectedAsset] = useState<Asset | undefined>(undefined);
 
   useEffect(() => {
     async function fetchAndProcessVaults() {
       try {
         const vaultData = await getVaults();
-        const combinedVaults = await Promise.all(vaultData.map(async (vault) => {
-          const extended: ExtendedSpacewalkVault = { ...vault };
+        const combinedVaults = await Promise.all(
+          vaultData.map(async (vault) => {
+            const extended: ExtendedSpacewalkVault = { ...vault };
 
-          // Start of Stellar balance retrieval
-          const stellarAccount = await getVaultStellarPublicKey(vault.id.accountId);
-          if (stellarAccount) {
-            const accountLoaded = await serverHorizon?.loadAccount(stellarAccount.publicKey());
-            let vaultAssetBalance;
+            // Start of Stellar balance retrieval
+            const stellarAccount = await getVaultStellarPublicKey(vault.id.accountId);
+            if (stellarAccount) {
+              const accountLoaded = await serverHorizon?.loadAccount(stellarAccount.publicKey());
+              let vaultAssetBalance;
 
-            if (typeof vault.id.currencies.wrapped.Stellar === 'string') {
-              vaultAssetBalance = accountLoaded?.balances.find(bal => bal.asset_type === 'native')?.balance;
-            } else if (vault.id.currencies.wrapped.Stellar?.AlphaNum4) {
-              let { code } = vault.id.currencies.wrapped.Stellar.AlphaNum4;
-              vaultAssetBalance = accountLoaded?.balances.find(bal => 'asset_code' in bal && bal.asset_code === code)?.balance;
+              if (typeof vault.id.currencies.wrapped.Stellar === 'string') {
+                vaultAssetBalance = accountLoaded?.balances.find(
+                  (bal) => bal.asset_type === 'native',
+                )?.balance;
+              } else if (vault.id.currencies.wrapped.Stellar?.AlphaNum4) {
+                let { code } = vault.id.currencies.wrapped.Stellar.AlphaNum4;
+                vaultAssetBalance = accountLoaded?.balances.find(
+                  (bal) => 'asset_code' in bal && bal.asset_code === code,
+                )?.balance;
+              }
+              extended.redeemableTokens = vaultAssetBalance;
             }
-            extended.redeemableTokens = vaultAssetBalance;
-          }
-          // End of Stellar balance retrieval
+            // End of Stellar balance retrieval
 
-          // TODO: Pendulum balance retrieval goes here
+            // TODO: Pendulum balance retrieval goes here
 
-          return extended;
-        }));
+            return extended;
+          }),
+        );
 
         setExtendedVaults(combinedVaults);
       } catch (error) {
-        console.error("BRIDGE CONNECTION ERROR", error);
+        console.error('BRIDGE CONNECTION ERROR', error);
       }
     }
 
@@ -63,30 +69,34 @@ function useSpacewalkBridge(): SpacewalkBridge {
 
   const wrappedAssets = useMemo(() => {
     if (!vaults) return;
-    const assets = vaults.map(vault => convertCurrencyToStellarAsset(vault.id.currencies.wrapped.Stellar))
-      .filter((asset): asset is Asset => asset != null && !shouldFilterOut(TenantName.Pendulum, asset));
-    return _.uniqBy(assets, asset => stringifyStellarAsset(asset));
+    const assets = vaults
+      .map((vault) => convertCurrencyToStellarAsset(vault.id.currencies.wrapped.Stellar))
+      .filter(
+        (asset): asset is Asset => asset != null && !shouldFilterOut(TenantName.Pendulum, asset),
+      );
+    return _.uniqBy(assets, (asset) => stringifyStellarAsset(asset));
   }, [vaults]);
 
   useEffect(() => {
-    if (selectedAsset?.code === "XLM") {
-      const xlmVault = vaults.find((vault) => vault.id.currencies.wrapped.Stellar === "StellarNative")
+    if (selectedAsset?.code === 'XLM') {
+      const xlmVault = vaults.find(
+        (vault) => vault.id.currencies.wrapped.Stellar === 'StellarNative',
+      );
       if (xlmVault) {
-        setSelectedVault(xlmVault.id)
+        setSelectedVault(xlmVault.id);
       }
     } else {
-      
       const vault = vaults.find((vault) => {
-        if(typeof vault.id.currencies.wrapped.Stellar === "string") return null
+        if (typeof vault.id.currencies.wrapped.Stellar === 'string') return null;
         if (vault.id.currencies.wrapped.Stellar.AlphaNum4) {
-          return vault.id.currencies.wrapped.Stellar.AlphaNum4.code === selectedAsset?.code
+          return vault.id.currencies.wrapped.Stellar.AlphaNum4.code === selectedAsset?.code;
         } else if (vault.id.currencies.wrapped.Stellar.AlphaNum12) {
-          return vault.id.currencies.wrapped.Stellar.AlphaNum12.code === selectedAsset?.code
+          return vault.id.currencies.wrapped.Stellar.AlphaNum12.code === selectedAsset?.code;
         }
-      })
-      setSelectedVault(vault?.id)
+      });
+      setSelectedVault(vault?.id);
     }
-  }, [selectedAsset, vaults])
+  }, [selectedAsset, vaults]);
 
   return {
     selectedVault,

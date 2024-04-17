@@ -1,8 +1,7 @@
 import { Box, Tab, Tabs, Typography } from '@mui/material';
-// import useBridgeSettings from 'hooks/bridge/pendulum/useBridgeSettings';
-import React, { useState } from 'react';
 import { IssueComponent } from './Issue';
 import { RedeemComponent } from './Redeem';
+import React, { useState } from 'react';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -45,6 +44,7 @@ const BridgeComponent = () => {
           <Tab label="back to stellar" />
         </Tabs>
       </Box>
+
       <CustomTabPanel value={value} index={0}>
         <IssueComponent />
       </CustomTabPanel>

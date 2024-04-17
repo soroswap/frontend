@@ -1,34 +1,36 @@
-import { Box, Button, MenuItem, Select, TextField } from '@mui/material';
-import { useInkathon } from '@scio-labs/use-inkathon';
-import { useSorobanReact } from '@soroban-react/core';
-import { deriveShortenedRequestId } from 'helpers/bridge/pendulum/spacewalk';
 import {
   convertRawHexKeyToPublicKey,
   decimalToStellarNative,
 } from 'helpers/bridge/pendulum/stellar';
+
+import { Asset, BASE_FEE, Memo, Operation, TransactionBuilder } from 'stellar-sdk';
+import { deriveShortenedRequestId } from 'helpers/bridge/pendulum/spacewalk';
 import { getEventBySectionAndMethod, getSubstrateErrors } from 'helpers/bridge/pendulum/substrate';
-import { useIssuePallet } from 'hooks/bridge/pendulum/useIssuePallet';
-import useSpacewalkBridge from 'hooks/bridge/pendulum/useSpacewalkBridge';
 import { useCallback, useMemo, useState } from 'react';
-import { BASE_FEE, Memo, Operation, TransactionBuilder } from 'stellar-sdk';
-import { BridgeButton } from '../BridgeButton';
+import { useInkathon } from '@scio-labs/use-inkathon';
+import { useIssuePallet } from 'hooks/bridge/pendulum/useIssuePallet';
+import { useSorobanReact } from '@soroban-react/core';
+import { VaultId } from './useSpacewalkVaults';
+import BigNumber from 'bignumber.js';
 
-export type IssueFormValues = {
-  amount: number;
-  securityDeposit: number;
-  to: number;
-};
+interface Props {
+  amount: string;
+  selectedAsset: Asset | undefined;
+  selectedVault: VaultId | undefined;
+}
 
-export function IssueComponent() {
+const useIssueHandler = ({ amount, selectedAsset, selectedVault }: Props) => {
   const { address, serverHorizon, activeChain, activeConnector } = useSorobanReact();
-  const { activeAccount, activeSigner, api } = useInkathon();
-  const { selectedVault, setSelectedAsset, wrappedAssets, selectedAsset, vaults } =
-    useSpacewalkBridge();
-  const { createIssueRequestExtrinsic, getIssueRequest } = useIssuePallet();
-  const [isBridging, setIsBridging] = useState<boolean>(false);
-  const [amount, setAmount] = useState<string>('');
 
-  const amountRaw = decimalToStellarNative(amount).toString();
+  const { activeAccount, activeSigner, api } = useInkathon();
+
+  const { createIssueRequestExtrinsic, getIssueRequest } = useIssuePallet();
+
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  const amountRaw = useMemo(() => {
+    return Number(amount) ? decimalToStellarNative(amount).toString() : new BigNumber(0).toString();
+  }, [amount]);
 
   const requestIssueExtrinsic = useMemo(() => {
     if (!selectedVault || !amount) {
@@ -81,7 +83,7 @@ export function IssueComponent() {
         let response = await serverHorizon?.submitTransaction(transactionToSubmit);
         console.log('🚀 « response:', response);
         if (response) {
-          setIsBridging(false);
+          setIsLoading(false);
         }
       } catch (error) {
         console.error('Error submitting transaction:', error);
@@ -117,7 +119,7 @@ export function IssueComponent() {
       return;
     }
 
-    setIsBridging(true);
+    setIsLoading(true);
 
     requestIssueExtrinsic
       .signAndSend(activeAccount.address, { signer: activeSigner }, (result) => {
@@ -158,7 +160,7 @@ export function IssueComponent() {
       })
       .catch((error) => {
         console.error('Transaction submission failed', error);
-        setIsBridging(false);
+        setIsLoading(false);
       });
   }, [
     activeAccount,
@@ -170,46 +172,10 @@ export function IssueComponent() {
     requestIssueExtrinsic,
   ]);
 
-  const handleAssetSelection = (assetCode: string) => {
-    const newAsset = wrappedAssets?.find((ast) => ast.code == assetCode);
-    setSelectedAsset(newAsset);
+  return {
+    handler: submitRequestIssueExtrinsic,
+    isLoading,
   };
+};
 
-  return (
-    <Box
-      component="form"
-      noValidate
-      autoComplete="off"
-      sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}
-    >
-      {wrappedAssets && wrappedAssets.length > 0 && (
-        <Box mb={2}>
-          <Select
-            value={selectedAsset?.code}
-            onChange={(e) => handleAssetSelection(e.target.value)}
-          >
-            {wrappedAssets?.map((asset, index) => (
-              <MenuItem key={index} value={asset.code}>
-                {asset.code}
-              </MenuItem>
-            ))}
-          </Select>
-        </Box>
-      )}
-      <TextField
-        label="Amount to Bridge to Pendulum"
-        variant="outlined"
-        value={amount}
-        onChange={(e) => setAmount(e.target.value)}
-        placeholder="Enter amount"
-        fullWidth
-        type="number"
-      />
-      <Box>
-        You will receive: {amount} {selectedAsset?.code}.s
-      </Box>
-      <BridgeButton isLoading={isBridging} callback={submitRequestIssueExtrinsic} />
-      <Button onClick={() => console.log('selectedVault', selectedVault)}>TEST</Button>
-    </Box>
-  );
-}
+export default useIssueHandler;

@@ -1,6 +1,7 @@
 import { Box, Paper, Typography, styled } from '@mui/material';
 import { useBalance, useInkathon } from '@scio-labs/use-inkathon';
 import BridgeComponent from 'components/Bridge/BridgeComponent';
+import BridgeComponentNew from 'components/Bridge/BridgeComponentNew';
 
 import SEO from 'components/SEO';
 
@@ -21,13 +22,7 @@ const PageWrapper = styled(Paper)`
 `;
 
 export default function BridgePage() {
-  const {
-    isConnected,
-    activeAccount,
-    error,
-    activeChain,
-    isConnecting,
-  } = useInkathon();
+  const { isConnected, activeAccount, error, activeChain, isConnecting } = useInkathon();
 
   const { balanceFormatted } = useBalance(activeAccount?.address, true);
 
@@ -46,37 +41,41 @@ export default function BridgePage() {
   return (
     <>
       <SEO title="Bridge - Soroswap" description="Soroswap" />
-      <PageWrapper>
-        <BridgeComponent />
+      <Box display="flex" flexDirection="column" alignItems="center" gap="32px" width="100%">
+        <BridgeComponentNew />
 
-        <Typography variant="h6" mt={2}>
-          {getStatusMessage()}
-        </Typography>
+        <PageWrapper>
+          <BridgeComponent />
 
-        {isConnected && (
-          <>
-            <Box>
-              <Typography variant="h6" mt={2}>
-                Network
-              </Typography>
-              <Typography variant="body1">{activeChain?.name}</Typography>
-            </Box>
-            <Box>
-              <Typography variant="h6" mt={2}>
-                Account
-              </Typography>
-              <Typography variant="body1">{activeAccount?.address}</Typography>
-            </Box>
+          <Typography variant="h6" mt={2}>
+            {getStatusMessage()}
+          </Typography>
 
-            <Box>
-              <Typography variant="h6" mt={2}>
-                Balance
-              </Typography>
-              <Typography variant="body1">{balanceFormatted}</Typography>
-            </Box>
-          </>
-        )}
-      </PageWrapper>
+          {isConnected && (
+            <>
+              <Box>
+                <Typography variant="h6" mt={2}>
+                  Network
+                </Typography>
+                <Typography variant="body1">{activeChain?.name}</Typography>
+              </Box>
+              <Box>
+                <Typography variant="h6" mt={2}>
+                  Account
+                </Typography>
+                <Typography variant="body1">{activeAccount?.address}</Typography>
+              </Box>
+
+              <Box>
+                <Typography variant="h6" mt={2}>
+                  Balance
+                </Typography>
+                <Typography variant="body1">{balanceFormatted}</Typography>
+              </Box>
+            </>
+          )}
+        </PageWrapper>
+      </Box>
     </>
   );
 }
