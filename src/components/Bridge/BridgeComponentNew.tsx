@@ -77,26 +77,6 @@ const BridgeComponentNew = () => {
     return isConnected && (noSelecteds || noValues);
   };
 
-  //Since we only have two chains, we can set the other chain when one is selected
-  //Remove this when we have more chains
-  useEffect(() => {
-    if (selectedChainFrom === BridgeChains.PENDULUM && selectedChainTo !== BridgeChains.STELLAR) {
-      setSelectedChainTo(BridgeChains.STELLAR);
-    }
-
-    if (selectedChainFrom === BridgeChains.STELLAR && selectedChainTo !== BridgeChains.PENDULUM) {
-      setSelectedChainTo(BridgeChains.PENDULUM);
-    }
-
-    if (selectedChainTo === BridgeChains.PENDULUM && selectedChainFrom !== BridgeChains.STELLAR) {
-      setSelectedChainFrom(BridgeChains.STELLAR);
-    }
-
-    if (selectedChainTo === BridgeChains.STELLAR && selectedChainFrom !== BridgeChains.PENDULUM) {
-      setSelectedChainFrom(BridgeChains.PENDULUM);
-    }
-  }, [selectedChainFrom, selectedChainTo]);
-
   return (
     <SwapWrapper>
       <BridgeHeader />
