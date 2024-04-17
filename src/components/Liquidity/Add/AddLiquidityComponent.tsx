@@ -14,7 +14,6 @@ import TransactionConfirmationModal, {
 } from 'components/TransactionConfirmationModal';
 import { AppContext } from 'contexts';
 import { getCurrentTimePlusOneHour } from 'functions/getCurrentTimePlusOneHour';
-import { calculateLiquidityFees } from 'functions/getNetworkFees';
 import { formatTokenAmount } from 'helpers/format';
 import { bigNumberToI128, bigNumberToU64 } from 'helpers/utils';
 import { useToken } from 'hooks/tokens/useToken';
@@ -35,6 +34,8 @@ import AddModalFooter from './AddModalFooter';
 import AddModalHeader from './AddModalHeader';
 import WrapStellarAssetModal from 'components/Modals/WrapStellarAssetModal';
 import useBoolean from 'hooks/useBoolean';
+import useAddLiquidityNetworkFees from 'hooks/useAddLiquidityNetworkFees';
+import useGetNativeTokenBalance from 'hooks/useGetNativeTokenBalance';
 
 export const PageWrapper = styled('main')`
   position: relative;
@@ -115,7 +116,6 @@ export default function AddLiquidityComponent({
   const [amountOfLpTokensToReceive, setAmountOfLpTokensToReceive] = useState<string>('');
   const [lpPercentage, setLpPercentage] = useState<string>('');
   const [totalShares, setTotalShares] = useState<string>('');
-  const [networkFees, setNetworkFees] = useState<number>(0);
   const [subentryCount, setSubentryCount] = useState<number>(0);
 
   const {
@@ -300,90 +300,18 @@ export default function AddLiquidityComponent({
     baseCurrency,
   });
 
+  const nativeBalance = useGetNativeTokenBalance();
+
   useEffect(() => {
     const getSubentryCount = async () => {
-      if (sorobanContext.address) {
+      if (sorobanContext.address && nativeBalance.data?.validAccount) {
         const account = await sorobanContext.serverHorizon?.loadAccount(sorobanContext.address);
         const count = account?.subentry_count ?? 0;
         setSubentryCount(count);
       }
     };
 
-    const fetchNetworkFees = async () => {
-      let desired0BN: BigNumber;
-      let desired1BN: BigNumber;
-      let valDependent: string;
-      if (Number(formattedAmounts[dependentField]) === 0) {
-        valDependent = '30';
-      } else {
-        valDependent = formattedAmounts[dependentField];
-      }
-
-      let valIndependent: string;
-      if (Number(formattedAmounts[independentField]) === 0) {
-        valIndependent = '30';
-      } else {
-        valIndependent = formattedAmounts[dependentField];
-      }
-
-      if (independentField === Field.CURRENCY_A) {
-        desired0BN = new BigNumber(valIndependent).shiftedBy(7);
-        desired1BN = new BigNumber(valDependent).shiftedBy(7);
-      } else {
-        desired0BN = new BigNumber(valDependent).shiftedBy(7);
-        desired1BN = new BigNumber(valIndependent).shiftedBy(7);
-      }
-
-      if (
-        desired0BN.isNaN() ||
-        desired1BN.isNaN() ||
-        !baseCurrency ||
-        !currencyB ||
-        !sorobanContext.address
-      ) {
-        // setNetworkFees(0);
-        return;
-      } else {
-        const desiredAScVal = bigNumberToI128(desired0BN);
-        const desiredBScVal = bigNumberToI128(desired1BN);
-
-        // Here we are implementint the slippage: which will be in the "0.5" format when is 0.5%
-        const factor = BigNumber(100).minus(userSlippage).dividedBy(100);
-        const min0BN = desired0BN.multipliedBy(factor).decimalPlaces(0); // we dont want to have decimals after applying the factor
-        const min1BN = desired1BN.multipliedBy(factor).decimalPlaces(0);
-
-        const minAScVal = bigNumberToI128(min0BN);
-        const minBScVal = bigNumberToI128(min1BN);
-
-        const args = [
-          new StellarSdk.Address(baseCurrency?.contract ?? '').toScVal(),
-          new StellarSdk.Address(currencyB?.contract ?? '').toScVal(),
-          desiredAScVal,
-          desiredBScVal,
-          minAScVal,
-          minBScVal,
-          new StellarSdk.Address(sorobanContext.address ?? '').toScVal(),
-          bigNumberToU64(BigNumber(getCurrentTimePlusOneHour())),
-        ];
-
-        try {
-          const fees = await calculateLiquidityFees(
-            sorobanContext,
-            args,
-            RouterMethod.ADD_LIQUIDITY,
-          );
-          if (fees) {
-            setNetworkFees(Number(fees) / 10 ** 7);
-          }
-        } catch (error) {
-          console.error('Error fetching network fees:', error);
-          setNetworkFees(-1);
-        }
-      }
-    };
-
     getSubentryCount();
-    fetchNetworkFees();
   }, [
     sorobanContext,
     formattedAmounts,
@@ -392,7 +320,67 @@ export default function AddLiquidityComponent({
     currencyB,
     independentField,
     dependentField,
+    nativeBalance.data?.validAccount,
   ]);
+
+  const buildNetworkFeesArgs = () => {
+    let desired0BN: BigNumber;
+    let desired1BN: BigNumber;
+    let valDependent: string;
+    let valIndependent: string;
+
+    valDependent = formattedAmounts[dependentField];
+
+    valIndependent = formattedAmounts[independentField];
+
+    if (Number(valDependent) === 0 || Number(valIndependent) === 0) return undefined;
+
+    if (independentField === Field.CURRENCY_A) {
+      desired0BN = new BigNumber(valIndependent).shiftedBy(7);
+      desired1BN = new BigNumber(valDependent).shiftedBy(7);
+    } else {
+      desired0BN = new BigNumber(valDependent).shiftedBy(7);
+      desired1BN = new BigNumber(valIndependent).shiftedBy(7);
+    }
+
+    if (
+      desired0BN.isNaN() ||
+      desired1BN.isNaN() ||
+      !baseCurrency ||
+      !currencyB ||
+      !sorobanContext.address
+    ) {
+      return undefined;
+    } else {
+      const desiredAScVal = bigNumberToI128(desired0BN);
+      const desiredBScVal = bigNumberToI128(desired1BN);
+
+      // Here we are implementint the slippage: which will be in the "0.5" format when is 0.5%
+      const factor = BigNumber(100).minus(userSlippage).dividedBy(100);
+      const min0BN = desired0BN.multipliedBy(factor).decimalPlaces(0); // we dont want to have decimals after applying the factor
+      const min1BN = desired1BN.multipliedBy(factor).decimalPlaces(0);
+
+      const minAScVal = bigNumberToI128(min0BN);
+      const minBScVal = bigNumberToI128(min1BN);
+
+      const args = [
+        new StellarSdk.Address(baseCurrency?.contract ?? '').toScVal(),
+        new StellarSdk.Address(currencyB?.contract ?? '').toScVal(),
+        desiredAScVal,
+        desiredBScVal,
+        minAScVal,
+        minBScVal,
+        new StellarSdk.Address(sorobanContext.address ?? '').toScVal(),
+        bigNumberToU64(BigNumber(getCurrentTimePlusOneHour())),
+      ];
+
+      return args;
+    }
+  };
+
+  const { networkFees, isLoading: isLoadingNetworkFees } = useAddLiquidityNetworkFees(
+    buildNetworkFeesArgs(),
+  );
 
   const wrapModal = useBoolean();
 
@@ -474,6 +462,7 @@ export default function AddLiquidityComponent({
                   onConfirm: provideLiquidity,
                   shareOfPool: lpPercentage,
                   networkFees,
+                  isLoadingNetworkFees,
                 })
               }
             />
