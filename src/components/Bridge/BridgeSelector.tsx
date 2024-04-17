@@ -174,7 +174,7 @@ const BridgeSelector = (props: Props) => {
         <CurrencySelect visible disabled={disabled} selected={false} onClick={modal.setTrue}>
           <Aligner>
             <RowFixed>
-              {selectedAsset && (
+              {selectedAsset && selectedChain && (
                 <CurrencyLogo
                   style={{ marginRight: '2px' }}
                   currency={{
@@ -186,7 +186,7 @@ const BridgeSelector = (props: Props) => {
               )}
 
               <StyledTokenName className="token-symbol-container">
-                {selectedAsset?.code || 'Select token'}
+                {selectedChain && selectedAsset ? selectedAsset.code : 'Select token'}
               </StyledTokenName>
             </RowFixed>
             <StyledDropDown selected={true} />
