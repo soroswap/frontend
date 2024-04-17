@@ -1,12 +1,11 @@
-import { useSorobanReact } from '@soroban-react/core';
-import { TenantName } from 'BridgeStateProvider/models';
-import { xlmVaultId } from 'helpers/bridge/configs';
-import { convertCurrencyToStellarAsset, shouldFilterOut } from 'helpers/bridge/pendulum/spacewalk';
-import { stringifyStellarAsset } from 'helpers/bridge/pendulum/stellar';
 import _ from 'lodash-es';
-import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
 import { Asset } from 'stellar-sdk';
+import { convertCurrencyToStellarAsset, shouldFilterOut } from 'helpers/bridge/pendulum/spacewalk';
+import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
 import { ExtendedSpacewalkVault, VaultId, useSpacewalkVaults } from './useSpacewalkVaults';
+import { stringifyStellarAsset } from 'helpers/bridge/pendulum/stellar';
+import { TenantName } from 'BridgeStateProvider/models';
+import { useSorobanReact } from '@soroban-react/core';
 
 export interface SpacewalkBridge {
   selectedVault?: VaultId;

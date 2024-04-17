@@ -1,14 +1,12 @@
-import { Box, MenuItem, Select, TextField } from '@mui/material';
-import { useInkathon } from '@scio-labs/use-inkathon';
-import { useSorobanReact } from '@soroban-react/core';
-import BigNumber from 'bignumber.js';
+import { Asset } from 'stellar-sdk';
 import { decimalToStellarNative, isPublicKey } from 'helpers/bridge/pendulum/stellar';
 import { getEventBySectionAndMethod, getSubstrateErrors } from 'helpers/bridge/pendulum/substrate';
-import { useRedeemPallet } from 'hooks/bridge/pendulum/useRedeemPallet';
-import useSpacewalkBridge from 'hooks/bridge/pendulum/useSpacewalkBridge';
 import { useCallback, useMemo, useState } from 'react';
-import { Asset } from 'stellar-sdk';
+import { useInkathon } from '@scio-labs/use-inkathon';
+import { useRedeemPallet } from 'hooks/bridge/pendulum/useRedeemPallet';
+import { useSorobanReact } from '@soroban-react/core';
 import { VaultId } from './useSpacewalkVaults';
+import BigNumber from 'bignumber.js';
 
 interface Props {
   amount: string;
