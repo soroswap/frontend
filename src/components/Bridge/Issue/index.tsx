@@ -7,7 +7,7 @@ import { getEventBySectionAndMethod, getSubstrateErrors } from "helpers/bridge/p
 import { useIssuePallet } from "hooks/bridge/pendulum/useIssuePallet";
 import useSpacewalkBridge from "hooks/bridge/pendulum/useSpacewalkBridge";
 import { useCallback, useMemo, useState } from "react";
-import { Asset, BASE_FEE, Memo, Operation, TransactionBuilder } from "stellar-sdk";
+import { BASE_FEE, Memo, Operation, TransactionBuilder } from "stellar-sdk";
 import { BridgeButton } from "../BridgeButton";
 
 export type IssueFormValues = {
@@ -19,7 +19,8 @@ export type IssueFormValues = {
 export function IssueComponent() {
   const { address, serverHorizon, activeChain, activeConnector } = useSorobanReact();
   const { activeAccount, activeSigner, api } = useInkathon();
-  const { selectedVault, setSelectedAsset, wrappedAssets, selectedAsset } = useSpacewalkBridge()
+  const { selectedVault, setSelectedAsset, wrappedAssets, selectedAsset, vaults } = useSpacewalkBridge()
+  console.log('🚀 « vaults:', vaults);
   const { createIssueRequestExtrinsic, getIssueRequest } = useIssuePallet();
   const [isBridging, setIsBridging] = useState<boolean>(false)
   const [amount, setAmount] = useState<string>('');
@@ -35,7 +36,7 @@ export function IssueComponent() {
   }, [amount, amountRaw, createIssueRequestExtrinsic, selectedVault]);
 
   const createStellarPayment = useCallback(async (recipient: string, memo: string) => {
-    if (!address) {
+    if (!address || !selectedAsset) {
       console.log("Stellar Wallet not connected");
       return;
     }
@@ -50,7 +51,7 @@ export function IssueComponent() {
     })
       .addOperation(Operation.payment({
         destination: recipient,
-        asset: Asset.native(),
+        asset: selectedAsset,
         amount: amount,
       }))
       .addMemo(Memo.text(memo))
@@ -76,7 +77,7 @@ export function IssueComponent() {
     } catch (error) {
       console.error('Error submitting transaction:', error);
     }
-  },[activeChain?.networkPassphrase, activeConnector, address, amount, serverHorizon]);
+  },[activeChain?.networkPassphrase, activeConnector, address, amount, selectedAsset, serverHorizon]);
   
 
   const submitRequestIssueExtrinsic = useCallback(() => {
