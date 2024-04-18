@@ -275,7 +275,7 @@ export default function ConfirmSwapModal({
     swapResult,
     trade,
     wrapTxHash,
-    networkFees
+    networkFees,
   ]);
 
   const titleToShow =

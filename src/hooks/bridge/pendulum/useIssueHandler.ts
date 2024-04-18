@@ -27,6 +27,9 @@ const useIssueHandler = ({ amount, selectedAsset, selectedVault }: Props) => {
   const { createIssueRequestExtrinsic, getIssueRequest } = useIssuePallet();
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [txSuccess, setTxSuccess] = useState<boolean>(false);
+  const [txError, setTxError] = useState<boolean>(false);
+  const [txHash, setTxHash] = useState<string | undefined>();
 
   const amountRaw = useMemo(() => {
     return Number(amount) ? decimalToStellarNative(amount).toString() : new BigNumber(0).toString();
@@ -84,9 +87,12 @@ const useIssueHandler = ({ amount, selectedAsset, selectedVault }: Props) => {
         console.log('🚀 « response:', response);
         if (response) {
           setIsLoading(false);
+          setTxSuccess(true);
+          setTxHash(response.hash);
         }
       } catch (error) {
         console.error('Error submitting transaction:', error);
+        setTxError(true);
       }
     },
     [
@@ -120,6 +126,7 @@ const useIssueHandler = ({ amount, selectedAsset, selectedVault }: Props) => {
     }
 
     setIsLoading(true);
+    setTxSuccess(false);
 
     requestIssueExtrinsic
       .signAndSend(activeAccount.address, { signer: activeSigner }, (result) => {
@@ -148,19 +155,24 @@ const useIssueHandler = ({ amount, selectedAsset, selectedVault }: Props) => {
             );
 
             getIssueRequest(issueId).then((issueRequest) => {
-              createStellarPayment(stellarVaultAddress.publicKey(), memo);
+              createStellarPayment(stellarVaultAddress.publicKey(), memo).catch((err) => {
+                setTxError(true);
+              });
             });
           }
 
           if (errors.length === 0) {
             console.log('Confirmed!');
             // setConfirmationDialogVisible(true);
+          } else {
+            setTxError(true);
           }
         }
       })
       .catch((error) => {
         console.error('Transaction submission failed', error);
         setIsLoading(false);
+        setTxError(true);
       });
   }, [
     activeAccount,
@@ -172,9 +184,24 @@ const useIssueHandler = ({ amount, selectedAsset, selectedVault }: Props) => {
     requestIssueExtrinsic,
   ]);
 
+  const resetStates = () => {
+    setIsLoading(false);
+    setTxSuccess(false);
+    setTxError(false);
+    setTxHash(undefined);
+  };
+
   return {
     handler: submitRequestIssueExtrinsic,
     isLoading,
+    txSuccess,
+    txError,
+    setIsLoading,
+    setTxError,
+    setTxSuccess,
+    txHash,
+    setTxHash,
+    resetStates,
   };
 };
 

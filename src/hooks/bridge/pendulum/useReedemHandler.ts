@@ -20,6 +20,9 @@ const useReedemHandler = ({ amount, selectedAsset, selectedVault }: Props) => {
   const { address: stellarAddress } = useSorobanReact();
 
   const [isLoading, setIsLoading] = useState(false);
+  const [txSuccess, setTxSuccess] = useState(false);
+  const [txError, setTxError] = useState(false);
+  const [txHash, setTxHash] = useState<string | undefined>();
 
   const amountRaw = useMemo(() => {
     return Number(amount) ? decimalToStellarNative(amount).toString() : new BigNumber(0).toString();
@@ -44,6 +47,7 @@ const useReedemHandler = ({ amount, selectedAsset, selectedVault }: Props) => {
     }
 
     setIsLoading(true);
+    setTxSuccess(false);
 
     requestRedeemExtrinsic
       .signAndSend(activeAccount.address, { signer: activeSigner as any }, (result: any) => {
@@ -73,12 +77,16 @@ const useReedemHandler = ({ amount, selectedAsset, selectedVault }: Props) => {
 
           if (errors.length === 0) {
             console.log('transaction successfull');
+            setTxSuccess(true);
+          } else {
+            setTxError(true);
           }
         }
       })
       .catch((error: unknown) => {
         console.error('Transaction submission failed', error);
         setIsLoading(false);
+        setTxError(true);
       });
   }, [
     requestRedeemExtrinsic,
@@ -89,7 +97,24 @@ const useReedemHandler = ({ amount, selectedAsset, selectedVault }: Props) => {
     getRedeemRequest,
   ]);
 
-  return { handler: submitRequestRedeemExtrinsic, isLoading };
+  const resetStates = () => {
+    setIsLoading(false);
+    setTxSuccess(false);
+    setTxError(false);
+  };
+
+  return {
+    handler: submitRequestRedeemExtrinsic,
+    isLoading,
+    txSuccess,
+    txError,
+    setIsLoading,
+    setTxSuccess,
+    setTxError,
+    txHash,
+    setTxHash,
+    resetStates,
+  };
 };
 
 export default useReedemHandler;

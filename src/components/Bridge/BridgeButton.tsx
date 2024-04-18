@@ -1,8 +1,8 @@
-import { Box, CircularProgress } from "@mui/material";
-import { getSubstrateChain, useInkathon } from "@scio-labs/use-inkathon";
-import { useSorobanReact } from "@soroban-react/core";
-import { ButtonPrimary } from "components/Buttons/Button";
-import { ButtonText } from "components/Text";
+import { Box, CircularProgress } from '@mui/material';
+import { getSubstrateChain, useInkathon } from '@scio-labs/use-inkathon';
+import { useSorobanReact } from '@soroban-react/core';
+import { ButtonPrimary } from 'components/Buttons/Button';
+import { ButtonText } from 'components/Text';
 
 interface PendulumBridgeButtonProps {
   isLoading?: boolean;
@@ -12,38 +12,34 @@ interface PendulumBridgeButtonProps {
 
 export function BridgeButton({ isLoading, disabled, callback }: PendulumBridgeButtonProps) {
   const { address } = useSorobanReact();
-  const {
-    connect,
-    isConnected,
-    isConnecting,
-  } = useInkathon();
+  const { connect, isConnected, isConnecting } = useInkathon();
 
   const handleConnect = async () => {
     const substrateChain = getSubstrateChain('pendulum');
-    
+
     await connect?.(substrateChain);
   };
 
   const buttonText = () => {
     if (!address) {
-      return "Connect Wallet"
+      return 'Connect Wallet';
     }
     if (!isConnected) {
-      return "Connect Pendulum wallet"
+      return 'Connect Pendulum wallet';
     }
     if (isConnected) {
-      return "Bridge"
+      return 'Send';
     }
-  }
+  };
 
   const handleButtonClick = () => {
     if (!isConnected) {
-      handleConnect()
+      handleConnect();
     } else {
-      callback()
+      callback();
     }
-  }
-  
+  };
+
   return (
     <div>
       <ButtonPrimary
@@ -57,7 +53,7 @@ export function BridgeButton({ isLoading, disabled, callback }: PendulumBridgeBu
               <CircularProgress size="24px" />
             </Box>
           ) : (
-              <>{buttonText()}</>
+            <>{buttonText()}</>
           )}
         </ButtonText>
       </ButtonPrimary>

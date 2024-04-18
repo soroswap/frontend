@@ -13,24 +13,26 @@ interface AlphaNum12 {
   issuer: string;
 }
 
-export type SpacewalkStellarAssetType = {
-  AlphaNum4: AlphaNum4;
-  AlphaNum12?: never;
-} | {
-  AlphaNum4?: never;
-  AlphaNum12: AlphaNum12;
-};
+export type SpacewalkStellarAssetType =
+  | {
+      AlphaNum4: AlphaNum4;
+      AlphaNum12?: never;
+    }
+  | {
+      AlphaNum4?: never;
+      AlphaNum12: AlphaNum12;
+    };
 
 export interface VaultId {
-  accountId: AccountId32,
+  accountId: AccountId32;
   currencies: {
     collateral: {
-      XCM: string
-    },
+      XCM: string;
+    };
     wrapped: {
-      Stellar: SpacewalkStellarAssetType | string
-    }
-  }
+      Stellar: SpacewalkStellarAssetType | string;
+    };
+  };
 }
 
 interface VaultStatus {
@@ -41,15 +43,22 @@ export interface SpacewalkVault {
   id: VaultId;
   status: VaultStatus;
   bannedUntil: string;
-  secureCollateralThreshold: string,
-  toBeIssuedTokens: string,
-  issuedTokens: string,
-  toBeRedeemedTokens: string,
-  toBeReplacedTokens: string,
-  replaceCollateral: string,
-  activeReplaceCollateral: string,
-  liquidatedCollateral: string
+  secureCollateralThreshold: string;
+  toBeIssuedTokens: string;
+  issuedTokens: string;
+  toBeRedeemedTokens: string;
+  toBeReplacedTokens: string;
+  replaceCollateral: string;
+  activeReplaceCollateral: string;
+  liquidatedCollateral: string;
 }
+
+export const SpacewalkCodeToSymbol: {
+  [key: string]: string;
+} = {
+  '0x42524c00': 'BRL',
+  '0x545a5300': 'TZS',
+};
 
 export interface ExtendedSpacewalkVault extends SpacewalkVault {
   issuableTokens?: string;
@@ -66,7 +75,7 @@ export function useSpacewalkVaults() {
       setLoading(false);
       return;
     }
-    
+
     // Check if the vaultRegistry API is available
     if (!api.query.vaultRegistry || !api.tx.vaultRegistry) {
       setLoading(false);
@@ -75,20 +84,34 @@ export function useSpacewalkVaults() {
 
     api.query.vaultRegistry.vaults.entries().then((entries) => {
       const typedEntries = entries.map(([, value]) => {
-        const newValue = value.toHuman() as unknown as SpacewalkVault
+        const newValue = value.toHuman() as unknown as SpacewalkVault;
 
-        if (typeof newValue.id.currencies.wrapped.Stellar !== "string" && newValue.id.currencies.wrapped.Stellar.AlphaNum4?.code.includes("0x")) {
-          switch (newValue.id.currencies.wrapped.Stellar.AlphaNum4.code) {
-            case "0x42524c00": newValue.id.currencies.wrapped.Stellar.AlphaNum4.code = "BRL"; break;
-            case "0x545a5300": newValue.id.currencies.wrapped.Stellar.AlphaNum4.code = "TZS"; break;
-          }
-        } else if (typeof newValue.id.currencies.wrapped.Stellar !== "string" && newValue.id.currencies.wrapped.Stellar.AlphaNum12?.code.includes("0x")) {
-          switch (newValue.id.currencies.wrapped.Stellar.AlphaNum12.code) {
-            case "0x42524c00": newValue.id.currencies.wrapped.Stellar.AlphaNum12.code = "BRL"; break;
-            case "0x545a5300": newValue.id.currencies.wrapped.Stellar.AlphaNum12.code = "TZS"; break;
-          }
-        }
-        return newValue
+        // if (
+        //   typeof newValue.id.currencies.wrapped.Stellar !== 'string' &&
+        //   newValue.id.currencies.wrapped.Stellar.AlphaNum4?.code.includes('0x')
+        // ) {
+        //   switch (newValue.id.currencies.wrapped.Stellar.AlphaNum4.code) {
+        //     case '0x42524c00':
+        //       newValue.id.currencies.wrapped.Stellar.AlphaNum4.code = 'BRL';
+        //       break;
+        //     case '0x545a5300':
+        //       newValue.id.currencies.wrapped.Stellar.AlphaNum4.code = 'TZS';
+        //       break;
+        //   }
+        // } else if (
+        //   typeof newValue.id.currencies.wrapped.Stellar !== 'string' &&
+        //   newValue.id.currencies.wrapped.Stellar.AlphaNum12?.code.includes('0x')
+        // ) {
+        //   switch (newValue.id.currencies.wrapped.Stellar.AlphaNum12.code) {
+        //     case '0x42524c00':
+        //       newValue.id.currencies.wrapped.Stellar.AlphaNum12.code = 'BRL';
+        //       break;
+        //     case '0x545a5300':
+        //       newValue.id.currencies.wrapped.Stellar.AlphaNum12.code = 'TZS';
+        //       break;
+        //   }
+        // }
+        return newValue;
       });
       setVaults(typedEntries);
       setLoading(false);
@@ -112,16 +135,19 @@ export function useSpacewalkVaults() {
     });
   }, [vaults, loading]);
 
-  const getVaultStellarPublicKey = useCallback(async (accountId: AccountId32) => {
-    if (!api) {
-      return undefined;
-    }
-    const publicKeyBinary = await api.query.vaultRegistry?.vaultStellarPublicKey(accountId);
-    return publicKeyBinary ? convertRawHexKeyToPublicKey(publicKeyBinary.toHex()) : undefined;
-  }, [api]);
+  const getVaultStellarPublicKey = useCallback(
+    async (accountId: AccountId32) => {
+      if (!api) {
+        return undefined;
+      }
+      const publicKeyBinary = await api.query.vaultRegistry?.vaultStellarPublicKey(accountId);
+      return publicKeyBinary ? convertRawHexKeyToPublicKey(publicKeyBinary.toHex()) : undefined;
+    },
+    [api],
+  );
 
   return {
     getVaults,
-    getVaultStellarPublicKey
+    getVaultStellarPublicKey,
   };
 }

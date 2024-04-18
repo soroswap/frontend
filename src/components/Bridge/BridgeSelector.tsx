@@ -6,13 +6,16 @@ import {
 } from 'components/CurrencyInputPanel/SwapCurrencyInputPanel';
 import { Asset } from 'stellar-sdk';
 import { Box, Modal, Typography, styled, useMediaQuery, useTheme } from '@mui/material';
+import { BridgeChains } from './BridgeComponentNew';
 import { opacify } from 'themes/utils';
 import { RowFixed } from 'components/Row';
 import Column from 'components/Column';
 import CurrencyLogo from 'components/Logo/CurrencyLogo';
 import useBoolean from 'hooks/useBoolean';
+import { useGetBridgeAssetInfo } from 'hooks/bridge/pendulum/useGetBridgeAssetInfo';
+import BridgeAssetItem from './BridgeAssetItem';
 
-const ModalContentWrapper = styled(Column, {
+export const ModalContentWrapper = styled(Column, {
   shouldForwardProp: (prop) => prop !== 'modalheight',
 })<{ modalheight?: number | string }>`
   overflow: hidden;
@@ -76,14 +79,14 @@ const SelectItemContainer = styled(Box, {
 
 interface Props {
   assets: Asset[];
-  chains: { name: string; icon: JSX.Element }[];
+  chains: { name: BridgeChains; icon: JSX.Element }[];
   modalTitle: string;
-  selectedChain: string;
-  setSelectedChain: React.Dispatch<React.SetStateAction<string>>;
+  selectedChain: BridgeChains | null;
+  setSelectedChain: React.Dispatch<React.SetStateAction<BridgeChains | null>>;
   selectedAsset: Asset | undefined;
   setSelectedAsset: React.Dispatch<React.SetStateAction<Asset | undefined>>;
   disabled?: boolean;
-  disabledChains?: string[];
+  disabledChains?: (BridgeChains | null)[];
 }
 
 const BridgeSelector = (props: Props) => {
@@ -110,7 +113,7 @@ const BridgeSelector = (props: Props) => {
     modal.setFalse();
   };
 
-  const onSelectChain = (chainName: string) => {
+  const onSelectChain = (chainName: BridgeChains) => {
     setSelectedChain(chainName);
 
     if (selectedAsset) {
@@ -118,75 +121,73 @@ const BridgeSelector = (props: Props) => {
     }
   };
 
+  const { code, token } = useGetBridgeAssetInfo({ asset: selectedAsset, chain: selectedChain });
+
   return (
     <>
       <Modal open={modal.value} onClose={modal.setFalse}>
-        <ModalContentWrapper modalheight="60vh">
-          <Typography
-            variant="h6"
-            sx={{
-              padding: '16px 24px 12px 18px',
-            }}
-          >
-            {modalTitle}
-          </Typography>
-          <Box display="flex" height="100%" gap={2}>
-            <ModalLeftContainer>
-              {chains.map((chain, index) => {
-                const isDisabled = disabledChains?.includes(chain.name);
-                return (
+        <div>
+          <ModalContentWrapper modalheight="60vh">
+            <Typography
+              variant="h6"
+              sx={{
+                padding: '16px 24px 12px 18px',
+              }}
+            >
+              {modalTitle}
+            </Typography>
+            <Box display="flex" height="100%" gap={2}>
+              <ModalLeftContainer>
+                {chains.map((chain, index) => {
+                  const isDisabled = disabledChains?.includes(chain.name);
+                  return (
+                    <SelectItemContainer
+                      key={index}
+                      isSelected={selectedChain === chain.name}
+                      onClick={() => (isDisabled ? null : onSelectChain(chain.name))}
+                      isDisabled={isDisabled}
+                    >
+                      {chain.icon}
+                      <Typography variant="body1">{chain.name}</Typography>
+                    </SelectItemContainer>
+                  );
+                })}
+              </ModalLeftContainer>
+              <ModalRightContainer>
+                {assets.map((asset, index) => (
                   <SelectItemContainer
                     key={index}
-                    isSelected={selectedChain === chain.name}
-                    onClick={() => (isDisabled ? null : onSelectChain(chain.name))}
-                    isDisabled={isDisabled}
+                    isSelected={selectedAsset?.code === asset.code}
+                    onClick={() => onSelectAsset(asset)}
+                    isDisabled={!selectedChain}
                   >
-                    {chain.icon}
-                    <Typography variant="body1">{chain.name}</Typography>
+                    <BridgeAssetItem asset={asset} chain={selectedChain} />
                   </SelectItemContainer>
-                );
-              })}
-            </ModalLeftContainer>
-            <ModalRightContainer>
-              {assets.map((asset, index) => (
-                <SelectItemContainer
-                  key={index}
-                  isSelected={selectedAsset?.code === asset.code}
-                  onClick={() => onSelectAsset(asset)}
-                  isDisabled={!selectedChain}
-                >
-                  <CurrencyLogo
-                    style={{ marginRight: '2px' }}
-                    currency={{
-                      code: asset.code,
-                      contract: '',
-                    }}
-                    size={isMobile ? '16px' : '24px'}
-                  />
-                  <Typography variant="body1">{asset.code}</Typography>
-                </SelectItemContainer>
-              ))}
-            </ModalRightContainer>
-          </Box>
-        </ModalContentWrapper>
+                ))}
+              </ModalRightContainer>
+            </Box>
+          </ModalContentWrapper>
+        </div>
       </Modal>
       <Box>
-        <CurrencySelect visible disabled={disabled} selected={false} onClick={modal.setTrue}>
+        <CurrencySelect
+          visible
+          disabled={disabled}
+          selected={!!selectedAsset && !!selectedChain}
+          onClick={modal.setTrue}
+        >
           <Aligner>
             <RowFixed>
               {selectedAsset && selectedChain && (
                 <CurrencyLogo
                   style={{ marginRight: '2px' }}
-                  currency={{
-                    code: selectedAsset.code,
-                    contract: '',
-                  }}
-                  size={isMobile ? '16px' : '28px'}
+                  currency={token}
+                  size={isMobile ? '16px' : '24px'}
                 />
               )}
 
               <StyledTokenName className="token-symbol-container">
-                {selectedChain && selectedAsset ? selectedAsset.code : 'Select token'}
+                {selectedChain && selectedAsset ? code : 'Select token'}
               </StyledTokenName>
             </RowFixed>
             <StyledDropDown selected={true} />

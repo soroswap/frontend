@@ -30,7 +30,7 @@ const ConfirmButton = styled(ButtonError)`
   margin-top: 10px;
 `;
 
-const DetailRowValue = styled(
+export const DetailRowValue = styled(
   ({
     component = 'div',
     children,
