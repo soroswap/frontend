@@ -127,6 +127,8 @@ const useIssueHandler = ({ amount, selectedAsset, selectedVault }: Props) => {
 
     setIsLoading(true);
     setTxSuccess(false);
+    setTxError(false);
+    setTxHash(undefined);
 
     requestIssueExtrinsic
       .signAndSend(activeAccount.address, { signer: activeSigner }, (result) => {
