@@ -1,38 +1,39 @@
-import { useState } from 'react';
+import { Box, Modal, Typography, useTheme } from '@mui/material';
+import { useInkathon } from '@scio-labs/use-inkathon';
+import { ButtonPrimary } from 'components/Buttons/Button';
+import { CloseButton } from 'components/Buttons/CloseButton';
+import { AutoColumn } from 'components/Column';
 import {
   Container,
   InputPanel,
   InputRow,
   StyledNumericalInput,
 } from 'components/CurrencyInputPanel/SwapCurrencyInputPanel';
-import { ArrowContainer, OutputSwapSection, SwapSection } from 'components/Swap/SwapComponent';
-import { AlertTriangle, ArrowDown } from 'react-feather';
-import { ArrowWrapper, SwapWrapper } from 'components/Swap/styleds';
-import { Box, Modal, Typography, useTheme } from '@mui/material';
-import { BridgeButton } from './BridgeButton';
-import { useInkathon } from '@scio-labs/use-inkathon';
-import BridgeHeader from './BridgeHeader';
-import BridgeSelector, { ModalContentWrapper } from './BridgeSelector';
-import PendulumChainIcon from './ChainIcons/PendulumChainIcon';
-import StellarChainIcon from './ChainIcons/StellarChainIcon';
-import useIssueHandler from 'hooks/bridge/pendulum/useIssueHandler';
-import useReedemHandler from 'hooks/bridge/pendulum/useReedemHandler';
-import useSpacewalkBridge from 'hooks/bridge/pendulum/useSpacewalkBridge';
-import useBoolean from 'hooks/useBoolean';
-import { ButtonText, SubHeader, SubHeaderLarge, SubHeaderSmall } from 'components/Text';
-import { Label } from 'components/Liquidity/Add/AddModalHeader';
 import { DetailRowValue } from 'components/Liquidity/Add/AddModalFooter';
-import { ButtonPrimary } from 'components/Buttons/Button';
-import BridgeAssetItem from './BridgeAssetItem';
-import { useGetBridgeAssetInfo } from 'hooks/bridge/pendulum/useGetBridgeAssetInfo';
-import { CloseButton } from 'components/Buttons/CloseButton';
+import { Label } from 'components/Liquidity/Add/AddModalHeader';
 import { RowBetween } from 'components/Row';
-import { ConfirmedIcon } from 'components/TransactionConfirmationModal/ModalStyles';
 import {
   AnimatedEntranceConfirmationIcon,
   LoadingIndicatorOverlay,
 } from 'components/Swap/PendingModalContent/Logos';
-import { AutoColumn } from 'components/Column';
+import { ArrowContainer, OutputSwapSection, SwapSection } from 'components/Swap/SwapComponent';
+import { ArrowWrapper, SwapWrapper } from 'components/Swap/styleds';
+import { ButtonText, SubHeader, SubHeaderLarge, SubHeaderSmall } from 'components/Text';
+import { ConfirmedIcon } from 'components/TransactionConfirmationModal/ModalStyles';
+import { useGetBridgeAssetInfo } from 'hooks/bridge/pendulum/useGetBridgeAssetInfo';
+import useIssueHandler from 'hooks/bridge/pendulum/useIssueHandler';
+import useReedemHandler from 'hooks/bridge/pendulum/useReedemHandler';
+import useSpacewalkBalances from 'hooks/bridge/pendulum/useSpacewalkBalances';
+import useSpacewalkBridge from 'hooks/bridge/pendulum/useSpacewalkBridge';
+import useBoolean from 'hooks/useBoolean';
+import { useState } from 'react';
+import { AlertTriangle, ArrowDown } from 'react-feather';
+import BridgeAssetItem from './BridgeAssetItem';
+import { BridgeButton } from './BridgeButton';
+import BridgeHeader from './BridgeHeader';
+import BridgeSelector, { ModalContentWrapper } from './BridgeSelector';
+import PendulumChainIcon from './ChainIcons/PendulumChainIcon';
+import StellarChainIcon from './ChainIcons/StellarChainIcon';
 
 export enum BridgeChains {
   PENDULUM = 'Pendulum',
@@ -109,6 +110,9 @@ const BridgeComponentNew = () => {
   const showPendingModal = isPending || isSuccess || isError;
 
   const theme = useTheme();
+
+  const pendulumBalances = useSpacewalkBalances()
+  // console.log('🚀 « pendulumBalances:', pendulumBalances);
 
   return (
     <>
@@ -234,7 +238,7 @@ const BridgeComponentNew = () => {
               <div>From {selectedChainFrom}</div>
               <InputRow>
                 <BridgeSelector
-                  modalTitle="Swap from"
+                  modalTitle="Bridge from"
                   chains={chains}
                   disabledChains={[selectedChainTo]}
                   selectedChain={selectedChainFrom}
@@ -266,7 +270,7 @@ const BridgeComponentNew = () => {
               <div>To {selectedChainTo}</div>
               <InputRow>
                 <BridgeSelector
-                  modalTitle="Swap to"
+                  modalTitle="Bridge to"
                   chains={chains}
                   selectedChain={selectedChainTo}
                   setSelectedChain={setSelectedChainTo}

@@ -23,15 +23,16 @@ export type SpacewalkStellarAssetType =
       AlphaNum12: AlphaNum12;
     };
 
+export interface SpacewalkPrimitivesCurrencyId {
+  Stellar: SpacewalkStellarAssetType | string;
+}
 export interface VaultId {
   accountId: AccountId32;
   currencies: {
     collateral: {
       XCM: string;
     };
-    wrapped: {
-      Stellar: SpacewalkStellarAssetType | string;
-    };
+    wrapped: SpacewalkPrimitivesCurrencyId;
   };
 }
 

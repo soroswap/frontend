@@ -1,9 +1,11 @@
 import { ApiPromise } from '@polkadot/api';
+import { UInt, u128 } from '@polkadot/types';
 import type { Enum, Struct, u8 } from '@polkadot/types-codec';
 import { U8aFixed } from '@polkadot/types-codec';
 import { TenantName } from 'BridgeStateProvider/models';
+import BigNumber from 'bignumber.js';
 import bs58 from 'bs58';
-import { SpacewalkStellarAssetType } from 'hooks/bridge/pendulum/useSpacewalkVaults';
+import { SpacewalkCodeToSymbol, SpacewalkStellarAssetType } from 'hooks/bridge/pendulum/useSpacewalkVaults';
 import { DateTime } from 'luxon';
 import { Asset, Keypair } from 'stellar-sdk';
 import { convertRawHexKeyToPublicKey } from './stellar';
@@ -50,10 +52,12 @@ export function convertCurrencyToStellarAsset(currency: SpacewalkStellarAssetTyp
       return Asset.native();
     } else if (currency.AlphaNum4) {
       const issuer = convertRawHexKeyToPublicKey(currency.AlphaNum4.issuer);
-      return new Asset(currency.AlphaNum4.code, issuer.publicKey());
+      const code = SpacewalkCodeToSymbol?.[currency.AlphaNum4.code] || currency.AlphaNum4.code;
+      return new Asset(code, issuer.publicKey());
     } else if (currency.AlphaNum12) {
       const issuer = convertRawHexKeyToPublicKey(currency.AlphaNum12.issuer);
-      return new Asset(currency.AlphaNum12.code, issuer.publicKey());
+      const code = SpacewalkCodeToSymbol?.[currency.AlphaNum12.code] || currency.AlphaNum12.code;
+      return new Asset(code, issuer.publicKey());
     } else {
       return null;
     }
@@ -228,3 +232,16 @@ export const deriveShortenedRequestId = (requestIdHex: string) => {
   // This derivation matches the one used in the Spacewalk pallets
   return bs58.encode(requestId).slice(0, 28);
 }
+
+export const nativePendulumToDecimal = (value: BigNumber | number | string | u128 | UInt, decimals: number = 12) => {
+  if (!value) return new BigNumber(0);
+
+  if (typeof value === 'string' || value instanceof u128 || value instanceof UInt) {
+    // Replace the unnecessary ',' with '' to prevent BigNumber from throwing an error
+    value = new BigNumber(value.toString().replaceAll(',', ''));
+  }
+  const bigIntValue = new BigNumber(value);
+  const divisor = new BigNumber(10).pow(decimals);
+
+  return bigIntValue.div(divisor);
+};
