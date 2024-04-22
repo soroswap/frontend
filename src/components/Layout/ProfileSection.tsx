@@ -61,6 +61,7 @@ export const HeaderChip = ({
   isSmall,
   chains,
   canDisconnect,
+  disconnect,
   ...rest
 }: {
   label: React.ReactNode;
@@ -68,10 +69,11 @@ export const HeaderChip = ({
   isSmall?: boolean;
   chains?: any[];
   canDisconnect?: boolean;
+  disconnect?: ()=> void;
 }) => {
   const theme = useTheme();
   const sorobanReact = useSorobanReact();
-  const { setActiveChain, disconnect} = sorobanReact; 
+  const { setActiveChain } = sorobanReact; 
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
 
@@ -89,8 +91,11 @@ export const HeaderChip = ({
   }
 
   const handleDisconnect = () => {
-    disconnect && disconnect();
-    handleClose();
+    if (!disconnect) {
+      sorobanReact.disconnect();
+    } else {
+      disconnect()
+    }
   }
 
   const profileChipStyle = {
