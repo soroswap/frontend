@@ -281,8 +281,7 @@ export default function SwapCurrencyInputPanel({
             <RowBetween>
               {address && currency ? (
                 <CurrencyBalance
-                  address={address}
-                  currency={currency}
+                  contract={currency.contract}
                   onMax={onMax}
                   hideBalance={hideBalance}
                   showMaxButton={showMaxButton}

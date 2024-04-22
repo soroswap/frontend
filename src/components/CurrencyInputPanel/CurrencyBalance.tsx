@@ -1,14 +1,13 @@
 import { styled, useTheme } from '@mui/material';
 import { RowFixed } from 'components/Row';
 import { BodySmall } from 'components/Text';
-import useGetMyBalances from 'hooks/useGetMyBalances';
 import { MouseoverTooltip } from 'components/Tooltip';
+import useGetMyBalances from 'hooks/useGetMyBalances';
 
-import { TokenType } from 'interfaces/tokens';
-import { xlmTokenList } from 'constants/xlmToken';
-import { useMemo } from 'react';
 import { useSorobanReact } from '@soroban-react/core';
 import { TextWithLoadingPlaceholder } from 'components/Swap/AdvancedSwapDetails';
+import { xlmTokenList } from 'constants/xlmToken';
+import { useMemo } from 'react';
 
 const StyledBalanceMax = styled('button')<{ disabled?: boolean }>`
   background-color: transparent;
@@ -31,8 +30,7 @@ const StyledBalanceMax = styled('button')<{ disabled?: boolean }>`
 `;
 
 interface CurrencyBalanceProps {
-  address: string;
-  currency: TokenType;
+  contract: string;
   onMax: (maxValue: string) => void;
   hideBalance: any;
   showMaxButton: any;
@@ -42,8 +40,7 @@ interface CurrencyBalanceProps {
 }
 
 export default function CurrencyBalance({
-  currency,
-  address,
+  contract,
   onMax,
   hideBalance,
   showMaxButton,
@@ -54,18 +51,18 @@ export default function CurrencyBalance({
   // const [fee, setFee] = useState<number>(0);
   // const [adjustedBalance, setAdjustedBalance] = useState<number>(0);
   const { tokenBalancesResponse, isLoading: isLoadingMyBalances } = useGetMyBalances();
+  const { activeChain } = useSorobanReact();
 
   const balance =
-    tokenBalancesResponse?.balances?.find((b) => b?.contract === currency?.contract)?.balance ||
+    tokenBalancesResponse?.balances?.find((b) => b?.contract === contract)?.balance ||
     '0';
-  const { activeChain } = useSorobanReact();
 
   let availableBalance: number;
   const xlmTokenContract = useMemo(() => {
     return xlmTokenList.find((tList) => tList.network === activeChain?.id)?.assets[0].contract;
   }, [activeChain]);
 
-  const isXLM = currency.contract === xlmTokenContract;
+  const isXLM = contract === xlmTokenContract;
 
   if (isXLM) {
     availableBalance =
@@ -101,12 +98,12 @@ export default function CurrencyBalance({
             }
           >
             <BodySmall color={theme.palette.secondary.main}>
-              {!hideBalance && currency ? `Available balance: ${availableBalance}` : null}
+              {!hideBalance && contract ? `Available balance: ${availableBalance}` : null}
             </BodySmall>
           </MouseoverTooltip>
         ) : (
           <BodySmall color={theme.palette.secondary.main}>
-            {!hideBalance && currency ? `Balance: ${availableBalance}` : null}
+            {!hideBalance && contract ? `Balance: ${availableBalance}` : null}
           </BodySmall>
         )}
 

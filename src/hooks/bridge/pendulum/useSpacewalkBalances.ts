@@ -12,7 +12,7 @@
 
 import { useInkathon } from "@scio-labs/use-inkathon";
 import { convertCurrencyToStellarAsset, nativePendulumToDecimal } from "helpers/bridge/pendulum/spacewalk";
-import { useEffect, useState } from "react";
+import useSWRImmutable from "swr/immutable";
 import { SpacewalkPrimitivesCurrencyId, useSpacewalkVaults } from "./useSpacewalkVaults";
 
 interface SpacewalkBalanceType {
@@ -31,84 +31,75 @@ function useSpacewalkBalances() {
 
   const { getVaults } = useSpacewalkVaults();
 
-  const [balances, setBalances] = useState<SpacewalkBalances[] | undefined>();
-
-  useEffect(() => {
-    if (!api || !activeAccount) return;
-
-    async function fetchSpacewalkCurrencies() {
-      try {
-        const vaultData = await getVaults();
-        const currencies = vaultData.map(vault => vault.id.currencies.wrapped);
-        return currencies;
-      } catch (error) {
-        console.error('BRIDGE CONNECTION ERROR', error);
-        return [];
-      }
+  async function fetchSpacewalkCurrencies() {
+    try {
+      const vaultData = await getVaults();
+      const currencies = vaultData.map(vault => vault.id.currencies.wrapped);
+      return currencies;
+    } catch (error) {
+      console.error('BRIDGE CONNECTION ERROR', error);
+      return [];
     }
+  }
 
-    async function getPortfolioAssetsFromSpacewalk(spacewalkCurrencies: SpacewalkPrimitivesCurrencyId[]) {
-      if (!spacewalkCurrencies || spacewalkCurrencies.length === 0 || !activeAccount) return [];
-  
-      const assets = await Promise.all(spacewalkCurrencies.map(async (currency: SpacewalkPrimitivesCurrencyId) => {
-        const asset = convertCurrencyToStellarAsset(currency.Stellar)
-        const balance = await fetchBridgedTokensBalance(activeAccount.address, currency);
+  async function getPortfolioAssetsFromSpacewalk(spacewalkCurrencies: SpacewalkPrimitivesCurrencyId[]) {
+    if (!spacewalkCurrencies || spacewalkCurrencies.length === 0 || !activeAccount) return [];
 
-        const decimals = 12;
-        const amount = nativePendulumToDecimal(balance?.free || '0', decimals).toNumber();
-        // const price: number = (await pricesCache)[token];
-        // const usdValue = price * amount;
+    const assets = await Promise.all(spacewalkCurrencies.map(async (currency: SpacewalkPrimitivesCurrencyId) => {
+      const asset = convertCurrencyToStellarAsset(currency.Stellar)
+      const balance = await fetchBridgedTokensBalance(activeAccount.address, currency);
 
-        return {
-          asset: asset?.code,
-          // price,
-          balance: amount,
-          // usdValue,
-        };
-      }));
-  
-      return assets.filter(asset => asset != null);
-    }
+      const decimals = 12;
+      const amount = nativePendulumToDecimal(balance?.free || '0', decimals).toNumber();
+      // const price: number = (await pricesCache)[token];
+      // const usdValue = price * amount;
 
-    async function fetchBridgedTokensBalance(address: string, currency: SpacewalkPrimitivesCurrencyId): Promise<SpacewalkBalanceType | null> {
-      if (!api) return null;
-      const accountData = await api.query.tokens.accounts(address, currency);
-      const result = accountData.toHuman();
-    
-      // Validate the result structure
-      const isValidSpacewalkBalance = (data: any): data is SpacewalkBalanceType => {
-        return typeof data === 'object' &&
-               data !== null &&
-               typeof data.free === 'string' &&
-               typeof data.reserved === 'string' &&
-               typeof data.frozen === 'string';
+      return {
+        asset: asset?.code,
+        // price,
+        balance: amount,
+        // usdValue,
       };
-    
-      if (isValidSpacewalkBalance(result)) {
-        return result;
-      } else {
-        console.error('Data fetched does not match SpacewalkBalanceType:', result);
-        return null;
-      }
+    }));
+
+    return assets.filter(asset => asset != null);
+  }
+
+  async function fetchBridgedTokensBalance(address: string, currency: SpacewalkPrimitivesCurrencyId): Promise<SpacewalkBalanceType | null> {
+    if (!api) return null;
+    const accountData = await api.query.tokens.accounts(address, currency);
+    const result = accountData.toHuman();
+  
+    // Validate the result structure
+    const isValidSpacewalkBalance = (data: any): data is SpacewalkBalanceType => {
+      return typeof data === 'object' &&
+             data !== null &&
+             typeof data.free === 'string' &&
+             typeof data.reserved === 'string' &&
+             typeof data.frozen === 'string';
+    };
+  
+    if (isValidSpacewalkBalance(result)) {
+      return result;
+    } else {
+      console.error('Data fetched does not match SpacewalkBalanceType:', result);
+      return null;
     }
+  }
 
-    async function fetchSpacewalkBalances() {
-      try {
-        const spacewalkCurrencies = await fetchSpacewalkCurrencies();
-        const portfolioAssets = await getPortfolioAssetsFromSpacewalk(spacewalkCurrencies);
-        setBalances(portfolioAssets)
-      } catch (error) {
-        console.error('Error in fetching data:', error);
-      }
-    }
+  async function fetchSpacewalkBalances() {
+    const spacewalkCurrencies = await fetchSpacewalkCurrencies();
+    const portfolioAssets = await getPortfolioAssetsFromSpacewalk(spacewalkCurrencies);
+    return portfolioAssets
+  }
 
-    fetchSpacewalkBalances();
-
-  }, [activeAccount, api, getVaults]);
-
+  const { data, isLoading, error, mutate } = useSWRImmutable(activeAccount && api && getVaults ? [activeAccount, api, getVaults] : null, () => fetchSpacewalkBalances())
 
   return {
-    balances
+    balances: data,
+    isLoading,
+    error,
+    mutate,
   }
 }
 
