@@ -26,7 +26,7 @@ interface SpacewalkBalances {
   balance: number,
 }
 
-async function useSpacewalkBalances() {
+function useSpacewalkBalances() {
   const { api, activeAccount } = useInkathon();
 
   const { getVaults } = useSpacewalkVaults();

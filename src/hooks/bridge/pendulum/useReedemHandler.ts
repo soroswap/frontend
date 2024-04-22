@@ -48,6 +48,8 @@ const useReedemHandler = ({ amount, selectedAsset, selectedVault }: Props) => {
 
     setIsLoading(true);
     setTxSuccess(false);
+    setTxError(false);
+    setTxHash(undefined);
 
     requestRedeemExtrinsic
       .signAndSend(activeAccount.address, { signer: activeSigner as any }, (result: any) => {
@@ -101,6 +103,7 @@ const useReedemHandler = ({ amount, selectedAsset, selectedVault }: Props) => {
     setIsLoading(false);
     setTxSuccess(false);
     setTxError(false);
+    setTxHash(undefined);
   };
 
   return {
