@@ -22,8 +22,12 @@ export function shortenAddress(address: string, chars = 4): string {
   if (!parsed) {
     throw Error(`Invalid 'address' parameter '${address}'.`);
   }
-  if (parsed.length == 48 )return `${parsed.substring(0, chars)}...${parsed.substring(48 - chars)}`;
-  if (parsed.length <= 56) return `${parsed.substring(0, chars)}...${parsed.substring(56 - chars)}`;
+  switch (parsed.length) {
+    case 48:
+      return `${parsed.substring(0, chars)}...${parsed.substring(48 - chars)}`;
+    case 56:
+      return `${parsed.substring(0, chars)}...${parsed.substring(56 - chars)}`;
+  }
   return '';
   
 }
