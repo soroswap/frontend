@@ -12,14 +12,16 @@ import {
 import { TextWithLoadingPlaceholder } from 'components/Swap/AdvancedSwapDetails';
 import { ArrowContainer, OutputSwapSection, SwapSection } from 'components/Swap/SwapComponent';
 import { ArrowWrapper, SwapWrapper } from 'components/Swap/styleds';
+import { nativeStellarToDecimal } from 'helpers/bridge/pendulum/spacewalk';
 import useIssueHandler from 'hooks/bridge/pendulum/useIssueHandler';
 import useRedeemHandler from 'hooks/bridge/pendulum/useRedeemHandler';
 import useSpacewalkBalances from 'hooks/bridge/pendulum/useSpacewalkBalances';
 import useSpacewalkBridge from 'hooks/bridge/pendulum/useSpacewalkBridge';
+import { useSpacewalkFees } from 'hooks/bridge/pendulum/useSpacewalkFees';
 import useBoolean from 'hooks/useBoolean';
 import useGetMyBalances from 'hooks/useGetMyBalances';
 import useGetNativeTokenBalance from 'hooks/useGetNativeTokenBalance';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { ArrowDown } from 'react-feather';
 import { BASE_FEE } from 'stellar-sdk';
 import { BridgeButton } from './BridgeButton';
@@ -42,6 +44,8 @@ const chains = [
 const BridgeComponentNew = () => {
   const { activeChain, address, serverHorizon } = useSorobanReact();
   const { isConnected } = useInkathon();
+  const { getFees } = useSpacewalkFees();
+  const fees = getFees();
 
   const confirmModal = useBoolean();
 
@@ -136,6 +140,10 @@ const BridgeComponentNew = () => {
     getSubentryCount();
   }, [address, nativeBalance.data?.validAccount, serverHorizon])
 
+  const endAmount = useMemo(() => {
+    return Number(amount) - Number(nativeStellarToDecimal((new BigNumber(amount)).multipliedBy(selectedChainFrom === "Stellar" ? fees.issueFee : fees.redeemFee)))
+  }, [amount, fees.issueFee, fees.redeemFee, selectedChainFrom]);
+
   return (
     <>
       <BridgeConfirmModal
@@ -221,7 +229,7 @@ const BridgeComponentNew = () => {
                 />
                 <StyledNumericalInput
                   className="token-amount-input"
-                  value={amount}
+                  value={endAmount}
                   onUserInput={(value) => setAmount(value)}
                 />
               </InputRow>
