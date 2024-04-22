@@ -3,15 +3,15 @@ import {
   decimalToStellarNative,
 } from 'helpers/bridge/pendulum/stellar';
 
-import { Asset, BASE_FEE, Memo, Operation, TransactionBuilder } from 'stellar-sdk';
+import { useInkathon } from '@scio-labs/use-inkathon';
+import { useSorobanReact } from '@soroban-react/core';
+import BigNumber from 'bignumber.js';
 import { deriveShortenedRequestId } from 'helpers/bridge/pendulum/spacewalk';
 import { getEventBySectionAndMethod, getSubstrateErrors } from 'helpers/bridge/pendulum/substrate';
-import { useCallback, useMemo, useState } from 'react';
-import { useInkathon } from '@scio-labs/use-inkathon';
 import { useIssuePallet } from 'hooks/bridge/pendulum/useIssuePallet';
-import { useSorobanReact } from '@soroban-react/core';
+import { useCallback, useMemo, useState } from 'react';
+import { Asset, BASE_FEE, Memo, Operation, TransactionBuilder } from 'stellar-sdk';
 import { VaultId } from './useSpacewalkVaults';
-import BigNumber from 'bignumber.js';
 
 interface Props {
   amount: string;
@@ -194,6 +194,7 @@ const useIssueHandler = ({ amount, selectedAsset, selectedVault }: Props) => {
   };
 
   return {
+    extrinsic: requestIssueExtrinsic,
     handler: submitRequestIssueExtrinsic,
     isLoading,
     txSuccess,

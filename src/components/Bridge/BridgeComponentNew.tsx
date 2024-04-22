@@ -9,7 +9,7 @@ import {
 import { ArrowContainer, OutputSwapSection, SwapSection } from 'components/Swap/SwapComponent';
 import { ArrowWrapper, SwapWrapper } from 'components/Swap/styleds';
 import useIssueHandler from 'hooks/bridge/pendulum/useIssueHandler';
-import useReedemHandler from 'hooks/bridge/pendulum/useReedemHandler';
+import useRedeemHandler from 'hooks/bridge/pendulum/useRedeemHandler';
 import useSpacewalkBalances from 'hooks/bridge/pendulum/useSpacewalkBalances';
 import useSpacewalkBridge from 'hooks/bridge/pendulum/useSpacewalkBridge';
 import useBoolean from 'hooks/useBoolean';
@@ -50,7 +50,7 @@ const BridgeComponentNew = () => {
     selectedVault,
   });
 
-  const reedem = useReedemHandler({
+  const redeem = useRedeemHandler({
     amount,
     selectedAsset,
     selectedVault,
@@ -64,7 +64,7 @@ const BridgeComponentNew = () => {
 
   const onClickConfirmButton = () => {
     if (selectedChainFrom === BridgeChains.PENDULUM) {
-      reedem.handler();
+      redeem.handler();
     } else {
       issue.handler();
     }
@@ -81,21 +81,19 @@ const BridgeComponentNew = () => {
   const onCloseConfirmModal = () => {
     confirmModal.setFalse();
     issue.resetStates();
-    reedem.resetStates();
+    redeem.resetStates();
   };
 
-  const isPending = issue.isLoading || reedem.isLoading;
-  const isSuccess = issue.txSuccess || reedem.txSuccess;
-  const isError = issue.txError || reedem.txError;
-  const txHash = issue.txHash || reedem.txHash;
+  const isPending = issue.isLoading || redeem.isLoading;
+  const isSuccess = issue.txSuccess || redeem.txSuccess;
+  const isError = issue.txError || redeem.txError;
+  const txHash = issue.txHash || redeem.txHash;
 
   const showPendingModal = isPending || isSuccess || isError;
 
   const theme = useTheme();
 
   const { balances } = useSpacewalkBalances()
-  console.log('🚀 « balances:', balances);
-  // console.log('🚀 « pendulumBalances:', pendulumBalances);
 
   return (
     <>
@@ -112,6 +110,7 @@ const BridgeComponentNew = () => {
         selectedChainTo={selectedChainTo}
         showPendingModal={showPendingModal}
         txHash={txHash}
+        extrinsic={issue.extrinsic ?? redeem.extrinsic}
       />
 
       <SwapWrapper>

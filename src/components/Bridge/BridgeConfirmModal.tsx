@@ -1,24 +1,29 @@
+import { Box, Modal, Typography, useTheme } from '@mui/material';
+import { SubmittableExtrinsic } from '@polkadot/api/promise/types';
+import BigNumber from 'bignumber.js';
+import { ButtonPrimary } from 'components/Buttons/Button';
+import { CloseButton } from 'components/Buttons/CloseButton';
+import { AutoColumn } from 'components/Column';
+import CopyTxHash from 'components/CopyTxHash/CopyTxHash';
+import { DetailRowValue } from 'components/Liquidity/Add/AddModalFooter';
+import { Label } from 'components/Liquidity/Add/AddModalHeader';
+import { RowBetween } from 'components/Row';
 import {
   AnimatedEntranceConfirmationIcon,
   LoadingIndicatorOverlay,
 } from 'components/Swap/PendingModalContent/Logos';
+import { ButtonText, SubHeader, SubHeaderLarge, SubHeaderSmall } from 'components/Text';
+import { ConfirmedIcon } from 'components/TransactionConfirmationModal/ModalStyles';
+import { nativePendulumToDecimal, nativeStellarToDecimal } from 'helpers/bridge/pendulum/spacewalk';
+import { useGetBridgeAssetInfo } from 'hooks/bridge/pendulum/useGetBridgeAssetInfo';
+import { useSpacewalkFees } from 'hooks/bridge/pendulum/useSpacewalkFees';
+import { UseBooleanReturnProps } from 'hooks/useBoolean';
+import { useEffect, useMemo, useState } from 'react';
 import { AlertTriangle } from 'react-feather';
 import { Asset } from 'stellar-sdk';
-import { AutoColumn } from 'components/Column';
-import { Box, Modal, Typography, useTheme } from '@mui/material';
-import { BridgeChains } from './BridgeComponentNew';
-import { ButtonPrimary } from 'components/Buttons/Button';
-import { ButtonText, SubHeader, SubHeaderLarge, SubHeaderSmall } from 'components/Text';
-import { CloseButton } from 'components/Buttons/CloseButton';
-import { ConfirmedIcon } from 'components/TransactionConfirmationModal/ModalStyles';
-import { DetailRowValue } from 'components/Liquidity/Add/AddModalFooter';
-import { Label } from 'components/Liquidity/Add/AddModalHeader';
-import { ModalContentWrapper } from './BridgeSelector';
-import { RowBetween } from 'components/Row';
-import { UseBooleanReturnProps } from 'hooks/useBoolean';
-import { useGetBridgeAssetInfo } from 'hooks/bridge/pendulum/useGetBridgeAssetInfo';
 import BridgeAssetItem from './BridgeAssetItem';
-import CopyTxHash from 'components/CopyTxHash/CopyTxHash';
+import { BridgeChains } from './BridgeComponentNew';
+import { ModalContentWrapper } from './BridgeSelector';
 
 interface Props {
   confirmModal: UseBooleanReturnProps;
@@ -33,6 +38,7 @@ interface Props {
   selectedAsset: Asset | undefined;
   amount: string;
   onClickConfirmButton: () => void;
+  extrinsic?: SubmittableExtrinsic
 }
 
 const BridgeConfirmModal = (props: Props) => {
@@ -49,15 +55,34 @@ const BridgeConfirmModal = (props: Props) => {
     selectedChainTo,
     showPendingModal,
     txHash,
+    extrinsic,
   } = props;
 
   const theme = useTheme();
+  const { getTransactionFee, getFees } = useSpacewalkFees();
+  const fees = getFees();
 
   const assetInfo = useGetBridgeAssetInfo({ asset: selectedAsset, chain: selectedChainFrom });
 
-  const getSecurityDeposit = () => {
-    return Number(amount) * 0.005;
-  };
+  const [txFee, setTxFee] = useState<BigNumber>(new BigNumber(0))
+  
+  useEffect(() => {
+    if (!extrinsic) {
+      return;
+    }
+
+    getTransactionFee(extrinsic).then((fee: BigNumber) => {
+      setTxFee(nativePendulumToDecimal(fee));
+    });
+  }, [extrinsic, getTransactionFee, setTxFee]);
+  
+  const bridgeFee = useMemo(() => {
+    return nativeStellarToDecimal((new BigNumber(amount)).multipliedBy(fees.issueFee));
+  }, [amount, fees]);
+
+  const griefingCollateral = useMemo(() => {
+    return nativeStellarToDecimal((new BigNumber(amount).shiftedBy(12)).multipliedBy(fees.issueGriefingCollateral));
+  }, [amount, fees]);
 
   return (
     <Modal open={confirmModal.value} onClose={onCloseConfirmModal}>
@@ -159,15 +184,15 @@ const BridgeConfirmModal = (props: Props) => {
             <Box mt={3} pt={3} borderTop={(theme) => `1px solid ${theme.palette.divider}`}>
               <Box display="flex" justifyContent="space-between" gap={1}>
                 <Label>Bridge fee:</Label>
-                <DetailRowValue>0 {assetInfo.code}</DetailRowValue>
+                <DetailRowValue>{bridgeFee.toString()} {assetInfo.code}</DetailRowValue>
               </Box>
               <Box display="flex" justifyContent="space-between" gap={1}>
                 <Label>Security deposit:</Label>
-                <DetailRowValue>{getSecurityDeposit()} PEN</DetailRowValue>
+                <DetailRowValue>{griefingCollateral.toString()} PEN</DetailRowValue>
               </Box>
               <Box display="flex" justifyContent="space-between" gap={1}>
                 <Label>Transaction fee:</Label>
-                <DetailRowValue>0 PEN</DetailRowValue>
+                <DetailRowValue>{txFee.toFixed(12)} PEN</DetailRowValue>
               </Box>
             </Box>
 

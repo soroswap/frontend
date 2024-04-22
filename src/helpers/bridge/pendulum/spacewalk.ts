@@ -245,3 +245,17 @@ export const nativePendulumToDecimal = (value: BigNumber | number | string | u12
 
   return bigIntValue.div(divisor);
 };
+
+export const nativeStellarToDecimal = (value: BigNumber | number | string) => {
+  const bigIntValue = new BigNumber(value);
+  const divisor = new BigNumber(10).pow(12);
+
+  return bigIntValue.div(divisor);
+};
+
+export const fixedPointToDecimal = (value: BigNumber | number | string) => {
+  const bigIntValue = new BigNumber(value);
+  const divisor = new BigNumber(10).pow(18);
+
+  return bigIntValue.div(divisor);
+};

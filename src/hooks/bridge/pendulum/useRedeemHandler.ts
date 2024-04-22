@@ -1,12 +1,12 @@
-import { Asset } from 'stellar-sdk';
+import { useInkathon } from '@scio-labs/use-inkathon';
+import { useSorobanReact } from '@soroban-react/core';
+import BigNumber from 'bignumber.js';
 import { decimalToStellarNative, isPublicKey } from 'helpers/bridge/pendulum/stellar';
 import { getEventBySectionAndMethod, getSubstrateErrors } from 'helpers/bridge/pendulum/substrate';
-import { useCallback, useMemo, useState } from 'react';
-import { useInkathon } from '@scio-labs/use-inkathon';
 import { useRedeemPallet } from 'hooks/bridge/pendulum/useRedeemPallet';
-import { useSorobanReact } from '@soroban-react/core';
+import { useCallback, useMemo, useState } from 'react';
+import { Asset } from 'stellar-sdk';
 import { VaultId } from './useSpacewalkVaults';
-import BigNumber from 'bignumber.js';
 
 interface Props {
   amount: string;
@@ -14,7 +14,7 @@ interface Props {
   selectedVault: VaultId | undefined;
 }
 
-const useReedemHandler = ({ amount, selectedAsset, selectedVault }: Props) => {
+const useRedeemHandler = ({ amount, selectedAsset, selectedVault }: Props) => {
   const { activeAccount, activeSigner, api } = useInkathon();
   const { createRedeemRequestExtrinsic, getRedeemRequest } = useRedeemPallet();
   const { address: stellarAddress } = useSorobanReact();
@@ -107,6 +107,7 @@ const useReedemHandler = ({ amount, selectedAsset, selectedVault }: Props) => {
   };
 
   return {
+    extrinsic: requestRedeemExtrinsic,
     handler: submitRequestRedeemExtrinsic,
     isLoading,
     txSuccess,
@@ -120,4 +121,4 @@ const useReedemHandler = ({ amount, selectedAsset, selectedVault }: Props) => {
   };
 };
 
-export default useReedemHandler;
+export default useRedeemHandler;
