@@ -77,8 +77,8 @@ const BridgeConfirmModal = (props: Props) => {
   }, [extrinsic, getTransactionFee, setTxFee]);
   
   const bridgeFee = useMemo(() => {
-    return nativeStellarToDecimal((new BigNumber(amount)).multipliedBy(fees.issueFee));
-  }, [amount, fees]);
+    return nativeStellarToDecimal((new BigNumber(amount)).multipliedBy(selectedChainFrom === "Stellar" ? fees.issueFee : fees.redeemFee));
+  }, [amount, fees.issueFee, fees.redeemFee, selectedChainFrom]);
 
   const griefingCollateral = useMemo(() => {
     return nativeStellarToDecimal((new BigNumber(amount).shiftedBy(12)).multipliedBy(fees.issueGriefingCollateral));

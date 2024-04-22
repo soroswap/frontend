@@ -1,19 +1,19 @@
+import { Box, Modal, Typography, styled, useMediaQuery, useTheme } from '@mui/material';
+import Column from 'components/Column';
 import {
+  Aligner,
   CurrencySelect,
   StyledDropDown,
   StyledTokenName,
-  Aligner,
 } from 'components/CurrencyInputPanel/SwapCurrencyInputPanel';
-import { Asset } from 'stellar-sdk';
-import { Box, Modal, Typography, styled, useMediaQuery, useTheme } from '@mui/material';
-import { BridgeChains } from './BridgeComponentNew';
-import { opacify } from 'themes/utils';
-import { RowFixed } from 'components/Row';
-import Column from 'components/Column';
 import CurrencyLogo from 'components/Logo/CurrencyLogo';
-import useBoolean from 'hooks/useBoolean';
+import { RowFixed } from 'components/Row';
 import { useGetBridgeAssetInfo } from 'hooks/bridge/pendulum/useGetBridgeAssetInfo';
+import useBoolean from 'hooks/useBoolean';
+import { Asset } from 'stellar-sdk';
+import { opacify } from 'themes/utils';
 import BridgeAssetItem from './BridgeAssetItem';
+import { BridgeChains } from './BridgeComponentNew';
 
 export const ModalContentWrapper = styled(Column, {
   shouldForwardProp: (prop) => prop !== 'modalheight',
@@ -122,7 +122,6 @@ const BridgeSelector = (props: Props) => {
   };
 
   const { code, token } = useGetBridgeAssetInfo({ asset: selectedAsset, chain: selectedChain });
-
   return (
     <>
       <Modal open={modal.value} onClose={modal.setFalse}>

@@ -22,7 +22,7 @@ import { RowBetween, RowFixed } from 'components/Row';
 import CurrencySearchModal from 'components/SearchModal/CurrencySearchModal';
 import { TokenType } from 'interfaces';
 import { darken } from 'polished';
-import { ReactNode, useCallback, useState, useEffect } from 'react';
+import { ReactNode, useCallback, useState } from 'react';
 import { ChevronDown } from 'react-feather';
 import { flexColumnNoWrap, flexRowNoWrap } from 'themes/styles';
 import CurrencyBalance from './CurrencyBalance';
@@ -277,8 +277,7 @@ export default function CurrencyInputPanel({
             <RowBetween>
               {address && currency ? (
                 <CurrencyBalance
-                  address={address}
-                  currency={currency}
+                  contract={currency.contract}
                   onMax={onMax}
                   hideBalance={hideBalance}
                   showMaxButton={showMaxButton}

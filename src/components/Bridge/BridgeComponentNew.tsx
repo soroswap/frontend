@@ -1,20 +1,29 @@
 import { Box, useTheme } from '@mui/material';
 import { useInkathon } from '@scio-labs/use-inkathon';
+import { useSorobanReact } from '@soroban-react/core';
+import BigNumber from 'bignumber.js';
+import CurrencyBalance from 'components/CurrencyInputPanel/CurrencyBalance';
 import {
   Container,
   InputPanel,
   InputRow,
   StyledNumericalInput,
 } from 'components/CurrencyInputPanel/SwapCurrencyInputPanel';
+import { TextWithLoadingPlaceholder } from 'components/Swap/AdvancedSwapDetails';
 import { ArrowContainer, OutputSwapSection, SwapSection } from 'components/Swap/SwapComponent';
 import { ArrowWrapper, SwapWrapper } from 'components/Swap/styleds';
+import { nativeStellarToDecimal } from 'helpers/bridge/pendulum/spacewalk';
 import useIssueHandler from 'hooks/bridge/pendulum/useIssueHandler';
 import useRedeemHandler from 'hooks/bridge/pendulum/useRedeemHandler';
 import useSpacewalkBalances from 'hooks/bridge/pendulum/useSpacewalkBalances';
 import useSpacewalkBridge from 'hooks/bridge/pendulum/useSpacewalkBridge';
+import { useSpacewalkFees } from 'hooks/bridge/pendulum/useSpacewalkFees';
 import useBoolean from 'hooks/useBoolean';
-import { useState } from 'react';
+import useGetMyBalances from 'hooks/useGetMyBalances';
+import useGetNativeTokenBalance from 'hooks/useGetNativeTokenBalance';
+import { useEffect, useMemo, useState } from 'react';
 import { ArrowDown } from 'react-feather';
+import { BASE_FEE } from 'stellar-sdk';
 import { BridgeButton } from './BridgeButton';
 import BridgeConfirmModal from './BridgeConfirmModal';
 import BridgeHeader from './BridgeHeader';
@@ -33,7 +42,10 @@ const chains = [
 ];
 
 const BridgeComponentNew = () => {
+  const { activeChain, address, serverHorizon } = useSorobanReact();
   const { isConnected } = useInkathon();
+  const { getFees } = useSpacewalkFees();
+  const fees = getFees();
 
   const confirmModal = useBoolean();
 
@@ -74,8 +86,9 @@ const BridgeComponentNew = () => {
     const noSelecteds = !selectedChainFrom || !selectedChainTo || !selectedAsset;
 
     const noValues = !Number(amount);
-
-    return isConnected && (noSelecteds || noValues);
+    const isInvalidBridgeAmount = Boolean(amount > (fromAssetBalance ?? 0))
+    
+    return isConnected && (noSelecteds || noValues || isInvalidBridgeAmount);
   };
 
   const onCloseConfirmModal = () => {
@@ -93,7 +106,43 @@ const BridgeComponentNew = () => {
 
   const theme = useTheme();
 
-  const { balances } = useSpacewalkBalances()
+  const { balances: spacewalkBalances, isLoading, mutate } = useSpacewalkBalances();
+
+  const spacewalkAssetBalance = spacewalkBalances?.find((balance) => {
+    return balance.asset === selectedAsset?.code;
+  });
+
+  const { tokenBalancesResponse, isLoading: isLoadingMyBalances } = useGetMyBalances();
+
+  const stellarBalance =
+    tokenBalancesResponse?.balances?.find(
+      (b) =>
+        activeChain?.networkPassphrase &&
+        b?.contract === selectedAsset?.contractId(activeChain.networkPassphrase),
+    )?.balance || '0';
+
+  const fromAssetBalance =
+    selectedChainFrom === 'Stellar' ? stellarBalance : spacewalkAssetBalance?.balance;
+
+  
+  const [subentryCount, setSubentryCount] = useState<number>(0)
+  const nativeBalance = useGetNativeTokenBalance();
+
+  useEffect(() => {
+    const getSubentryCount = async () => {
+      if (address && nativeBalance.data?.validAccount) {
+        const account = await serverHorizon?.loadAccount(address);
+        const count = account?.subentry_count ?? 0;
+        setSubentryCount(count);
+      }
+    };
+
+    getSubentryCount();
+  }, [address, nativeBalance.data?.validAccount, serverHorizon])
+
+  const endAmount = useMemo(() => {
+    return Number(amount) - Number(nativeStellarToDecimal((new BigNumber(amount)).multipliedBy(selectedChainFrom === "Stellar" ? fees.issueFee : fees.redeemFee)))
+  }, [amount, fees.issueFee, fees.redeemFee, selectedChainFrom]);
 
   return (
     <>
@@ -137,6 +186,21 @@ const BridgeComponentNew = () => {
                   onUserInput={(value) => setAmount(value)}
                 />
               </InputRow>
+              {selectedChainFrom === 'Stellar' ? (
+                <CurrencyBalance
+                  contract={selectedAsset?.contractId(activeChain?.networkPassphrase ?? '') ?? ''}
+                  onMax={(value) => setAmount(value)}
+                  hideBalance={false}
+                  showMaxButton={true}
+                  networkFees={Number(BigNumber(BASE_FEE).shiftedBy(-7))}
+                  subentryCount={subentryCount}
+                />
+              ) : (
+                //TODO: Add MAX button for other networks balances
+                <TextWithLoadingPlaceholder syncing={isLoading} width={100}>
+                  <>Balance: {fromAssetBalance}</>
+                </TextWithLoadingPlaceholder>
+              )}
             </Container>
           </InputPanel>
         </SwapSection>
@@ -165,7 +229,7 @@ const BridgeComponentNew = () => {
                 />
                 <StyledNumericalInput
                   className="token-amount-input"
-                  value={amount}
+                  value={endAmount}
                   onUserInput={(value) => setAmount(value)}
                 />
               </InputRow>
