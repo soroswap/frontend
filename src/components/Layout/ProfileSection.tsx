@@ -3,6 +3,7 @@ import { Box, Chip, useMediaQuery, Menu, MenuItem, MenuProps } from '@mui/materi
 import {ArrowDropDownSharp, LinkOff } from '@mui/icons-material';
 import { useTheme, styled, alpha } from '@mui/material/styles';
 import { SorobanContextType, useSorobanReact } from '@soroban-react/core';
+import { useInkathon } from '@scio-labs/use-inkathon';
 import { AppContext } from 'contexts';
 import { shortenAddress } from '../../helpers/address';
 import { WalletButton } from 'components/Buttons/WalletButton';
@@ -73,6 +74,7 @@ export const HeaderChip = ({
 }) => {
   const theme = useTheme();
   const sorobanReact = useSorobanReact();
+  const inkathon = useInkathon();
   const { setActiveChain } = sorobanReact; 
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
@@ -93,6 +95,7 @@ export const HeaderChip = ({
   const handleDisconnect = () => {
     if (!disconnect) {
       sorobanReact.disconnect();
+      inkathon.disconnect!();
     } else {
       disconnect()
     }
@@ -102,7 +105,7 @@ export const HeaderChip = ({
     display: 'flex',
     flexDirection: 'row',
     height: isSmall ? 30 : 56,
-    padding: isSmall ? '14px 16px 18px 16px' : '16px 24px',
+    padding: isSmall && canDisconnect ? '8px 1px 16px 1px' : isSmall ? '8px 16px' : '16px 24px',
     justifyContent: 'center',
     alignItems: 'center',
     gap: 0.5,
