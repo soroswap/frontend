@@ -5,7 +5,12 @@ import { stringifyStellarAsset } from 'helpers/bridge/pendulum/stellar';
 import _ from 'lodash-es';
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
 import { Asset } from 'stellar-sdk';
-import { ExtendedSpacewalkVault, SpacewalkCodeToSymbol, VaultId, useSpacewalkVaults } from './useSpacewalkVaults';
+import {
+  ExtendedSpacewalkVault,
+  SpacewalkCodeToSymbol,
+  VaultId,
+  useSpacewalkVaults,
+} from './useSpacewalkVaults';
 
 export interface SpacewalkBridge {
   selectedVault?: VaultId;
@@ -14,6 +19,7 @@ export interface SpacewalkBridge {
   selectedAsset?: Asset;
   setSelectedAsset: Dispatch<SetStateAction<Asset | undefined>>;
   setSelectedVault: Dispatch<SetStateAction<VaultId | undefined>>;
+  selectedVaultExtended?: ExtendedSpacewalkVault;
 }
 
 function useSpacewalkBridge(): SpacewalkBridge {
@@ -21,6 +27,9 @@ function useSpacewalkBridge(): SpacewalkBridge {
   const [vaults, setExtendedVaults] = useState<ExtendedSpacewalkVault[]>([]);
   const { getVaults, getVaultStellarPublicKey } = useSpacewalkVaults();
   const [selectedVault, setSelectedVault] = useState<VaultId | undefined>(undefined);
+  const [selectedVaultExtended, setSelectedVaultExtended] = useState<
+    ExtendedSpacewalkVault | undefined
+  >();
   const [selectedAsset, setSelectedAsset] = useState<Asset | undefined>(undefined);
 
   useEffect(() => {
@@ -53,7 +62,7 @@ function useSpacewalkBridge(): SpacewalkBridge {
             // End of Stellar balance retrieval
 
             // TODO: Pendulum balance retrieval goes here
-            extended.issuableTokens = "0"
+            extended.issuableTokens = '0';
             return extended;
           }),
         );
@@ -84,6 +93,7 @@ function useSpacewalkBridge(): SpacewalkBridge {
       );
       if (xlmVault) {
         setSelectedVault(xlmVault.id);
+        setSelectedVaultExtended(xlmVault);
       }
     } else {
       const vault = vaults.find((vault) => {
@@ -95,12 +105,10 @@ function useSpacewalkBridge(): SpacewalkBridge {
         }
       });
       setSelectedVault(vault?.id);
+      setSelectedVaultExtended(vault);
     }
   }, [selectedAsset, vaults]);
 
-
-  console.log('🚀 « vaults:', vaults);
-  
   return {
     selectedVault,
     vaults,
@@ -108,6 +116,7 @@ function useSpacewalkBridge(): SpacewalkBridge {
     selectedAsset,
     setSelectedAsset,
     setSelectedVault,
+    selectedVaultExtended,
   };
 }
 
