@@ -43,38 +43,6 @@ export default function BridgePage() {
       <SEO title="Bridge - Soroswap" description="Soroswap" />
       <Box display="flex" flexDirection="column" alignItems="center" gap="32px" width="100%">
         <BridgeComponentNew />
-
-        <PageWrapper>
-          <BridgeComponent />
-
-          <Typography variant="h6" mt={2}>
-            {getStatusMessage()}
-          </Typography>
-
-          {isConnected && (
-            <>
-              <Box>
-                <Typography variant="h6" mt={2}>
-                  Network
-                </Typography>
-                <Typography variant="body1">{activeChain?.name}</Typography>
-              </Box>
-              <Box>
-                <Typography variant="h6" mt={2}>
-                  Account
-                </Typography>
-                <Typography variant="body1">{activeAccount?.address}</Typography>
-              </Box>
-
-              <Box>
-                <Typography variant="h6" mt={2}>
-                  Balance
-                </Typography>
-                <Typography variant="body1">{balanceFormatted}</Typography>
-              </Box>
-            </>
-          )}
-        </PageWrapper>
       </Box>
     </>
   );

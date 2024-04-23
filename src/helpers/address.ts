@@ -1,7 +1,17 @@
 export function isAddress(value: string): string | false {
-  try {
-    return value.match(/^[A-Z0-9]{56}$/) ? value : false;
-  } catch {
+  if (value.length === 56) {
+    try {
+      return value.match(/^[A-Z0-9]{56}$/) ? value : false;
+    } catch {
+      return false;
+    }
+  } else if (value.length == 48) {
+    try {
+      return value.match(/^[A-Za-z0-9]{48}$/) ? value : false;
+    } catch {
+      return false;
+    }
+  } else {
     return false;
   }
 }
@@ -12,7 +22,14 @@ export function shortenAddress(address: string, chars = 4): string {
   if (!parsed) {
     throw Error(`Invalid 'address' parameter '${address}'.`);
   }
-  return `${parsed.substring(0, chars)}...${parsed.substring(56 - chars)}`;
+  switch (parsed.length) {
+    case 48:
+      return `${parsed.substring(0, chars)}...${parsed.substring(48 - chars)}`;
+    case 56:
+      return `${parsed.substring(0, chars)}...${parsed.substring(56 - chars)}`;
+  }
+  return '';
+  
 }
 
 export function isValidSymbol(code: string): boolean {
