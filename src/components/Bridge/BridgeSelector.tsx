@@ -13,7 +13,7 @@ import useBoolean from 'hooks/useBoolean';
 import { Asset } from 'stellar-sdk';
 import { opacify } from 'themes/utils';
 import BridgeAssetItem from './BridgeAssetItem';
-import { BridgeChains } from './BridgeComponentNew';
+import { BridgeChains } from './BridgeComponent';
 
 export const ModalContentWrapper = styled(Column, {
   shouldForwardProp: (prop) => prop !== 'modalheight',

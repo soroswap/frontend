@@ -22,7 +22,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { AlertTriangle } from 'react-feather';
 import { Asset } from 'stellar-sdk';
 import BridgeAssetItem from './BridgeAssetItem';
-import { BridgeChains } from './BridgeComponentNew';
+import { BridgeChains } from './BridgeComponent';
 import { ModalContentWrapper } from './BridgeSelector';
 
 interface Props {

@@ -1,6 +1,6 @@
 import { Asset } from 'stellar-sdk';
 import { Box, Typography } from '@mui/material';
-import { BridgeChains } from './BridgeComponentNew';
+import { BridgeChains } from './BridgeComponent';
 import { useGetBridgeAssetInfo } from 'hooks/bridge/pendulum/useGetBridgeAssetInfo';
 import CurrencyLogo from 'components/Logo/CurrencyLogo';
 

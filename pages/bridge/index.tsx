@@ -1,48 +1,14 @@
-import { Box, Paper, Typography, styled } from '@mui/material';
-import { useBalance, useInkathon } from '@scio-labs/use-inkathon';
-import BridgeComponent from 'components/Bridge/BridgeComponent';
-import BridgeComponentNew from 'components/Bridge/BridgeComponentNew';
+import { Box, Paper, styled } from '@mui/material';
+import BridgeComponent from 'components/Bridge/BridgeComponent'
 
 import SEO from 'components/SEO';
 
-const PageWrapper = styled(Paper)`
-  background: ${({ theme }) => `linear-gradient(${theme.palette.customBackground.bg2}, ${
-    theme.palette.customBackground.bg2
-  }) padding-box,
-              linear-gradient(150deg, rgba(136,102,221,1) 0%, rgba(${
-                theme.palette.mode == 'dark' ? '33,29,50,1' : '255,255,255,1'
-              }) 35%, rgba(${
-                theme.palette.mode == 'dark' ? '33,29,50,1' : '255,255,255,1'
-              }) 65%, rgba(136,102,221,1) 100%) border-box`};
-  border: 1px solid transparent;
-  border-radius: 16px;
-  padding: 32px 48px;
-  width: 100%;
-  max-width: 860px;
-`;
-
 export default function BridgePage() {
-  const { isConnected, activeAccount, error, activeChain, isConnecting } = useInkathon();
-
-  const { balanceFormatted } = useBalance(activeAccount?.address, true);
-
-  const getStatusMessage = () => {
-    if (isConnected) {
-      return 'Connected';
-    } else if (error?.message) {
-      return error.message;
-    } else if (isConnecting) {
-      return 'Connecting...';
-    } else {
-      return 'Disconnected';
-    }
-  };
-
   return (
     <>
       <SEO title="Bridge - Soroswap" description="Soroswap" />
       <Box display="flex" flexDirection="column" alignItems="center" gap="32px" width="100%">
-        <BridgeComponentNew />
+        <BridgeComponent/>
       </Box>
     </>
   );

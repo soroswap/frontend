@@ -1,5 +1,5 @@
 import { Asset } from 'stellar-sdk';
-import { BridgeChains } from 'components/Bridge/BridgeComponentNew';
+import { BridgeChains } from 'components/Bridge/BridgeComponent';
 import { useSorobanReact } from '@soroban-react/core';
 import { SpacewalkCodeToSymbol } from './useSpacewalkVaults';
 import { useAllTokens } from 'hooks/tokens/useAllTokens';
