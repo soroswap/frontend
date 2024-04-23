@@ -5,7 +5,7 @@ import { stringifyStellarAsset } from 'helpers/bridge/pendulum/stellar';
 import _ from 'lodash-es';
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
 import { Asset } from 'stellar-sdk';
-import { ExtendedSpacewalkVault, VaultId, useSpacewalkVaults } from './useSpacewalkVaults';
+import { ExtendedSpacewalkVault, SpacewalkCodeToSymbol, VaultId, useSpacewalkVaults } from './useSpacewalkVaults';
 
 export interface SpacewalkBridge {
   selectedVault?: VaultId;
@@ -43,6 +43,7 @@ function useSpacewalkBridge(): SpacewalkBridge {
                 )?.balance;
               } else if (vault.id.currencies.wrapped.Stellar?.AlphaNum4) {
                 let { code } = vault.id.currencies.wrapped.Stellar.AlphaNum4;
+                code = SpacewalkCodeToSymbol?.[code] || code;
                 vaultAssetBalance = accountLoaded?.balances.find(
                   (bal) => 'asset_code' in bal && bal.asset_code === code,
                 )?.balance;
@@ -52,7 +53,7 @@ function useSpacewalkBridge(): SpacewalkBridge {
             // End of Stellar balance retrieval
 
             // TODO: Pendulum balance retrieval goes here
-
+            extended.issuableTokens = "0"
             return extended;
           }),
         );
@@ -97,6 +98,9 @@ function useSpacewalkBridge(): SpacewalkBridge {
     }
   }, [selectedAsset, vaults]);
 
+
+  console.log('🚀 « vaults:', vaults);
+  
   return {
     selectedVault,
     vaults,
