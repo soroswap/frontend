@@ -19,11 +19,12 @@ import { useGetBridgeAssetInfo } from 'hooks/bridge/pendulum/useGetBridgeAssetIn
 import { useSpacewalkFees } from 'hooks/bridge/pendulum/useSpacewalkFees';
 import { UseBooleanReturnProps } from 'hooks/useBoolean';
 import { useEffect, useMemo, useState } from 'react';
-import { AlertTriangle } from 'react-feather';
+import { AlertTriangle, Info } from 'react-feather';
 import { Asset } from 'stellar-sdk';
 import BridgeAssetItem from './BridgeAssetItem';
 import { BridgeChains } from './BridgeComponentNew';
 import { ModalContentWrapper } from './BridgeSelector';
+import { MouseoverTooltip } from 'components/Tooltip';
 
 interface Props {
   confirmModal: UseBooleanReturnProps;
@@ -38,7 +39,7 @@ interface Props {
   selectedAsset: Asset | undefined;
   amount: string;
   onClickConfirmButton: () => void;
-  extrinsic?: SubmittableExtrinsic
+  extrinsic?: SubmittableExtrinsic;
 }
 
 const BridgeConfirmModal = (props: Props) => {
@@ -64,8 +65,8 @@ const BridgeConfirmModal = (props: Props) => {
 
   const assetInfo = useGetBridgeAssetInfo({ asset: selectedAsset, chain: selectedChainFrom });
 
-  const [txFee, setTxFee] = useState<BigNumber>(new BigNumber(0))
-  
+  const [txFee, setTxFee] = useState<BigNumber>(new BigNumber(0));
+
   useEffect(() => {
     if (!extrinsic) {
       return;
@@ -75,13 +76,19 @@ const BridgeConfirmModal = (props: Props) => {
       setTxFee(nativePendulumToDecimal(fee));
     });
   }, [extrinsic, getTransactionFee, setTxFee]);
-  
+
   const bridgeFee = useMemo(() => {
-    return nativeStellarToDecimal((new BigNumber(amount)).multipliedBy(selectedChainFrom === "Stellar" ? fees.issueFee : fees.redeemFee));
+    return nativeStellarToDecimal(
+      new BigNumber(amount).multipliedBy(
+        selectedChainFrom === 'Stellar' ? fees.issueFee : fees.redeemFee,
+      ),
+    );
   }, [amount, fees.issueFee, fees.redeemFee, selectedChainFrom]);
 
   const griefingCollateral = useMemo(() => {
-    return nativeStellarToDecimal((new BigNumber(amount).shiftedBy(12)).multipliedBy(fees.issueGriefingCollateral));
+    return nativeStellarToDecimal(
+      new BigNumber(amount).shiftedBy(12).multipliedBy(fees.issueGriefingCollateral),
+    );
   }, [amount, fees]);
 
   return (
@@ -183,8 +190,19 @@ const BridgeConfirmModal = (props: Props) => {
 
             <Box mt={3} pt={3} borderTop={(theme) => `1px solid ${theme.palette.divider}`}>
               <Box display="flex" justifyContent="space-between" gap={1}>
-                <Label>Bridge fee:</Label>
-                <DetailRowValue>{bridgeFee.toString()} {assetInfo.code}</DetailRowValue>
+                <MouseoverTooltip
+                  title="Currently zero fee, transitioning to 0.1% per transaction soon."
+                  placement="top"
+                >
+                  <Box display="flex" alignItems="center" gap={1}>
+                    <Info size={14} color={theme.palette.text.secondary} />
+                    <Label>Bridge fee:</Label>
+                  </Box>
+                </MouseoverTooltip>
+
+                <DetailRowValue>
+                  {bridgeFee.toString()} {assetInfo.code}
+                </DetailRowValue>
               </Box>
               <Box display="flex" justifyContent="space-between" gap={1}>
                 <Label>Security deposit:</Label>
