@@ -108,6 +108,7 @@ export default function BridgeDisclaimerDropdown() {
                   py: 0.4,
                   opacity: 0.5,
                 }}
+                style={{textWrap:'pretty'}}
               >
                 <ListItemIcon sx={{ minWidth: '20px' }}>
                   <FiberManualRecord sx={{ fontSize: 'x-small', color: 'action.active' }} />
