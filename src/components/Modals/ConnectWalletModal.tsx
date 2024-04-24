@@ -75,6 +75,16 @@ const FooterText = styled('div')<{ isMobile: boolean }>`
   }
 `;
 
+export const ConnectWalletStyles = {
+  Title,
+  Subtitle,
+  Text,
+  Info,
+  ContentWrapper,
+  WalletBox,
+  FooterText,
+};
+
 const ConnectWalletContent = ({
   isMobile,
   wallets,
