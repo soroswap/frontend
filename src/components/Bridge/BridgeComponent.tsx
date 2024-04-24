@@ -30,6 +30,7 @@ import BridgeHeader from './BridgeHeader';
 import BridgeSelector from './BridgeSelector';
 import PendulumChainIcon from './ChainIcons/PendulumChainIcon';
 import StellarChainIcon from './ChainIcons/StellarChainIcon';
+import useGetSubentryCount from 'hooks/useGetSubentryCount';
 
 export enum BridgeChains {
   PENDULUM = 'Pendulum',
@@ -43,18 +44,28 @@ const chains = [
 
 const BridgeComponentNew = () => {
   const { activeChain, address, serverHorizon } = useSorobanReact();
+
   const { isConnected } = useInkathon();
+
   const { getFees } = useSpacewalkFees();
+
   const fees = getFees();
 
   const confirmModal = useBoolean();
+
+  const { balances: spacewalkBalances, isLoading, mutate } = useSpacewalkBalances();
+
+  const { tokenBalancesResponse, isLoading: isLoadingMyBalances } = useGetMyBalances();
+
+  const { subentryCount } = useGetSubentryCount();
 
   const [selectedChainFrom, setSelectedChainFrom] = useState<BridgeChains | null>(null);
   const [selectedChainTo, setSelectedChainTo] = useState<BridgeChains | null>(null);
 
   const [amount, setAmount] = useState<string>('0');
 
-  const { wrappedAssets, selectedAsset, setSelectedAsset, selectedVault } = useSpacewalkBridge();
+  const { wrappedAssets, selectedAsset, setSelectedAsset, selectedVault, selectedVaultExtended } =
+    useSpacewalkBridge();
 
   const issue = useIssueHandler({
     amount,
@@ -82,13 +93,51 @@ const BridgeComponentNew = () => {
     }
   };
 
+  const hasInsufficientLiquidity = () => {
+    if (selectedChainFrom === BridgeChains.PENDULUM) {
+      const reedemableTokens = selectedVaultExtended?.redeemableTokens ?? 0;
+
+      if (Number(amount) > Number(reedemableTokens)) {
+        return true;
+      }
+    }
+
+    return false;
+  };
+
+  const hasInsufficientBalance = () => {
+    const isInvalidBridgeAmount = Boolean(amount > (fromAssetBalance ?? 0));
+
+    return isInvalidBridgeAmount;
+  };
+
   const shouldDisableBridgeButton = () => {
     const noSelecteds = !selectedChainFrom || !selectedChainTo || !selectedAsset;
 
     const noValues = !Number(amount);
-    const isInvalidBridgeAmount = Boolean(amount > (fromAssetBalance ?? 0))
-    
-    return isConnected && (noSelecteds || noValues || isInvalidBridgeAmount);
+
+    const isInvalidBridgeAmount = hasInsufficientBalance();
+
+    const insufficientLiquidity = hasInsufficientLiquidity();
+
+    const shouldDisable =
+      isConnected && (noSelecteds || noValues || isInvalidBridgeAmount || insufficientLiquidity);
+
+    return shouldDisable;
+  };
+
+  const getBridgeButtonText = () => {
+    const isInvalidBridgeAmount = hasInsufficientBalance();
+
+    const insufficientLiquidity = hasInsufficientLiquidity();
+
+    if (isInvalidBridgeAmount) {
+      return 'Insufficient balance';
+    }
+
+    if (insufficientLiquidity) {
+      return 'Insufficient liquidity';
+    }
   };
 
   const onCloseConfirmModal = () => {
@@ -97,51 +146,58 @@ const BridgeComponentNew = () => {
     redeem.resetStates();
   };
 
-  const isPending = issue.isLoading || redeem.isLoading;
-  const isSuccess = issue.txSuccess || redeem.txSuccess;
-  const isError = issue.txError || redeem.txError;
-  const txHash = issue.txHash || redeem.txHash;
+  const getModalStatus = () => {
+    const isPending = issue.isLoading || redeem.isLoading;
+    const isSuccess = issue.txSuccess || redeem.txSuccess;
+    const isError = issue.txError || redeem.txError;
+    const txHash = issue.txHash || redeem.txHash;
 
-  const showPendingModal = isPending || isSuccess || isError;
+    const showPendingModal = isPending || isSuccess || isError;
 
-  const theme = useTheme();
+    return { isPending, isSuccess, isError, txHash, showPendingModal };
+  };
 
-  const { balances: spacewalkBalances, isLoading, mutate } = useSpacewalkBalances();
+  const getStellarBalance = () => {
+    const stellarBalance =
+      tokenBalancesResponse?.balances?.find(
+        (b) =>
+          activeChain?.networkPassphrase &&
+          b?.contract === selectedAsset?.contractId(activeChain.networkPassphrase),
+      )?.balance || '0';
 
-  const spacewalkAssetBalance = spacewalkBalances?.find((balance) => {
-    return balance.asset === selectedAsset?.code;
-  });
+    return stellarBalance;
+  };
 
-  const { tokenBalancesResponse, isLoading: isLoadingMyBalances } = useGetMyBalances();
+  const getSpacewalkBalance = () => {
+    const spacewalkAssetBalance = spacewalkBalances?.find((balance) => {
+      return balance.asset === selectedAsset?.code;
+    });
 
-  const stellarBalance =
-    tokenBalancesResponse?.balances?.find(
-      (b) =>
-        activeChain?.networkPassphrase &&
-        b?.contract === selectedAsset?.contractId(activeChain.networkPassphrase),
-    )?.balance || '0';
+    return spacewalkAssetBalance?.balance;
+  };
 
-  const fromAssetBalance =
-    selectedChainFrom === 'Stellar' ? stellarBalance : spacewalkAssetBalance?.balance;
+  const getFromAssetBalance = () => {
+    const fromAssetBalance =
+      selectedChainFrom === 'Stellar' ? getStellarBalance() : getSpacewalkBalance();
 
-  
-  const [subentryCount, setSubentryCount] = useState<number>(0)
-  const nativeBalance = useGetNativeTokenBalance();
+    return fromAssetBalance;
+  };
 
-  useEffect(() => {
-    const getSubentryCount = async () => {
-      if (address && nativeBalance.data?.validAccount) {
-        const account = await serverHorizon?.loadAccount(address);
-        const count = account?.subentry_count ?? 0;
-        setSubentryCount(count);
-      }
-    };
+  const modalStatus = getModalStatus();
 
-    getSubentryCount();
-  }, [address, nativeBalance.data?.validAccount, serverHorizon])
+  const fromAssetBalance = getFromAssetBalance();
 
   const endAmount = useMemo(() => {
-    return Number(amount) - Number(nativeStellarToDecimal((new BigNumber(amount)).multipliedBy(selectedChainFrom === "Stellar" ? fees.issueFee : fees.redeemFee)))
+    return (
+      Number(amount) -
+        Number(
+          nativeStellarToDecimal(
+            new BigNumber(amount).multipliedBy(
+              selectedChainFrom === 'Stellar' ? fees.issueFee : fees.redeemFee,
+            ),
+          ),
+        ) || 0
+    );
   }, [amount, fees.issueFee, fees.redeemFee, selectedChainFrom]);
 
   return (
@@ -149,16 +205,16 @@ const BridgeComponentNew = () => {
       <BridgeConfirmModal
         amount={amount}
         confirmModal={confirmModal}
-        isError={isError}
-        isPending={isPending}
-        isSuccess={isSuccess}
+        isError={modalStatus.isError}
+        isPending={modalStatus.isPending}
+        isSuccess={modalStatus.isSuccess}
         onClickConfirmButton={onClickConfirmButton}
         onCloseConfirmModal={onCloseConfirmModal}
         selectedAsset={selectedAsset}
         selectedChainFrom={selectedChainFrom}
         selectedChainTo={selectedChainTo}
-        showPendingModal={showPendingModal}
-        txHash={txHash}
+        showPendingModal={modalStatus.showPendingModal}
+        txHash={modalStatus.txHash}
         extrinsic={issue.extrinsic ?? redeem.extrinsic}
       />
 
@@ -238,7 +294,8 @@ const BridgeComponentNew = () => {
         </OutputSwapSection>
         <Box mt={2}>
           <BridgeButton
-            isLoading={isPending}
+            text={getBridgeButtonText()}
+            isLoading={modalStatus.isPending}
             callback={confirmModal.setTrue}
             disabled={shouldDisableBridgeButton()}
           />

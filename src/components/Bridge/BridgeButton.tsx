@@ -8,9 +8,10 @@ interface PendulumBridgeButtonProps {
   isLoading?: boolean;
   disabled?: boolean;
   callback: () => void;
+  text?: string; // Optional text to force display
 }
 
-export function BridgeButton({ isLoading, disabled, callback }: PendulumBridgeButtonProps) {
+export function BridgeButton({ isLoading, disabled, callback, text }: PendulumBridgeButtonProps) {
   const { address } = useSorobanReact();
   const { connect, isConnected, isConnecting } = useInkathon();
 
@@ -53,7 +54,7 @@ export function BridgeButton({ isLoading, disabled, callback }: PendulumBridgeBu
               <CircularProgress size="24px" />
             </Box>
           ) : (
-            <>{buttonText()}</>
+            <>{text || buttonText()}</>
           )}
         </ButtonText>
       </ButtonPrimary>
