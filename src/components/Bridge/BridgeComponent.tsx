@@ -42,7 +42,7 @@ const chains = [
   { name: BridgeChains.STELLAR, icon: <StellarChainIcon height="24px" width="24px" /> },
 ];
 
-const BridgeComponentNew = () => {
+const BridgeComponent = () => {
   const { activeChain, address, serverHorizon } = useSorobanReact();
 
   const { isConnected } = useInkathon();
@@ -254,7 +254,7 @@ const BridgeComponentNew = () => {
               ) : (
                 //TODO: Add MAX button for other networks balances
                 <TextWithLoadingPlaceholder syncing={isLoading} width={100}>
-                  <>Balance: {fromAssetBalance}</>
+                  <>Available Balance: {fromAssetBalance}</>
                 </TextWithLoadingPlaceholder>
               )}
             </Container>
@@ -306,4 +306,4 @@ const BridgeComponentNew = () => {
   );
 };
 
-export default BridgeComponentNew;
+export default BridgeComponent;
