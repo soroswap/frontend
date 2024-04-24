@@ -5,6 +5,7 @@ import { MouseoverTooltip } from 'components/Tooltip';
 import useGetMyBalances from 'hooks/useGetMyBalances';
 
 import { useSorobanReact } from '@soroban-react/core';
+import BigNumber from 'bignumber.js';
 import { TextWithLoadingPlaceholder } from 'components/Swap/AdvancedSwapDetails';
 import { xlmTokenList } from 'constants/xlmToken';
 import { useMemo } from 'react';
@@ -39,6 +40,15 @@ interface CurrencyBalanceProps {
   isLoadingNetworkFees?: boolean;
 }
 
+function calculateAvailableBalance(contract: string, balance: string, isXLM: boolean, networkFees: number, subentryCount: number): BigNumber {
+  const baseBalance = new BigNumber(balance);
+  if (isXLM) {
+    const adjustment = new BigNumber(networkFees).plus(1).plus(new BigNumber(subentryCount).multipliedBy(0.5));
+    return BigNumber.max(new BigNumber(0), baseBalance.minus(adjustment)).decimalPlaces(7);
+  }
+  return baseBalance;
+}
+
 export default function CurrencyBalance({
   contract,
   onMax,
@@ -48,30 +58,16 @@ export default function CurrencyBalance({
   subentryCount,
   isLoadingNetworkFees,
 }: CurrencyBalanceProps) {
-  // const [fee, setFee] = useState<number>(0);
-  // const [adjustedBalance, setAdjustedBalance] = useState<number>(0);
   const { tokenBalancesResponse, isLoading: isLoadingMyBalances } = useGetMyBalances();
   const { activeChain } = useSorobanReact();
 
-  const balance =
-    tokenBalancesResponse?.balances?.find((b) => b?.contract === contract)?.balance ||
-    '0';
-
-  let availableBalance: number;
   const xlmTokenContract = useMemo(() => {
     return xlmTokenList.find((tList) => tList.network === activeChain?.id)?.assets[0].contract;
   }, [activeChain]);
 
   const isXLM = contract === xlmTokenContract;
-
-  if (isXLM) {
-    availableBalance =
-      Number(balance) - Number(networkFees) - 1 - 0.5 * Number(subentryCount) > 0
-        ? Number(balance) - Number(networkFees) - 1 - 0.5 * Number(subentryCount)
-        : 0;
-  } else {
-    availableBalance = Number(balance);
-  }
+  const balance = tokenBalancesResponse?.balances?.find((b) => b?.contract === contract)?.balance || '0';
+  const availableBalance = useMemo(() => calculateAvailableBalance(contract, balance.toString(), isXLM, networkFees ?? 0, subentryCount ?? 0), [contract, balance, isXLM, networkFees, subentryCount]);
 
   const theme = useTheme();
 
@@ -107,7 +103,7 @@ export default function CurrencyBalance({
           </BodySmall>
         )}
 
-        {showMaxButton && availableBalance > 0 && ((isXLM && Number(networkFees) > 0) || !isXLM) ? (
+        {showMaxButton && Number(availableBalance) > 0 && ((isXLM && Number(networkFees) > 0) || !isXLM) ? (
           <StyledBalanceMax onClick={() => onMax(availableBalance.toString())}>
             Max
           </StyledBalanceMax>
