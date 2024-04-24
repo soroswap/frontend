@@ -46,6 +46,8 @@ const Wrapper = styled(Column)`
   overflow: hidden;
 `;
 
+const accentColor = {color: '#B295F8'};
+
 export default function BridgeDisclaimerDropdown() {
   const theme = useTheme();
   const [showDetails, setShowDetails] = useState(false);
@@ -75,27 +77,28 @@ export default function BridgeDisclaimerDropdown() {
               <>
                 Total issuable amount (in USD): 50000 USD. Join our vault operator program, more{' '}
                 <Link
+                  style={accentColor}
                   target="_blank"
                   className="text-primary ml-1"
                   href="https://pendulum.gitbook.io/pendulum-docs/build/spacewalk-stellar-bridge/operating-a-vault"
                   rel="noreferrer"
                 >
-                  here
+                  here.
                 </Link>
-                .
               </>,
               <>
                 Estimated time for issuing: In a minute after submitting the Stellar payment to the
                 vault. Contact{' '}
                 <Link
+                  style={accentColor}
                   href="https://t.me/pendulum_chain"
                   target="_blank"
                   rel="noreferrer"
                   className="mx-1 text-primary"
                 >
-                  support
+                  support 
                 </Link>
-                if your transaction is still pending after 10 minutes.
+                {' '}if your transaction is still pending after 10 minutes.
               </>,
             ].map((text, index) => (
               <ListItem
