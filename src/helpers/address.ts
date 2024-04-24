@@ -1,7 +1,7 @@
 export function isAddress(value: string): string | false {
-  if (value.length === 56) {
+  if (value?.length === 56) {
     try {
-      return value.match(/^[A-Z0-9]{56}$/) ? value : false;
+      return value?.match(/^[A-Z0-9]{56}$/) ? value : false;
     } catch {
       return false;
     }
@@ -11,9 +11,9 @@ export function isAddress(value: string): string | false {
 }
 
 export function isPolkadotAdress(value: string): string | false {
-  if (value.length === 48) {
+  if (value?.length === 48) {
     try {
-      return value.match(/^[A-Za-z0-9]{48}$/) ? value : false;
+      return value?.match(/^[A-Za-z0-9]{48}$/) ? value : false;
     } catch {
       return false;
     }

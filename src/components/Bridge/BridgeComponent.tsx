@@ -1,4 +1,4 @@
-import { Box, useTheme } from '@mui/material';
+import { Box } from '@mui/material';
 import { useInkathon } from '@scio-labs/use-inkathon';
 import { useSorobanReact } from '@soroban-react/core';
 import BigNumber from 'bignumber.js';
@@ -20,17 +20,17 @@ import useSpacewalkBridge from 'hooks/bridge/pendulum/useSpacewalkBridge';
 import { useSpacewalkFees } from 'hooks/bridge/pendulum/useSpacewalkFees';
 import useBoolean from 'hooks/useBoolean';
 import useGetMyBalances from 'hooks/useGetMyBalances';
-import useGetNativeTokenBalance from 'hooks/useGetNativeTokenBalance';
-import { useEffect, useMemo, useState } from 'react';
+import useGetSubentryCount from 'hooks/useGetSubentryCount';
+import { useMemo, useState } from 'react';
 import { ArrowDown } from 'react-feather';
 import { BASE_FEE } from 'stellar-sdk';
 import { BridgeButton } from './BridgeButton';
 import BridgeConfirmModal from './BridgeConfirmModal';
+import BridgeDisclaimerDropdown from './BridgeDisclaimer';
 import BridgeHeader from './BridgeHeader';
 import BridgeSelector from './BridgeSelector';
 import PendulumChainIcon from './ChainIcons/PendulumChainIcon';
 import StellarChainIcon from './ChainIcons/StellarChainIcon';
-import useGetSubentryCount from 'hooks/useGetSubentryCount';
 
 export enum BridgeChains {
   PENDULUM = 'Pendulum',
@@ -292,13 +292,14 @@ const BridgeComponentNew = () => {
             </Container>
           </InputPanel>
         </OutputSwapSection>
-        <Box mt={2}>
+        <Box mt={2} display={"flex"} sx={{flexDirection: "column", gap: 2}}>
           <BridgeButton
             text={getBridgeButtonText()}
             isLoading={modalStatus.isPending}
             callback={confirmModal.setTrue}
             disabled={shouldDisableBridgeButton()}
           />
+          <BridgeDisclaimerDropdown/>
         </Box>
       </SwapWrapper>
     </>
