@@ -76,11 +76,15 @@ export default function CurrencyBalance({
     availableBalance = Number(balance);
   }
 
+  availableBalance = Number(availableBalance?.toFixed(currency?.decimals ?? 7));
+
   const theme = useTheme();
 
   return (
     <TextWithLoadingPlaceholder
-      syncing={(isXLM && Boolean(isLoadingNetworkFees)) || isLoadingMyBalances || !tokenBalancesResponse}
+      syncing={
+        (isXLM && Boolean(isLoadingNetworkFees)) || isLoadingMyBalances || !tokenBalancesResponse
+      }
       width={150}
     >
       <RowFixed style={{ height: '17px' }}>
