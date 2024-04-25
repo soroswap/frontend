@@ -67,14 +67,12 @@ export default function PolkadotCurrencyBalance({
   let availableBalance: number = 0;
   
   const endAmount = useMemo(() => {
-    console.log(getAssetBalance())
     return (
       getAssetBalance() || 0
     );
   }, [balances, selectedAsset]);
 
   useEffect(() => {
-    console.log(selectedAsset, balances)
     availableBalance = endAmount;
     
   }, [balances, selectedAsset])
