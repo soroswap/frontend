@@ -23,6 +23,7 @@ const useRedeemHandler = ({ amount, selectedAsset, selectedVault }: Props) => {
   const [txSuccess, setTxSuccess] = useState(false);
   const [txError, setTxError] = useState(false);
   const [txHash, setTxHash] = useState<string | undefined>();
+  const [errorMessage, setErrorMessage] = useState<string | undefined>();
 
   const amountRaw = useMemo(() => {
     return Number(amount) ? decimalToStellarNative(amount).toString() : new BigNumber(0).toString();
@@ -50,6 +51,7 @@ const useRedeemHandler = ({ amount, selectedAsset, selectedVault }: Props) => {
     setTxSuccess(false);
     setTxError(false);
     setTxHash(undefined);
+    setErrorMessage(undefined);
 
     requestRedeemExtrinsic
       .signAndSend(activeAccount.address, { signer: activeSigner as any }, (result: any) => {
@@ -81,12 +83,16 @@ const useRedeemHandler = ({ amount, selectedAsset, selectedVault }: Props) => {
             console.log('transaction successfull');
             setTxSuccess(true);
           } else {
+            const errMessage = `Transaction failed with errors: ${errors.join('\n')}`;
+            setErrorMessage(errMessage);
             setTxError(true);
           }
         }
       })
       .catch((error: unknown) => {
         console.error('Transaction submission failed', error);
+        const msg = (error as any)?.message || 'Unknown error';
+        setErrorMessage(msg);
         setIsLoading(false);
         setTxError(true);
       });
@@ -104,6 +110,7 @@ const useRedeemHandler = ({ amount, selectedAsset, selectedVault }: Props) => {
     setTxSuccess(false);
     setTxError(false);
     setTxHash(undefined);
+    setErrorMessage(undefined);
   };
 
   return {
@@ -118,6 +125,7 @@ const useRedeemHandler = ({ amount, selectedAsset, selectedVault }: Props) => {
     txHash,
     setTxHash,
     resetStates,
+    errorMessage,
   };
 };
 
