@@ -1,7 +1,6 @@
-import React, { useEffect, useState } from 'react';
-import useGetNativeTokenBalance from './useGetNativeTokenBalance';
 import { useSorobanReact } from '@soroban-react/core';
-import useSWRImmutable from 'swr/dist/immutable';
+import { useEffect, useState } from 'react';
+import useGetNativeTokenBalance from './useGetNativeTokenBalance';
 
 const useGetSubentryCount = () => {
   const { address, serverHorizon } = useSorobanReact();
@@ -21,7 +20,7 @@ const useGetSubentryCount = () => {
     getSubentryCount();
   }, [address, nativeBalance.data?.validAccount, serverHorizon]);
 
-  return { subentryCount };
+  return { subentryCount, nativeBalance: nativeBalance?.data?.data };
 };
 
 export default useGetSubentryCount;

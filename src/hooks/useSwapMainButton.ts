@@ -7,7 +7,6 @@ import { Field } from 'state/swap/actions';
 import { relevantTokensType } from './useBalances';
 import useGetMyBalances from './useGetMyBalances';
 import useGetNativeTokenBalance from './useGetNativeTokenBalance';
-import { xlmTokenList } from 'constants/xlmToken';
 
 interface Props {
   currencies: any;
@@ -18,7 +17,6 @@ interface Props {
   routeNotFound: boolean;
   onSubmit: () => void;
   trade: InterfaceTrade | undefined;
-  subentryCount: number;
   networkFees: number;
 }
 
@@ -30,12 +28,12 @@ const useSwapMainButton = ({
   onSubmit,
   trade,
   networkFees,
-  subentryCount,
 }: Props) => {
   const sorobanContext = useSorobanReact();
   const { ConnectWalletModal } = useContext(AppContext);
   const { isConnectWalletModalOpen, setConnectWalletModalOpen } = ConnectWalletModal;
   const { data } = useGetNativeTokenBalance();
+  const { availableNativeBalance } = useGetMyBalances();
 
   const { address } = sorobanContext;
   const userBalances = useGetMyBalances();
@@ -51,8 +49,7 @@ const useSwapMainButton = ({
     )?.balance;
 
     if (isXLMCurrencyA) {
-      balanceA = Number(balanceA) - Number(networkFees) - 1 - 0.5 * Number(subentryCount);
-      balanceA = balanceA > 0 ? balanceA : 0;
+      balanceA = availableNativeBalance(networkFees)
     }
 
     const balanceB = userBalances.tokenBalancesResponse?.balances.find(

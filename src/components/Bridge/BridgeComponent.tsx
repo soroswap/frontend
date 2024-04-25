@@ -20,10 +20,8 @@ import useSpacewalkBridge from 'hooks/bridge/pendulum/useSpacewalkBridge';
 import { useSpacewalkFees } from 'hooks/bridge/pendulum/useSpacewalkFees';
 import useBoolean from 'hooks/useBoolean';
 import useGetMyBalances from 'hooks/useGetMyBalances';
-import useGetSubentryCount from 'hooks/useGetSubentryCount';
 import { useMemo, useState } from 'react';
 import { ArrowDown } from 'react-feather';
-import { BASE_FEE } from 'stellar-sdk';
 import { BridgeButton } from './BridgeButton';
 import BridgeConfirmModal from './BridgeConfirmModal';
 import BridgeDisclaimerDropdown from './BridgeDisclaimer';
@@ -43,7 +41,7 @@ const chains = [
 ];
 
 const BridgeComponent = () => {
-  const { activeChain, address, serverHorizon } = useSorobanReact();
+  const { activeChain } = useSorobanReact();
 
   const { isConnected } = useInkathon();
 
@@ -56,8 +54,6 @@ const BridgeComponent = () => {
   const { balances: spacewalkBalances, isLoading, mutate } = useSpacewalkBalances();
 
   const { tokenBalancesResponse, isLoading: isLoadingMyBalances } = useGetMyBalances();
-
-  const { subentryCount } = useGetSubentryCount();
 
   const [selectedChainFrom, setSelectedChainFrom] = useState<BridgeChains | null>(null);
   const [selectedChainTo, setSelectedChainTo] = useState<BridgeChains | null>(null);
@@ -248,8 +244,6 @@ const BridgeComponent = () => {
                   onMax={(value) => setAmount(value)}
                   hideBalance={false}
                   showMaxButton={true}
-                  networkFees={Number(BigNumber(BASE_FEE).shiftedBy(-7))}
-                  subentryCount={subentryCount}
                 />
               ) : (
                 //TODO: Add MAX button for other networks balances

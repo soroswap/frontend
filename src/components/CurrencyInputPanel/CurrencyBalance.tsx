@@ -35,18 +35,8 @@ interface CurrencyBalanceProps {
   onMax: (maxValue: string) => void;
   hideBalance: any;
   showMaxButton: any;
-  networkFees?: number | undefined | null;
-  subentryCount?: number | undefined | null;
+  networkFees?: string | number | BigNumber | null;
   isLoadingNetworkFees?: boolean;
-}
-
-function calculateAvailableBalance(contract: string, balance: string, isXLM: boolean, networkFees: number, subentryCount: number): BigNumber {
-  const baseBalance = new BigNumber(balance);
-  if (isXLM) {
-    const adjustment = new BigNumber(networkFees).plus(1).plus(new BigNumber(subentryCount).multipliedBy(0.5));
-    return BigNumber.max(new BigNumber(0), baseBalance.minus(adjustment)).decimalPlaces(7);
-  }
-  return baseBalance;
 }
 
 export default function CurrencyBalance({
@@ -55,10 +45,9 @@ export default function CurrencyBalance({
   hideBalance,
   showMaxButton,
   networkFees,
-  subentryCount,
   isLoadingNetworkFees,
 }: CurrencyBalanceProps) {
-  const { tokenBalancesResponse, isLoading: isLoadingMyBalances } = useGetMyBalances();
+  const { tokenBalancesResponse, availableNativeBalance, isLoading: isLoadingMyBalances } = useGetMyBalances();
   const { activeChain } = useSorobanReact();
 
   const xlmTokenContract = useMemo(() => {
@@ -67,9 +56,12 @@ export default function CurrencyBalance({
 
   const isXLM = contract === xlmTokenContract;
   const balance = tokenBalancesResponse?.balances?.find((b) => b?.contract === contract)?.balance || '0';
-  const availableBalance = useMemo(() => calculateAvailableBalance(contract, balance.toString(), isXLM, networkFees ?? 0, subentryCount ?? 0), [contract, balance, isXLM, networkFees, subentryCount]);
-
-  availableBalance = Number(availableBalance?.toFixed(currency?.decimals ?? 7));
+  
+  let availableBalance = balance
+  
+  if (isXLM) {
+    availableBalance = availableNativeBalance(networkFees)
+  }
 
   const theme = useTheme();
 
