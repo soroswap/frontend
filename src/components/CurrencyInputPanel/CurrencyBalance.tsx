@@ -69,11 +69,15 @@ export default function CurrencyBalance({
   const balance = tokenBalancesResponse?.balances?.find((b) => b?.contract === contract)?.balance || '0';
   const availableBalance = useMemo(() => calculateAvailableBalance(contract, balance.toString(), isXLM, networkFees ?? 0, subentryCount ?? 0), [contract, balance, isXLM, networkFees, subentryCount]);
 
+  availableBalance = Number(availableBalance?.toFixed(currency?.decimals ?? 7));
+
   const theme = useTheme();
 
   return (
     <TextWithLoadingPlaceholder
-      syncing={(isXLM && Boolean(isLoadingNetworkFees)) || isLoadingMyBalances || !tokenBalancesResponse}
+      syncing={
+        (isXLM && Boolean(isLoadingNetworkFees)) || isLoadingMyBalances || !tokenBalancesResponse
+      }
       width={150}
     >
       <RowFixed style={{ height: '17px' }}>
