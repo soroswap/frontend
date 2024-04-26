@@ -31,6 +31,7 @@ import BridgeHeader from './BridgeHeader';
 import BridgeSelector from './BridgeSelector';
 import PendulumChainIcon from './ChainIcons/PendulumChainIcon';
 import StellarChainIcon from './ChainIcons/StellarChainIcon';
+import PolkadotCurrencyBalance from './PolkadotCurrencyBalance';
 
 export enum BridgeChains {
   PENDULUM = 'Pendulum',
@@ -252,10 +253,14 @@ const BridgeComponent = () => {
                   subentryCount={subentryCount}
                 />
               ) : (
-                //TODO: Add MAX button for other networks balances
-                <TextWithLoadingPlaceholder syncing={isLoading} width={100}>
-                  <>Available Balance: {fromAssetBalance}</>
-                </TextWithLoadingPlaceholder>
+                  <PolkadotCurrencyBalance
+                    balances={spacewalkBalances ? spacewalkBalances : undefined}
+                    selectedAsset={selectedAsset ? selectedAsset : undefined}
+                    onMax={(value) => setAmount(value)}
+                    isLoading={isLoading}
+                    hideBalance={!selectedAsset ? true : false}
+                    showMaxButton={selectedAsset ? true : false}
+                  />
               )}
             </Container>
           </InputPanel>
