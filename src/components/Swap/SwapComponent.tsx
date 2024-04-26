@@ -127,8 +127,6 @@ export function SwapComponent({
   const [state, dispatch] = useReducer(swapReducer, { ...initialSwapState, ...prefilledState });
   const { typedValue, recipient, independentField } = state;
 
-  const [subentryCount, setSubentryCount] = useState<number>(0);
-
   const { onSwitchTokens, onCurrencySelection, onUserInput, onChangeRecipient } =
     useSwapActionHandlers(dispatch);
   const dependentField: Field = independentField === Field.INPUT ? Field.OUTPUT : Field.INPUT;
@@ -203,15 +201,31 @@ export function SwapComponent({
 
   const handleTypeInput = useCallback(
     (value: string) => {
+      const currency = currencies[Field.INPUT];
+      const decimals = currency?.decimals ?? 7;
+
+      // Prevents user from inputting more decimals than the token supports
+      if (value.split('.').length > 1 && value.split('.')[1].length > decimals) {
+        return;
+      }
+
       onUserInput(Field.INPUT, value);
     },
-    [onUserInput],
+    [onUserInput, currencies],
   );
   const handleTypeOutput = useCallback(
     (value: string) => {
+      const currency = currencies[Field.OUTPUT];
+      const decimals = currency?.decimals ?? 7;
+
+      // Prevents user from inputting more decimals than the token supports
+      if (value.split('.').length > 1 && value.split('.')[1].length > decimals) {
+        return;
+      }
+
       onUserInput(Field.OUTPUT, value);
     },
-    [onUserInput],
+    [onUserInput, currencies],
   );
 
   const formattedAmounts = useMemo(
@@ -310,16 +324,6 @@ export function SwapComponent({
   const priceImpactSeverity = 2; //IF is < 2 it shows Swap anyway button in red
   const showPriceImpactWarning = false;
 
-  const { getMainButtonText, isMainButtonDisabled, handleMainButtonClick, getSwapValues } =
-    useSwapMainButton({
-      currencies,
-      currencyBalances,
-      formattedAmounts,
-      routeNotFound,
-      onSubmit: handleContinueToReview,
-      trade,
-    });
-
   const nativeBalance = useGetNativeTokenBalance();
 
   useEffect(() => {
@@ -344,19 +348,21 @@ export function SwapComponent({
       }
     };
 
-    const getSubentryCount = async () => {
-      if (sorobanContext.address && nativeBalance.data?.validAccount) {
-        const account = await sorobanContext.serverHorizon?.loadAccount(sorobanContext.address);
-        const count = account?.subentry_count ?? 0;
-        setSubentryCount(count);
-      }
-    };
-
-    getSubentryCount();
     checkTrustline();
   }, [sorobanContext, swapCallback, trade, nativeBalance.data?.validAccount]);
 
   const { networkFees, isLoading: isLoadingNetworkFees } = useSwapNetworkFees(trade, currencies);
+
+  const { getMainButtonText, isMainButtonDisabled, handleMainButtonClick, getSwapValues } =
+    useSwapMainButton({
+      currencies,
+      currencyBalances,
+      formattedAmounts,
+      routeNotFound,
+      onSubmit: handleContinueToReview,
+      trade,
+      networkFees,
+    });
 
   const useConfirmModal = useConfirmModalState({
     trade: trade!,
@@ -440,7 +446,6 @@ export function SwapComponent({
               onCurrencySelect={handleInputSelect}
               otherCurrency={currencies[Field.OUTPUT]}
               networkFees={networkFees}
-              subentryCount={subentryCount}
               isLoadingNetworkFees={isLoadingNetworkFees}
               // showCommonBases
               // id={InterfaceSectionName.CURRENCY_INPUT_PANEL}
@@ -489,7 +494,6 @@ export function SwapComponent({
                 loading={independentField === Field.INPUT && routeIsSyncing}
                 disableInput={getSwapValues().noCurrencySelected}
                 networkFees={networkFees}
-                subentryCount={subentryCount}
               />
             </OutputSwapSection>
           </div>

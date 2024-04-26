@@ -5,6 +5,7 @@ import { MouseoverTooltip } from 'components/Tooltip';
 import useGetMyBalances from 'hooks/useGetMyBalances';
 
 import { useSorobanReact } from '@soroban-react/core';
+import BigNumber from 'bignumber.js';
 import { TextWithLoadingPlaceholder } from 'components/Swap/AdvancedSwapDetails';
 import { xlmTokenList } from 'constants/xlmToken';
 import { useMemo } from 'react';
@@ -34,8 +35,7 @@ interface CurrencyBalanceProps {
   onMax: (maxValue: string) => void;
   hideBalance: any;
   showMaxButton: any;
-  networkFees?: number | undefined | null;
-  subentryCount?: number | undefined | null;
+  networkFees?: string | number | BigNumber | null;
   isLoadingNetworkFees?: boolean;
 }
 
@@ -45,39 +45,31 @@ export default function CurrencyBalance({
   hideBalance,
   showMaxButton,
   networkFees,
-  subentryCount,
   isLoadingNetworkFees,
 }: CurrencyBalanceProps) {
-  // const [fee, setFee] = useState<number>(0);
-  // const [adjustedBalance, setAdjustedBalance] = useState<number>(0);
-  const { tokenBalancesResponse, isLoading: isLoadingMyBalances } = useGetMyBalances();
+  const { tokenBalancesResponse, availableNativeBalance, isLoading: isLoadingMyBalances } = useGetMyBalances();
   const { activeChain } = useSorobanReact();
 
-  const balance =
-    tokenBalancesResponse?.balances?.find((b) => b?.contract === contract)?.balance ||
-    '0';
-
-  let availableBalance: number;
   const xlmTokenContract = useMemo(() => {
     return xlmTokenList.find((tList) => tList.network === activeChain?.id)?.assets[0].contract;
   }, [activeChain]);
 
   const isXLM = contract === xlmTokenContract;
-
+  const balance = tokenBalancesResponse?.balances?.find((b) => b?.contract === contract)?.balance || '0';
+  
+  let availableBalance = balance
+  
   if (isXLM) {
-    availableBalance =
-      Number(balance) - Number(networkFees) - 1 - 0.5 * Number(subentryCount) > 0
-        ? Number(balance) - Number(networkFees) - 1 - 0.5 * Number(subentryCount)
-        : 0;
-  } else {
-    availableBalance = Number(balance);
+    availableBalance = availableNativeBalance(networkFees)
   }
 
   const theme = useTheme();
 
   return (
     <TextWithLoadingPlaceholder
-      syncing={(isXLM && Boolean(isLoadingNetworkFees)) || isLoadingMyBalances || !tokenBalancesResponse}
+      syncing={
+        (isXLM && Boolean(isLoadingNetworkFees)) || isLoadingMyBalances || !tokenBalancesResponse
+      }
       width={150}
     >
       <RowFixed style={{ height: '17px' }}>
@@ -107,7 +99,7 @@ export default function CurrencyBalance({
           </BodySmall>
         )}
 
-        {showMaxButton && availableBalance > 0 && ((isXLM && Number(networkFees) > 0) || !isXLM) ? (
+        {showMaxButton && Number(availableBalance) > 0 ? (
           <StyledBalanceMax onClick={() => onMax(availableBalance.toString())}>
             Max
           </StyledBalanceMax>

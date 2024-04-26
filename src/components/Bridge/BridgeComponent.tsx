@@ -9,7 +9,6 @@ import {
   InputRow,
   StyledNumericalInput,
 } from 'components/CurrencyInputPanel/SwapCurrencyInputPanel';
-import { TextWithLoadingPlaceholder } from 'components/Swap/AdvancedSwapDetails';
 import { ArrowContainer, OutputSwapSection, SwapSection } from 'components/Swap/SwapComponent';
 import { ArrowWrapper, SwapWrapper } from 'components/Swap/styleds';
 import { nativeStellarToDecimal } from 'helpers/bridge/pendulum/spacewalk';
@@ -20,10 +19,8 @@ import useSpacewalkBridge from 'hooks/bridge/pendulum/useSpacewalkBridge';
 import { useSpacewalkFees } from 'hooks/bridge/pendulum/useSpacewalkFees';
 import useBoolean from 'hooks/useBoolean';
 import useGetMyBalances from 'hooks/useGetMyBalances';
-import useGetSubentryCount from 'hooks/useGetSubentryCount';
 import { useEffect, useMemo, useState } from 'react';
 import { ArrowDown } from 'react-feather';
-import { BASE_FEE } from 'stellar-sdk';
 import { BridgeButton } from './BridgeButton';
 import BridgeConfirmModal from './BridgeConfirmModal';
 import BridgeDisclaimerDropdown from './BridgeDisclaimer';
@@ -44,7 +41,7 @@ const chains = [
 ];
 
 const BridgeComponent = () => {
-  const { activeChain, address, serverHorizon } = useSorobanReact();
+  const { activeChain } = useSorobanReact();
 
   const { isConnected } = useInkathon();
 
@@ -56,9 +53,11 @@ const BridgeComponent = () => {
 
   const { balances: spacewalkBalances, isLoading, mutate } = useSpacewalkBalances();
 
-  const { tokenBalancesResponse, isLoading: isLoadingMyBalances } = useGetMyBalances();
-
-  const { subentryCount } = useGetSubentryCount();
+  const {
+    tokenBalancesResponse,
+    availableNativeBalance,
+    isLoading: isLoadingMyBalances,
+  } = useGetMyBalances();
 
   const [selectedChainFrom, setSelectedChainFrom] = useState<BridgeChains | null>(null);
   const [selectedChainTo, setSelectedChainTo] = useState<BridgeChains | null>(null);
@@ -159,12 +158,14 @@ const BridgeComponent = () => {
   };
 
   const getStellarBalance = () => {
-    const stellarBalance =
+    let stellarBalance =
       tokenBalancesResponse?.balances?.find(
         (b) =>
           activeChain?.networkPassphrase &&
           b?.contract === selectedAsset?.contractId(activeChain.networkPassphrase),
       )?.balance || '0';
+
+    if (selectedAsset?.code === 'XLM') stellarBalance = availableNativeBalance();
 
     return stellarBalance;
   };
@@ -270,8 +271,6 @@ const BridgeComponent = () => {
                   onMax={(value) => setAmount(value)}
                   hideBalance={false}
                   showMaxButton={true}
-                  networkFees={Number(BigNumber(BASE_FEE).shiftedBy(-7))}
-                  subentryCount={subentryCount}
                 />
               ) : (
                 <PolkadotCurrencyBalance
@@ -279,8 +278,8 @@ const BridgeComponent = () => {
                   selectedAsset={selectedAsset ? selectedAsset : undefined}
                   onMax={(value) => setAmount(value)}
                   isLoading={isLoading}
-                  hideBalance={!selectedAsset ? true : false}
-                  showMaxButton={selectedAsset ? true : false}
+                  hideBalance={!selectedAsset}
+                  showMaxButton={Boolean(selectedAsset)}
                 />
               )}
             </Container>
