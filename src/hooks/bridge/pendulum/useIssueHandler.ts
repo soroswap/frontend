@@ -30,6 +30,7 @@ const useIssueHandler = ({ amount, selectedAsset, selectedVault }: Props) => {
   const [txSuccess, setTxSuccess] = useState<boolean>(false);
   const [txError, setTxError] = useState<boolean>(false);
   const [txHash, setTxHash] = useState<string | undefined>();
+  const [errorMessage, setErrorMessage] = useState<string | undefined>();
 
   const amountRaw = useMemo(() => {
     return Number(amount) ? decimalToStellarNative(amount).toString() : new BigNumber(0).toString();
@@ -92,6 +93,7 @@ const useIssueHandler = ({ amount, selectedAsset, selectedVault }: Props) => {
         }
       } catch (error) {
         console.error('Error submitting transaction:', error);
+        console.log({ error });
         setTxError(true);
       }
     },
@@ -129,6 +131,7 @@ const useIssueHandler = ({ amount, selectedAsset, selectedVault }: Props) => {
     setTxSuccess(false);
     setTxError(false);
     setTxHash(undefined);
+    setErrorMessage(undefined);
 
     requestIssueExtrinsic
       .signAndSend(activeAccount.address, { signer: activeSigner }, (result) => {
@@ -167,12 +170,15 @@ const useIssueHandler = ({ amount, selectedAsset, selectedVault }: Props) => {
             console.log('Confirmed!');
             // setConfirmationDialogVisible(true);
           } else {
+            const errMessage = `Transaction failed with errors: ${errors.join('\n')}`;
+            setErrorMessage(errMessage);
             setTxError(true);
           }
         }
       })
       .catch((error) => {
-        console.error('Transaction submission failed', error);
+        const msg = (error as any)?.message || 'Unknown error';
+        setErrorMessage(msg);
         setIsLoading(false);
         setTxError(true);
       });
@@ -191,6 +197,7 @@ const useIssueHandler = ({ amount, selectedAsset, selectedVault }: Props) => {
     setTxSuccess(false);
     setTxError(false);
     setTxHash(undefined);
+    setErrorMessage(undefined);
   };
 
   return {
@@ -205,6 +212,7 @@ const useIssueHandler = ({ amount, selectedAsset, selectedVault }: Props) => {
     txHash,
     setTxHash,
     resetStates,
+    errorMessage,
   };
 };
 

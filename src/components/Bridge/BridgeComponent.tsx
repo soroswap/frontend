@@ -21,7 +21,7 @@ import { useSpacewalkFees } from 'hooks/bridge/pendulum/useSpacewalkFees';
 import useBoolean from 'hooks/useBoolean';
 import useGetMyBalances from 'hooks/useGetMyBalances';
 import useGetSubentryCount from 'hooks/useGetSubentryCount';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { ArrowDown } from 'react-feather';
 import { BASE_FEE } from 'stellar-sdk';
 import { BridgeButton } from './BridgeButton';
@@ -201,6 +201,25 @@ const BridgeComponent = () => {
     );
   }, [amount, fees.issueFee, fees.redeemFee, selectedChainFrom]);
 
+  //Auto select the other chain when the user selects one
+  useEffect(() => {
+    if (selectedChainFrom === BridgeChains.PENDULUM && selectedChainTo !== BridgeChains.STELLAR) {
+      setSelectedChainTo(BridgeChains.STELLAR);
+    }
+
+    if (selectedChainFrom === BridgeChains.STELLAR && selectedChainTo !== BridgeChains.PENDULUM) {
+      setSelectedChainTo(BridgeChains.PENDULUM);
+    }
+
+    if (selectedChainTo === BridgeChains.PENDULUM && selectedChainFrom !== BridgeChains.STELLAR) {
+      setSelectedChainFrom(BridgeChains.STELLAR);
+    }
+
+    if (selectedChainTo === BridgeChains.STELLAR && selectedChainFrom !== BridgeChains.PENDULUM) {
+      setSelectedChainFrom(BridgeChains.PENDULUM);
+    }
+  }, [selectedChainFrom, selectedChainTo]);
+
   return (
     <>
       <BridgeConfirmModal
@@ -216,6 +235,7 @@ const BridgeComponent = () => {
         selectedChainTo={selectedChainTo}
         showPendingModal={modalStatus.showPendingModal}
         txHash={modalStatus.txHash}
+        errorMessage={issue.errorMessage || redeem.errorMessage}
         extrinsic={issue.extrinsic ?? redeem.extrinsic}
       />
 
@@ -297,14 +317,14 @@ const BridgeComponent = () => {
             </Container>
           </InputPanel>
         </OutputSwapSection>
-        <Box mt={2} display={"flex"} sx={{flexDirection: "column", gap: 2}}>
+        <Box mt={2} display={'flex'} sx={{ flexDirection: 'column', gap: 2 }}>
           <BridgeButton
             text={getBridgeButtonText()}
             isLoading={modalStatus.isPending}
             callback={confirmModal.setTrue}
             disabled={shouldDisableBridgeButton()}
           />
-          <BridgeDisclaimerDropdown/>
+          <BridgeDisclaimerDropdown />
         </Box>
       </SwapWrapper>
     </>
