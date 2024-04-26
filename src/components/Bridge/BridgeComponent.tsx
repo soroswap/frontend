@@ -53,7 +53,7 @@ const BridgeComponent = () => {
 
   const { balances: spacewalkBalances, isLoading, mutate } = useSpacewalkBalances();
 
-  const { tokenBalancesResponse, isLoading: isLoadingMyBalances } = useGetMyBalances();
+  const { tokenBalancesResponse, availableNativeBalance, isLoading: isLoadingMyBalances } = useGetMyBalances();
 
   const [selectedChainFrom, setSelectedChainFrom] = useState<BridgeChains | null>(null);
   const [selectedChainTo, setSelectedChainTo] = useState<BridgeChains | null>(null);
@@ -154,13 +154,15 @@ const BridgeComponent = () => {
   };
 
   const getStellarBalance = () => {
-    const stellarBalance =
+    let stellarBalance =
       tokenBalancesResponse?.balances?.find(
         (b) =>
           activeChain?.networkPassphrase &&
           b?.contract === selectedAsset?.contractId(activeChain.networkPassphrase),
       )?.balance || '0';
 
+    if (selectedAsset?.code === "XLM") stellarBalance = availableNativeBalance()
+    
     return stellarBalance;
   };
 
@@ -266,14 +268,14 @@ const BridgeComponent = () => {
                   showMaxButton={true}
                 />
               ) : (
-                  <PolkadotCurrencyBalance
-                    balances={spacewalkBalances ? spacewalkBalances : undefined}
-                    selectedAsset={selectedAsset ? selectedAsset : undefined}
-                    onMax={(value) => setAmount(value)}
-                    isLoading={isLoading}
-                    hideBalance={!selectedAsset ? true : false}
-                    showMaxButton={selectedAsset ? true : false}
-                  />
+                <PolkadotCurrencyBalance
+                  balances={spacewalkBalances ? spacewalkBalances : undefined}
+                  selectedAsset={selectedAsset ? selectedAsset : undefined}
+                  onMax={(value) => setAmount(value)}
+                  isLoading={isLoading}
+                  hideBalance={!selectedAsset}
+                  showMaxButton={Boolean(selectedAsset)}
+                />
               )}
             </Container>
           </InputPanel>

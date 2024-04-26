@@ -99,7 +99,7 @@ export default function CurrencyBalance({
           </BodySmall>
         )}
 
-        {showMaxButton && Number(availableBalance) > 0 && ((isXLM && Number(networkFees) > 0) || !isXLM) ? (
+        {showMaxButton && Number(availableBalance) > 0 ? (
           <StyledBalanceMax onClick={() => onMax(availableBalance.toString())}>
             Max
           </StyledBalanceMax>
