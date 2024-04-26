@@ -237,6 +237,7 @@ const BridgeComponent = () => {
         txHash={modalStatus.txHash}
         errorMessage={issue.errorMessage || redeem.errorMessage}
         extrinsic={issue.extrinsic ?? redeem.extrinsic}
+        tryAgain={issue.tryAgain}
       />
 
       <SwapWrapper>
@@ -273,14 +274,14 @@ const BridgeComponent = () => {
                   subentryCount={subentryCount}
                 />
               ) : (
-                  <PolkadotCurrencyBalance
-                    balances={spacewalkBalances ? spacewalkBalances : undefined}
-                    selectedAsset={selectedAsset ? selectedAsset : undefined}
-                    onMax={(value) => setAmount(value)}
-                    isLoading={isLoading}
-                    hideBalance={!selectedAsset ? true : false}
-                    showMaxButton={selectedAsset ? true : false}
-                  />
+                <PolkadotCurrencyBalance
+                  balances={spacewalkBalances ? spacewalkBalances : undefined}
+                  selectedAsset={selectedAsset ? selectedAsset : undefined}
+                  onMax={(value) => setAmount(value)}
+                  isLoading={isLoading}
+                  hideBalance={!selectedAsset ? true : false}
+                  showMaxButton={selectedAsset ? true : false}
+                />
               )}
             </Container>
           </InputPanel>

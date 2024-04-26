@@ -1,4 +1,4 @@
-import { Box, Modal, Typography, useTheme } from '@mui/material';
+import { Box, Button, Modal, Typography, useTheme } from '@mui/material';
 import { SubmittableExtrinsic } from '@polkadot/api/promise/types';
 import BigNumber from 'bignumber.js';
 import { ButtonPrimary } from 'components/Buttons/Button';
@@ -41,6 +41,7 @@ interface Props {
   onClickConfirmButton: () => void;
   extrinsic?: SubmittableExtrinsic;
   errorMessage?: string;
+  tryAgain?: { show: boolean; fn: any };
 }
 
 const BridgeConfirmModal = (props: Props) => {
@@ -59,6 +60,7 @@ const BridgeConfirmModal = (props: Props) => {
     txHash,
     extrinsic,
     errorMessage,
+    tryAgain,
   } = props;
 
   const theme = useTheme();
@@ -97,7 +99,7 @@ const BridgeConfirmModal = (props: Props) => {
     <Modal open={confirmModal.value} onClose={onCloseConfirmModal}>
       <div>
         {showPendingModal ? (
-          <ModalContentWrapper sx={{ p: 3 }} modalheight="300px">
+          <ModalContentWrapper sx={{ p: 3 }} modalheight="350px">
             <div>
               <RowBetween>
                 <div />
@@ -146,9 +148,14 @@ const BridgeConfirmModal = (props: Props) => {
                 </Box>
 
                 {isSuccess ? null : isError && errorMessage ? (
-                  <SubHeaderSmall color="textSecondary" textAlign="center" marginBottom="12px">
-                    {errorMessage}
-                  </SubHeaderSmall>
+                  <Box>
+                    <SubHeaderSmall color="textSecondary" textAlign="center" marginBottom="12px">
+                      {errorMessage}
+                    </SubHeaderSmall>
+                    {tryAgain && tryAgain.show ? (
+                      <ButtonPrimary onClick={tryAgain.fn}>Try again</ButtonPrimary>
+                    ) : null}
+                  </Box>
                 ) : (
                   <SubHeaderSmall color="textSecondary" textAlign="center" marginBottom="12px">
                     Confirm this transaction in your wallet

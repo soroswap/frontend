@@ -31,6 +31,7 @@ const useIssueHandler = ({ amount, selectedAsset, selectedVault }: Props) => {
   const [txError, setTxError] = useState<boolean>(false);
   const [txHash, setTxHash] = useState<string | undefined>();
   const [errorMessage, setErrorMessage] = useState<string | undefined>();
+  const [tryAgain, setTryAgain] = useState<{ show: boolean; fn: any }>({ show: false, fn: null });
 
   const amountRaw = useMemo(() => {
     return Number(amount) ? decimalToStellarNative(amount).toString() : new BigNumber(0).toString();
@@ -82,19 +83,16 @@ const useIssueHandler = ({ amount, selectedAsset, selectedVault }: Props) => {
         activeChain?.networkPassphrase ?? '',
       );
       console.log('🚀 « transactionToSubmit:', transactionToSubmit);
+      const res = await serverHorizon?.submitTransaction(transactionToSubmit);
+      console.log('🚀 « response:', res);
 
-      try {
-        let response = await serverHorizon?.submitTransaction(transactionToSubmit);
-        console.log('🚀 « response:', response);
-        if (response) {
-          setIsLoading(false);
-          setTxSuccess(true);
-          setTxHash(response.hash);
-        }
-      } catch (error) {
-        console.error('Error submitting transaction:', error);
-        console.log({ error });
-        setTxError(true);
+      if (res) {
+        setIsLoading(false);
+        setTxSuccess(true);
+        setTxHash(res.hash);
+        setTryAgain({ show: false, fn: null });
+      } else {
+        throw new Error("Couldn't submit transaction");
       }
     },
     [
@@ -132,6 +130,7 @@ const useIssueHandler = ({ amount, selectedAsset, selectedVault }: Props) => {
     setTxError(false);
     setTxHash(undefined);
     setErrorMessage(undefined);
+    setTryAgain({ show: false, fn: null });
 
     requestIssueExtrinsic
       .signAndSend(activeAccount.address, { signer: activeSigner }, (result) => {
@@ -159,10 +158,29 @@ const useIssueHandler = ({ amount, selectedAsset, selectedVault }: Props) => {
               stellarVaultAccountFromEventHex.toString(),
             );
 
-            getIssueRequest(issueId).then((issueRequest) => {
-              createStellarPayment(stellarVaultAddress.publicKey(), memo).catch((err) => {
+            getIssueRequest(issueId).then(async (issueRequest) => {
+              try {
+                await createStellarPayment(stellarVaultAddress.publicKey(), memo);
+              } catch (error) {
+                console.error('Error submitting transaction:', error);
+                const msg = (error as any)?.message || 'Unexpected error';
+                setTryAgain({
+                  show: true,
+                  fn: async () => {
+                    try {
+                      setIsLoading(true);
+                      setTxError(false);
+                      setErrorMessage(undefined);
+                      await createStellarPayment(stellarVaultAddress.publicKey(), memo);
+                    } catch (error) {
+                      setErrorMessage(msg);
+                      setTxError(true);
+                    }
+                  },
+                });
+                setErrorMessage(msg);
                 setTxError(true);
-              });
+              }
             });
           }
 
@@ -198,6 +216,7 @@ const useIssueHandler = ({ amount, selectedAsset, selectedVault }: Props) => {
     setTxError(false);
     setTxHash(undefined);
     setErrorMessage(undefined);
+    setTryAgain({ show: false, fn: null });
   };
 
   return {
@@ -213,6 +232,7 @@ const useIssueHandler = ({ amount, selectedAsset, selectedVault }: Props) => {
     setTxHash,
     resetStates,
     errorMessage,
+    tryAgain,
   };
 };
 
