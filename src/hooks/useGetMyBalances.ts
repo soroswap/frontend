@@ -43,7 +43,7 @@ const useGetMyBalances = () => {
 
   const { address } = sorobanContext;
   const { tokens, isLoading: isLoadingTokens } = useAllTokens();
-  const { subentryCount, nativeBalance } = useGetSubentryCount();
+  const { subentryCount, nativeBalance, isLoading: isSubentryLoading } = useGetSubentryCount();
 
   const { account } = useHorizonLoadAccount();
 
@@ -71,7 +71,7 @@ const useGetMyBalances = () => {
     tokenBalancesResponse: data,
     availableNativeBalance,
     isError: error,
-    isLoading: isLoading || isLoadingTokens,
+    isLoading: isLoading || isLoadingTokens || isSubentryLoading,
     refetch: mutate,
   };
 };
