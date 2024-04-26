@@ -40,6 +40,7 @@ interface Props {
   amount: string;
   onClickConfirmButton: () => void;
   extrinsic?: SubmittableExtrinsic;
+  errorMessage?: string;
 }
 
 const BridgeConfirmModal = (props: Props) => {
@@ -57,6 +58,7 @@ const BridgeConfirmModal = (props: Props) => {
     showPendingModal,
     txHash,
     extrinsic,
+    errorMessage,
   } = props;
 
   const theme = useTheme();
@@ -142,11 +144,17 @@ const BridgeConfirmModal = (props: Props) => {
                     From {selectedChainFrom} to {selectedChainTo}
                   </Typography>
                 </Box>
-                {isPending && !isSuccess && !isError && (
+
+                {isSuccess ? null : isError && errorMessage ? (
+                  <SubHeaderSmall color="textSecondary" textAlign="center" marginBottom="12px">
+                    {errorMessage}
+                  </SubHeaderSmall>
+                ) : (
                   <SubHeaderSmall color="textSecondary" textAlign="center" marginBottom="12px">
                     Confirm this transaction in your wallet
                   </SubHeaderSmall>
                 )}
+
                 {txHash && (
                   <Box>
                     <CopyTxHash txHash={txHash} />

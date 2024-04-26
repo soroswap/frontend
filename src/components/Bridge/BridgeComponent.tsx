@@ -9,7 +9,6 @@ import {
   InputRow,
   StyledNumericalInput,
 } from 'components/CurrencyInputPanel/SwapCurrencyInputPanel';
-import { TextWithLoadingPlaceholder } from 'components/Swap/AdvancedSwapDetails';
 import { ArrowContainer, OutputSwapSection, SwapSection } from 'components/Swap/SwapComponent';
 import { ArrowWrapper, SwapWrapper } from 'components/Swap/styleds';
 import { nativeStellarToDecimal } from 'helpers/bridge/pendulum/spacewalk';
@@ -20,7 +19,7 @@ import useSpacewalkBridge from 'hooks/bridge/pendulum/useSpacewalkBridge';
 import { useSpacewalkFees } from 'hooks/bridge/pendulum/useSpacewalkFees';
 import useBoolean from 'hooks/useBoolean';
 import useGetMyBalances from 'hooks/useGetMyBalances';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { ArrowDown } from 'react-feather';
 import { BridgeButton } from './BridgeButton';
 import BridgeConfirmModal from './BridgeConfirmModal';
@@ -29,6 +28,7 @@ import BridgeHeader from './BridgeHeader';
 import BridgeSelector from './BridgeSelector';
 import PendulumChainIcon from './ChainIcons/PendulumChainIcon';
 import StellarChainIcon from './ChainIcons/StellarChainIcon';
+import PolkadotCurrencyBalance from './PolkadotCurrencyBalance';
 
 export enum BridgeChains {
   PENDULUM = 'Pendulum',
@@ -196,6 +196,25 @@ const BridgeComponent = () => {
     );
   }, [amount, fees.issueFee, fees.redeemFee, selectedChainFrom]);
 
+  //Auto select the other chain when the user selects one
+  useEffect(() => {
+    if (selectedChainFrom === BridgeChains.PENDULUM && selectedChainTo !== BridgeChains.STELLAR) {
+      setSelectedChainTo(BridgeChains.STELLAR);
+    }
+
+    if (selectedChainFrom === BridgeChains.STELLAR && selectedChainTo !== BridgeChains.PENDULUM) {
+      setSelectedChainTo(BridgeChains.PENDULUM);
+    }
+
+    if (selectedChainTo === BridgeChains.PENDULUM && selectedChainFrom !== BridgeChains.STELLAR) {
+      setSelectedChainFrom(BridgeChains.STELLAR);
+    }
+
+    if (selectedChainTo === BridgeChains.STELLAR && selectedChainFrom !== BridgeChains.PENDULUM) {
+      setSelectedChainFrom(BridgeChains.PENDULUM);
+    }
+  }, [selectedChainFrom, selectedChainTo]);
+
   return (
     <>
       <BridgeConfirmModal
@@ -211,6 +230,7 @@ const BridgeComponent = () => {
         selectedChainTo={selectedChainTo}
         showPendingModal={modalStatus.showPendingModal}
         txHash={modalStatus.txHash}
+        errorMessage={issue.errorMessage || redeem.errorMessage}
         extrinsic={issue.extrinsic ?? redeem.extrinsic}
       />
 
@@ -246,10 +266,14 @@ const BridgeComponent = () => {
                   showMaxButton={true}
                 />
               ) : (
-                //TODO: Add MAX button for other networks balances
-                <TextWithLoadingPlaceholder syncing={isLoading} width={100}>
-                  <>Available Balance: {fromAssetBalance}</>
-                </TextWithLoadingPlaceholder>
+                  <PolkadotCurrencyBalance
+                    balances={spacewalkBalances ? spacewalkBalances : undefined}
+                    selectedAsset={selectedAsset ? selectedAsset : undefined}
+                    onMax={(value) => setAmount(value)}
+                    isLoading={isLoading}
+                    hideBalance={!selectedAsset ? true : false}
+                    showMaxButton={selectedAsset ? true : false}
+                  />
               )}
             </Container>
           </InputPanel>
@@ -286,14 +310,14 @@ const BridgeComponent = () => {
             </Container>
           </InputPanel>
         </OutputSwapSection>
-        <Box mt={2} display={"flex"} sx={{flexDirection: "column", gap: 2}}>
+        <Box mt={2} display={'flex'} sx={{ flexDirection: 'column', gap: 2 }}>
           <BridgeButton
             text={getBridgeButtonText()}
             isLoading={modalStatus.isPending}
             callback={confirmModal.setTrue}
             disabled={shouldDisableBridgeButton()}
           />
-          <BridgeDisclaimerDropdown/>
+          <BridgeDisclaimerDropdown />
         </Box>
       </SwapWrapper>
     </>
