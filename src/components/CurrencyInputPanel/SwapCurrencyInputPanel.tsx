@@ -183,7 +183,6 @@ interface SwapCurrencyInputPanelProps {
   disabled?: boolean;
   disableInput?: boolean;
   networkFees?: number;
-  subentryCount?: number | undefined | null;
   isLoadingNetworkFees?: boolean;
 }
 
@@ -208,8 +207,7 @@ export default function SwapCurrencyInputPanel({
   loading = false,
   disabled = false,
   disableInput = false,
-  networkFees = 0,
-  subentryCount,
+  networkFees,
   isLoadingNetworkFees,
   ...rest
 }: SwapCurrencyInputPanelProps) {
@@ -286,7 +284,6 @@ export default function SwapCurrencyInputPanel({
                   hideBalance={hideBalance}
                   showMaxButton={showMaxButton}
                   networkFees={networkFees}
-                  subentryCount={subentryCount}
                   isLoadingNetworkFees={isLoadingNetworkFees}
                 />
               ) : (

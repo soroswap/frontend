@@ -17,6 +17,7 @@ interface Props {
   routeNotFound: boolean;
   onSubmit: () => void;
   trade: InterfaceTrade | undefined;
+  networkFees: number;
 }
 
 const useSwapMainButton = ({
@@ -26,11 +27,13 @@ const useSwapMainButton = ({
   routeNotFound,
   onSubmit,
   trade,
+  networkFees,
 }: Props) => {
   const sorobanContext = useSorobanReact();
   const { ConnectWalletModal } = useContext(AppContext);
   const { isConnectWalletModalOpen, setConnectWalletModalOpen } = ConnectWalletModal;
   const { data } = useGetNativeTokenBalance();
+  const { availableNativeBalance } = useGetMyBalances();
 
   const { address } = sorobanContext;
   const userBalances = useGetMyBalances();
@@ -39,9 +42,16 @@ const useSwapMainButton = ({
     const currencyA: TokenType = currencies[Field.INPUT];
     const currencyB: TokenType = currencies[Field.OUTPUT];
 
-    const balanceA = userBalances.tokenBalancesResponse?.balances.find(
+    const isXLMCurrencyA = currencyA?.code === 'XLM';
+
+    let balanceA = userBalances.tokenBalancesResponse?.balances.find(
       (token) => token.contract == currencyA?.contract,
     )?.balance;
+
+    if (isXLMCurrencyA) {
+      balanceA = availableNativeBalance(networkFees)
+    }
+
     const balanceB = userBalances.tokenBalancesResponse?.balances.find(
       (token) => token.contract == currencyB?.contract,
     )?.balance;
@@ -84,8 +94,8 @@ const useSwapMainButton = ({
       insufficientLiquidity,
       insufficientBalanceToken,
     } = getSwapValues();
-    if (noCurrencySelected) return 'Select a token';
     if (!address) return 'Connect Wallet';
+    if (noCurrencySelected) return 'Select a token';
     if (noAmountTyped) return 'Enter an amount';
     if (insufficientLiquidity) return 'Insufficient liquidity';
     if (data && !data?.validAccount) return 'Fund wallet to sign Transaction';

@@ -1,10 +1,14 @@
 import { SorobanContextType, useSorobanReact } from '@soroban-react/core';
+import BigNumber from 'bignumber.js';
 import { TokenType } from 'interfaces';
+import { useCallback } from 'react';
+import { BASE_FEE } from 'stellar-sdk';
+import { AccountResponse } from 'stellar-sdk/lib/horizon';
 import useSWRImmutable from 'swr/immutable';
 import { useAllTokens } from './tokens/useAllTokens';
 import { tokenBalances } from './useBalances';
+import useGetSubentryCount from './useGetSubentryCount';
 import useHorizonLoadAccount from './useHorizonLoadAccount';
-import { AccountResponse } from 'stellar-sdk/lib/horizon';
 
 interface FetchBalancesProps {
   address?: string;
@@ -21,11 +25,25 @@ const fetchBalances = async ({ address, tokens, sorobanContext, account }: Fetch
   return response;
 };
 
+function calculateAvailableBalance(
+  balance?: string | number | BigNumber | null,
+  networkFees?: string | number | BigNumber | null,
+  subentryCount?: number,
+): BigNumber {
+  if(!balance) return BigNumber(0)
+  const baseBalance = new BigNumber(balance).shiftedBy(-7);
+  const adjustment = new BigNumber(networkFees ?? Number(BigNumber(BASE_FEE).shiftedBy(-7)))
+    .plus(1)
+    .plus(new BigNumber(subentryCount ?? 0).multipliedBy(0.5));
+  return BigNumber.max(new BigNumber(0), baseBalance.minus(adjustment)).decimalPlaces(7);
+}
+
 const useGetMyBalances = () => {
   const sorobanContext = useSorobanReact();
 
   const { address } = sorobanContext;
   const { tokens, isLoading: isLoadingTokens } = useAllTokens();
+  const { subentryCount, nativeBalance, isLoading: isSubentryLoading } = useGetSubentryCount();
 
   const { account } = useHorizonLoadAccount();
 
@@ -37,12 +55,23 @@ const useGetMyBalances = () => {
       fetchBalances({ address, tokens, sorobanContext, account }),
   );
 
+  const availableNativeBalance = useCallback(
+    (networkFees?: string | number | BigNumber | null) =>
+      calculateAvailableBalance(
+        nativeBalance,
+        networkFees,
+        subentryCount,
+      ),
+    [nativeBalance, subentryCount],
+  );
+
   return {
     sorobanContext,
     tokens,
     tokenBalancesResponse: data,
+    availableNativeBalance,
     isError: error,
-    isLoading: isLoading || isLoadingTokens,
+    isLoading: isLoading || isLoadingTokens || isSubentryLoading,
     refetch: mutate,
   };
 };
