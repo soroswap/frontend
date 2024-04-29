@@ -37,7 +37,7 @@ import SwapCurrencyInputPanel from '../CurrencyInputPanel/SwapCurrencyInputPanel
 import SwapHeader from './SwapHeader';
 import { ArrowWrapper, SwapWrapper } from './styleds';
 
-const SwapSection = styled('div')(({ theme }) => ({
+export const SwapSection = styled('div')(({ theme }) => ({
   position: 'relative',
   backgroundColor: theme.palette.customBackground.module,
   borderRadius: 12,
@@ -66,7 +66,7 @@ const SwapSection = styled('div')(({ theme }) => ({
   },
 }));
 
-const OutputSwapSection = styled(SwapSection)`
+export const OutputSwapSection = styled(SwapSection)`
   border-bottom: ${({ theme }) => `1px solid ${theme.palette.customBackground.module}`};
   border-radius: 16px;
   border: 1px solid rgba(180, 239, 175, 0.2);
@@ -126,8 +126,6 @@ export function SwapComponent({
 
   const [state, dispatch] = useReducer(swapReducer, { ...initialSwapState, ...prefilledState });
   const { typedValue, recipient, independentField } = state;
-
-  const [subentryCount, setSubentryCount] = useState<number>(0);
 
   const { onSwitchTokens, onCurrencySelection, onUserInput, onChangeRecipient } =
     useSwapActionHandlers(dispatch);
@@ -350,15 +348,6 @@ export function SwapComponent({
       }
     };
 
-    const getSubentryCount = async () => {
-      if (sorobanContext.address && nativeBalance.data?.validAccount) {
-        const account = await sorobanContext.serverHorizon?.loadAccount(sorobanContext.address);
-        const count = account?.subentry_count ?? 0;
-        setSubentryCount(count);
-      }
-    };
-
-    getSubentryCount();
     checkTrustline();
   }, [sorobanContext, swapCallback, trade, nativeBalance.data?.validAccount]);
 
@@ -372,7 +361,6 @@ export function SwapComponent({
       routeNotFound,
       onSubmit: handleContinueToReview,
       trade,
-      subentryCount,
       networkFees,
     });
 
@@ -458,7 +446,6 @@ export function SwapComponent({
               onCurrencySelect={handleInputSelect}
               otherCurrency={currencies[Field.OUTPUT]}
               networkFees={networkFees}
-              subentryCount={subentryCount}
               isLoadingNetworkFees={isLoadingNetworkFees}
               // showCommonBases
               // id={InterfaceSectionName.CURRENCY_INPUT_PANEL}
@@ -507,7 +494,6 @@ export function SwapComponent({
                 loading={independentField === Field.INPUT && routeIsSyncing}
                 disableInput={getSwapValues().noCurrencySelected}
                 networkFees={networkFees}
-                subentryCount={subentryCount}
               />
             </OutputSwapSection>
           </div>
