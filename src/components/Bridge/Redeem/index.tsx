@@ -1,11 +1,11 @@
-import { Box, TextField } from "@mui/material";
+import { Box, MenuItem, Select, TextField } from "@mui/material";
 import { useInkathon } from "@scio-labs/use-inkathon";
 import { useSorobanReact } from "@soroban-react/core";
 import BigNumber from "bignumber.js";
-import { xlmVaultId } from "helpers/bridge/configs";
 import { decimalToStellarNative, isPublicKey } from "helpers/bridge/pendulum/stellar";
 import { getEventBySectionAndMethod, getSubstrateErrors } from "helpers/bridge/pendulum/substrate";
 import { useRedeemPallet } from "hooks/bridge/pendulum/useRedeemPallet";
+import useSpacewalkBridge from "hooks/bridge/pendulum/useSpacewalkBridge";
 import { useCallback, useMemo, useState } from "react";
 import { BridgeButton } from "../BridgeButton";
 
@@ -18,24 +18,24 @@ export function RedeemComponent() {
   const { activeAccount, activeSigner, api } = useInkathon();
   const { createRedeemRequestExtrinsic, getRedeemRequest } = useRedeemPallet();
   const { address } = useSorobanReact();
+  const { selectedVault, wrappedAssets, selectedAsset, setSelectedAsset } = useSpacewalkBridge()
   const [submissionPending, setSubmissionPending] = useState(false);
   const [amount, setAmount] = useState<string>('');
-  // const [selectedNetwork, setSelectedNetwork] = useState<string>('pendulum');
 
   const amountRaw = useMemo(() => {
     return amount ? decimalToStellarNative(amount).toString() : new BigNumber(0).toString();
   }, [amount]);
   const stellarAddress = address;
   const requestRedeemExtrinsic = useMemo(() => {
-    if (!xlmVaultId || !api || !stellarAddress || !isPublicKey(stellarAddress)) {
+    if (!selectedVault || !api || !stellarAddress || !isPublicKey(stellarAddress)) {
       return undefined;
     }
 
-    return createRedeemRequestExtrinsic(amountRaw, stellarAddress, xlmVaultId);
-  }, [amountRaw, api, createRedeemRequestExtrinsic, stellarAddress]);
+    return createRedeemRequestExtrinsic(amountRaw, stellarAddress, selectedVault);
+  }, [amountRaw, api, createRedeemRequestExtrinsic, selectedVault, stellarAddress]);
   
   const submitRequestRedeemExtrinsic = useCallback(() => {
-    if (!requestRedeemExtrinsic || !api || !xlmVaultId) {
+    if (!requestRedeemExtrinsic || !api || !selectedVault) {
       return;
     }
 
@@ -81,25 +81,32 @@ export function RedeemComponent() {
         console.error("Transaction submission failed", error);
         setSubmissionPending(false);
       });
-  }, [requestRedeemExtrinsic, api, activeAccount?.address, activeSigner, getRedeemRequest]);
+  }, [requestRedeemExtrinsic, api, selectedVault, activeAccount?.address, activeSigner, getRedeemRequest]);
 
   
   async function handleRedeem() {
     const res = await submitRequestRedeemExtrinsic()
     console.log(res)
   }
-  
+
+  const handleAssetSelection = (assetCode: string) => {
+    const newAsset = wrappedAssets?.find((ast) => ast.code == assetCode)
+    setSelectedAsset(newAsset)
+  }
+
   return (
     <Box component="form" noValidate autoComplete="off" sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-      {/* <Box mb={2}>
-        <Select value={selectedNetwork} onChange={(e) => setSelectedNetwork(e.target.value)}>
-          {availableNetworks.map((chain) => (
-            <MenuItem key={chain} value={chain}>
-              {chain}
-            </MenuItem>
-          ))}
-        </Select>
-      </Box> */}
+      {wrappedAssets && wrappedAssets.length > 0 && (   
+        <Box mb={2}>
+          <Select value={selectedAsset?.code} onChange={(e) => handleAssetSelection(e.target.value)}>
+            {wrappedAssets?.map((asset, index) => (
+              <MenuItem key={index} value={asset.code}>
+                {asset.code}
+              </MenuItem>
+            ))}
+          </Select>
+        </Box>
+      )}
       <TextField
         label="Amount to Bridge back to Stellar"
         variant="outlined"

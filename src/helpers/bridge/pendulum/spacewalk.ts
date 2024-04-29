@@ -1,11 +1,14 @@
 import { ApiPromise } from '@polkadot/api';
+import { UInt, u128 } from '@polkadot/types';
 import type { Enum, Struct, u8 } from '@polkadot/types-codec';
 import { U8aFixed } from '@polkadot/types-codec';
+import { TenantName } from 'BridgeStateProvider/models';
+import BigNumber from 'bignumber.js';
 import bs58 from 'bs58';
+import { SpacewalkCodeToSymbol, SpacewalkStellarAssetType } from 'hooks/bridge/pendulum/useSpacewalkVaults';
 import { DateTime } from 'luxon';
 import { Asset, Keypair } from 'stellar-sdk';
 import { convertRawHexKeyToPublicKey } from './stellar';
-import { TenantName } from 'BridgeStateProvider/models';
 
 interface SpacewalkPrimitivesCurrencyId extends Enum {
   readonly isNative: boolean;
@@ -43,29 +46,23 @@ function hex_to_ascii(hexString: string, leading0x = true) {
   return str;
 }
 
-export function convertCurrencyToStellarAsset(currency: SpacewalkPrimitivesCurrencyId): Asset | null {
-  if (!currency.isStellar) {
-    return null;
-  }
-
-  const stellarAsset = currency.asStellar;
-
+export function convertCurrencyToStellarAsset(currency: SpacewalkStellarAssetType | string): Asset | null {
   try {
-    if (stellarAsset.isStellarNative) {
+    if (typeof currency == "string") {
       return Asset.native();
-    } else if (stellarAsset.isAlphaNum4) {
-      const code = tryConvertCodeToAscii(stellarAsset.asAlphaNum4.code);
-      const issuer = convertRawHexKeyToPublicKey(stellarAsset.asAlphaNum4.issuer.toHex());
+    } else if (currency.AlphaNum4) {
+      const issuer = convertRawHexKeyToPublicKey(currency.AlphaNum4.issuer);
+      const code = SpacewalkCodeToSymbol?.[currency.AlphaNum4.code] || currency.AlphaNum4.code;
       return new Asset(code, issuer.publicKey());
-    } else if (stellarAsset.isAlphaNum12) {
-      const code = tryConvertCodeToAscii(stellarAsset.asAlphaNum12.code);
-      const issuer = convertRawHexKeyToPublicKey(stellarAsset.asAlphaNum12.issuer.toHex());
+    } else if (currency.AlphaNum12) {
+      const issuer = convertRawHexKeyToPublicKey(currency.AlphaNum12.issuer);
+      const code = SpacewalkCodeToSymbol?.[currency.AlphaNum12.code] || currency.AlphaNum12.code;
       return new Asset(code, issuer.publicKey());
     } else {
       return null;
     }
-  } catch {
-    return null;
+  } catch (error) {
+    return null
   }
 }
 
@@ -73,9 +70,9 @@ export function addSuffix(s: string) {
   return s + SpacewalkConstants.WrappedCurrencySuffix;
 }
 
-export function currencyToStellarAssetCode(currency: SpacewalkPrimitivesCurrencyId) {
-  return convertCurrencyToStellarAsset(currency)?.getCode() + SpacewalkConstants.WrappedCurrencySuffix;
-}
+// export function currencyToStellarAssetCode(currency: SpacewalkPrimitivesCurrencyId) {
+//   return convertCurrencyToStellarAsset(currency)?.getCode() + SpacewalkConstants.WrappedCurrencySuffix;
+// }
 
 export function convertStellarAssetToCurrency(asset: Asset, api: ApiPromise): SpacewalkPrimitivesCurrencyId {
   if (asset.isNative()) {
@@ -163,8 +160,9 @@ export function currencyToString(currency: SpacewalkPrimitivesCurrencyId, tenant
   }
 }
 
-function tryConvertCodeToAscii(code: U8aFixed) {
+export function tryConvertCodeToAscii(code: U8aFixed) {
   const ascii = hex_to_ascii(code.toHex());
+  console.log('🚀 « ascii:', ascii);
   if (ascii !== ascii.trim()) {
     throw Error('Asset code contains invalid space characters');
   }
@@ -234,3 +232,30 @@ export const deriveShortenedRequestId = (requestIdHex: string) => {
   // This derivation matches the one used in the Spacewalk pallets
   return bs58.encode(requestId).slice(0, 28);
 }
+
+export const nativePendulumToDecimal = (value: BigNumber | number | string | u128 | UInt, decimals: number = 12) => {
+  if (!value) return new BigNumber(0);
+
+  if (typeof value === 'string' || value instanceof u128 || value instanceof UInt) {
+    // Replace the unnecessary ',' with '' to prevent BigNumber from throwing an error
+    value = new BigNumber(value.toString().replaceAll(',', ''));
+  }
+  const bigIntValue = new BigNumber(value);
+  const divisor = new BigNumber(10).pow(decimals);
+
+  return bigIntValue.div(divisor);
+};
+
+export const nativeStellarToDecimal = (value: BigNumber | number | string) => {
+  const bigIntValue = new BigNumber(value);
+  const divisor = new BigNumber(10).pow(12);
+
+  return bigIntValue.div(divisor);
+};
+
+export const fixedPointToDecimal = (value: BigNumber | number | string) => {
+  const bigIntValue = new BigNumber(value);
+  const divisor = new BigNumber(10).pow(18);
+
+  return bigIntValue.div(divisor);
+};

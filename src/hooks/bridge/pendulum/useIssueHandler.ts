@@ -1,34 +1,41 @@
-import { Box, Button, MenuItem, Select, TextField } from '@mui/material';
-import { useInkathon } from '@scio-labs/use-inkathon';
-import { useSorobanReact } from '@soroban-react/core';
-import { deriveShortenedRequestId } from 'helpers/bridge/pendulum/spacewalk';
 import {
   convertRawHexKeyToPublicKey,
   decimalToStellarNative,
 } from 'helpers/bridge/pendulum/stellar';
+
+import { useInkathon } from '@scio-labs/use-inkathon';
+import { useSorobanReact } from '@soroban-react/core';
+import BigNumber from 'bignumber.js';
+import { deriveShortenedRequestId } from 'helpers/bridge/pendulum/spacewalk';
 import { getEventBySectionAndMethod, getSubstrateErrors } from 'helpers/bridge/pendulum/substrate';
 import { useIssuePallet } from 'hooks/bridge/pendulum/useIssuePallet';
-import useSpacewalkBridge from 'hooks/bridge/pendulum/useSpacewalkBridge';
 import { useCallback, useMemo, useState } from 'react';
-import { BASE_FEE, Memo, Operation, TransactionBuilder } from 'stellar-sdk';
-import { BridgeButton } from '../BridgeButton';
+import { Asset, BASE_FEE, Memo, Operation, TransactionBuilder } from 'stellar-sdk';
+import { VaultId } from './useSpacewalkVaults';
 
-export type IssueFormValues = {
-  amount: number;
-  securityDeposit: number;
-  to: number;
-};
+interface Props {
+  amount: string;
+  selectedAsset: Asset | undefined;
+  selectedVault: VaultId | undefined;
+}
 
-export function IssueComponent() {
+const useIssueHandler = ({ amount, selectedAsset, selectedVault }: Props) => {
   const { address, serverHorizon, activeChain, activeConnector } = useSorobanReact();
-  const { activeAccount, activeSigner, api } = useInkathon();
-  const { selectedVault, setSelectedAsset, wrappedAssets, selectedAsset, vaults } =
-    useSpacewalkBridge();
-  const { createIssueRequestExtrinsic, getIssueRequest } = useIssuePallet();
-  const [isBridging, setIsBridging] = useState<boolean>(false);
-  const [amount, setAmount] = useState<string>('');
 
-  const amountRaw = decimalToStellarNative(amount).toString();
+  const { activeAccount, activeSigner, api } = useInkathon();
+
+  const { createIssueRequestExtrinsic, getIssueRequest } = useIssuePallet();
+
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [txSuccess, setTxSuccess] = useState<boolean>(false);
+  const [txError, setTxError] = useState<boolean>(false);
+  const [txHash, setTxHash] = useState<string | undefined>();
+  const [errorMessage, setErrorMessage] = useState<string | undefined>();
+  const [tryAgain, setTryAgain] = useState<{ show: boolean; fn: any }>({ show: false, fn: null });
+
+  const amountRaw = useMemo(() => {
+    return Number(amount) ? decimalToStellarNative(amount).toString() : new BigNumber(0).toString();
+  }, [amount]);
 
   const requestIssueExtrinsic = useMemo(() => {
     if (!selectedVault || !amount) {
@@ -76,15 +83,16 @@ export function IssueComponent() {
         activeChain?.networkPassphrase ?? '',
       );
       console.log('🚀 « transactionToSubmit:', transactionToSubmit);
+      const res = await serverHorizon?.submitTransaction(transactionToSubmit);
+      console.log('🚀 « response:', res);
 
-      try {
-        let response = await serverHorizon?.submitTransaction(transactionToSubmit);
-        console.log('🚀 « response:', response);
-        if (response) {
-          setIsBridging(false);
-        }
-      } catch (error) {
-        console.error('Error submitting transaction:', error);
+      if (res) {
+        setIsLoading(false);
+        setTxSuccess(true);
+        setTxHash(res.hash);
+        setTryAgain({ show: false, fn: null });
+      } else {
+        throw new Error("Couldn't submit transaction");
       }
     },
     [
@@ -117,7 +125,12 @@ export function IssueComponent() {
       return;
     }
 
-    setIsBridging(true);
+    setIsLoading(true);
+    setTxSuccess(false);
+    setTxError(false);
+    setTxHash(undefined);
+    setErrorMessage(undefined);
+    setTryAgain({ show: false, fn: null });
 
     requestIssueExtrinsic
       .signAndSend(activeAccount.address, { signer: activeSigner }, (result) => {
@@ -145,20 +158,47 @@ export function IssueComponent() {
               stellarVaultAccountFromEventHex.toString(),
             );
 
-            getIssueRequest(issueId).then((issueRequest) => {
-              createStellarPayment(stellarVaultAddress.publicKey(), memo);
+            getIssueRequest(issueId).then(async (issueRequest) => {
+              try {
+                await createStellarPayment(stellarVaultAddress.publicKey(), memo);
+              } catch (error) {
+                console.error('Error submitting transaction:', error);
+                const msg = (error as any)?.message || 'Unexpected error';
+                setTryAgain({
+                  show: true,
+                  fn: async () => {
+                    try {
+                      setIsLoading(true);
+                      setTxError(false);
+                      setErrorMessage(undefined);
+                      await createStellarPayment(stellarVaultAddress.publicKey(), memo);
+                    } catch (error) {
+                      setErrorMessage(msg);
+                      setTxError(true);
+                    }
+                  },
+                });
+                setErrorMessage(msg);
+                setTxError(true);
+              }
             });
           }
 
           if (errors.length === 0) {
             console.log('Confirmed!');
             // setConfirmationDialogVisible(true);
+          } else {
+            const errMessage = `Transaction failed with errors: ${errors.join('\n')}`;
+            setErrorMessage(errMessage);
+            setTxError(true);
           }
         }
       })
       .catch((error) => {
-        console.error('Transaction submission failed', error);
-        setIsBridging(false);
+        const msg = (error as any)?.message || 'Unknown error';
+        setErrorMessage(msg);
+        setIsLoading(false);
+        setTxError(true);
       });
   }, [
     activeAccount,
@@ -170,46 +210,30 @@ export function IssueComponent() {
     requestIssueExtrinsic,
   ]);
 
-  const handleAssetSelection = (assetCode: string) => {
-    const newAsset = wrappedAssets?.find((ast) => ast.code == assetCode);
-    setSelectedAsset(newAsset);
+  const resetStates = () => {
+    setIsLoading(false);
+    setTxSuccess(false);
+    setTxError(false);
+    setTxHash(undefined);
+    setErrorMessage(undefined);
+    setTryAgain({ show: false, fn: null });
   };
 
-  return (
-    <Box
-      component="form"
-      noValidate
-      autoComplete="off"
-      sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}
-    >
-      {wrappedAssets && wrappedAssets.length > 0 && (
-        <Box mb={2}>
-          <Select
-            value={selectedAsset?.code}
-            onChange={(e) => handleAssetSelection(e.target.value)}
-          >
-            {wrappedAssets?.map((asset, index) => (
-              <MenuItem key={index} value={asset.code}>
-                {asset.code}
-              </MenuItem>
-            ))}
-          </Select>
-        </Box>
-      )}
-      <TextField
-        label="Amount to Bridge to Pendulum"
-        variant="outlined"
-        value={amount}
-        onChange={(e) => setAmount(e.target.value)}
-        placeholder="Enter amount"
-        fullWidth
-        type="number"
-      />
-      <Box>
-        You will receive: {amount} {selectedAsset?.code}.s
-      </Box>
-      <BridgeButton isLoading={isBridging} callback={submitRequestIssueExtrinsic} />
-      <Button onClick={() => console.log('selectedVault', selectedVault)}>TEST</Button>
-    </Box>
-  );
-}
+  return {
+    extrinsic: requestIssueExtrinsic,
+    handler: submitRequestIssueExtrinsic,
+    isLoading,
+    txSuccess,
+    txError,
+    setIsLoading,
+    setTxError,
+    setTxSuccess,
+    txHash,
+    setTxHash,
+    resetStates,
+    errorMessage,
+    tryAgain,
+  };
+};
+
+export default useIssueHandler;

@@ -1,66 +1,45 @@
-import { Box, CircularProgress } from "@mui/material";
-import { getSubstrateChain, useInkathon } from "@scio-labs/use-inkathon";
-import { useSorobanReact } from "@soroban-react/core";
-import { ButtonPrimary } from "components/Buttons/Button";
-import { ButtonText } from "components/Text";
+/* eslint-disable @next/next/no-img-element */
+import { Box, CircularProgress } from '@mui/material';
+import { ButtonPrimary } from 'components/Buttons/Button';
+import { ButtonText } from 'components/Text';
+import { ConnectPendulumWalletButton } from './ConnectPendulumWalletButton';
+import { useInkathon } from '@scio-labs/use-inkathon';
+import { useSorobanReact } from '@soroban-react/core';
 
 interface PendulumBridgeButtonProps {
   isLoading?: boolean;
   disabled?: boolean;
   callback: () => void;
+  text?: string; // Optional text to force display
 }
 
-export function BridgeButton({ isLoading, disabled, callback }: PendulumBridgeButtonProps) {
+export function BridgeButton({ isLoading, disabled, callback, text }: PendulumBridgeButtonProps) {
   const { address } = useSorobanReact();
-  const {
-    connect,
-    isConnected,
-    isConnecting,
-  } = useInkathon();
+  const { isConnecting, isConnected } = useInkathon();
 
-  const handleConnect = async () => {
-    const substrateChain = getSubstrateChain('pendulum');
-    
-    await connect?.(substrateChain);
-  };
-
-  const buttonText = () => {
-    if (!address) {
-      return "Connect Wallet"
-    }
-    if (!isConnected) {
-      return "Connect Pendulum wallet"
-    }
-    if (isConnected) {
-      return "Bridge"
-    }
+  if (!isConnected) {
+    return <ConnectPendulumWalletButton />;
   }
 
-  const handleButtonClick = () => {
-    if (!isConnected) {
-      handleConnect()
-    } else {
-      callback()
-    }
-  }
-  
   return (
-    <div>
-      <ButtonPrimary
-        disabled={isConnecting || isLoading || !address || disabled}
-        onClick={handleButtonClick}
-        sx={{ height: '64px' }}
-      >
-        <ButtonText fontSize={20} fontWeight={600}>
-          {isLoading || isConnecting ? (
-            <Box display="flex" alignItems="center" component="span">
-              <CircularProgress size="24px" />
-            </Box>
-          ) : (
-              <>{buttonText()}</>
-          )}
-        </ButtonText>
-      </ButtonPrimary>
-    </div>
+    <>
+      <div>
+        <ButtonPrimary
+          disabled={isConnecting || isLoading || !address || disabled}
+          onClick={callback}
+          sx={{ height: '64px' }}
+        >
+          <ButtonText fontSize={20} fontWeight={600}>
+            {isLoading || isConnecting ? (
+              <Box display="flex" alignItems="center" component="span">
+                <CircularProgress size="24px" />
+              </Box>
+            ) : (
+              <>{text || 'Send'}</>
+            )}
+          </ButtonText>
+        </ButtonPrimary>
+      </div>
+    </>
   );
 }
