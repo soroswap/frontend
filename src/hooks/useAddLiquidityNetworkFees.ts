@@ -4,7 +4,7 @@ import { SorobanContextType, useSorobanReact } from '@soroban-react/core';
 import useSWRImmutable from 'swr/immutable';
 import BigNumber from 'bignumber.js';
 import { RouterMethod } from './useRouterCallback';
-import * as StellarSdk from 'stellar-sdk';
+import * as StellarSdk from '@stellar/stellar-sdk';
 
 const fetchNetworkFees = async (
   args: StellarSdk.xdr.ScVal[] | undefined,

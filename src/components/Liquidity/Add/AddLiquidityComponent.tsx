@@ -27,7 +27,7 @@ import { Plus } from 'react-feather';
 import { Field } from 'state/mint/actions';
 import { useDerivedMintInfo, useMintActionHandlers, useMintState } from 'state/mint/hooks';
 import { useUserSlippageToleranceWithDefault } from 'state/user/hooks';
-import * as StellarSdk from 'stellar-sdk';
+import * as StellarSdk from '@stellar/stellar-sdk';
 import { opacify } from 'themes/utils';
 import { AddRemoveTabs } from '../AddRemoveHeader';
 import AddModalFooter from './AddModalFooter';

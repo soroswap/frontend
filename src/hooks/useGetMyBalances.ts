@@ -4,7 +4,7 @@ import useSWRImmutable from 'swr/immutable';
 import { useAllTokens } from './tokens/useAllTokens';
 import { tokenBalances } from './useBalances';
 import useHorizonLoadAccount from './useHorizonLoadAccount';
-import { AccountResponse } from 'stellar-sdk/lib/horizon';
+import { AccountResponse } from '@stellar/stellar-sdk/lib/horizon';
 
 interface FetchBalancesProps {
   address?: string;

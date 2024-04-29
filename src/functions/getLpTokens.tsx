@@ -2,7 +2,7 @@ import { fetchAllSoroswapPairs } from 'services/pairs';
 import { findToken } from 'hooks/tokens/useToken';
 import { getPairsFromFactory } from './getPairs';
 import { getTotalLpShares } from './getTotalLpShares';
-import { Networks } from 'stellar-sdk';
+import { Networks } from '@stellar/stellar-sdk';
 import { reservesBigNumber } from 'hooks/useReserves';
 import { SorobanContextType } from '@soroban-react/core';
 import { tokenBalance } from 'hooks';

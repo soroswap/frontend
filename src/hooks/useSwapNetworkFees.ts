@@ -5,7 +5,7 @@ import useSWRImmutable from 'swr/immutable';
 import { useRouterSDK } from 'functions/generateRoute';
 import { TokenType } from 'interfaces';
 import { xlmTokenList } from 'constants/xlmToken';
-import { Networks } from 'stellar-sdk';
+import { Networks } from '@stellar/stellar-sdk';
 import { TradeType } from 'soroswap-router-sdk';
 
 type Currencies = {

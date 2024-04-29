@@ -1,6 +1,6 @@
 import { contractInvoke, setTrustline } from '@soroban-react/contracts';
 import { useContext, useEffect, useState } from 'react';
-import * as StellarSdk from 'stellar-sdk';
+import * as StellarSdk from '@stellar/stellar-sdk';
 
 import { AppContext, SnackbarIconType } from 'contexts';
 

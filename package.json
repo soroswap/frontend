@@ -60,7 +60,7 @@
     "react-window": "^1.8.9",
     "redux": "^4.2.1",
     "soroswap-router-sdk": "^1.2.4",
-    "stellar-sdk": "11.1.0",
+    "@stellar/stellar-sdk": "11.1.0",
     "swr": "^2.2.0",
     "typescript": "5.3.3",
     "use-resize-observer": "^9.1.0"

@@ -11,7 +11,7 @@ import { bigNumberToI128, bigNumberToU64 } from 'helpers/utils';
 import { useContext } from 'react';
 import { InterfaceTrade, TradeType } from 'state/routing/types';
 import { useUserSlippageToleranceWithDefault } from 'state/user/hooks';
-import * as StellarSdk from 'stellar-sdk';
+import * as StellarSdk from '@stellar/stellar-sdk';
 import { useSWRConfig } from 'swr';
 import { RouterMethod, useRouterCallback } from './useRouterCallback';
 

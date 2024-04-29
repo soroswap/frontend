@@ -1,6 +1,6 @@
 import { SorobanContextType } from '@soroban-react/core';
 import { getClassicStellarAsset, isAddress } from 'helpers/address';
-import * as StellarSdk from 'stellar-sdk';
+import * as StellarSdk from '@stellar/stellar-sdk';
 
 export function getClassicAssetSorobanAddress(
   classicAsset: string,
