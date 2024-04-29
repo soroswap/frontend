@@ -7,7 +7,7 @@ import { useTokensFromPair } from 'hooks/useTokensFromPair';
 import { TokenType } from 'interfaces/tokens';
 import { darken } from 'polished';
 import { useMemo, useState } from 'react';
-import * as StellarSdk from 'stellar-sdk';
+import * as StellarSdk from '@stellar/stellar-sdk';
 import { bigNumberToI128 } from '../../helpers/utils';
 
 interface SwapButtonProps {

@@ -1,4 +1,4 @@
-import * as StellarSdk from 'stellar-sdk';
+import * as StellarSdk from '@stellar/stellar-sdk';
 import { useSorobanReact, SorobanContextType } from '@soroban-react/core';
 import { contractTransaction } from '@soroban-react/contracts';
 import axios from 'axios';

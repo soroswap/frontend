@@ -2,7 +2,7 @@ import { contractInvoke } from '@soroban-react/contracts';
 import { SorobanContextType } from '@soroban-react/core';
 import { addressToScVal, scValToJs } from 'helpers/convert';
 import { fetchFactory } from 'services/factory';
-import { xdr } from 'stellar-sdk';
+import { xdr } from '@stellar/stellar-sdk';
 
 export async function getPairAddress(
   address_0: string | undefined,

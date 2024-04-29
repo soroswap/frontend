@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { Networks } from 'stellar-sdk';
+import { Networks } from '@stellar/stellar-sdk';
 interface SubscribedPair {
   contractId: string;
   token0: string;

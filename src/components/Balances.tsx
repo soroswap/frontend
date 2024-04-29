@@ -4,7 +4,7 @@ import useGetMyBalances from 'hooks/useGetMyBalances';
 import { useMintTestToken } from 'hooks/useMintTestToken';
 import { TokenType } from 'interfaces';
 import { useContext, useState } from 'react';
-import { Networks } from 'stellar-sdk';
+import { Networks } from '@stellar/stellar-sdk';
 import BalancesTable from './BalancesTable/BalancesTable';
 import { ButtonPrimary } from './Buttons/Button';
 import { WalletButton } from './Buttons/WalletButton';

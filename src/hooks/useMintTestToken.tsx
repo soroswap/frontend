@@ -5,7 +5,7 @@ import { SnackbarIconType } from 'contexts';
 import { bigNumberToI128 } from 'helpers/utils';
 import { TokenType } from 'interfaces';
 import { useCallback } from 'react';
-import * as StellarSdk from 'stellar-sdk';
+import * as StellarSdk from '@stellar/stellar-sdk';
 import { useApiTokens } from './tokens/useApiTokens';
 import useNotification from './useNotification';
 interface MintTestTokenProps {
