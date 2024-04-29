@@ -53,7 +53,11 @@ const BridgeComponent = () => {
 
   const { balances: spacewalkBalances, isLoading, mutate } = useSpacewalkBalances();
 
-  const { tokenBalancesResponse, availableNativeBalance, isLoading: isLoadingMyBalances } = useGetMyBalances();
+  const {
+    tokenBalancesResponse,
+    availableNativeBalance,
+    isLoading: isLoadingMyBalances,
+  } = useGetMyBalances();
 
   const [selectedChainFrom, setSelectedChainFrom] = useState<BridgeChains | null>(null);
   const [selectedChainTo, setSelectedChainTo] = useState<BridgeChains | null>(null);
@@ -161,8 +165,8 @@ const BridgeComponent = () => {
           b?.contract === selectedAsset?.contractId(activeChain.networkPassphrase),
       )?.balance || '0';
 
-    if (selectedAsset?.code === "XLM") stellarBalance = availableNativeBalance()
-    
+    if (selectedAsset?.code === 'XLM') stellarBalance = availableNativeBalance();
+
     return stellarBalance;
   };
 
@@ -234,6 +238,7 @@ const BridgeComponent = () => {
         txHash={modalStatus.txHash}
         errorMessage={issue.errorMessage || redeem.errorMessage}
         extrinsic={issue.extrinsic ?? redeem.extrinsic}
+        tryAgain={issue.tryAgain}
       />
 
       <SwapWrapper>
