@@ -7,7 +7,7 @@ import BigNumber from 'bignumber.js';
 import { AppContext, SnackbarIconType } from 'contexts';
 import { sendNotification } from 'functions/sendNotification';
 import { TokenType } from 'interfaces';
-import * as StellarSdk from 'stellar-sdk';
+import * as StellarSdk from '@stellar/stellar-sdk';
 import { bigNumberToI128 } from '../../helpers/utils';
 
 interface MintButtonProps {

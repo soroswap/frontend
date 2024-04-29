@@ -12,7 +12,9 @@ import { ButtonPrimary } from 'components/Buttons/Button';
 import { AlertCircle } from 'react-feather';
 
 import * as Bowser from 'bowser';
-import { isConnected } from '@stellar/freighter-api';
+import { isConnected } from '@stellar/freighter-api'; 
+import { isConnected as isConnectedLobstr } from '@lobstrco/signer-extension-api';
+
 import { Connector } from '@soroban-react/types';
 
 const Title = styled('div')`
@@ -90,12 +92,14 @@ const ConnectWalletContent = ({
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const sorobanContext = useSorobanReact();
   const { setActiveConnectorAndConnect } = sorobanContext;
-  const [walletsStatus, setWalletsStatus] = useState<
-    { name: string; isInstalled: boolean; isLoading: boolean }[]
-  >([
-    { name: 'freighter', isInstalled: false, isLoading: true },
-    { name: 'xbull', isInstalled: false, isLoading: true },
-  ]);
+  const [walletsStatus, setWalletsStatus] = 
+  useState<{ name: string; isInstalled: boolean; isLoading: boolean }[]>(
+    [
+      { name: 'freighter', isInstalled: false, isLoading: true },
+      { name: 'xbull', isInstalled: false, isLoading: true },
+      { name: 'lobstr', isInstalled: false, isLoading: true },
+    ]
+  );
   const browser = Bowser.getParser(window.navigator.userAgent).getBrowserName();
 
   const installWallet = (wallet: any) => {
@@ -111,7 +115,7 @@ const ConnectWalletContent = ({
           );
           break;
       }
-    } else if (wallet.id === 'xbull') {
+    } else if (wallet.id === 'xbull') { 
       switch (browser) {
         case 'Firefox':
           window.open('https://addons.mozilla.org/es/firefox/addon/xbull-wallet/', '_blank');
@@ -119,6 +123,15 @@ const ConnectWalletContent = ({
         default:
           window.open(
             'https://chromewebstore.google.com/detail/xbull-wallet/omajpeaffjgmlpmhbfdjepdejoemifpe',
+            '_blank',
+          );
+          break;
+      }
+    } else if (wallet.id === 'lobstr') { 
+      switch (browser) {
+        default:
+          window.open(
+            'https://chromewebstore.google.com/detail/lobstr-signer-extension/ldiagbjmlmjiieclmdkagofdjcgodjle',
             '_blank',
           );
           break;
@@ -173,6 +186,12 @@ const ConnectWalletContent = ({
           return { name: walletStatus.name, isInstalled: true, isLoading: false };
         }
       }
+      if (walletStatus.name === 'lobstr') {
+  
+        const connected = await isConnectedLobstr();
+
+        return { name: walletStatus.name, isInstalled: connected, isLoading: false };
+      }
       return { ...walletStatus, isLoading: false };
     });
 
@@ -195,16 +214,24 @@ const ConnectWalletContent = ({
               const walletStatus = walletsStatus.find(
                 (walletStatus) => walletStatus.name === wallet.id,
               );
+              let walletIconUrl = theme.palette.mode == 'dark'
+              ? freighterLogoWhite.src
+              : freighterLogoBlack.src
+              if(wallet.id =='lobstr'){
+                walletIconUrl = 'https://stellar.creit.tech/wallet-icons/lobstr.svg'
+              }
+              else if(wallet.id =='freighter'){
+                walletIconUrl = 'https://stellar.creit.tech/wallet-icons/freighter.svg'
+              }
+              else if(wallet.id =='xbull'){
+                walletIconUrl = 'https://stellar.creit.tech/wallet-icons/xbull.svg'
+              }
 
               return (
                 <WalletBox key={index} onClick={() => handleClick(wallet, walletStatus)}>
                   <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
                     <Image
-                      src={
-                        theme.palette.mode == 'dark'
-                          ? freighterLogoWhite.src
-                          : freighterLogoBlack.src
-                      }
+                      src={walletIconUrl}
                       width={24}
                       height={24}
                       alt={wallet.name + ' Wallet'}
@@ -240,15 +267,24 @@ const ConnectWalletContent = ({
               const walletStatus = walletsStatus.find(
                 (walletStatus) => walletStatus.name === wallet.id,
               );
+              let walletIconUrl = theme.palette.mode == 'dark'
+              ? freighterLogoWhite.src
+              : freighterLogoBlack.src
+              if(wallet.id =='lobstr'){
+                walletIconUrl = 'https://stellar.creit.tech/wallet-icons/lobstr.svg'
+              }
+              else if(wallet.id =='freighter'){
+                walletIconUrl = 'https://stellar.creit.tech/wallet-icons/freighter.svg'
+              }
+              else if(wallet.id =='xbull'){
+                walletIconUrl = 'https://stellar.creit.tech/wallet-icons/xbull.svg'
+              }
+
               return (
                 <WalletBox key={index} onClick={() => handleClick(wallet, walletStatus)}>
                   <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
                     <Image
-                      src={
-                        theme.palette.mode == 'dark'
-                          ? freighterLogoWhite.src
-                          : freighterLogoBlack.src
-                      }
+                      src={walletIconUrl}
                       width={24}
                       height={24}
                       alt={wallet.name + ' Wallet'}

@@ -2,7 +2,7 @@ import { TxResponse, contractInvoke } from '@soroban-react/contracts';
 
 import { useSorobanReact } from '@soroban-react/core';
 import { useCallback } from 'react';
-import * as StellarSdk from 'stellar-sdk';
+import * as StellarSdk from '@stellar/stellar-sdk';
 import { useSWRConfig } from 'swr';
 import { useRouterAddress } from './useRouterAddress';
 
@@ -33,6 +33,7 @@ export const revalidateKeysCondition = (key: any) => {
     'subscribed-pairs',
     'currencyBalance',
     'horizon-account',
+    'swap-network-fees',
   ]);
 
   return Array.isArray(key) && key.some((k) => revalidateKeys.has(k));

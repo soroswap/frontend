@@ -8,14 +8,15 @@ import SwapDetailsDropdown from 'components/Swap/SwapDetailsDropdown';
 import { ButtonText } from 'components/Text';
 import { TransactionFailedContent } from 'components/TransactionConfirmationModal';
 import { AppContext, SnackbarIconType } from 'contexts';
-import { calculateSwapFees } from 'functions/getNetworkFees';
 import { sendNotification } from 'functions/sendNotification';
 import { formatTokenAmount } from 'helpers/format';
 import { requiresTrustline } from 'helpers/stellar';
 import { relevantTokensType } from 'hooks';
 import { useToken } from 'hooks/tokens/useToken';
+import useGetNativeTokenBalance from 'hooks/useGetNativeTokenBalance';
 import { useSwapCallback } from 'hooks/useSwapCallback';
 import useSwapMainButton from 'hooks/useSwapMainButton';
+import useSwapNetworkFees from 'hooks/useSwapNetworkFees';
 import { TokenType } from 'interfaces';
 import {
   ReactNode,
@@ -126,7 +127,6 @@ export function SwapComponent({
   const [state, dispatch] = useReducer(swapReducer, { ...initialSwapState, ...prefilledState });
   const { typedValue, recipient, independentField } = state;
 
-  const [networkFees, setNetworkFees] = useState<number>(0);
   const [subentryCount, setSubentryCount] = useState<number>(0);
 
   const { onSwitchTokens, onCurrencySelection, onUserInput, onChangeRecipient } =
@@ -203,15 +203,31 @@ export function SwapComponent({
 
   const handleTypeInput = useCallback(
     (value: string) => {
+      const currency = currencies[Field.INPUT];
+      const decimals = currency?.decimals ?? 7;
+
+      // Prevents user from inputting more decimals than the token supports
+      if (value.split('.').length > 1 && value.split('.')[1].length > decimals) {
+        return;
+      }
+
       onUserInput(Field.INPUT, value);
     },
-    [onUserInput],
+    [onUserInput, currencies],
   );
   const handleTypeOutput = useCallback(
     (value: string) => {
+      const currency = currencies[Field.OUTPUT];
+      const decimals = currency?.decimals ?? 7;
+
+      // Prevents user from inputting more decimals than the token supports
+      if (value.split('.').length > 1 && value.split('.')[1].length > decimals) {
+        return;
+      }
+
       onUserInput(Field.OUTPUT, value);
     },
-    [onUserInput],
+    [onUserInput, currencies],
   );
 
   const formattedAmounts = useMemo(
@@ -310,43 +326,20 @@ export function SwapComponent({
   const priceImpactSeverity = 2; //IF is < 2 it shows Swap anyway button in red
   const showPriceImpactWarning = false;
 
-  const { getMainButtonText, isMainButtonDisabled, handleMainButtonClick, getSwapValues } =
-    useSwapMainButton({
-      currencies,
-      currencyBalances,
-      formattedAmounts,
-      routeNotFound,
-      onSubmit: handleContinueToReview,
-      trade,
-    });
+  const nativeBalance = useGetNativeTokenBalance();
 
   useEffect(() => {
-    const checkRequiresTrustlineAdjust = async () => {
-      if (!swapCallback) {
-        return;
-      }
-
-      try {
-        const simulatedTransaction = await swapCallback(true);
-        if (simulatedTransaction) {
-          return false;
-        }
-      } catch (error) {
-        return true;
-      }
-    };
-
     const checkTrustline = async () => {
       if (!trade) return;
       if (sorobanContext.address) {
         // Check if we need trustline
         const needTrustline = await requiresTrustline(
-          trade?.outputAmount?.currency.contract!,
           sorobanContext,
+          trade?.outputAmount?.currency,
+          trade?.outputAmount?.value,
         );
-        const requiresTrustlineAdjust = await checkRequiresTrustlineAdjust();
 
-        if (needTrustline || requiresTrustlineAdjust) {
+        if (needTrustline) {
           setNeedTrustline(true);
         } else {
           setNeedTrustline(false);
@@ -357,22 +350,8 @@ export function SwapComponent({
       }
     };
 
-    const fetchNetworkFees = async () => {
-      if (trade) {
-        try {
-          const fees = await calculateSwapFees(sorobanContext, trade);
-          if (fees) {
-            setNetworkFees(Number(fees) / 10 ** 7);
-          }
-        } catch (error) {
-          console.error('Error fetching network fees:', error);
-          setNetworkFees(0);
-        }
-      }
-    };
-
     const getSubentryCount = async () => {
-      if (sorobanContext.address) {
+      if (sorobanContext.address && nativeBalance.data?.validAccount) {
         const account = await sorobanContext.serverHorizon?.loadAccount(sorobanContext.address);
         const count = account?.subentry_count ?? 0;
         setSubentryCount(count);
@@ -380,9 +359,22 @@ export function SwapComponent({
     };
 
     getSubentryCount();
-    fetchNetworkFees();
     checkTrustline();
-  }, [sorobanContext, swapCallback, trade]);
+  }, [sorobanContext, swapCallback, trade, nativeBalance.data?.validAccount]);
+
+  const { networkFees, isLoading: isLoadingNetworkFees } = useSwapNetworkFees(trade, currencies);
+
+  const { getMainButtonText, isMainButtonDisabled, handleMainButtonClick, getSwapValues } =
+    useSwapMainButton({
+      currencies,
+      currencyBalances,
+      formattedAmounts,
+      routeNotFound,
+      onSubmit: handleContinueToReview,
+      trade,
+      subentryCount,
+      networkFees,
+    });
 
   const useConfirmModal = useConfirmModalState({
     trade: trade!,
@@ -467,6 +459,7 @@ export function SwapComponent({
               otherCurrency={currencies[Field.OUTPUT]}
               networkFees={networkFees}
               subentryCount={subentryCount}
+              isLoadingNetworkFees={isLoadingNetworkFees}
               // showCommonBases
               // id={InterfaceSectionName.CURRENCY_INPUT_PANEL}
               loading={independentField === Field.OUTPUT && routeIsSyncing}

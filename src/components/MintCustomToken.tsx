@@ -1,6 +1,6 @@
 import { contractInvoke, setTrustline } from '@soroban-react/contracts';
 import { useContext, useEffect, useState } from 'react';
-import * as StellarSdk from 'stellar-sdk';
+import * as StellarSdk from '@stellar/stellar-sdk';
 
 import { AppContext, SnackbarIconType } from 'contexts';
 
@@ -179,7 +179,7 @@ export function MintCustomToken() {
       if (isAddress(newTokenAddress)) {
         const tokenInfo = await findToken(newTokenAddress, tokensAsMap, sorobanContext);
         setTokenSymbol(tokenInfo?.code as string);
-        const requiresTrust = await requiresTrustline(newTokenAddress, sorobanContext);
+        const requiresTrust = await requiresTrustline(sorobanContext, tokenInfo, String(tokenAmount));
         if (requiresTrust) {
           setButtonText('Set Trustline');
           setNeedToSetTrustline(true);
@@ -197,7 +197,7 @@ export function MintCustomToken() {
     };
 
     updateTokenInfo();
-  }, [isMinting, sorobanContext, tokenAddress, tokensAsMap, needsWrapping]);
+  }, [isMinting, sorobanContext, tokenAddress, tokensAsMap, needsWrapping, tokenAmount]);
 
   useEffect(() => {
     switch (showWrapStellarAssetModal) {

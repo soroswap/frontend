@@ -184,6 +184,7 @@ interface SwapCurrencyInputPanelProps {
   disableInput?: boolean;
   networkFees?: number;
   subentryCount?: number | undefined | null;
+  isLoadingNetworkFees?: boolean;
 }
 
 export default function SwapCurrencyInputPanel({
@@ -209,6 +210,7 @@ export default function SwapCurrencyInputPanel({
   disableInput = false,
   networkFees = 0,
   subentryCount,
+  isLoadingNetworkFees,
   ...rest
 }: SwapCurrencyInputPanelProps) {
   const [modalOpen, setModalOpen] = useState(false);
@@ -286,6 +288,7 @@ export default function SwapCurrencyInputPanel({
                   showMaxButton={showMaxButton}
                   networkFees={networkFees}
                   subentryCount={subentryCount}
+                  isLoadingNetworkFees={isLoadingNetworkFees}
                 />
               ) : (
                 <span />
