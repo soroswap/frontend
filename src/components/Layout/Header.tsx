@@ -157,13 +157,14 @@ export default function Header({ isDrawerOpen, setDrawerOpen }: HeaderProps) {
   interface NavItem {
     href: string;
     label: string;
+    target?: string;
   }
 
   const navItems: NavItem[] = [
-    { href: '/balance', label: 'Balance' },
-    { href: '/swap', label: 'Swap' },
-    { href: '/liquidity', label: 'Liquidity' },
-    { href: 'https://info.soroswap.finance', label: 'Explorer' },
+    { href: '/balance', label: 'Balance',  target:'_self'},
+    { href: '/swap', label: 'Swap', target:'_self' },
+    { href: '/liquidity', label: 'Liquidity',  target:'_self'},
+    { href: 'https://info.soroswap.finance', label: 'Explorer', target:'_blank'},
   ];
   
   return (
@@ -195,6 +196,7 @@ export default function Header({ isDrawerOpen, setDrawerOpen }: HeaderProps) {
                   key={item.href}
                   href={item.href}
                   active={item.label === 'Swap' ? (pathname.includes(item.href) || pathname === '/') : pathname.includes(item.href)}
+                  target={item.target}
                   data-testid="nav-link"
                 >
                   {item.label}
