@@ -8,7 +8,7 @@ import { tokenBalance } from 'hooks';
 import { reservesBNWithTokens } from 'hooks/useReserves';
 import { TokenType } from 'interfaces';
 import { fetchFactory } from 'services/factory';
-import { xdr } from 'stellar-sdk';
+import { xdr } from '@stellar/stellar-sdk';
 import { getPairAddress } from './getPairAddress';
 import { getTotalLpShares } from './getTotalLpShares';
 

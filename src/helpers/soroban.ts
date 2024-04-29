@@ -1,12 +1,12 @@
 // TODO: None of these functions are being used
 // import BigNumber from 'bignumber.js';
-// import * as StellarSdk from 'stellar-sdk';// import { ERRORS } from './error';
+// import * as StellarSdk from '@stellar/stellar-sdk';// import { ERRORS } from './error';
 // import { stroopToXlm } from './format';
 // import { I128 } from './xdr';
 
 import { contractInvoke } from '@soroban-react/contracts';
 import { SorobanContextType } from '@soroban-react/core';
-import { xdr } from 'stellar-sdk';
+import { xdr } from '@stellar/stellar-sdk';
 import { scValToJs } from './convert';
 
 // // TODO: once soroban supports estimated fees, we can fetch this

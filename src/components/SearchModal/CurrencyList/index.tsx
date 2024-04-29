@@ -3,7 +3,7 @@ import BigNumber from 'bignumber.js';
 import { CSSProperties, MutableRefObject, useCallback, useMemo } from 'react';
 import { Check } from 'react-feather';
 import { FixedSizeList } from 'react-window';
-import { AccountResponse } from 'stellar-sdk/lib/horizon';
+import { AccountResponse } from '@stellar/stellar-sdk/lib/horizon';
 import useSWRImmutable from 'swr/immutable';
 
 import { CircularProgress, Typography, styled } from '@mui/material';

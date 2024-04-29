@@ -7,6 +7,7 @@ import { Field } from 'state/swap/actions';
 import { relevantTokensType } from './useBalances';
 import useGetMyBalances from './useGetMyBalances';
 import useGetNativeTokenBalance from './useGetNativeTokenBalance';
+import { xlmTokenList } from 'constants/xlmToken';
 
 interface Props {
   currencies: any;
@@ -17,6 +18,8 @@ interface Props {
   routeNotFound: boolean;
   onSubmit: () => void;
   trade: InterfaceTrade | undefined;
+  subentryCount: number;
+  networkFees: number;
 }
 
 const useSwapMainButton = ({
@@ -26,6 +29,8 @@ const useSwapMainButton = ({
   routeNotFound,
   onSubmit,
   trade,
+  networkFees,
+  subentryCount,
 }: Props) => {
   const sorobanContext = useSorobanReact();
   const { ConnectWalletModal } = useContext(AppContext);
@@ -33,14 +38,26 @@ const useSwapMainButton = ({
   const { data } = useGetNativeTokenBalance();
 
   const { address } = sorobanContext;
-  const userBalances = useGetMyBalances()
+  const userBalances = useGetMyBalances();
 
   const getSwapValues = () => {
     const currencyA: TokenType = currencies[Field.INPUT];
     const currencyB: TokenType = currencies[Field.OUTPUT];
 
-    const balanceA = userBalances.tokenBalancesResponse?.balances.find(token => token.contract == (currencyA?.contract))?.balance
-    const balanceB = userBalances.tokenBalancesResponse?.balances.find(token => token.contract == (currencyB?.contract))?.balance
+    const isXLMCurrencyA = currencyA?.code === 'XLM';
+
+    let balanceA = userBalances.tokenBalancesResponse?.balances.find(
+      (token) => token.contract == currencyA?.contract,
+    )?.balance;
+
+    if (isXLMCurrencyA) {
+      balanceA = Number(balanceA) - Number(networkFees) - 1 - 0.5 * Number(subentryCount);
+      balanceA = balanceA > 0 ? balanceA : 0;
+    }
+
+    const balanceB = userBalances.tokenBalancesResponse?.balances.find(
+      (token) => token.contract == currencyB?.contract,
+    )?.balance;
 
     const inputA = formattedAmounts[Field.INPUT] ?? 0;
     const inputB = formattedAmounts[Field.OUTPUT] ?? 0;
@@ -82,9 +99,9 @@ const useSwapMainButton = ({
     } = getSwapValues();
     if (!address) return 'Connect Wallet';
     if (noCurrencySelected) return 'Select a token';
-    if (insufficientLiquidity) return 'Insufficient liquidity';
-    if (!data?.validAccount) return 'Fund wallet to sign Transaction';
     if (noAmountTyped) return 'Enter an amount';
+    if (insufficientLiquidity) return 'Insufficient liquidity';
+    if (data && !data?.validAccount) return 'Fund wallet to sign Transaction';
     if (insufficientBalance) return 'Insufficient ' + insufficientBalanceToken + ' balance';
     if (invalidAmount) return 'Invalid amount';
     if (routeNotFound) return 'Route not found';

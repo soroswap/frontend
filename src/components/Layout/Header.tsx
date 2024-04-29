@@ -1,15 +1,14 @@
-import { Box, Switch, SwitchProps, useMediaQuery } from '@mui/material';
-import { styled, useTheme } from '@mui/material/styles';
-import Image from 'next/image';
-import Link from 'next/link';
-import { useRouter } from 'next/router';
 import React from 'react';
+import Link from 'next/link';
+import Image from 'next/image';
 import { Menu } from 'react-feather';
-import soroswapLogoPurpleBlack from '../../assets/svg/SoroswapPurpleBlack.svg';
-import soroswapLogoPurpleWhite from '../../assets/svg/SoroswapPurpleWhite.svg';
-import darkModeMoon from '../../assets/svg/darkModeMoon.svg';
-import lightModeSun from '../../assets/svg/lightModeSun.svg';
-import { ColorModeContext } from '../../contexts';
+import { useRouter } from 'next/router';
+import { Box, Switch, SwitchProps, useMediaQuery, styled, useTheme } from '@mui/material';
+import soroswapLogoPurpleBlack from 'assets/svg/SoroswapPurpleBlack.svg';
+import soroswapLogoPurpleWhite from 'assets/svg/SoroswapPurpleWhite.svg';
+import darkModeMoon from 'assets/svg/darkModeMoon.svg';
+import lightModeSun from 'assets/svg/lightModeSun.svg';
+import { ColorModeContext } from 'contexts';
 import ProfileSection, { ActiveChainHeaderChip } from './ProfileSection';
 
 const MainBox = styled('div')<{ isMobile: boolean }>`
@@ -155,6 +154,19 @@ export default function Header({ isDrawerOpen, setDrawerOpen }: HeaderProps) {
   const logoWidth = isMobile ? 88 : 162;
   const logoHeight = isMobile ? 30 : 56;
 
+  interface NavItem {
+    href: string;
+    label: string;
+    target?: string;
+  }
+
+  const navItems: NavItem[] = [
+    { href: '/balance', label: 'Balance',  target:'_self'},
+    { href: '/swap', label: 'Swap', target:'_self' },
+    { href: '/liquidity', label: 'Liquidity',  target:'_self'},
+    { href: 'https://info.soroswap.finance', label: 'Explore', target:'_blank'},
+  ];
+  
   return (
     <>
       <MainBox isMobile={isMobile}>
@@ -179,30 +191,17 @@ export default function Header({ isDrawerOpen, setDrawerOpen }: HeaderProps) {
         {!isMobile ? (
           <>
             <NavBar data-testid="nav">
-              <NavItem
-                href={'/balance'}
-                active={pathname.includes('/balance')}
-                data-testid="nav-link"
-              >
-                Balance
-              </NavItem>
-              <NavItem
-                href={'/swap'}
-                active={pathname.includes('/swap') || pathname === '/'}
-                data-testid="nav-link"
-              >
-                Swap
-              </NavItem>
-              <NavItem
-                href={'/liquidity'}
-                active={pathname.includes('/liquidity')}
-                data-testid="nav-link"
-              >
-                Liquidity
-              </NavItem>
-              {/* <NavItem href={'/mint'} active={pathname.includes('/mint')}>
-                Mint
-              </NavItem> */}
+              {navItems.map((item) => (
+                <NavItem
+                  key={item.href}
+                  href={item.href}
+                  active={item.label === 'Swap' ? (pathname.includes(item.href) || pathname === '/') : pathname.includes(item.href)}
+                  target={item.target}
+                  data-testid="nav-link"
+                >
+                  {item.label}
+                </NavItem>
+              ))}
             </NavBar>
             <ButtonsBox>
               <ModeSwitch
@@ -226,21 +225,15 @@ export default function Header({ isDrawerOpen, setDrawerOpen }: HeaderProps) {
             </Box>
             <NavBarContainer>
               <NavBarMobile>
-                <NavItemMobile href={'/balance'} active={pathname.includes('/balance')}>
-                  Balance
-                </NavItemMobile>
-                <NavItemMobile
-                  href={'/swap'}
-                  active={pathname.includes('/swap') || pathname === '/'}
-                >
-                  Swap
-                </NavItemMobile>
-                <NavItemMobile href={'/liquidity'} active={pathname.includes('/liquidity')}>
-                  Liquidity
-                </NavItemMobile>
-                {/* <NavItemMobile href={'/mint'} active={pathname.includes('/mint')}>
-                  Mint
-                </NavItemMobile> */}
+                {navItems.map((item) => (
+                  <NavItemMobile
+                    key={item.href}
+                    href={item.href}
+                    active={item.label === 'Swap' ? (pathname.includes(item.href) ||  pathname === '/') : pathname.includes(item.href)}
+                  >
+                    {item.label}
+                  </NavItemMobile>
+                ))}
               </NavBarMobile>
             </NavBarContainer>
           </>

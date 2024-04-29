@@ -26,7 +26,7 @@ import { Plus } from 'react-feather';
 import { Field } from 'state/burn/actions';
 import { useBurnActionHandlers, useBurnState, useDerivedBurnInfo } from 'state/burn/hooks';
 import { useUserSlippageToleranceWithDefault } from 'state/user/hooks';
-import * as StellarSdk from 'stellar-sdk';
+import * as StellarSdk from '@stellar/stellar-sdk';
 import { opacify } from 'themes/utils';
 import { AddRemoveTabs } from '../AddRemoveHeader';
 

@@ -203,15 +203,31 @@ export function SwapComponent({
 
   const handleTypeInput = useCallback(
     (value: string) => {
+      const currency = currencies[Field.INPUT];
+      const decimals = currency?.decimals ?? 7;
+
+      // Prevents user from inputting more decimals than the token supports
+      if (value.split('.').length > 1 && value.split('.')[1].length > decimals) {
+        return;
+      }
+
       onUserInput(Field.INPUT, value);
     },
-    [onUserInput],
+    [onUserInput, currencies],
   );
   const handleTypeOutput = useCallback(
     (value: string) => {
+      const currency = currencies[Field.OUTPUT];
+      const decimals = currency?.decimals ?? 7;
+
+      // Prevents user from inputting more decimals than the token supports
+      if (value.split('.').length > 1 && value.split('.')[1].length > decimals) {
+        return;
+      }
+
       onUserInput(Field.OUTPUT, value);
     },
-    [onUserInput],
+    [onUserInput, currencies],
   );
 
   const formattedAmounts = useMemo(
@@ -310,16 +326,6 @@ export function SwapComponent({
   const priceImpactSeverity = 2; //IF is < 2 it shows Swap anyway button in red
   const showPriceImpactWarning = false;
 
-  const { getMainButtonText, isMainButtonDisabled, handleMainButtonClick, getSwapValues } =
-    useSwapMainButton({
-      currencies,
-      currencyBalances,
-      formattedAmounts,
-      routeNotFound,
-      onSubmit: handleContinueToReview,
-      trade,
-    });
-
   const nativeBalance = useGetNativeTokenBalance();
 
   useEffect(() => {
@@ -356,7 +362,19 @@ export function SwapComponent({
     checkTrustline();
   }, [sorobanContext, swapCallback, trade, nativeBalance.data?.validAccount]);
 
-  const { networkFees } = useSwapNetworkFees(trade);
+  const { networkFees, isLoading: isLoadingNetworkFees } = useSwapNetworkFees(trade, currencies);
+
+  const { getMainButtonText, isMainButtonDisabled, handleMainButtonClick, getSwapValues } =
+    useSwapMainButton({
+      currencies,
+      currencyBalances,
+      formattedAmounts,
+      routeNotFound,
+      onSubmit: handleContinueToReview,
+      trade,
+      subentryCount,
+      networkFees,
+    });
 
   const useConfirmModal = useConfirmModalState({
     trade: trade!,
@@ -441,6 +459,7 @@ export function SwapComponent({
               otherCurrency={currencies[Field.OUTPUT]}
               networkFees={networkFees}
               subentryCount={subentryCount}
+              isLoadingNetworkFees={isLoadingNetworkFees}
               // showCommonBases
               // id={InterfaceSectionName.CURRENCY_INPUT_PANEL}
               loading={independentField === Field.OUTPUT && routeIsSyncing}
