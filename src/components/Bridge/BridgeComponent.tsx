@@ -106,7 +106,7 @@ const BridgeComponent = () => {
   };
 
   const hasInsufficientBalance = () => {
-    const isInvalidBridgeAmount = Boolean(amount > (fromAssetBalance ?? 0));
+    const isInvalidBridgeAmount = Boolean(Number(amount) > (Number(fromAssetBalance) ?? 0));
 
     return isInvalidBridgeAmount;
   };
@@ -165,7 +165,10 @@ const BridgeComponent = () => {
           b?.contract === selectedAsset?.contractId(activeChain.networkPassphrase),
       )?.balance || '0';
 
-    if (selectedAsset?.code === 'XLM') stellarBalance = availableNativeBalance();
+    if (selectedAsset?.code === 'XLM') {
+      stellarBalance = availableNativeBalance();
+      stellarBalance = stellarBalance.toNumber();
+    }
 
     return stellarBalance;
   };
@@ -180,7 +183,7 @@ const BridgeComponent = () => {
 
   const getFromAssetBalance = () => {
     const fromAssetBalance =
-      selectedChainFrom === 'Stellar' ? getStellarBalance() : getSpacewalkBalance();
+      selectedChainFrom === BridgeChains.STELLAR ? getStellarBalance() : getSpacewalkBalance();
 
     return fromAssetBalance;
   };
