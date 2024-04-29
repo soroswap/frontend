@@ -164,7 +164,8 @@ export default function Header({ isDrawerOpen, setDrawerOpen }: HeaderProps) {
     { href: '/balance', label: 'Balance',  target:'_self'},
     { href: '/swap', label: 'Swap', target:'_self' },
     { href: '/liquidity', label: 'Liquidity',  target:'_self'},
-    { href: 'https://info.soroswap.finance', label: 'Explore', target:'_blank'},
+    { href: '/bridge', label: 'Bridge',  target:'_self'},
+    { href: 'https://info.soroswap.finance', label: 'Info', target:'_blank'},
   ];
   
   return (

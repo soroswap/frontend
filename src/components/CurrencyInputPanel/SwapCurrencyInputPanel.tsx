@@ -15,7 +15,7 @@ import CurrencySearchModal from '../SearchModal/CurrencySearchModal';
 import CurrencyBalance from './CurrencyBalance';
 import { FiatValue } from './FiatValue';
 
-const InputPanel = styled('div')<{ hideInput?: boolean }>`
+export const InputPanel = styled('div')<{ hideInput?: boolean }>`
   ${flexColumnNoWrap};
   position: relative;
   border-radius: ${({ hideInput }) => (hideInput ? '16px' : '20px')};
@@ -25,7 +25,7 @@ const InputPanel = styled('div')<{ hideInput?: boolean }>`
   will-change: height;
 `;
 
-const Container = styled('div')<{ hideInput: boolean }>`
+export const Container = styled('div')<{ hideInput: boolean }>`
   min-height: 44px;
   border-radius: ${({ hideInput }) => (hideInput ? '16px' : '20px')};
   width: ${({ hideInput }) => (hideInput ? '100%' : 'initial')};
@@ -37,7 +37,7 @@ const Container = styled('div')<{ hideInput: boolean }>`
 
 const shouldNotForwardPropsCurrencySelect = ['hideInput', 'visible'];
 
-const CurrencySelect = styled(ButtonBase, {
+export const CurrencySelect = styled(ButtonBase, {
   shouldForwardProp: (prop) => !shouldNotForwardPropsCurrencySelect.includes(prop as string),
 })<{
   visible: boolean;
@@ -93,7 +93,7 @@ const CurrencySelect = styled(ButtonBase, {
   visibility: ${({ visible }) => (visible ? 'visible' : 'hidden')};
 `;
 
-const InputRow = styled('div')`
+export const InputRow = styled('div')`
   ${flexRowNoWrap};
   align-items: center;
   justify-content: space-between;
@@ -118,14 +118,14 @@ const FiatRow = styled(LabelRow)`
   padding: 8px 0px 0px 0px;
 `;
 
-const Aligner = styled('span')`
+export const Aligner = styled('span')`
   display: flex;
   align-items: center;
   justify-content: space-between;
   width: 100%;
 `;
 
-const StyledDropDown = styled(ChevronDown)<{ selected: boolean }>`
+export const StyledDropDown = styled(ChevronDown)<{ selected: boolean }>`
   margin: 0 0.25rem 0 0.35rem;
   height: 35%;
   margin-left: 8px;
@@ -136,7 +136,7 @@ const StyledDropDown = styled(ChevronDown)<{ selected: boolean }>`
   }
 `;
 
-const StyledTokenName = styled('span')<{ active?: boolean }>`
+export const StyledTokenName = styled('span')<{ active?: boolean }>`
   ${({ active }) => (active ? '  margin: 0 0.25rem 0 0.25rem;' : '  margin: 0 0.25rem 0 0.25rem;')}
   font-size: 20px;
   font-weight: 600;
@@ -146,7 +146,7 @@ const StyledTokenName = styled('span')<{ active?: boolean }>`
   }
 `;
 
-const StyledNumericalInput = styled(NumericalInput)<{ $loading: boolean }>`
+export const StyledNumericalInput = styled(NumericalInput)<{ $loading?: boolean }>`
   filter: ${({ $loading }) => ($loading ? 'grayscale(1)' : 'none')};
   opacity: ${({ $loading }) => ($loading ? '0.4' : '1')};
   transition: opacity 0.2s ease-in-out;
@@ -183,7 +183,6 @@ interface SwapCurrencyInputPanelProps {
   disabled?: boolean;
   disableInput?: boolean;
   networkFees?: number;
-  subentryCount?: number | undefined | null;
   isLoadingNetworkFees?: boolean;
 }
 
@@ -208,8 +207,7 @@ export default function SwapCurrencyInputPanel({
   loading = false,
   disabled = false,
   disableInput = false,
-  networkFees = 0,
-  subentryCount,
+  networkFees,
   isLoadingNetworkFees,
   ...rest
 }: SwapCurrencyInputPanelProps) {
@@ -281,13 +279,11 @@ export default function SwapCurrencyInputPanel({
             <RowBetween>
               {address && currency ? (
                 <CurrencyBalance
-                  address={address}
-                  currency={currency}
+                  contract={currency.contract}
                   onMax={onMax}
                   hideBalance={hideBalance}
                   showMaxButton={showMaxButton}
                   networkFees={networkFees}
-                  subentryCount={subentryCount}
                   isLoadingNetworkFees={isLoadingNetworkFees}
                 />
               ) : (

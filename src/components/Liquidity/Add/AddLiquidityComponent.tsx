@@ -7,6 +7,7 @@ import { WalletButton } from 'components/Buttons/WalletButton';
 import { DarkGrayCard } from 'components/Card';
 import { AutoColumn, ColumnCenter } from 'components/Column';
 import CurrencyInputPanel from 'components/CurrencyInputPanel';
+import WrapStellarAssetModal from 'components/Modals/WrapStellarAssetModal';
 import { DEFAULT_SLIPPAGE_INPUT_VALUE } from 'components/Settings/MaxSlippageSettings';
 import { BodySmall, ButtonText } from 'components/Text';
 import TransactionConfirmationModal, {
@@ -17,12 +18,14 @@ import { getCurrentTimePlusOneHour } from 'functions/getCurrentTimePlusOneHour';
 import { formatTokenAmount } from 'helpers/format';
 import { bigNumberToI128, bigNumberToU64 } from 'helpers/utils';
 import { useToken } from 'hooks/tokens/useToken';
+import useAddLiquidityNetworkFees from 'hooks/useAddLiquidityNetworkFees';
+import useBoolean from 'hooks/useBoolean';
 import useCalculateLpToReceive from 'hooks/useCalculateLp';
 import useLiquidityValidations from 'hooks/useLiquidityValidations';
 import { RouterMethod, useRouterCallback } from 'hooks/useRouterCallback';
 import { TokenType } from 'interfaces';
 import { useRouter } from 'next/router';
-import { useCallback, useContext, useMemo, useState, useEffect } from 'react';
+import { useCallback, useContext, useMemo, useState } from 'react';
 import { Plus } from 'react-feather';
 import { Field } from 'state/mint/actions';
 import { useDerivedMintInfo, useMintActionHandlers, useMintState } from 'state/mint/hooks';
@@ -32,10 +35,6 @@ import { opacify } from 'themes/utils';
 import { AddRemoveTabs } from '../AddRemoveHeader';
 import AddModalFooter from './AddModalFooter';
 import AddModalHeader from './AddModalHeader';
-import WrapStellarAssetModal from 'components/Modals/WrapStellarAssetModal';
-import useBoolean from 'hooks/useBoolean';
-import useAddLiquidityNetworkFees from 'hooks/useAddLiquidityNetworkFees';
-import useGetNativeTokenBalance from 'hooks/useGetNativeTokenBalance';
 
 export const PageWrapper = styled('main')`
   position: relative;
@@ -116,7 +115,6 @@ export default function AddLiquidityComponent({
   const [amountOfLpTokensToReceive, setAmountOfLpTokensToReceive] = useState<string>('');
   const [lpPercentage, setLpPercentage] = useState<string>('');
   const [totalShares, setTotalShares] = useState<string>('');
-  const [subentryCount, setSubentryCount] = useState<number>(0);
 
   const {
     token: baseCurrency,
@@ -300,29 +298,6 @@ export default function AddLiquidityComponent({
     baseCurrency,
   });
 
-  const nativeBalance = useGetNativeTokenBalance();
-
-  useEffect(() => {
-    const getSubentryCount = async () => {
-      if (sorobanContext.address && nativeBalance.data?.validAccount) {
-        const account = await sorobanContext.serverHorizon?.loadAccount(sorobanContext.address);
-        const count = account?.subentry_count ?? 0;
-        setSubentryCount(count);
-      }
-    };
-
-    getSubentryCount();
-  }, [
-    sorobanContext,
-    formattedAmounts,
-    userSlippage,
-    baseCurrency,
-    currencyB,
-    independentField,
-    dependentField,
-    nativeBalance.data?.validAccount,
-  ]);
-
   const buildNetworkFeesArgs = () => {
     let desired0BN: BigNumber;
     let desired1BN: BigNumber;
@@ -494,9 +469,6 @@ export default function AddLiquidityComponent({
             transparent
             otherCurrency={currencies[Field.CURRENCY_B] ?? null}
             networkFees={networkFees}
-            subentryCount={subentryCount}
-
-            // showCommonBases
           />
           <ColumnCenter>
             <Plus size="16" color={theme.palette.secondary.main} />
@@ -512,8 +484,6 @@ export default function AddLiquidityComponent({
             currency={currencies[Field.CURRENCY_B] ?? null}
             otherCurrency={currencies[Field.CURRENCY_A] ?? null}
             networkFees={networkFees}
-            subentryCount={subentryCount}
-            // showCommonBases
           />
           {!sorobanContext.address ? (
             <WalletButton />
