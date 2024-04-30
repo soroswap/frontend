@@ -40,7 +40,7 @@ export function stringifyStellarAsset(asset: Asset): string {
   return asset.isNative() ? 'XLM' : `${asset.getCode()}:${asset.getIssuer()}`;
 }
 
-export const decimalToStellarNative = (value: string) => {
+export const decimalToStellarNative = (value: string): string => {
   let bigIntValue;
   try {
     bigIntValue = new BigNumber(value);
@@ -48,5 +48,7 @@ export const decimalToStellarNative = (value: string) => {
     bigIntValue = new BigNumber(0);
   }
   const multiplier = new BigNumber(10).pow(12);
-  return bigIntValue.times(multiplier);
+  const result = bigIntValue.times(multiplier);
+  console.log(result.toFixed())
+  return result.toFixed();
 };

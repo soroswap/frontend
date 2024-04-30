@@ -62,7 +62,7 @@ const BridgeComponent = () => {
   const [selectedChainFrom, setSelectedChainFrom] = useState<BridgeChains | null>(null);
   const [selectedChainTo, setSelectedChainTo] = useState<BridgeChains | null>(null);
 
-  const [amount, setAmount] = useState<string>('0');
+  const [amount, setAmount] = useState<string>('');
 
   const { wrappedAssets, selectedAsset, setSelectedAsset, selectedVault, selectedVaultExtended } =
     useSpacewalkBridge();
@@ -205,6 +205,13 @@ const BridgeComponent = () => {
     );
   }, [amount, fees.issueFee, fees.redeemFee, selectedChainFrom]);
 
+  const maxLengthAmount = (value:string, maxLength?:number) => {
+    if(maxLength === 0 || !maxLength || value.length <= maxLength){
+      setAmount(value);
+    } else {
+      return false;
+    }
+  }
   //Auto select the other chain when the user selects one
   useEffect(() => {
     if (selectedChainFrom === BridgeChains.PENDULUM && selectedChainTo !== BridgeChains.STELLAR) {
@@ -265,7 +272,7 @@ const BridgeComponent = () => {
                 <StyledNumericalInput
                   className="token-amount-input"
                   value={amount}
-                  onUserInput={(value) => setAmount(value)}
+                  onUserInput={(value) => maxLengthAmount(value, 27)}
                 />
               </InputRow>
               {selectedChainFrom === 'Stellar' ? (
@@ -314,7 +321,7 @@ const BridgeComponent = () => {
                 <StyledNumericalInput
                   className="token-amount-input"
                   value={endAmount}
-                  onUserInput={(value) => setAmount(value)}
+                  onUserInput={(value) => maxLengthAmount(value, 27)}
                 />
               </InputRow>
             </Container>
