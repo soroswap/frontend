@@ -49,6 +49,5 @@ export const decimalToStellarNative = (value: string): string => {
   }
   const multiplier = new BigNumber(10).pow(12);
   const result = bigIntValue.times(multiplier);
-  console.log(result.toFixed())
   return result.toFixed();
 };
