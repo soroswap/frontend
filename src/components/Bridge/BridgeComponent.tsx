@@ -17,6 +17,7 @@ import useRedeemHandler from 'hooks/bridge/pendulum/useRedeemHandler';
 import useSpacewalkBalances from 'hooks/bridge/pendulum/useSpacewalkBalances';
 import useSpacewalkBridge from 'hooks/bridge/pendulum/useSpacewalkBridge';
 import { useSpacewalkFees } from 'hooks/bridge/pendulum/useSpacewalkFees';
+import { useSpacewalkVaults } from 'hooks/bridge/pendulum/useSpacewalkVaults';
 import useBoolean from 'hooks/useBoolean';
 import useGetMyBalances from 'hooks/useGetMyBalances';
 import { useEffect, useMemo, useState } from 'react';
@@ -223,6 +224,17 @@ const BridgeComponent = () => {
       setSelectedChainFrom(BridgeChains.PENDULUM);
     }
   }, [selectedChainFrom, selectedChainTo]);
+
+  const { getVaultsWithIssuableTokens, getVaults } = useSpacewalkVaults()
+  
+  getVaultsWithIssuableTokens().then((resp) => {
+    console.log("resp", resp)
+  });
+
+  getVaults().then((resp) => {
+    console.log("vaults", resp)
+  })
+
 
   return (
     <>

@@ -1,6 +1,7 @@
 import { AccountId32 } from '@polkadot/types/interfaces';
 import { useInkathon } from '@scio-labs/use-inkathon';
 import { convertRawHexKeyToPublicKey } from 'helpers/bridge/pendulum/stellar';
+import { isEmpty } from 'lodash';
 import { useCallback, useEffect, useState } from 'react';
 
 interface AlphaNum4 {
@@ -147,8 +148,21 @@ export function useSpacewalkVaults() {
     [api],
   );
 
+  const getVaultsWithIssuableTokens = useCallback(async() => {
+    if (!api) {
+      return undefined;
+    }
+    //@ts-ignore
+    if (isEmpty(api.rpc.vaultRegistry)) {
+      throw new Error('Vault Registry does not exist');
+    }
+    //@ts-ignore
+    return await api.rpc.vaultRegistry.getVaultsWithIssuableTokens();
+  },[api])
+
   return {
     getVaults,
     getVaultStellarPublicKey,
+    getVaultsWithIssuableTokens,
   };
 }

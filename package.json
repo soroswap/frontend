@@ -20,6 +20,8 @@
     "@mui/material": "^5.10.17",
     "@next/font": "13.0.7",
     "@nightlylabs/wallet-selector-polkadot": "0.2.4",
+    "@pendulum-chain/api": "^1.0.1",
+    "@pendulum-chain/types": "^1.0.1",
     "@polkadot/api-contract": "^10.12.6",
     "@polkadot/types": "^10.12.6",
     "@reduxjs/toolkit": "^2.2.1",
