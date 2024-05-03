@@ -28,9 +28,36 @@ import BigNumber from 'bignumber.js';
 interface Step {
   label: string;
   body: JSX.Element | Element;
+  key?: string;
 }
 
-export interface IssueSteps {
+export enum IssueStepKeys {
+  REVIEW = 'review',
+  SIGN_RQ = 'sign_rq',
+  SIGN_TX = 'sign_tx',
+  RESULT = 'res'
+}
+
+export enum RedeemStepKeys {
+  REVIEW = 'review',
+  SIGN_RQ = 'sign_rq',
+  RESULT = 'res'
+}
+
+export const IssueStepsByKeys: Record<IssueStepKeys, number> = {
+  [IssueStepKeys.REVIEW]: 0,
+  [IssueStepKeys.SIGN_RQ]: 1,
+  [IssueStepKeys.SIGN_TX]: 2,
+  [IssueStepKeys.RESULT]: 3
+};
+
+export const RedeemStepsByKeys: Record<RedeemStepKeys, number> = {
+  [IssueStepKeys.REVIEW]: 0,
+  [IssueStepKeys.SIGN_RQ]: 1,
+  [IssueStepKeys.RESULT]: 3
+};
+
+export interface IssueStepsProps {
   amount: string;
   assetInfo: any;
   bridgeFee: any;
@@ -50,7 +77,7 @@ export interface IssueSteps {
   setActiveStep: (step: number) => void;
 }
 
-export function issueSteps(props: IssueSteps) {
+export function issueSteps(props: IssueStepsProps) {
   const { 
     amount,
     assetInfo,
@@ -67,18 +94,12 @@ export function issueSteps(props: IssueSteps) {
     tryAgain,
     txHash,
     onClickConfirmButton,
-    onCloseConfirmModal,
-    setActiveStep,
-  } = props;
+  } = props; 
   const steps: Step[] = [
     {
       label: 'Review your transaction',
       body: (
         <>
-          <RowBetween>
-            <SubHeader>Confirm Bridge</SubHeader>
-          </RowBetween>
-  
           <Box mt={3}>
             <Typography variant="h6">From {selectedChainFrom}</Typography>
   
@@ -137,105 +158,74 @@ export function issueSteps(props: IssueSteps) {
           </ButtonPrimary>
         </>
       ),
+      key: IssueStepKeys.REVIEW
     },
     {
-      label: 'Sign Issue Request in your Wallet',
+      label: `Approve in your Pendulum wallet`,
       body: (
-        <>
+        <Box sx={{pt:4}}>
           <ConfirmedIcon>
             <LoadingIndicatorOverlay />
           </ConfirmedIcon>
-          <AutoColumn gap="12px" sx={{ mt: 2 }} justify="center">
+          <AutoColumn gap="12px" sx={{ mt: 4 }} justify="center">
             <SubHeaderLarge color="textPrimary" textAlign="center">
               Waiting for confirmation
             </SubHeaderLarge>
             <Box textAlign="center">
+              <Typography color="textSecondary"> Request {selectedChainFrom == 'Stellar' ? 'Issue ' : 'Reedem '}</Typography>
               <Box display="flex" gap={1}>
-                <div> {amount}</div>
+                <div>{amount}</div>
                 <BridgeAssetItem
                   asset={selectedAsset}
                   chain={selectedChainFrom}
                   flexDirection="row-reverse"
                 />
-                <div>to {amount} </div>
+                <div>to {amount}</div>
                 <BridgeAssetItem
                   asset={selectedAsset}
                   chain={selectedChainTo}
                   flexDirection="row-reverse"
                 />
+
               </Box>
-              <Typography variant="body2">
-                From {selectedChainFrom} to {selectedChainTo}
+              <Typography color="textSecondary">
+                from {selectedChainFrom} to {selectedChainTo}
               </Typography>
             </Box>
             <SubHeaderSmall color="textSecondary" textAlign="center" marginBottom="12px">
-              Confirm this transaction in your wallet
+              Confirm this transaction in your Pendulum wallet and await for chain confirmation.
             </SubHeaderSmall>
           </AutoColumn>
-        </>
-      )
+        </Box>
+      ),
+      key: IssueStepKeys.SIGN_RQ
     },
     {
-      label: 'Sign the transaction in your wallet',
+      label: 'Transfer your assets from Stellar',
       body: (
-        <>
+        <Box sx={{mt: 4}}>
           <ConfirmedIcon>
             <LoadingIndicatorOverlay />
           </ConfirmedIcon>
           <AutoColumn gap="12px" sx={{ mt: 2 }} justify="center">
             <SubHeaderLarge color="textPrimary" textAlign="center">
-              Waiting for confirmation
+              Waiting for {selectedChainFrom} confirmation
             </SubHeaderLarge>
-  
             <Box textAlign="center">
-              <Box display="flex" gap={1}>
-                <div> {amount}</div>
-                <BridgeAssetItem
-                  asset={selectedAsset}
-                  chain={selectedChainFrom}
-                  flexDirection="row-reverse"
-                />
-                <div>to {amount} </div>
-                <BridgeAssetItem
-                  asset={selectedAsset}
-                  chain={selectedChainTo}
-                  flexDirection="row-reverse"
-                />
-              </Box>
-              <Typography variant="body2">
-                From {selectedChainFrom} to {selectedChainTo}
+            <Typography variant="body2" color="textSecondary" marginBottom="12px">
+                Review and confirm this transaction in your Stellar wallet and await for chain confirmation.
               </Typography>
             </Box>
-  
-            {isSuccess ? null : isError && errorMessage ? (
-              <Box>
-                <SubHeaderSmall color="textSecondary" textAlign="center" marginBottom="12px">
-                  {errorMessage}
-                </SubHeaderSmall>
-                {tryAgain && tryAgain.show ? (
-                  <ButtonPrimary onClick={tryAgain.fn}>Try again</ButtonPrimary>
-                ) : null}
-              </Box>
-            ) : (
-              <SubHeaderSmall color="textSecondary" textAlign="center" marginBottom="12px">
-                Confirm this transaction in your wallet
-              </SubHeaderSmall>
-            )}
-  
-            {txHash && (
-              <Box>
-                <CopyTxHash txHash={txHash} />
-              </Box>
-            )}
           </AutoColumn>
-        </>
-      )
+        </Box>
+      ),
+      key: IssueStepKeys.SIGN_TX
     },
     {
       label: 'Result',
       body: (
-        <>
-          <Box textAlign={'center'}>
+        <Box>
+          <Box textAlign={'center'} sx={{my:2}}>
             {isSuccess ? (
               <AnimatedEntranceConfirmationIcon />
             ) : (isError && errorMessage) && (
@@ -247,6 +237,10 @@ export function issueSteps(props: IssueSteps) {
           </SubHeaderLarge>
           <AutoColumn gap="16px" sx={{ mt: 2, mb: 2 }} justify="center">
             <Box textAlign="center">
+              <Typography color="textSecondary">
+                {isSuccess ? 'Successfully' : 'We were unable to'}
+                {selectedChainFrom == 'Stellar' ? ' issue ' : ' redeem '}
+              </Typography>
               <Box display="flex" gap={1}>
                 <div> {amount}</div>
                 <BridgeAssetItem
@@ -261,8 +255,8 @@ export function issueSteps(props: IssueSteps) {
                   flexDirection="row-reverse"
                 />
               </Box>
-              <Typography variant="body2">
-                From {selectedChainFrom} to {selectedChainTo}
+              <Typography color="textSecondary">
+                from {selectedChainFrom} to {selectedChainTo}.
               </Typography>
             </Box>
        
@@ -277,15 +271,15 @@ export function issueSteps(props: IssueSteps) {
                 ) : null}
               </Box>
             )}
-  
             {txHash && (
               <Box>
                 <CopyTxHash txHash={txHash} />
               </Box>
             )}
           </AutoColumn>
-        </>
-      )
+        </Box>
+      ),
+      key: IssueStepKeys.RESULT
     }
   ];
   return (

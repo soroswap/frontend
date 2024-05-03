@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-type UseStepperState = {
+export type UseStepperState = {
   activeStep: number;
   setActiveStep: (step: number) => void;
   handleNext: () => void;

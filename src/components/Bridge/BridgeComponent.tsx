@@ -32,7 +32,7 @@ import PolkadotCurrencyBalance from './PolkadotCurrencyBalance';
 
 
 import { useModalStepper } from 'hooks/bridge/pendulum/useModalStepper';
-import { IssueSteps } from 'components/Bridge/IssueSteps';
+import { IssueStepKeys, IssueStepsByKeys } from 'components/Bridge/IssueSteps';
 
 export enum BridgeChains {
   PENDULUM = 'Pendulum',
@@ -77,6 +77,7 @@ const BridgeComponent = () => {
     amount,
     selectedAsset,
     selectedVault,
+    stepper,
   });
 
   const redeem = useRedeemHandler({
@@ -94,10 +95,10 @@ const BridgeComponent = () => {
   const onClickConfirmButton = () => {
     if (selectedChainFrom === BridgeChains.PENDULUM) {
       redeem.handler();
-      stepper.handleNext();
     } else {
       issue.handler();
     }
+    stepper.setActiveStep(IssueStepsByKeys[IssueStepKeys.SIGN_RQ]);
   };
 
   const hasInsufficientLiquidity = () => {
@@ -159,7 +160,6 @@ const BridgeComponent = () => {
     const isSuccess = issue.txSuccess || redeem.txSuccess;
     const isError = issue.txError || redeem.txError;
     const txHash = issue.txHash || redeem.txHash;
-
     const showPendingModal = isPending || isSuccess || isError;
 
     return { isPending, isSuccess, isError, txHash, showPendingModal };

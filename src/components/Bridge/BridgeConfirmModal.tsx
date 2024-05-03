@@ -15,9 +15,11 @@ import { ModalContentWrapper } from './BridgeSelector';
 
 import {Stepper, Step, StepLabel, StepContent} from '@mui/material';
 
-import { IssueSteps, issueSteps } from './IssueSteps';
+import { IssueStepsProps, issueSteps } from './IssueSteps';
 
 import { CloseButton } from 'components/Buttons/CloseButton';
+
+import { IssueStepKeys, IssueStepsByKeys, RedeemStepsByKeys } from './IssueSteps';
 
 interface BridgeStepperProps {
   steps: any;
@@ -33,14 +35,14 @@ export function BridgeStepper(props: BridgeStepperProps) {
       </Box>
       <Stepper activeStep={activeStep} orientation="vertical">
         {steps.map((step: any) => (
-          <Step key={step.label}>
+          <Step key={step.key}>
             <StepLabel>
               {step.label}
             </StepLabel>
-            <StepContent sx={{px: 2, mx: 2}}>
-              <>
+            <StepContent>
+              <Box sx={{pr:4}}>
                 {step.body}
-              </>
+              </Box>
             </StepContent>
           </Step>
         ))}
@@ -93,7 +95,7 @@ const BridgeConfirmModal = (props: Props) => {
   const { getTransactionFee, getFees } = useSpacewalkFees();
   const fees = getFees();
   const theme = useTheme();
-  const {activeStep, setActiveStep, handleNext, handleBack} = stepper;
+  const {activeStep, setActiveStep} = stepper;
 
   const bridgeFee = useMemo(() => {
     return nativeStellarToDecimal(
@@ -108,7 +110,7 @@ const BridgeConfirmModal = (props: Props) => {
       new BigNumber(amount).shiftedBy(12).multipliedBy(fees.issueGriefingCollateral),
     );
   }, [amount, fees]);
-  const stepsProps: IssueSteps = {
+  const stepsProps: IssueStepsProps = {
       amount,
       assetInfo,
       bridgeFee,
@@ -128,7 +130,21 @@ const BridgeConfirmModal = (props: Props) => {
       setActiveStep
   }
 
-  const steps = issueSteps(stepsProps)
+  const allSteps = issueSteps(stepsProps);
+
+  const [steps, setSteps] = useState(allSteps);
+  const redeemSteps = useMemo(() => {
+    const redeemStepKeys = Object.keys(RedeemStepsByKeys);
+    return allSteps.filter((step: any) => redeemStepKeys.includes(step.key));
+  }, [allSteps]);
+
+  useEffect(() => {
+    if(selectedChainFrom === 'Stellar') {
+      setSteps(issueSteps(stepsProps));
+    } else if (selectedChainFrom === 'Pendulum') {
+      setSteps(redeemSteps);
+    }
+  }, [selectedChainFrom, selectedChainTo]);
 
   useEffect(() => {
     if (!extrinsic) {
@@ -143,19 +159,19 @@ const BridgeConfirmModal = (props: Props) => {
     if (isSuccess) {
       setActiveStep(steps.length - 1);
     }
-  }, [isSuccess, setActiveStep]);
+  }, [isSuccess]);
 
   useEffect(() => {
     if (isError) {
       setActiveStep(steps.length - 1);
     }
-  }, [isError, setActiveStep]);
+  }, [isError]);
 
   return (
     <Modal open={confirmModal.value} onClose={onCloseConfirmModal}>
-      <div>    
+      <>
         <BridgeStepper steps={steps} activeStep={activeStep} onCloseConfirmModal={onCloseConfirmModal}/>
-      </div>
+      </>
     </Modal>
   );
 };
