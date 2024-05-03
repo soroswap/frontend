@@ -30,7 +30,7 @@ function calculateAvailableBalance(
   networkFees?: string | number | BigNumber | null,
   subentryCount?: number,
 ): BigNumber {
-  if(!balance) return BigNumber(0)
+  if (!balance) return BigNumber(0);
   const baseBalance = new BigNumber(balance).shiftedBy(-7);
   const adjustment = new BigNumber(networkFees ?? Number(BigNumber(BASE_FEE).shiftedBy(-7)))
     .plus(1)
@@ -45,9 +45,14 @@ const useGetMyBalances = () => {
   const { tokens, isLoading: isLoadingTokens } = useAllTokens();
   const { subentryCount, nativeBalance, isLoading: isSubentryLoading } = useGetSubentryCount();
 
-  const { account } = useHorizonLoadAccount();
+  const { account, mutate: refetchAccount } = useHorizonLoadAccount();
 
-  const { data, isLoading, mutate, error } = useSWRImmutable(
+  const {
+    data,
+    isLoading,
+    mutate: refetchBalances,
+    error,
+  } = useSWRImmutable(
     address && account && tokens.length > 0
       ? ['balance', address, tokens, sorobanContext, account, tokens.length]
       : null,
@@ -57,13 +62,14 @@ const useGetMyBalances = () => {
 
   const availableNativeBalance = useCallback(
     (networkFees?: string | number | BigNumber | null) =>
-      calculateAvailableBalance(
-        nativeBalance,
-        networkFees,
-        subentryCount,
-      ),
+      calculateAvailableBalance(nativeBalance, networkFees, subentryCount),
     [nativeBalance, subentryCount],
   );
+
+  const refresh = async () => {
+    await refetchAccount();
+    await refetchBalances();
+  };
 
   return {
     sorobanContext,
@@ -72,7 +78,7 @@ const useGetMyBalances = () => {
     availableNativeBalance,
     isError: error,
     isLoading: isLoading || isLoadingTokens || isSubentryLoading,
-    refetch: mutate,
+    refetch: refresh,
   };
 };
 
