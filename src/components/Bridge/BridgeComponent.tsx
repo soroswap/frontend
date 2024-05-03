@@ -1,4 +1,4 @@
-import { Box } from '@mui/material';
+import { Box, Button } from '@mui/material';
 import { useInkathon } from '@scio-labs/use-inkathon';
 import { useSorobanReact } from '@soroban-react/core';
 import BigNumber from 'bignumber.js';
@@ -30,6 +30,10 @@ import PendulumChainIcon from './ChainIcons/PendulumChainIcon';
 import StellarChainIcon from './ChainIcons/StellarChainIcon';
 import PolkadotCurrencyBalance from './PolkadotCurrencyBalance';
 
+
+import { useModalStepper } from 'hooks/bridge/pendulum/useModalStepper';
+import { IssueSteps } from 'components/Bridge/IssueSteps';
+
 export enum BridgeChains {
   PENDULUM = 'Pendulum',
   STELLAR = 'Stellar',
@@ -58,6 +62,8 @@ const BridgeComponent = () => {
     availableNativeBalance,
     isLoading: isLoadingMyBalances,
   } = useGetMyBalances();
+
+  const stepper = useModalStepper();
 
   const [selectedChainFrom, setSelectedChainFrom] = useState<BridgeChains | null>(null);
   const [selectedChainTo, setSelectedChainTo] = useState<BridgeChains | null>(null);
@@ -88,6 +94,7 @@ const BridgeComponent = () => {
   const onClickConfirmButton = () => {
     if (selectedChainFrom === BridgeChains.PENDULUM) {
       redeem.handler();
+      stepper.handleNext();
     } else {
       issue.handler();
     }
@@ -144,6 +151,7 @@ const BridgeComponent = () => {
     confirmModal.setFalse();
     issue.resetStates();
     redeem.resetStates();
+    stepper.handleReset();
   };
 
   const getModalStatus = () => {
@@ -242,6 +250,7 @@ const BridgeComponent = () => {
         errorMessage={issue.errorMessage || redeem.errorMessage}
         extrinsic={issue.extrinsic ?? redeem.extrinsic}
         tryAgain={issue.tryAgain}
+        stepper={stepper}
       />
 
       <SwapWrapper>

@@ -1,30 +1,53 @@
 import { Box, Button, Modal, Typography, useTheme } from '@mui/material';
 import { SubmittableExtrinsic } from '@polkadot/api/promise/types';
 import BigNumber from 'bignumber.js';
-import { ButtonPrimary } from 'components/Buttons/Button';
-import { CloseButton } from 'components/Buttons/CloseButton';
-import { AutoColumn } from 'components/Column';
-import CopyTxHash from 'components/CopyTxHash/CopyTxHash';
-import { DetailRowValue } from 'components/Liquidity/Add/AddModalFooter';
-import { Label } from 'components/Liquidity/Add/AddModalHeader';
-import { RowBetween } from 'components/Row';
-import {
-  AnimatedEntranceConfirmationIcon,
-  LoadingIndicatorOverlay,
-} from 'components/Swap/PendingModalContent/Logos';
-import { ButtonText, SubHeader, SubHeaderLarge, SubHeaderSmall } from 'components/Text';
-import { ConfirmedIcon } from 'components/TransactionConfirmationModal/ModalStyles';
+
 import { nativePendulumToDecimal, nativeStellarToDecimal } from 'helpers/bridge/pendulum/spacewalk';
 import { useGetBridgeAssetInfo } from 'hooks/bridge/pendulum/useGetBridgeAssetInfo';
 import { useSpacewalkFees } from 'hooks/bridge/pendulum/useSpacewalkFees';
 import { UseBooleanReturnProps } from 'hooks/useBoolean';
 import { useEffect, useMemo, useState } from 'react';
-import { AlertTriangle, Info } from 'react-feather';
+
 import { Asset } from 'stellar-sdk';
-import BridgeAssetItem from './BridgeAssetItem';
+
 import { BridgeChains } from './BridgeComponent';
 import { ModalContentWrapper } from './BridgeSelector';
-import { MouseoverTooltip } from 'components/Tooltip';
+
+import {Stepper, Step, StepLabel, StepContent} from '@mui/material';
+
+import { IssueSteps, issueSteps } from './IssueSteps';
+
+import { CloseButton } from 'components/Buttons/CloseButton';
+
+interface BridgeStepperProps {
+  steps: any;
+  activeStep: number;
+  onCloseConfirmModal: () => void;
+}
+export function BridgeStepper(props: BridgeStepperProps) {
+  const {activeStep, steps, onCloseConfirmModal} = props;
+  return (
+    <ModalContentWrapper sx={{ p: 3 }} modalheight="auto">
+      <Box textAlign={'end'}>
+        <CloseButton onClick={onCloseConfirmModal} />
+      </Box>
+      <Stepper activeStep={activeStep} orientation="vertical">
+        {steps.map((step: any) => (
+          <Step key={step.label}>
+            <StepLabel>
+              {step.label}
+            </StepLabel>
+            <StepContent sx={{px: 2, mx: 2}}>
+              <>
+                {step.body}
+              </>
+            </StepContent>
+          </Step>
+        ))}
+      </Stepper>
+    </ModalContentWrapper>
+  );
+}
 
 interface Props {
   confirmModal: UseBooleanReturnProps;
@@ -42,6 +65,7 @@ interface Props {
   extrinsic?: SubmittableExtrinsic;
   errorMessage?: string;
   tryAgain?: { show: boolean; fn: any };
+  stepper: any;
 }
 
 const BridgeConfirmModal = (props: Props) => {
@@ -61,25 +85,15 @@ const BridgeConfirmModal = (props: Props) => {
     extrinsic,
     errorMessage,
     tryAgain,
+    stepper
   } = props;
 
-  const theme = useTheme();
+  const [txFee, setTxFee] = useState<BigNumber>(new BigNumber(0));
+  const assetInfo = useGetBridgeAssetInfo({ asset: selectedAsset, chain: selectedChainFrom });
   const { getTransactionFee, getFees } = useSpacewalkFees();
   const fees = getFees();
-
-  const assetInfo = useGetBridgeAssetInfo({ asset: selectedAsset, chain: selectedChainFrom });
-
-  const [txFee, setTxFee] = useState<BigNumber>(new BigNumber(0));
-
-  useEffect(() => {
-    if (!extrinsic) {
-      return;
-    }
-
-    getTransactionFee(extrinsic).then((fee: BigNumber) => {
-      setTxFee(nativePendulumToDecimal(fee));
-    });
-  }, [extrinsic, getTransactionFee, setTxFee]);
+  const theme = useTheme();
+  const {activeStep, setActiveStep, handleNext, handleBack} = stepper;
 
   const bridgeFee = useMemo(() => {
     return nativeStellarToDecimal(
@@ -94,146 +108,53 @@ const BridgeConfirmModal = (props: Props) => {
       new BigNumber(amount).shiftedBy(12).multipliedBy(fees.issueGriefingCollateral),
     );
   }, [amount, fees]);
+  const stepsProps: IssueSteps = {
+      amount,
+      assetInfo,
+      bridgeFee,
+      errorMessage,
+      griefingCollateral,
+      isError,
+      isSuccess,
+      selectedAsset,
+      selectedChainFrom,
+      selectedChainTo,
+      theme,
+      txFee,
+      tryAgain,
+      txHash,
+      onClickConfirmButton,
+      onCloseConfirmModal,
+      setActiveStep
+  }
+
+  const steps = issueSteps(stepsProps)
+
+  useEffect(() => {
+    if (!extrinsic) {
+      return;
+    }
+    getTransactionFee(extrinsic).then((fee: BigNumber) => {
+      setTxFee(nativePendulumToDecimal(fee));
+    });
+  }, [extrinsic, getTransactionFee, setTxFee]);
+  
+  useEffect(() => {
+    if (isSuccess) {
+      setActiveStep(steps.length - 1);
+    }
+  }, [isSuccess, setActiveStep]);
+
+  useEffect(() => {
+    if (isError) {
+      setActiveStep(steps.length - 1);
+    }
+  }, [isError, setActiveStep]);
 
   return (
     <Modal open={confirmModal.value} onClose={onCloseConfirmModal}>
-      <div>
-        {showPendingModal ? (
-          <ModalContentWrapper sx={{ p: 3 }} modalheight="350px">
-            <div>
-              <RowBetween>
-                <div />
-                <CloseButton onClick={onCloseConfirmModal} />
-              </RowBetween>
-
-              <Box textAlign="center">
-                {isSuccess ? (
-                  <AnimatedEntranceConfirmationIcon />
-                ) : isError ? (
-                  <AlertTriangle strokeWidth={1} color={theme.palette.error.main} size="56px" />
-                ) : (
-                  <ConfirmedIcon>
-                    <LoadingIndicatorOverlay />
-                  </ConfirmedIcon>
-                )}
-              </Box>
-
-              <AutoColumn gap="12px" sx={{ mt: 2 }} justify="center">
-                <SubHeaderLarge color="textPrimary" textAlign="center">
-                  {isSuccess
-                    ? 'Transaction completed'
-                    : isError
-                    ? 'Transaction failed'
-                    : 'Waiting for confirmation'}
-                </SubHeaderLarge>
-
-                <Box textAlign="center">
-                  <Box display="flex" gap={1}>
-                    <div> {amount}</div>
-                    <BridgeAssetItem
-                      asset={selectedAsset}
-                      chain={selectedChainFrom}
-                      flexDirection="row-reverse"
-                    />
-                    <div>to {amount} </div>
-                    <BridgeAssetItem
-                      asset={selectedAsset}
-                      chain={selectedChainTo}
-                      flexDirection="row-reverse"
-                    />
-                  </Box>
-                  <Typography variant="body2">
-                    From {selectedChainFrom} to {selectedChainTo}
-                  </Typography>
-                </Box>
-
-                {isSuccess ? null : isError && errorMessage ? (
-                  <Box>
-                    <SubHeaderSmall color="textSecondary" textAlign="center" marginBottom="12px">
-                      {errorMessage}
-                    </SubHeaderSmall>
-                    {tryAgain && tryAgain.show ? (
-                      <ButtonPrimary onClick={tryAgain.fn}>Try again</ButtonPrimary>
-                    ) : null}
-                  </Box>
-                ) : (
-                  <SubHeaderSmall color="textSecondary" textAlign="center" marginBottom="12px">
-                    Confirm this transaction in your wallet
-                  </SubHeaderSmall>
-                )}
-
-                {txHash && (
-                  <Box>
-                    <CopyTxHash txHash={txHash} />
-                  </Box>
-                )}
-              </AutoColumn>
-            </div>
-          </ModalContentWrapper>
-        ) : (
-          <ModalContentWrapper sx={{ p: 3 }} modalheight="450px">
-            <RowBetween>
-              <SubHeader>Confirm Bridge</SubHeader>
-              <CloseButton onClick={onCloseConfirmModal} />
-            </RowBetween>
-
-            <Box mt={3}>
-              <Typography variant="h6">From {selectedChainFrom}</Typography>
-
-              <Box display="flex" gap={1}>
-                <div> {amount}</div>
-                <BridgeAssetItem
-                  asset={selectedAsset}
-                  chain={selectedChainFrom}
-                  flexDirection="row-reverse"
-                />
-              </Box>
-            </Box>
-
-            <Box mt={3}>
-              <Typography variant="h6">To {selectedChainTo}</Typography>
-
-              <Box display="flex" gap={1}>
-                <div> {amount}</div>
-                <BridgeAssetItem
-                  asset={selectedAsset}
-                  chain={selectedChainTo}
-                  flexDirection="row-reverse"
-                />
-              </Box>
-            </Box>
-
-            <Box mt={3} pt={3} borderTop={(theme) => `1px solid ${theme.palette.divider}`}>
-              <Box display="flex" justifyContent="space-between" gap={1}>
-                <MouseoverTooltip
-                  title="Currently zero fee, transitioning to 0.1% per transaction soon."
-                  placement="top"
-                >
-                  <Box display="flex" alignItems="center" gap={1}>
-                    <Info size={14} color={theme.palette.text.secondary} />
-                    <Label>Bridge fee:</Label>
-                  </Box>
-                </MouseoverTooltip>
-
-                <DetailRowValue>
-                  {bridgeFee.toString()} {assetInfo.code}
-                </DetailRowValue>
-              </Box>
-              <Box display="flex" justifyContent="space-between" gap={1}>
-                <Label>Security deposit:</Label>
-                <DetailRowValue>{griefingCollateral.toString()} PEN</DetailRowValue>
-              </Box>
-              <Box display="flex" justifyContent="space-between" gap={1}>
-                <Label>Transaction fee:</Label>
-                <DetailRowValue>{txFee.toFixed(12)} PEN</DetailRowValue>
-              </Box>
-            </Box>
-
-            <ButtonPrimary sx={{ mt: 3 }} onClick={onClickConfirmButton}>
-              <ButtonText>Confirm</ButtonText>
-            </ButtonPrimary>
-          </ModalContentWrapper>
-        )}
+      <div>    
+        <BridgeStepper steps={steps} activeStep={activeStep} onCloseConfirmModal={onCloseConfirmModal}/>
       </div>
     </Modal>
   );
