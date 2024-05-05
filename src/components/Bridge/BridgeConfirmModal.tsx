@@ -1,53 +1,258 @@
-import { Box, Button, Modal, Typography, useTheme } from '@mui/material';
+import { Box, Modal, useTheme, Typography, StepIcon } from '@mui/material';
 import { SubmittableExtrinsic } from '@polkadot/api/promise/types';
+import { useEffect, useMemo, useState } from 'react';
+import { AlertTriangle, Info } from 'react-feather';
 import BigNumber from 'bignumber.js';
+import { Asset } from 'stellar-sdk';
 
 import { nativePendulumToDecimal, nativeStellarToDecimal } from 'helpers/bridge/pendulum/spacewalk';
 import { useGetBridgeAssetInfo } from 'hooks/bridge/pendulum/useGetBridgeAssetInfo';
 import { useSpacewalkFees } from 'hooks/bridge/pendulum/useSpacewalkFees';
 import { UseBooleanReturnProps } from 'hooks/useBoolean';
-import { useEffect, useMemo, useState } from 'react';
 
-import { Asset } from 'stellar-sdk';
-
+import { Stepper, Step, StepLabel, StepContent } from '@mui/material';
+import { CloseButton } from 'components/Buttons/CloseButton';
+import { MouseoverTooltip } from 'components/Tooltip';
+import { Label } from 'components/Liquidity/Add/AddModalHeader';
+import { DetailRowValue } from 'components/Liquidity/Add/AddModalFooter';
+import { ButtonText, SubHeaderLarge, SubHeaderSmall } from 'components/Text';
+import { ButtonPrimary } from 'components/Buttons/Button';
+import { AutoColumn } from 'components/Column';
+import { ConfirmedIcon } from 'components/TransactionConfirmationModal/ModalStyles';
+import CopyTxHash from 'components/CopyTxHash/CopyTxHash';
 import { BridgeChains } from './BridgeComponent';
 import { ModalContentWrapper } from './BridgeSelector';
-
-import {Stepper, Step, StepLabel, StepContent} from '@mui/material';
-
-import { IssueStepsProps, issueSteps } from './IssueSteps';
-
-import { CloseButton } from 'components/Buttons/CloseButton';
-
-import { IssueStepKeys, IssueStepsByKeys, RedeemStepsByKeys } from './IssueSteps';
-
+import BridgeAssetItem from './BridgeAssetItem';
+import {
+  AnimatedEntranceConfirmationIcon,
+  LoadingIndicatorOverlay,
+} from 'components/Swap/PendingModalContent/Logos';
+import { 
+  IssueStepsByKeys,
+  RedeemStepsByKeys,
+  StepsProps,
+  StepType,
+  allSteps,
+  StepKeys
+} from './BridgeSteps';
 interface BridgeStepperProps {
   steps: any;
   activeStep: number;
-  onCloseConfirmModal: () => void;
+  stepsData: StepsProps;
 }
-export function BridgeStepper(props: BridgeStepperProps) {
-  const {activeStep, steps, onCloseConfirmModal} = props;
+
+const BridgeStepper = (props: BridgeStepperProps) => {
+  const {activeStep, steps, stepsData} = props;
   return (
-    <ModalContentWrapper sx={{ p: 3 }} modalheight="auto">
+    <>
       <Box textAlign={'end'}>
-        <CloseButton onClick={onCloseConfirmModal} />
+        <CloseButton onClick={stepsData.onCloseConfirmModal} />
       </Box>
       <Stepper activeStep={activeStep} orientation="vertical">
-        {steps.map((step: any) => (
+        {steps?.map((step: any) => {
+          const labelProps: {
+            optional?: React.ReactNode;
+            error?: boolean;
+          } = {};
+          if (
+              stepsData.isError && step.key === StepKeys.RESULT ||
+              stepsData.isError && (stepsData.selectedChainFrom === 'Stellar' && step.key === StepKeys.SIGN_TX) ||
+              stepsData.isError && (stepsData.selectedChainFrom === 'Pendulum' && step.key === StepKeys.SIGN_RQ)
+            ) {
+            labelProps.optional = (
+              <Typography variant="caption" color="error">
+                Alert message
+              </Typography>
+            );
+            labelProps.error = true;
+          }
+          return(
           <Step key={step.key}>
-            <StepLabel>
+            <StepLabel  {...labelProps}>
               {step.label}
             </StepLabel>
             <StepContent>
               <Box sx={{pr:4}}>
-                {step.body}
+                { 
+                  (stepsData && step.key === StepKeys.REVIEW) && (
+                    <>
+                      <Box mt={3}>
+                        <Typography variant="h6">From {stepsData.selectedChainFrom}</Typography>
+              
+                        <Box display="flex" gap={1}>
+                          <div> {stepsData.amount}</div>
+                          <BridgeAssetItem
+                            asset={stepsData.selectedAsset}
+                            chain={stepsData.selectedChainFrom}
+                            flexDirection="row-reverse"
+                          />
+                        </Box>
+                      </Box>
+              
+                      <Box mt={3}>
+                        <Typography variant="h6">To {stepsData.selectedChainTo}</Typography>
+              
+                        <Box display="flex" gap={1}>
+                          <div> {stepsData.amount}</div>
+                          <BridgeAssetItem
+                            asset={stepsData.selectedAsset}
+                            chain={stepsData.selectedChainTo}
+                            flexDirection="row-reverse"
+                          />
+                        </Box>
+                      </Box>
+              
+                      <Box mt={3} pt={3} borderTop={(theme) => `1px solid ${theme.palette.divider}`}>
+                        <Box display="flex" justifyContent="space-between" gap={1}>
+                          <MouseoverTooltip
+                            title="Currently zero fee, transitioning to 0.1% per transaction soon."
+                            placement="top"
+                          >
+                            <Box display="flex" alignItems="center" gap={1}>
+                              <Info size={14} color={stepsData.theme.palette.text.secondary} />
+                              <Label>Bridge fee:</Label>
+                            </Box>
+                          </MouseoverTooltip>
+              
+                          <DetailRowValue>
+                            {stepsData.bridgeFee.toString()} {stepsData.assetInfo.code}
+                          </DetailRowValue>
+                        </Box>
+                        <Box display="flex" justifyContent="space-between" gap={1}>
+                          <Label>Security deposit:</Label>
+                          <DetailRowValue>{stepsData.griefingCollateral.toString()} PEN</DetailRowValue>
+                        </Box>
+                        <Box display="flex" justifyContent="space-between" gap={1}>
+                          <Label>Transaction fee:</Label>
+                          <DetailRowValue>{Number(stepsData.txFee).toFixed(12)} PEN</DetailRowValue>
+                        </Box>
+                      </Box>
+              
+                      <ButtonPrimary sx={{ mt: 3 }} onClick={stepsData.onClickConfirmButton}>
+                        <ButtonText>Confirm</ButtonText>
+                      </ButtonPrimary>
+                    </>
+                  )
+                }
+                { stepsData && step.key === StepKeys.SIGN_RQ && (
+                    <Box sx={{pt:4}}>
+                      <ConfirmedIcon>
+                        <LoadingIndicatorOverlay />
+                      </ConfirmedIcon>
+                      <AutoColumn gap="12px" sx={{ mt: 4 }} justify="center">
+                        <SubHeaderLarge color="textPrimary" textAlign="center">
+                          Waiting for confirmation
+                        </SubHeaderLarge>
+                        <Box textAlign="center">
+                          <Typography color="textSecondary"> Request {stepsData.selectedChainFrom == 'Stellar' ? 'Issue ' : 'Reedem '}</Typography>
+                          <Box display="flex" gap={1}>
+                            <div>{stepsData.amount}</div>
+                            <BridgeAssetItem
+                              asset={stepsData.selectedAsset}
+                              chain={stepsData.selectedChainFrom}
+                              flexDirection="row-reverse"
+                            />
+                            <div>to {stepsData.amount}</div>
+                            <BridgeAssetItem
+                              asset={stepsData.selectedAsset}
+                              chain={stepsData.selectedChainTo}
+                              flexDirection="row-reverse"
+                            />
+
+                          </Box>
+                          <Typography color="textSecondary">
+                            from {stepsData.selectedChainFrom} to {stepsData.selectedChainTo}
+                          </Typography>
+                        </Box>
+                        <SubHeaderSmall color="textSecondary" textAlign="center" marginBottom="12px">
+                          Confirm this transaction in your Pendulum wallet and await for chain confirmation.
+                        </SubHeaderSmall>
+                      </AutoColumn>
+                    </Box>
+                  )
+                }
+                {
+                  stepsData && step.key === StepKeys.SIGN_TX && (
+                    <Box sx={{mt: 4}}>
+                      <ConfirmedIcon>
+                        <LoadingIndicatorOverlay />
+                      </ConfirmedIcon>
+                      <AutoColumn gap="12px" sx={{ mt: 2 }} justify="center">
+                        <SubHeaderLarge color="textPrimary" textAlign="center">
+                          Waiting for {stepsData.selectedChainFrom} confirmation
+                        </SubHeaderLarge>
+                        <Box textAlign="center">
+                        <Typography variant="body2" color="textSecondary" marginBottom="12px">
+                            Review and confirm this transaction in your Stellar wallet and await for chain confirmation.
+                          </Typography>
+                        </Box>
+                      </AutoColumn>
+                    </Box>
+                  )
+                }
+                {
+                  stepsData && step.key === StepKeys.RESULT && (
+                    <Box>
+                      <Box textAlign={'center'} sx={{my:2}}>
+                        {stepsData.isSuccess ? (
+                          <AnimatedEntranceConfirmationIcon />
+                        ) : (stepsData.isError && stepsData.errorMessage) && (
+                          <AlertTriangle strokeWidth={2} color={stepsData.theme.palette.error.main} size="56px" />
+                        )}
+                      </Box>
+                      <SubHeaderLarge color="textPrimary" textAlign="center">
+                        {stepsData.isSuccess ? 'Transaction completed': stepsData.isError && 'Transaction failed'}
+                      </SubHeaderLarge>
+                      <AutoColumn gap="16px" sx={{ mt: 2, mb: 2 }} justify="center">
+                        <Box textAlign="center">
+                          <Typography color="textSecondary">
+                            {stepsData.isSuccess ? 'Successfully' : 'We were unable to'}
+                            {stepsData.selectedChainFrom == 'Stellar' ? ' issue ' : ' redeem '}
+                          </Typography>
+                          <Box display="flex" gap={1}>
+                            <div> {stepsData.amount}</div>
+                            <BridgeAssetItem
+                              asset={stepsData.selectedAsset}
+                              chain={stepsData.selectedChainFrom}
+                              flexDirection="row-reverse"
+                            />
+                            <div>to {stepsData.amount} </div>
+                            <BridgeAssetItem
+                              asset={stepsData.selectedAsset}
+                              chain={stepsData.selectedChainTo}
+                              flexDirection="row-reverse"
+                            />
+                          </Box>
+                          <Typography color="textSecondary">
+                            from {stepsData.selectedChainFrom} to {stepsData.selectedChainTo}.
+                          </Typography>
+                        </Box>
+                  
+                        {(stepsData.isError && stepsData.errorMessage) && (
+                          <Box>
+                            <SubHeaderSmall color="textSecondary" textAlign="center" marginBottom="12px">
+                              {stepsData.errorMessage}
+                            </SubHeaderSmall>
+                            {stepsData.tryAgain && stepsData.tryAgain.show ? (
+                              <ButtonPrimary onClick={stepsData.tryAgain.fn}>Try again</ButtonPrimary>
+                            ) : null}
+                          </Box>
+                        )}
+                        {stepsData.txHash && (
+                          <Box>
+                            <CopyTxHash txHash={stepsData.txHash} />
+                          </Box>
+                        )}
+                      </AutoColumn>
+                    </Box>
+                  )
+                }
               </Box>
             </StepContent>
           </Step>
-        ))}
+        )})}
       </Stepper>
-    </ModalContentWrapper>
+    </>
   );
 }
 
@@ -110,7 +315,8 @@ const BridgeConfirmModal = (props: Props) => {
       new BigNumber(amount).shiftedBy(12).multipliedBy(fees.issueGriefingCollateral),
     );
   }, [amount, fees]);
-  const stepsProps: IssueStepsProps = {
+  
+  const stepsProps: StepsProps = {
       amount,
       assetInfo,
       bridgeFee,
@@ -125,22 +331,27 @@ const BridgeConfirmModal = (props: Props) => {
       txFee,
       tryAgain,
       txHash,
+      isPending,
       onClickConfirmButton,
       onCloseConfirmModal,
-      setActiveStep
-  }
+      setActiveStep 
+    };
 
-  const allSteps = issueSteps(stepsProps);
+  const [steps, setSteps] = useState<StepType[] | null>(null);
 
-  const [steps, setSteps] = useState(allSteps);
-  const redeemSteps = useMemo(() => {
+  const redeemSteps: StepType[] = useMemo(() => {
     const redeemStepKeys = Object.keys(RedeemStepsByKeys);
     return allSteps.filter((step: any) => redeemStepKeys.includes(step.key));
   }, [allSteps]);
 
+  const issueSteps: StepType[] = useMemo(() => {
+    const StepKeys = Object.keys(IssueStepsByKeys);
+    return allSteps.filter((step: any) => StepKeys.includes(step.key));
+  } , [allSteps]);
+
   useEffect(() => {
     if(selectedChainFrom === 'Stellar') {
-      setSteps(issueSteps(stepsProps));
+      setSteps(issueSteps);
     } else if (selectedChainFrom === 'Pendulum') {
       setSteps(redeemSteps);
     }
@@ -157,21 +368,21 @@ const BridgeConfirmModal = (props: Props) => {
   
   useEffect(() => {
     if (isSuccess) {
-      setActiveStep(steps.length - 1);
+      setActiveStep(steps && steps.length - 1);
     }
   }, [isSuccess]);
 
   useEffect(() => {
     if (isError) {
-      setActiveStep(steps.length - 1);
+      setActiveStep(steps && steps.length - 1);
     }
   }, [isError]);
 
   return (
     <Modal open={confirmModal.value} onClose={onCloseConfirmModal}>
-      <>
-        <BridgeStepper steps={steps} activeStep={activeStep} onCloseConfirmModal={onCloseConfirmModal}/>
-      </>
+      <ModalContentWrapper sx={{ p: 3 }} modalheight="auto">
+        <BridgeStepper steps={steps} stepsData={stepsProps} activeStep={activeStep} />
+      </ModalContentWrapper>
     </Modal>
   );
 };

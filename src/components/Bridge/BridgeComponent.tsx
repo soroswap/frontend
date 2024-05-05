@@ -32,7 +32,7 @@ import PolkadotCurrencyBalance from './PolkadotCurrencyBalance';
 
 
 import { useModalStepper } from 'hooks/bridge/pendulum/useModalStepper';
-import { IssueStepKeys, IssueStepsByKeys } from 'components/Bridge/IssueSteps';
+import { StepKeys, IssueStepsByKeys } from 'components/Bridge/BridgeSteps';
 
 export enum BridgeChains {
   PENDULUM = 'Pendulum',
@@ -98,7 +98,7 @@ const BridgeComponent = () => {
     } else {
       issue.handler();
     }
-    stepper.setActiveStep(IssueStepsByKeys[IssueStepKeys.SIGN_RQ]);
+    stepper.setActiveStep(IssueStepsByKeys[StepKeys.SIGN_RQ]);
   };
 
   const hasInsufficientLiquidity = () => {
@@ -222,6 +222,10 @@ const BridgeComponent = () => {
     if (selectedChainFrom === BridgeChains.STELLAR && selectedChainTo !== BridgeChains.PENDULUM) {
       setSelectedChainTo(BridgeChains.PENDULUM);
     }
+    
+  }, [selectedChainFrom]);
+
+  useEffect(() => {
 
     if (selectedChainTo === BridgeChains.PENDULUM && selectedChainFrom !== BridgeChains.STELLAR) {
       setSelectedChainFrom(BridgeChains.STELLAR);
@@ -230,7 +234,7 @@ const BridgeComponent = () => {
     if (selectedChainTo === BridgeChains.STELLAR && selectedChainFrom !== BridgeChains.PENDULUM) {
       setSelectedChainFrom(BridgeChains.PENDULUM);
     }
-  }, [selectedChainFrom, selectedChainTo]);
+  }, [selectedChainTo]);
 
   return (
     <>

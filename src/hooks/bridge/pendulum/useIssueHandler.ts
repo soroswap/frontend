@@ -13,7 +13,7 @@ import { useCallback, useMemo, useState } from 'react';
 import { Asset, BASE_FEE, Memo, Operation, TransactionBuilder } from 'stellar-sdk';
 import { VaultId } from './useSpacewalkVaults';
 import { UseStepperState } from './useModalStepper';
-import { IssueStepKeys, IssueStepsByKeys  } from 'components/Bridge/IssueSteps';
+import { StepKeys, IssueStepsByKeys  } from 'components/Bridge/BridgeSteps';
 interface Props {
   amount: string;
   selectedAsset: Asset | undefined;
@@ -162,7 +162,7 @@ const useIssueHandler = ({ amount, selectedAsset, selectedVault, stepper }: Prop
 
             getIssueRequest(issueId).then(async (issueRequest) => {
               try {
-                stepper.setActiveStep(IssueStepsByKeys[IssueStepKeys.SIGN_TX]);
+                stepper.setActiveStep(IssueStepsByKeys[StepKeys.SIGN_TX]);
                 await createStellarPayment(stellarVaultAddress.publicKey(), memo);
               } catch (error) {
                 console.error('Error submitting transaction:', error);
@@ -174,7 +174,7 @@ const useIssueHandler = ({ amount, selectedAsset, selectedVault, stepper }: Prop
                       setIsLoading(true);
                       setTxError(false);
                       setErrorMessage(undefined);
-                      stepper.setActiveStep(IssueStepsByKeys[IssueStepKeys.SIGN_TX]);
+                      stepper.setActiveStep(IssueStepsByKeys[StepKeys.SIGN_TX]);
                       await createStellarPayment(stellarVaultAddress.publicKey(), memo);
                     } catch (error) {
                       setErrorMessage(msg);
@@ -190,7 +190,7 @@ const useIssueHandler = ({ amount, selectedAsset, selectedVault, stepper }: Prop
 
           if (errors.length === 0) {
             console.log('Confirmed!');
-            stepper.setActiveStep(IssueStepsByKeys[IssueStepKeys.SIGN_TX]);
+            stepper.setActiveStep(IssueStepsByKeys[StepKeys.SIGN_TX]);
             // setConfirmationDialogVisible(true);
           } else {
             const errMessage = `Transaction failed with errors: ${errors.join('\n')}`;
