@@ -45,10 +45,17 @@ export function useRedeemPallet() {
         if (!api) {
           return undefined;
         }
-
+        if(amount.length >= 40) {
+          console.error('Amount too long')
+          return undefined;
+        }
         const publicKeyRaw = convertPublicKeyToRaw(stellarAddress);
-
-        return api.tx.redeem?.requestRedeem(amount, publicKeyRaw, vaultId);
+        try {
+          return api.tx.redeem?.requestRedeem(amount, publicKeyRaw, vaultId);
+        } catch(err) {
+          console.log('Error:', err)
+          return undefined;
+        }
       },
     };
   }, [api]);
