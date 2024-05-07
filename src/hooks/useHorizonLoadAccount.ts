@@ -9,14 +9,14 @@ const useHorizonLoadAccount = () => {
 
   const isFunded = nativeBalance.data?.validAccount;
 
-  const { data, isLoading, error } = useSWRImmutable(
+  const { data, isLoading, error, mutate } = useSWRImmutable(
     sorobanContext.address && isFunded
       ? ['horizon-account', sorobanContext.address, sorobanContext]
       : null,
     ([_, address]) => sorobanContext.serverHorizon?.loadAccount(address),
   );
 
-  return { account: data, isLoading, error };
+  return { account: data, isLoading, error, refetchAccount: mutate};
 };
 
 export default useHorizonLoadAccount;

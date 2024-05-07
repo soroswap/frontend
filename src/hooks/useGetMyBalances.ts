@@ -45,7 +45,7 @@ const useGetMyBalances = () => {
   const { tokens, isLoading: isLoadingTokens } = useAllTokens();
   const { subentryCount, nativeBalance, isLoading: isSubentryLoading } = useGetSubentryCount();
 
-  const { account } = useHorizonLoadAccount();
+  const { account, refetchAccount } = useHorizonLoadAccount();
 
   const { data, isLoading, mutate, error } = useSWRImmutable(
     address && account && tokens.length > 0
@@ -54,6 +54,12 @@ const useGetMyBalances = () => {
     ([key, address, tokens, sorobanContext, account]) =>
       fetchBalances({ address, tokens, sorobanContext, account }),
   );
+  const refreshBalances = useCallback(() => {
+    if (address && account && tokens.length > 0) {
+      refetchAccount();
+      mutate();
+    }
+  }, [address, account, tokens, mutate]);
 
   const availableNativeBalance = useCallback(
     (networkFees?: string | number | BigNumber | null) =>
@@ -72,7 +78,7 @@ const useGetMyBalances = () => {
     availableNativeBalance,
     isError: error,
     isLoading: isLoading || isLoadingTokens || isSubentryLoading,
-    refetch: mutate,
+    refetch: refreshBalances,
   };
 };
 
