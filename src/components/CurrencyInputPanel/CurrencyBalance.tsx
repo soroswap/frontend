@@ -47,7 +47,11 @@ export default function CurrencyBalance({
   networkFees,
   isLoadingNetworkFees,
 }: CurrencyBalanceProps) {
-  const { tokenBalancesResponse, availableNativeBalance, isLoading: isLoadingMyBalances } = useGetMyBalances();
+  const {
+    tokenBalancesResponse,
+    availableNativeBalance,
+    isLoading: isLoadingMyBalances,
+  } = useGetMyBalances();
   const { activeChain } = useSorobanReact();
 
   const xlmTokenContract = useMemo(() => {
@@ -55,12 +59,13 @@ export default function CurrencyBalance({
   }, [activeChain]);
 
   const isXLM = contract === xlmTokenContract;
-  const balance = tokenBalancesResponse?.balances?.find((b) => b?.contract === contract)?.balance || '0';
-  
-  let availableBalance = balance
-  
+  const balance =
+    tokenBalancesResponse?.balances?.find((b) => b?.contract === contract)?.balance || '0';
+
+  let availableBalance = balance;
+
   if (isXLM) {
-    availableBalance = availableNativeBalance(networkFees)
+    availableBalance = availableNativeBalance(networkFees);
   }
 
   const theme = useTheme();
@@ -90,12 +95,12 @@ export default function CurrencyBalance({
             }
           >
             <BodySmall color={theme.palette.secondary.main}>
-              {!hideBalance && contract ? `Available balance: ${availableBalance}` : null}
+              {!hideBalance && contract ? `Available balance: ${Number(availableBalance)}` : null}
             </BodySmall>
           </MouseoverTooltip>
         ) : (
           <BodySmall color={theme.palette.secondary.main}>
-            {!hideBalance && contract ? `Balance: ${availableBalance}` : null}
+            {!hideBalance && contract ? `Balance: ${Number(availableBalance)}` : null}
           </BodySmall>
         )}
 

@@ -129,13 +129,13 @@ const BridgeConfirmModal = (props: Props) => {
 
                 <Box textAlign="center">
                   <Box display="flex" gap={1}>
-                    <div> {amount}</div>
+                    <div> {Number(amount)}</div>
                     <BridgeAssetItem
                       asset={selectedAsset}
                       chain={selectedChainFrom}
                       flexDirection="row-reverse"
                     />
-                    <div>to {amount} </div>
+                    <div>to {Number(amount)} </div>
                     <BridgeAssetItem
                       asset={selectedAsset}
                       chain={selectedChainTo}
