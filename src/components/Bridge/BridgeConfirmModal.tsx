@@ -287,7 +287,6 @@ const BridgeConfirmModal = (props: Props) => {
     selectedAsset,
     selectedChainFrom,
     selectedChainTo,
-    showPendingModal,
     txHash,
     extrinsic,
     errorMessage,
@@ -355,7 +354,7 @@ const BridgeConfirmModal = (props: Props) => {
     } else if (selectedChainFrom === 'Pendulum') {
       setSteps(redeemSteps);
     }
-  }, [selectedChainFrom, selectedChainTo]);
+  }, [selectedChainFrom, selectedChainTo, issueSteps, redeemSteps]);
 
   useEffect(() => {
     if (!extrinsic) {
@@ -370,13 +369,13 @@ const BridgeConfirmModal = (props: Props) => {
     if (isSuccess) {
       setActiveStep(steps && steps.length - 1);
     }
-  }, [isSuccess]);
+  }, [isSuccess, steps, setActiveStep]);
 
   useEffect(() => {
     if (isError) {
       setActiveStep(steps && steps.length - 1);
     }
-  }, [isError]);
+  }, [isError, steps, setActiveStep]);
 
   return (
     <Modal open={confirmModal.value} onClose={onCloseConfirmModal}>
