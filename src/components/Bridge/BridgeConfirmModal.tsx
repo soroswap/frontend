@@ -1,8 +1,8 @@
-import { Box, Modal, useTheme, Typography, StepIcon } from '@mui/material';
+import { Box, Modal, Typography, useTheme } from '@mui/material';
 import { SubmittableExtrinsic } from '@polkadot/api/promise/types';
+import BigNumber from 'bignumber.js';
 import { useEffect, useMemo, useState } from 'react';
 import { AlertTriangle, Info } from 'react-feather';
-import BigNumber from 'bignumber.js';
 import { Asset } from 'stellar-sdk';
 
 import { nativePendulumToDecimal, nativeStellarToDecimal } from 'helpers/bridge/pendulum/spacewalk';
@@ -10,30 +10,30 @@ import { useGetBridgeAssetInfo } from 'hooks/bridge/pendulum/useGetBridgeAssetIn
 import { useSpacewalkFees } from 'hooks/bridge/pendulum/useSpacewalkFees';
 import { UseBooleanReturnProps } from 'hooks/useBoolean';
 
-import { Stepper, Step, StepLabel, StepContent } from '@mui/material';
-import { CloseButton } from 'components/Buttons/CloseButton';
-import { MouseoverTooltip } from 'components/Tooltip';
-import { Label } from 'components/Liquidity/Add/AddModalHeader';
-import { DetailRowValue } from 'components/Liquidity/Add/AddModalFooter';
-import { ButtonText, SubHeaderLarge, SubHeaderSmall } from 'components/Text';
+import { Step, StepContent, StepLabel, Stepper } from '@mui/material';
 import { ButtonPrimary } from 'components/Buttons/Button';
+import { CloseButton } from 'components/Buttons/CloseButton';
 import { AutoColumn } from 'components/Column';
-import { ConfirmedIcon } from 'components/TransactionConfirmationModal/ModalStyles';
 import CopyTxHash from 'components/CopyTxHash/CopyTxHash';
-import { BridgeChains } from './BridgeComponent';
-import { ModalContentWrapper } from './BridgeSelector';
-import BridgeAssetItem from './BridgeAssetItem';
+import { DetailRowValue } from 'components/Liquidity/Add/AddModalFooter';
+import { Label } from 'components/Liquidity/Add/AddModalHeader';
 import {
   AnimatedEntranceConfirmationIcon,
   LoadingIndicatorOverlay,
 } from 'components/Swap/PendingModalContent/Logos';
-import { 
+import { ButtonText, SubHeaderLarge, SubHeaderSmall } from 'components/Text';
+import { MouseoverTooltip } from 'components/Tooltip';
+import { ConfirmedIcon } from 'components/TransactionConfirmationModal/ModalStyles';
+import BridgeAssetItem from './BridgeAssetItem';
+import { BridgeChains } from './BridgeComponent';
+import { ModalContentWrapper } from './BridgeSelector';
+import {
   IssueStepsByKeys,
   RedeemStepsByKeys,
-  StepsProps,
+  StepKeys,
   StepType,
-  allSteps,
-  StepKeys
+  StepsProps,
+  allSteps
 } from './BridgeSteps';
 interface BridgeStepperProps {
   steps: any;
