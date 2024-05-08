@@ -16,7 +16,7 @@ const useHorizonLoadAccount = () => {
     ([_, address]) => sorobanContext.serverHorizon?.loadAccount(address),
   );
 
-  return { account: data, isLoading, error, refetchAccount: mutate};
+  return { account: data, isLoading, error, mutate };
 };
 
 export default useHorizonLoadAccount;

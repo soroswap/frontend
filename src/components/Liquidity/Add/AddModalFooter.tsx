@@ -92,7 +92,7 @@ export default function AddModalFooter({
     const amountA = new BigNumber(formattedAmounts.CURRENCY_A);
     const amountB = new BigNumber(formattedAmounts.CURRENCY_B);
 
-    return `1 ${currencyA?.code} = ${amountB.dividedBy(amountA).toFixed(6)} ${currencyB?.code}`;
+    return `1 ${currencyA?.code} = ${amountB.dividedBy(amountA).toNumber()} ${currencyB?.code}`;
   }, [currencyA, currencyB, formattedAmounts]);
 
   return (

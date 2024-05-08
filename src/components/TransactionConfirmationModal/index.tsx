@@ -193,7 +193,7 @@ export function ConfirmationModalContent({
   const isSmallDevice = useMediaQuery('(max-height: 600px)');
   return (
     <Wrapper>
-      <CustomWrapper style={isSmallDevice ? {overflowY:'scroll'}: {overflowY:'visible'}}>
+      <CustomWrapper style={isSmallDevice ? { overflowY: 'scroll' } : { overflowY: 'visible' }}>
         <Row>
           {headerContent?.()}
           <Row justify="left">

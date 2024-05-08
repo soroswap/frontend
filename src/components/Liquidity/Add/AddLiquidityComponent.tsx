@@ -397,8 +397,8 @@ export default function AddLiquidityComponent({
 
   const pendingText = (
     <BodySmall>
-      Adding {formattedAmounts[Field.CURRENCY_A]} {baseCurrency?.code} and{' '}
-      {formattedAmounts[Field.CURRENCY_B]} {currencyB?.code}
+      Adding {Number(formattedAmounts[Field.CURRENCY_A])} {baseCurrency?.code} and{' '}
+      {Number(formattedAmounts[Field.CURRENCY_B])} {currencyB?.code}
     </BodySmall>
   );
 

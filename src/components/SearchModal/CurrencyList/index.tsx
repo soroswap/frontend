@@ -52,14 +52,14 @@ const ListWrapper = styled('div')`
 
 function Balance({ balance }: { balance: string }) {
   const formatBalance = () => {
-    if (!balance) return '0';
+    if (!balance) return 0;
 
     const [numbers, decimals] = balance.split('.');
 
     if (numbers.length > 7) return numbers;
     if (numbers.length > 1 && decimals?.length > 3) return `${numbers}.${decimals.slice(0, 3)}`;
 
-    return balance;
+    return Number(balance);
   };
 
   return <StyledBalanceText title={String(balance)}>{formatBalance()}</StyledBalanceText>;
@@ -157,6 +157,7 @@ export function CurrencyRow({
   const blockedTokenOpacity = '0.6';
 
   // only show add or remove buttons if not on selected list
+
   return (
     <MenuItem
       tabIndex={0}
