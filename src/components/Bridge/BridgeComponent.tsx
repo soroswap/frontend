@@ -57,10 +57,14 @@ const BridgeComponent = () => {
 
   const { balances: spacewalkBalances, isLoading, mutate } = useSpacewalkBalances();
 
+  const refreshSpaceWalkBalances = () => {
+    mutate();
+  }
   const {
     tokenBalancesResponse,
     availableNativeBalance,
     isLoading: isLoadingMyBalances,
+    refetch,
   } = useGetMyBalances();
 
   const stepper = useModalStepper();
@@ -90,6 +94,8 @@ const BridgeComponent = () => {
     const tempSelectedChainFrom = selectedChainFrom;
     setSelectedChainFrom(selectedChainTo);
     setSelectedChainTo(tempSelectedChainFrom);
+    refetch();
+    refreshSpaceWalkBalances();
   };
 
   const onClickConfirmButton = () => {
@@ -243,6 +249,11 @@ const BridgeComponent = () => {
     }
   }, [selectedChainTo]);
 
+  useEffect(()=>{
+    refetch();
+    refreshSpaceWalkBalances();
+  },[modalStatus.isSuccess, modalStatus.isError, modalStatus.isPending])
+
   return (
     <>
       <BridgeConfirmModal
@@ -297,8 +308,8 @@ const BridgeComponent = () => {
                 />
               ) : (
                 <PolkadotCurrencyBalance
-                  balances={spacewalkBalances ? spacewalkBalances : undefined}
-                  selectedAsset={selectedAsset ? selectedAsset : undefined}
+                  balances={spacewalkBalances ?? undefined}
+                  selectedAsset={selectedAsset ?? undefined}
                   onMax={(value) => setAmount(value)}
                   isLoading={isLoading}
                   hideBalance={!selectedAsset}

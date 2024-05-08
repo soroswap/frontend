@@ -1,4 +1,5 @@
 import { SorobanContextType, useSorobanReact } from '@soroban-react/core';
+import { AccountResponse } from '@stellar/stellar-sdk/lib/horizon';
 import BigNumber from 'bignumber.js';
 import { TokenType } from 'interfaces';
 import { useCallback } from 'react';
@@ -8,7 +9,6 @@ import { useAllTokens } from './tokens/useAllTokens';
 import { tokenBalances } from './useBalances';
 import useGetSubentryCount from './useGetSubentryCount';
 import useHorizonLoadAccount from './useHorizonLoadAccount';
-import { AccountResponse } from '@stellar/stellar-sdk/lib/horizon';
 
 interface FetchBalancesProps {
   address?: string;
