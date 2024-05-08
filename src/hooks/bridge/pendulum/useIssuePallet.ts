@@ -44,8 +44,16 @@ export function useIssuePallet() {
         if (!api) {
           return undefined;
         }
-
-        return api.tx.issue?.requestIssue(amount, vaultId);
+        if(amount.length >= 40) {
+          console.error('Amount too long')
+          return undefined;
+        }
+        try{
+          return api.tx.issue?.requestIssue(amount, vaultId);
+        } catch(err) {
+          console.log('Error:', err)
+          return undefined;
+        }
       },
     };
   }, [api]);
