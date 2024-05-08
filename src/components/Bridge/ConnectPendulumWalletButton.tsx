@@ -12,20 +12,32 @@ import { ButtonPrimary } from 'components/Buttons/Button';
 import { ButtonText } from 'components/Text';
 import { ConnectWalletStyles } from 'components/Modals/ConnectWalletModal';
 import { useSorobanReact } from '@soroban-react/core';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import ModalBox from 'components/Modals/ModalBox';
 import useBoolean from 'hooks/useBoolean';
+import { AppContext } from 'contexts';
 
 const { Title, Subtitle, ContentWrapper, WalletBox, FooterText } = ConnectWalletStyles;
 
 export function ConnectPendulumWalletButton() {
   const { address } = useSorobanReact();
 
+  const { ConnectWalletModal } = useContext(AppContext);
+  const { isConnectWalletModalOpen, setConnectWalletModalOpen } = ConnectWalletModal;
+
   const { connect } = useInkathon();
 
   const [connectingWallet, setConnectingWallet] = useState<SubstrateWallet | undefined>();
 
-  const handleConnect = async (wallet: SubstrateWallet) => {
+  const handleClickButton = () => {
+    if (!address) {
+      setConnectWalletModalOpen(true);
+    } else {
+      walletModal.setTrue();
+    }
+  };
+
+  const handleConnectPendulum = async (wallet: SubstrateWallet) => {
     if (!isWalletInstalled(wallet)) {
       window.open(wallet.urls.website, '_blank');
       return;
@@ -71,7 +83,7 @@ export function ConnectPendulumWalletButton() {
                 className="custom-scrollbar"
               >
                 {getWallets()?.map?.((wallet) => (
-                  <WalletBox key={wallet.name} onClick={() => handleConnect(wallet)}>
+                  <WalletBox key={wallet.name} onClick={() => handleConnectPendulum(wallet)}>
                     <Box display="flex" gap={1}>
                       <img src={wallet.logoUrls[0]} alt={wallet.name} width={24} height={24} />
                       <span>{wallet.name}</span>
@@ -100,9 +112,9 @@ export function ConnectPendulumWalletButton() {
         </div>
       </Modal>
       <div>
-        <ButtonPrimary onClick={walletModal.setTrue} sx={{ height: '64px' }} disabled={!address}>
+        <ButtonPrimary onClick={handleClickButton} sx={{ height: '64px' }}>
           <ButtonText fontSize={20} fontWeight={600}>
-            Connect Pendulum Wallet
+            {address ? 'Connect Pendulum Wallet' : 'Connect Stellar Wallet'}
           </ButtonText>
         </ButtonPrimary>
       </div>
