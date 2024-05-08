@@ -59,11 +59,6 @@ const useGetMyBalances = () => {
     ([key, address, tokens, sorobanContext, account]) =>
       fetchBalances({ address, tokens, sorobanContext, account }),
   );
-  const refreshBalances = useCallback(() => {
-    if (address && account && tokens.length > 0) {
-      refetchAccount();
-    }
-  }, [address, account, tokens.length, refetchAccount]);
 
   const availableNativeBalance = useCallback(
     (networkFees?: string | number | BigNumber | null) =>
