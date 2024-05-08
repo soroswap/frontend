@@ -12,14 +12,16 @@ import { useIssuePallet } from 'hooks/bridge/pendulum/useIssuePallet';
 import { useCallback, useMemo, useState } from 'react';
 import { Asset, BASE_FEE, Memo, Operation, TransactionBuilder } from 'stellar-sdk';
 import { VaultId } from './useSpacewalkVaults';
-
+import { UseStepperState } from './useModalStepper';
+import { StepKeys, IssueStepsByKeys  } from 'components/Bridge/BridgeSteps';
 interface Props {
   amount: string;
   selectedAsset: Asset | undefined;
   selectedVault: VaultId | undefined;
+  stepper: UseStepperState;
 }
 
-const useIssueHandler = ({ amount, selectedAsset, selectedVault }: Props) => {
+const useIssueHandler = ({ amount, selectedAsset, selectedVault, stepper }: Props) => {
   const { address, serverHorizon, activeChain, activeConnector } = useSorobanReact();
 
   const { activeAccount, activeSigner, api } = useInkathon();
@@ -33,6 +35,7 @@ const useIssueHandler = ({ amount, selectedAsset, selectedVault }: Props) => {
   const [errorMessage, setErrorMessage] = useState<string | undefined>();
   const [tryAgain, setTryAgain] = useState<{ show: boolean; fn: any }>({ show: false, fn: null });
 
+  const txType = 'ISSUE';
   const amountRaw = useMemo(() => {
     return Number(amount) ? decimalToStellarNative(amount).toString() : new BigNumber(0).toString();
   }, [amount]);
@@ -135,7 +138,6 @@ const useIssueHandler = ({ amount, selectedAsset, selectedVault }: Props) => {
     requestIssueExtrinsic
       .signAndSend(activeAccount.address, { signer: activeSigner }, (result) => {
         const { status, events } = result;
-
         const errors = getSubstrateErrors(events, api);
         if (status.isInBlock) {
           if (errors.length > 0) {
@@ -160,6 +162,7 @@ const useIssueHandler = ({ amount, selectedAsset, selectedVault }: Props) => {
 
             getIssueRequest(issueId).then(async (issueRequest) => {
               try {
+                stepper.setActiveStep(IssueStepsByKeys[StepKeys.SIGN_TX]);
                 await createStellarPayment(stellarVaultAddress.publicKey(), memo);
               } catch (error) {
                 console.error('Error submitting transaction:', error);
@@ -171,6 +174,7 @@ const useIssueHandler = ({ amount, selectedAsset, selectedVault }: Props) => {
                       setIsLoading(true);
                       setTxError(false);
                       setErrorMessage(undefined);
+                      stepper.setActiveStep(IssueStepsByKeys[StepKeys.SIGN_TX]);
                       await createStellarPayment(stellarVaultAddress.publicKey(), memo);
                     } catch (error) {
                       setErrorMessage(msg);
@@ -186,6 +190,7 @@ const useIssueHandler = ({ amount, selectedAsset, selectedVault }: Props) => {
 
           if (errors.length === 0) {
             console.log('Confirmed!');
+            stepper.setActiveStep(IssueStepsByKeys[StepKeys.SIGN_TX]);
             // setConfirmationDialogVisible(true);
           } else {
             const errMessage = `Transaction failed with errors: ${errors.join('\n')}`;
@@ -233,6 +238,7 @@ const useIssueHandler = ({ amount, selectedAsset, selectedVault }: Props) => {
     resetStates,
     errorMessage,
     tryAgain,
+    txType
   };
 };
 

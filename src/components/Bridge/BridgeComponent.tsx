@@ -1,4 +1,4 @@
-import { Box } from '@mui/material';
+import { Box, Button } from '@mui/material';
 import { useInkathon } from '@scio-labs/use-inkathon';
 import { useSorobanReact } from '@soroban-react/core';
 import BigNumber from 'bignumber.js';
@@ -30,6 +30,10 @@ import PendulumChainIcon from './ChainIcons/PendulumChainIcon';
 import StellarChainIcon from './ChainIcons/StellarChainIcon';
 import PolkadotCurrencyBalance from './PolkadotCurrencyBalance';
 
+
+import { useModalStepper } from 'hooks/bridge/pendulum/useModalStepper';
+import { StepKeys, IssueStepsByKeys } from 'components/Bridge/BridgeSteps';
+
 export enum BridgeChains {
   PENDULUM = 'Pendulum',
   STELLAR = 'Stellar',
@@ -59,6 +63,8 @@ const BridgeComponent = () => {
     isLoading: isLoadingMyBalances,
   } = useGetMyBalances();
 
+  const stepper = useModalStepper();
+
   const [selectedChainFrom, setSelectedChainFrom] = useState<BridgeChains | null>(null);
   const [selectedChainTo, setSelectedChainTo] = useState<BridgeChains | null>(null);
 
@@ -71,6 +77,7 @@ const BridgeComponent = () => {
     amount,
     selectedAsset,
     selectedVault,
+    stepper,
   });
 
   const redeem = useRedeemHandler({
@@ -91,6 +98,7 @@ const BridgeComponent = () => {
     } else {
       issue.handler();
     }
+    stepper.setActiveStep(IssueStepsByKeys[StepKeys.SIGN_RQ]);
   };
 
   const hasInsufficientLiquidity = () => {
@@ -144,6 +152,7 @@ const BridgeComponent = () => {
     confirmModal.setFalse();
     issue.resetStates();
     redeem.resetStates();
+    stepper.handleReset();
   };
 
   const getModalStatus = () => {
@@ -151,7 +160,6 @@ const BridgeComponent = () => {
     const isSuccess = issue.txSuccess || redeem.txSuccess;
     const isError = issue.txError || redeem.txError;
     const txHash = issue.txHash || redeem.txHash;
-
     const showPendingModal = isPending || isSuccess || isError;
 
     return { isPending, isSuccess, isError, txHash, showPendingModal };
@@ -221,6 +229,10 @@ const BridgeComponent = () => {
     if (selectedChainFrom === BridgeChains.STELLAR && selectedChainTo !== BridgeChains.PENDULUM) {
       setSelectedChainTo(BridgeChains.PENDULUM);
     }
+    
+  }, [selectedChainFrom]);
+
+  useEffect(() => {
 
     if (selectedChainTo === BridgeChains.PENDULUM && selectedChainFrom !== BridgeChains.STELLAR) {
       setSelectedChainFrom(BridgeChains.STELLAR);
@@ -229,7 +241,7 @@ const BridgeComponent = () => {
     if (selectedChainTo === BridgeChains.STELLAR && selectedChainFrom !== BridgeChains.PENDULUM) {
       setSelectedChainFrom(BridgeChains.PENDULUM);
     }
-  }, [selectedChainFrom, selectedChainTo]);
+  }, [selectedChainTo]);
 
   return (
     <>
@@ -249,6 +261,7 @@ const BridgeComponent = () => {
         errorMessage={issue.errorMessage || redeem.errorMessage}
         extrinsic={issue.extrinsic ?? redeem.extrinsic}
         tryAgain={issue.tryAgain}
+        stepper={stepper}
       />
 
       <SwapWrapper>
