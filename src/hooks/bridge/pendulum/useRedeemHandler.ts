@@ -24,6 +24,7 @@ const useRedeemHandler = ({ amount, selectedAsset, selectedVault }: Props) => {
   const [txError, setTxError] = useState(false);
   const [txHash, setTxHash] = useState<string | undefined>();
   const [errorMessage, setErrorMessage] = useState<string | undefined>();
+  const txType = 'REDEEM';
 
   const amountRaw = useMemo(() => {
     return Number(amount) ? decimalToStellarNative(amount).toString() : new BigNumber(0).toString();
@@ -126,6 +127,7 @@ const useRedeemHandler = ({ amount, selectedAsset, selectedVault }: Props) => {
     setTxHash,
     resetStates,
     errorMessage,
+    txType
   };
 };
 

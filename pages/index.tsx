@@ -8,7 +8,7 @@ import { SwapState } from 'state/swap/reducer';
 import SEO from '../src/components/SEO';
 
 const TAG_ID = process.env.NEXT_PUBLIC_TAG_ID;
-if (TAG_ID && TAG_ID != ''){
+if (TAG_ID && TAG_ID != '') {
   ReactGA.initialize(TAG_ID);
 }
 
@@ -34,7 +34,7 @@ export default function Home() {
 
   return (
     <>
-      <SEO title="Soroswap" description="Soroswap Index" data-testid="SEO" />
+      <SEO title="Soroswap" data-testid="SEO" />
       {xlmToken && <SwapComponent prefilledState={prefilledState} />}
     </>
   );
