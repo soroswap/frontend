@@ -295,8 +295,8 @@ const BridgeComponent = () => {
                 />
               ) : (
                 <PolkadotCurrencyBalance
-                  balances={spacewalkBalances!}
-                  selectedAsset={selectedAsset!}
+                  balances={spacewalkBalances ?? undefined}
+                  selectedAsset={selectedAsset ?? undefined}
                   onMax={(value) => setAmount(value)}
                   isLoading={isLoading}
                   hideBalance={!selectedAsset}
