@@ -1,3 +1,11 @@
+# Cypress
+cypress/screenshots
+cypress/videos
+cypress/reports
+cypress/fixtures
+cypress/plugins
+cypress/.cache
+
 .soroban
 contracts/target/
 front-end/node_modules

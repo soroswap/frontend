@@ -509,6 +509,7 @@ export function SwapComponent({
           {/* {showPriceImpactWarning && <PriceImpactWarning priceImpact={largerPriceImpact} />} */}
           <div>
             <ButtonPrimary
+              data-testid="primary-button"  
               disabled={isMainButtonDisabled() || routeIsLoading}
               onClick={handleMainButtonClick}
               sx={{ height: '64px' }}

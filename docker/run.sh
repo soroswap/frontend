@@ -5,8 +5,8 @@ currentDir=$(pwd)
 
 # Set the name, image and version for the Docker container
 containerName=soroswapFrontend
-imageName=node
-versionTag=18.18.2
+imageName=cypress/browsers
+versionTag=node-20.10.0-chrome-121.0.6167.85-1-ff-118.0.2-edge-118.0.2088.46-1
 
 # Display the command being executed
 echo "Command: $1"

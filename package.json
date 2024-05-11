@@ -10,7 +10,8 @@
     "start": "next start",
     "lint": "next lint",
     "format": "prettier --write \"src/**/*.ts\" \"pages/**/*.ts\"",
-    "wdio": "exec wdio run ./wdio.conf.ts --watch"
+    "wdio": "exec wdio run ./wdio.conf.ts --watch",
+    "cy:open": "cypress open"
   },
   "dependencies": {
     "@emotion/react": "^11.10.5",
@@ -73,6 +74,10 @@
     "typescript": "5.3.3",
     "use-resize-observer": "^9.1.0"
   },
+  "resolutions": {
+    "cypress": "12.12.0"
+
+  },
   "devDependencies": {
     "@lingui/macro": "^4.3.0",
     "@testing-library/react": "^14.1.2",
@@ -88,6 +93,7 @@
     "@wdio/local-runner": "^8.26.1",
     "@wdio/mocha-framework": "^8.24.12",
     "@wdio/spec-reporter": "^8.24.12",
+    "cypress": "12.12.0",
     "jsdom": "^23.0.0",
     "msw": "^2.0.9",
     "next-router-mock": "^0.9.11",
