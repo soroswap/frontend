@@ -9,11 +9,27 @@ describe('Homepage', () => {
     })
     it('should show the connect wallet modal with all wallets', () => {
       cy.visit('/')
-      cy.get('[data-testid="primary-button"]').click().then(() => {
-        console.log('Button was clicked');
-      });;
+      cy.get('[data-testid="primary-button"]').click();
       cy.contains('Freighter Wallet')
       cy.contains('XBull Wallet')
       cy.contains('Lobstr Wallet')
     })
+
+    it('should show freighter is installed', () => {
+      cy.visit('/', {
+        onBeforeLoad: (win:any) => {
+          win.freighter = {
+            isConnected: () => true,
+            getPublicKey: () => Promise.resolve('publicKey'),
+            signTransaction: () => Promise.resolve('signedTransaction'),
+            // Add other methods as needed
+          };
+        },
+      });
+      cy.get('[data-testid="primary-button"]').click();
+      cy.contains('Detected')
+
+    });
+      
+
   })

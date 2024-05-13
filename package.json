@@ -11,7 +11,8 @@
     "lint": "next lint",
     "format": "prettier --write \"src/**/*.ts\" \"pages/**/*.ts\"",
     "wdio": "exec wdio run ./wdio.conf.ts --watch",
-    "cy:open": "cypress open"
+    "cy:run": "cypress run",
+    "cy:run:w":"cypress run --spec cypress/e2e/connectWallet.test.ts"
   },
   "dependencies": {
     "@emotion/react": "^11.10.5",

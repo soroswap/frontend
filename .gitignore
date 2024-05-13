@@ -5,6 +5,7 @@ cypress/reports
 cypress/fixtures
 cypress/plugins
 cypress/.cache
+cypress/logs
 
 .soroban
 contracts/target/
