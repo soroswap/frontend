@@ -9,6 +9,7 @@ import BalancesTable from './BalancesTable/BalancesTable';
 import { ButtonPrimary } from './Buttons/Button';
 import { WalletButton } from './Buttons/WalletButton';
 import { MintCustomToken } from './MintCustomToken';
+import { xlmTokenList } from 'constants/xlmToken';
 
 const PageWrapper = styled(Paper)`
   background: ${({ theme }) => `linear-gradient(${theme.palette.customBackground.bg2}, ${
@@ -37,6 +38,26 @@ export function Balances() {
 
   const [currentMintingToken, setCurrentMintingToken] = useState<TokenType | null>(null);
   const [isMinting, setIsMinting] = useState(false);
+  const getNetwork = () => {
+    switch (sorobanContext.activeChain?.networkPassphrase) {
+      case Networks.TESTNET:
+        return 'testnet';
+      case Networks.PUBLIC:
+        return 'mainnet';
+      case Networks.STANDALONE:
+        return 'standalone';
+      case Networks.FUTURENET:
+        return 'futurenet';
+      default:
+        return 'Unknown';
+    }
+  }
+
+  const getNativeToken = () => {
+    const network = getNetwork();
+    const nativeToken = xlmTokenList.find((token) => token.network === network);
+    return nativeToken?.assets[0];
+  }
 
   const handleMint = () => {
     setIsMinting(true);
@@ -104,7 +125,7 @@ export function Balances() {
             )}
           </Box>
           <Box>
-            <BalancesTable />
+            <BalancesTable nativeToken={getNativeToken()} />
           </Box>
         </>
       )}

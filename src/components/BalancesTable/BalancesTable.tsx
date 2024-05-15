@@ -119,15 +119,15 @@ function BalancesTableHead(props: BalancesTableProps) {
   );
 }
 
-export default function BalancesTable() {
+export default function BalancesTable(props: any) {
+  const { nativeToken } = props;
   const { tokens, tokenBalancesResponse } = useGetMyBalances();
-
   const rows =
-    tokenBalancesResponse?.balances?.map((x) => ({
+  tokenBalancesResponse?.balances?.map((x) => ({
       ...x,
       type: x.issuer
         ? 'Stellar Classic Asset'
-        : x.name == 'Stellar Lumens'
+        : (x.contract === nativeToken.contract && x.code === nativeToken.code)
         ? 'Native'
         : 'Soroban Token',
     })) ?? [];
