@@ -1,4 +1,4 @@
-import { defineConfig } from 'cypress'
+import { defineConfig } from 'cypress';
 
 export default defineConfig({
   projectId: 'fabfoi',
@@ -11,4 +11,4 @@ export default defineConfig({
     baseUrl: 'http://localhost:3000',
     specPattern: 'cypress/{e2e,staging}/**/*.test.ts',
   },
-})
+});

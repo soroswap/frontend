@@ -152,9 +152,8 @@ const ConnectWalletContent = ({
   };
 
   const connectWallet = async (wallet: Connector) => {
-    const connect = setActiveConnectorAndConnect && setActiveConnectorAndConnect(wallet);
     try {
-      await connect;
+      await setActiveConnectorAndConnect?.(wallet);
       setConnectWalletModalOpen(false);
     } catch (err) {
       const errorMessage = `${err}`;
