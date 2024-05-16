@@ -6,7 +6,7 @@ currentDir=$(pwd)
 # Set the name, image and version for the Docker container
 containerName=soroswapFrontend
 imageName=node
-versionTag=18.18.2
+versionTag=20.10.0
 
 # Display the command being executed
 echo "Command: $1"
