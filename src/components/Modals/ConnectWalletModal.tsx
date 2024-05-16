@@ -183,7 +183,8 @@ const ConnectWalletContent = ({
   useEffect(() => {
     const newWalletsStatus = walletsStatus.map(async (walletStatus) => {
       if (walletStatus.name === 'freighter') {
-        const connected = await isConnected();
+        const freighterConnector = sorobanContext.connectors.find((c) => c.id === 'freighter');
+        const connected = await freighterConnector?.isConnected();
         return { name: walletStatus.name, isInstalled: connected, isLoading: false };
       }
       if (walletStatus.name === 'xbull') {
@@ -200,7 +201,7 @@ const ConnectWalletContent = ({
     });
 
     Promise.all(newWalletsStatus).then((updatedWalletsStatus) => {
-      setWalletsStatus(updatedWalletsStatus);
+      setWalletsStatus(updatedWalletsStatus as any);
     });
   }, []);
 
