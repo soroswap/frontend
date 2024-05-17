@@ -14,12 +14,13 @@ import { requiresTrustline } from 'helpers/stellar';
 import { relevantTokensType } from 'hooks';
 import { useToken } from 'hooks/tokens/useToken';
 import useGetNativeTokenBalance from 'hooks/useGetNativeTokenBalance';
-import { useSwapCallback } from 'hooks/useSwapCallback';
+import { SuccessfullSwapResponse, useSwapCallback } from 'hooks/useSwapCallback';
 import useSwapMainButton from 'hooks/useSwapMainButton';
 import useSwapNetworkFees from 'hooks/useSwapNetworkFees';
 import { TokenType } from 'interfaces';
 import {
   ReactNode,
+  SetStateAction,
   useCallback,
   useContext,
   useEffect,
@@ -36,6 +37,7 @@ import { opacify } from 'themes/utils';
 import SwapCurrencyInputPanel from '../CurrencyInputPanel/SwapCurrencyInputPanel';
 import SwapHeader from './SwapHeader';
 import { ArrowWrapper, SwapWrapper } from './styleds';
+import * as StellarSdk from '@stellar/stellar-sdk';
 
 export const SwapSection = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -90,7 +92,7 @@ function getIsValidSwapQuote(
   return Boolean(!swapInputError && trade && tradeState === TradeState.VALID);
 }
 
-interface SwapStateProps {
+export interface SwapStateProps {
   showConfirm: boolean;
   tradeToConfirm?: InterfaceTrade;
   swapError?: Error;
@@ -107,9 +109,11 @@ const INITIAL_SWAP_STATE = {
 export function SwapComponent({
   prefilledState = {},
   disableTokenInputs = false,
+  handleDoSwap,
 }: {
   prefilledState?: Partial<SwapState>;
   disableTokenInputs?: boolean;
+  handleDoSwap?: (setSwapState: (value: SetStateAction<SwapStateProps>) => void) => void;
 }) {
   const sorobanContext = useSorobanReact();
   const { SnackbarContext } = useContext(AppContext);
@@ -263,6 +267,11 @@ export function SwapComponent({
   );
 
   const handleSwap = () => {
+    if (handleDoSwap) {
+      handleDoSwap(setSwapState);
+      return;
+    }
+
     if (!swapCallback) {
       return;
     }
@@ -510,7 +519,7 @@ export function SwapComponent({
           {/* {showPriceImpactWarning && <PriceImpactWarning priceImpact={largerPriceImpact} />} */}
           <div>
             <ButtonPrimary
-              data-testid="primary-button"  
+              data-testid="primary-button"
               disabled={isMainButtonDisabled() || routeIsLoading}
               onClick={handleMainButtonClick}
               sx={{ height: '64px' }}

@@ -1,40 +1,36 @@
-/// <reference types="cypress" />
-// ***********************************************
-// This example commands.ts shows you how to
-// create various custom commands and overwrite
-// existing commands.
-//
-// For more comprehensive examples of custom
-// commands please read more here:
-// https://on.cypress.io/custom-commands
-// ***********************************************
-//
-//
-// -- This is a parent command --
-// Cypress.Commands.add('login', (email, password) => { ... })
-//
-//
-// -- This is a child command --
-// Cypress.Commands.add('drag', { prevSubject: 'element'}, (subject, options) => { ... })
-//
-//
-// -- This is a dual command --
-// Cypress.Commands.add('dismiss', { prevSubject: 'optional'}, (subject, options) => { ... })
-//
-//
-// -- This will overwrite an existing command --
-// Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
-//
-// declare global {
-//   namespace Cypress {
-//     interface Chainable {
-//       login(email: string, password: string): Chainable<void>
-//       drag(subject: string, options?: Partial<TypeOptions>): Chainable<Element>
-//       dismiss(subject: string, options?: Partial<TypeOptions>): Chainable<Element>
-//       visit(originalFn: CommandOriginalFn, url: string, options: Partial<VisitOptions>): Chainable<Element>
-//     }
-//   }
-// }
+declare global {
+  namespace Cypress {
+    interface Chainable {
+      connectFreighterWallet(): Chainable<Element>;
+      selectUSDCAndTriggerSwap(): Chainable<Element>;
+    }
+  }
+}
 
-// Prevent TypeScript from reading file as legacy script
+Cypress.Commands.add('connectFreighterWallet', () => {
+  cy.get('[data-testid="primary-button"]').click();
+
+  cy.contains('Detected');
+
+  cy.contains('Freighter Wallet').click();
+
+  cy.get('[data-testid="primary-button"]').contains('Select a token');
+});
+
+Cypress.Commands.add('selectUSDCAndTriggerSwap', () => {
+  cy.contains('Select token').click();
+
+  cy.contains('USDC').click();
+
+  cy.get('[data-testid="primary-button"]').contains('Enter an amount');
+
+  cy.get('.token-amount-input').first().type('1');
+
+  cy.get('[data-testid="primary-button"]').contains('Swap').click();
+
+  cy.contains('Confirm swap').click();
+
+  cy.contains('Waiting for confirmation');
+});
+
 export {};
