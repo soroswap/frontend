@@ -9,7 +9,6 @@ import MainLayout from './Layout/MainLayout';
 import MySorobanReactProvider from 'soroban/MySorobanReactProvider';
 import store from 'state';
 import { SorobanContextType } from '@soroban-react/core';
-import '../../styles/globals.css';
 
 export default function Providers({
   children,

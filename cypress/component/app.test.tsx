@@ -1,3 +1,5 @@
+import '../../styles/globals.css';
+
 import { freighter } from '@soroban-react/freighter';
 import { SwapComponent } from 'components/Swap/SwapComponent';
 import MockRouter from '../utils/router';
