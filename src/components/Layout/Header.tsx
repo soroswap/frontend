@@ -158,14 +158,15 @@ export default function Header({ isDrawerOpen, setDrawerOpen }: HeaderProps) {
     href: string;
     label: string;
     target?: string;
+    test_id?: string;
   }
 
   const navItems: NavItem[] = [
-    { href: '/balance', label: 'Balance',  target:'_self'},
-    { href: '/swap', label: 'Swap', target:'_self' },
-    { href: '/liquidity', label: 'Liquidity',  target:'_self'},
-    { href: '/bridge', label: 'Bridge',  target:'_self'},
-    { href: 'https://info.soroswap.finance', label: 'Info', target:'_blank'},
+    { href: '/balance', label: 'Balance',  target:'_self', test_id:'balance__link'},
+    { href: '/swap', label: 'Swap', target:'_self' , test_id:'swap__link"'},
+    { href: '/liquidity', label: 'Liquidity',  target:'_self', test_id:'liquidity__link"'},
+    { href: '/bridge', label: 'Bridge',  target:'_self', test_id:'bridge__link"'},
+    { href: 'https://info.soroswap.finance', label: 'Info', target:'_blank', test_id:'info__link"'},
   ];
   
   return (
@@ -191,14 +192,14 @@ export default function Header({ isDrawerOpen, setDrawerOpen }: HeaderProps) {
         />
         {!isMobile ? (
           <>
-            <NavBar data-testid="nav">
+            <NavBar data-testid='navbar__container'>
               {navItems.map((item) => (
                 <NavItem
                   key={item.href}
                   href={item.href}
                   active={item.label === 'Swap' ? (pathname.includes(item.href) || pathname === '/') : pathname.includes(item.href)}
                   target={item.target}
-                  data-testid="nav-link"
+                  data-testid={item.test_id}
                 >
                   {item.label}
                 </NavItem>
@@ -224,13 +225,14 @@ export default function Header({ isDrawerOpen, setDrawerOpen }: HeaderProps) {
                 color={theme.palette.custom.borderColor}
               />
             </Box>
-            <NavBarContainer>
+            <NavBarContainer data-testid='navbar__container'>
               <NavBarMobile>
                 {navItems.map((item) => (
                   <NavItemMobile
                     key={item.href}
                     href={item.href}
                     active={item.label === 'Swap' ? (pathname.includes(item.href) ||  pathname === '/') : pathname.includes(item.href)}
+                    data-testid={item.test_id}
                   >
                     {item.label}
                   </NavItemMobile>
