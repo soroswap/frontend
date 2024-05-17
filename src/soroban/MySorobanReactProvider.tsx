@@ -23,7 +23,13 @@ const activeChain: WalletChain = findWalletChainByName(activeChainName) || testn
 // Set allowed connectors
 const connectors: Connector[] = [freighter(), xbull(), lobstr()];
 
-export default function MySorobanReactProvider({ children }: { children: React.ReactNode }) {
+export default function MySorobanReactProvider({
+  children,
+  ...rest
+}: {
+  children: React.ReactNode;
+  [x: string]: any;
+}) {
   const mounted = useMounted();
 
   if (!mounted) return null;
@@ -34,6 +40,7 @@ export default function MySorobanReactProvider({ children }: { children: React.R
       appName={'Soroswap'}
       connectors={connectors}
       activeChain={activeChain}
+      {...rest}
     >
       {children}
     </SorobanReactProvider>

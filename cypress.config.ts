@@ -1,4 +1,4 @@
-import { defineConfig } from 'cypress'
+import { defineConfig } from 'cypress';
 
 export default defineConfig({
   projectId: 'fabfoi',
@@ -9,6 +9,15 @@ export default defineConfig({
   video: false, // GH provides 2 CPUs, and cypress video eats one up, see https://github.com/cypress-io/cypress/issues/20468#issuecomment-1307608025
   e2e: {
     baseUrl: 'http://localhost:3000',
-    specPattern: 'cypress/{e2e,staging}/**/*.test.ts',
+    specPattern: 'cypress/{e2e,staging}/**/*.test.{ts,tsx}',
   },
-})
+  component: {
+    devServer: {
+      framework: 'next',
+      bundler: 'webpack',
+    },
+    specPattern: 'cypress/component/**/*.test.{ts,tsx}',
+    viewportHeight: 768,
+    viewportWidth: 1366,
+  },
+});
