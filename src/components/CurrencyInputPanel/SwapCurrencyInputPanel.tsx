@@ -238,6 +238,7 @@ export default function SwapCurrencyInputPanel({
             onClick={() => {
               setModalOpen(true);
             }}
+            data-testid="swap__token__select"
           >
             <Aligner>
               <RowFixed>

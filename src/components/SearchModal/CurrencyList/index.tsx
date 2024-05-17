@@ -167,6 +167,7 @@ export function CurrencyRow({
       disabled={isSelected}
       selected={otherSelected}
       dim={isBlockedToken}
+      data-testid={`currency__list__${currency.code}`}
     >
       <Column>
         <CurrencyLogo
@@ -319,7 +320,7 @@ export default function CurrencyList({
   }, []);
 
   return (
-    <ListWrapper data-testid="currency-list-wrapper">
+    <ListWrapper>
       {isLoading ? (
         <StyledRow justify="center" padding="12px">
           <CircularProgress size="16px" />

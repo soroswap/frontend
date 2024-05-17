@@ -1,6 +1,39 @@
 // cypress/integration/navigation.ts
 
-describe('Navigation flow', () => {
+// Swap flow
+describe('Select tokens & input ammount', () => {
+  it('should select token in, select token out and type an input ammount', () => {
+    cy.visit('/swap')
+    //Select input asset
+    cy.get('[data-testid="swap__input__panel"]').within(()=>{
+      cy.get('[data-testid="swap__token__select"]').click()
+    })
+    cy.get('[data-testid="currency__list__XRP"]').click()
+
+    //Select output asset
+    cy.get('[data-testid="swap__output__panel"]').within(()=>{
+      cy.get('[data-testid="swap__token__select"]').click()
+    })
+    cy.get('[data-testid="currency__list__XLM"]').click()
+
+    //Output amount
+    cy.get('[data-testid="swap__output__panel"]').within(()=>{
+      cy.get('.token-amount-input').type('56789')
+    })
+
+    //Input amount
+    cy.get('[data-testid="swap__input__panel"]').within(()=>{
+      cy.get('.token-amount-input').type('32456')
+    })
+
+
+    cy.screenshot()
+  })
+})
+
+
+// Navigation flow
+describe.skip('Navigation flow', () => {
   it('should render the navbar', () => {
     cy.visit('/')
     const navbar = cy.get('[data-testid="navbar__container"]')

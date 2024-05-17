@@ -387,7 +387,7 @@ export function SwapComponent({
 
   return (
     <>
-      <SwapWrapper>
+      <SwapWrapper data-testid="swap__section">
         <SwapHeader />
         <Modal
           open={txError}
@@ -433,7 +433,7 @@ export function SwapComponent({
         <div style={{ display: 'relative' }}>
           <SwapSection>
             <SwapCurrencyInputPanel
-              data-testid="Swap__panel"
+              data-testid="swap__input__panel"
               label={
                 independentField === Field.OUTPUT ? <span>From (at most)</span> : <span>From</span>
               }
@@ -473,6 +473,7 @@ export function SwapComponent({
           <div>
             <OutputSwapSection>
               <SwapCurrencyInputPanel
+                data-testid="swap__output__panel"
                 id={'swap-output'}
                 value={formattedAmounts[Field.OUTPUT]}
                 //disabled={disableTokenInputs}

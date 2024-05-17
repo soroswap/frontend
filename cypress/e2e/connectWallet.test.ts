@@ -1,4 +1,4 @@
-// cypress/integration/homepage_spec.ts
+// cypress/integration/connectWallet.ts
 
 describe('Connect Wallet', () => {
   it('should log the wallet', () => {
@@ -41,6 +41,7 @@ describe('Connect Wallet', () => {
       }
       //write logs to a file on cypress/logs/logs.txt
       cy.writeFile('cypress/logs/logs.txt', logs.join('\n'));
+      cy.screenshot();
     });
     // cy.contains('Public Key: publicKey')
   });
