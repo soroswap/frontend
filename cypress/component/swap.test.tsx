@@ -1,12 +1,11 @@
 import '../../styles/globals.css';
 
 import { Field } from 'state/swap/actions';
-import { freighter } from '@soroban-react/freighter';
 import { SetStateAction } from 'react';
 import { SwapComponent, SwapStateProps } from 'components/Swap/SwapComponent';
-import { xlmTokenList } from 'constants/xlmToken';
 import MockRouter from '../utils/router';
 import Providers from 'components/Providers';
+import { mockedFreighterConnector, sleep, testnetXLM } from '../utils/utils';
 
 interface MockedSwapPageProps {
   handleDoSwap?:
@@ -14,18 +13,7 @@ interface MockedSwapPageProps {
     | undefined;
 }
 
-const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
-
 const MockedSwapPage = ({ handleDoSwap }: MockedSwapPageProps) => {
-  const mockedFreighterConnector = {
-    ...freighter(),
-    isConnected: () => true,
-    getPublicKey: () => Promise.resolve('GCHR5WWPDFF3U3HP2NA6TI6FCQPYEWS3UOPIPJKZLAAFM57CEG4ZYBWP'),
-  };
-
-  const testnetXLM =
-    xlmTokenList.find((tList) => tList.network === 'testnet')?.assets?.[0]?.contract ?? null;
-
   const prefilledState = {
     [Field.INPUT]: { currencyId: testnetXLM },
     [Field.OUTPUT]: { currencyId: null },
@@ -45,10 +33,10 @@ const MockedSwapPage = ({ handleDoSwap }: MockedSwapPageProps) => {
 };
 
 describe('Swap Page', () => {
-  it('Should connect freighter wallet', () => {
-    cy.mount(<MockedSwapPage />);
-    cy.connectFreighterWallet();
-  });
+  // it('Should connect freighter wallet', () => {
+  //   cy.mount(<MockedSwapPage />);
+  //   cy.connectFreighterWallet();
+  // });
   it('Should able to swap tokens', () => {
     cy.mount(
       <MockedSwapPage

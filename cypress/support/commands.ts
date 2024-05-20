@@ -1,3 +1,6 @@
+import { shortenAddress } from 'helpers/address';
+import { walletAddress } from '../utils/utils';
+
 declare global {
   namespace Cypress {
     interface Chainable {
@@ -8,13 +11,13 @@ declare global {
 }
 
 Cypress.Commands.add('connectFreighterWallet', () => {
-  cy.get('[data-testid="primary-button"]').click();
+  cy.contains('Connect Wallet').click();
 
   cy.contains('Detected');
 
   cy.contains('Freighter Wallet').click();
 
-  cy.get('[data-testid="primary-button"]').contains('Select a token');
+  cy.contains(shortenAddress(walletAddress));
 });
 
 Cypress.Commands.add('selectUSDCAndTriggerSwap', () => {
