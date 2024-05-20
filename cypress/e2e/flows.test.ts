@@ -1,5 +1,20 @@
 // cypress/integration/navigation.ts
 
+
+//Bridge flow
+describe('Bridge flow', () => {
+  it('should render the disclaimer', () => {
+    cy.visit('/bridge')
+    cy.contains('Disclaimer')
+  })
+
+  it('should show the content of the disclaimer', () => {
+    cy.visit('/bridge')
+    cy.get('[data-testid="swap-details-header-row"]').click()
+    cy.contains('Bridge Fee: Currently zero fee')
+  })
+})
+
 // Swap flow
 describe('Select tokens & input ammount', () => {
   it('should select token in, select token out and type an input ammount', () => {
@@ -33,7 +48,7 @@ describe('Select tokens & input ammount', () => {
 
 
 // Navigation flow
-describe.skip('Navigation flow', () => {
+describe('Navigation flow', () => {
   it('should render the navbar', () => {
     cy.visit('/')
     const navbar = cy.get('[data-testid="navbar__container"]')
