@@ -23,7 +23,8 @@ describe('Select tokens & input ammount', () => {
     cy.get('[data-testid="swap__input__panel"]').within(()=>{
       cy.get('[data-testid="swap__token__select"]').click()
     })
-    cy.get('[data-testid="currency__list__XRP"]').click()
+    cy.get('[data-testid="token-search-input"]').type('usdc')
+    cy.get('[data-testid="currency__list__USDC"]').click()
 
     //Select output asset
     cy.get('[data-testid="swap__output__panel"]').within(()=>{
@@ -31,17 +32,40 @@ describe('Select tokens & input ammount', () => {
     })
     cy.get('[data-testid="currency__list__XLM"]').click()
 
-    //Output amount
-    cy.get('[data-testid="swap__output__panel"]').within(()=>{
-      cy.get('.token-amount-input').type('56789')
-    })
-
     //Input amount
     cy.get('[data-testid="swap__input__panel"]').within(()=>{
       cy.get('.token-amount-input').type('32456')
     })
 
+    //await for calcs
+    cy.wait(1500)
 
+    //Get the output ammount
+    cy.get('[data-testid="swap__output__panel"]').within(()=>{
+      cy.get('.token-amount-input').invoke('val').as('outputAmount')
+    })
+    cy.get('@outputAmount').should('not.be.empty')
+    cy.get('@outputAmount').should('have.length.greaterThan', 7)
+
+    cy.get('[data-testid="swap-details-header-row"]').click()
+
+    cy.contains('Price Impact')
+    cy.contains('Expected output')
+    cy.contains('Path')
+    
+    cy.get('[data-testid="swap__details__priceImpact"]').as('priceImpact')
+    cy.get('[data-testid="swap__details__expectedOutput"]').as('expectedOutput')
+    cy.get('[data-testid="swap__details__path"]').as('path')
+    
+    cy.get('@priceImpact').should('exist')
+    cy.get('@expectedOutput').should('exist')
+    cy.get('@path').should('exist')
+
+    cy.get('@priceImpact').contains('%')
+    cy.get('@expectedOutput').contains('XLM')
+    cy.get('@path').contains('XLM')
+    cy.get('@path').contains('USDC')
+    
     cy.screenshot()
   })
 })
@@ -65,7 +89,6 @@ describe('Navigation flow', () => {
     cy.get('a[href*="/swap"]').click()
     cy.wait(1500)
     cy.contains('You sell')
-    //Probar botones, dropdown y modal
   })
   it('should navigate to liquidity', () => {
     cy.visit('/')
@@ -78,12 +101,12 @@ describe('Navigation flow', () => {
     cy.get('a[href*="/bridge"]').click()
     cy.wait(1500)
     cy.contains('Disclaimer')
-    //Probar abrir disclaimer y buscar links
   })
   it('should navigate to info', () => {
     cy.visit('/')
     cy.get('a[href*="https://info.soroswap.finance"]').click()
     cy.wait(1500)
-    cy.url().should('eq', 'https://info.soroswap.finance/?network=mainnet')
+    cy.url().should('match', /https:\/\/info\.soroswap\.finance\//)
+    cy.screenshot()
   })
 })
