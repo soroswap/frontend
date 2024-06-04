@@ -105,10 +105,9 @@ export const HeaderChip = ({
     display: 'flex',
     flexDirection: 'row',
     height: isSmall ? 30 : 56,
-    padding: isSmall && canDisconnect ? '8px 1px 16px 1px' : isSmall ? '8px 16px' : '16px 24px',
+    width: isSmall ? 100 : 200,
+    paddingRight: '16px',
     justifyContent: 'center',
-    alignItems: 'center',
-    gap: 0.5,
     flexShrink: 0,
     borderRadius: isSmall ? '4px' : '16px',
     backgroundColor: '#8866DD',
@@ -124,15 +123,15 @@ export const HeaderChip = ({
       fontFamily: 'Inter',
       fontWeight: 600,
       lineHeight: '140%',
-      padding: 0
+      padding: '0px'
     },
     ':hover': {
       backgroundColor: '#8866DD',
     },
     '.MuiChip-action-icon':{
-      position:'relative',
-      top: isSmall ? '7px' :'5px',
-      left: '5px'
+      position: 'absolute',
+      marginLeft: '2px',
+      marginTop: '2px',
     }
   }
   return (
@@ -203,14 +202,15 @@ export const HeaderChip = ({
 export const ActiveChainHeaderChip = ({ isMobile }: { isMobile?: boolean }) => {
   const sorobanContext: SorobanContextType = useSorobanReact();
   const { activeChain, chains, activeConnector, address} = sorobanContext; 
-
+  console.log(activeChain)
   return (
     <>
-      {activeChain && chains && activeConnector?.id == 'xbull' && address ? 
+      {/*   {activeChain && chains && activeConnector?.id == 'xbull' && address ?
         <HeaderChip label={[activeChain?.name, <ArrowDropDownSharp key={'action-icon'} className='MuiChip-action-icon'/>]} isSmall={isMobile} chains={chains}/>
-      : 
+      :
         <HeaderChip label={activeChain?.name} isSmall={isMobile}/>
-      }
+      } */}
+      <HeaderChip label={[activeChain?.name, <ArrowDropDownSharp key={'action-icon'} className='MuiChip-action-icon' />]} isSmall={isMobile} chains={chains} />
     </>
     );
 };
