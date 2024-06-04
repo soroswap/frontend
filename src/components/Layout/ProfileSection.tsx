@@ -239,7 +239,7 @@ export default function ProfileSection() {
           canDisconnect
         />
       ):(
-        <WalletButton style={{whiteSpace:'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', borderRadius: '16px'}}/>
+          <WalletButton style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', borderRadius: '16px', height: 56, }} />
       ))} 
     </Box>
   );
