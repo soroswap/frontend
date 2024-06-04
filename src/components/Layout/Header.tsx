@@ -196,7 +196,7 @@ export default function Header({ isDrawerOpen, setDrawerOpen }: HeaderProps) {
                 <NavItem
                   key={item.href}
                   href={item.href}
-                  active={item.label === 'Swap' ? (pathname.includes(item.href) || pathname === '/') : pathname.includes(item.href)}
+                  active={item.label === 'Swap' ? (pathname.includes(item.href) || pathname === '/' || pathname === '/buy') : pathname.includes(item.href)}
                   target={item.target}
                   data-testid="nav-link"
                 >
