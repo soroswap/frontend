@@ -47,7 +47,7 @@ export default function SwapHeader({
   const [activeAction, setActiveAction] = useState<'swap' | 'buy'>('swap');
   const href = window.location.pathname;
   useEffect(() => {
-    setActiveAction(href === '/swap' ? 'swap' : 'buy');
+    setActiveAction(href === '/swap' || href === '/' ? 'swap' : 'buy');
   }, [href])
 
 
