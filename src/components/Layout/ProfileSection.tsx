@@ -202,7 +202,7 @@ export const HeaderChip = ({
 export const ActiveChainHeaderChip = ({ isMobile }: { isMobile?: boolean }) => {
   const sorobanContext: SorobanContextType = useSorobanReact();
   const { activeChain, chains, activeConnector, address} = sorobanContext; 
-  console.log(activeChain)
+
   return (
     <>
       {/*   {activeChain && chains && activeConnector?.id == 'xbull' && address ?
