@@ -25,6 +25,7 @@ import swapReducer, { SwapState, initialState as initialSwapState } from 'state/
 import { opacify } from 'themes/utils';
 import SwapHeader from 'components/Swap/SwapHeader';
 import { SwapWrapper } from 'components/Swap/styleds';
+import DepositFiatInputPanel from './BuyCryptoPanel';
 
 export const SwapSection = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -218,11 +219,8 @@ export function BuyComponent({
     <>
       <SwapWrapper style={{ minHeight: '500px' }}>
         <SwapHeader />
-        <AutoColumn gap="md" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-          <ButtonPrimary onClick={() => {
-            console.log('button clicked!')
-            alert('button clicked!')
-          }}>Buy USDC</ButtonPrimary>
+        <AutoColumn>
+          <DepositFiatInputPanel />
         </AutoColumn>
       </SwapWrapper>
     </>
