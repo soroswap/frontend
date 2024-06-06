@@ -32,7 +32,7 @@ jobs:
         run: yarn build
 
       - name: Run app
-        run: yarn pm2 start next ${{secrets.GITHUB_TOKEN}}
+        run: yarn pm2 start next
 
       - name: Run test
         run: yarn cy:run
