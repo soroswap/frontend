@@ -16,7 +16,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4.1.1
 
-      - name: Setup Node.js
+      - name: Set up Node.js
         uses: actions/setup-node@v4.0.2
         with:
           node-version: '20.10.0'
