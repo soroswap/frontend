@@ -1,0 +1,33 @@
+name: Run tests
+
+on: push
+permissions:
+  contents: write
+  pull-requests: write 
+  issues: read
+  packages: none
+  
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4.1.1
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4.0.2
+        with:
+          node-version: '20.10.0'
+
+      - name: Install dependencies
+        run: yarn install
+
+      - name: Install cypress
+        run: yarn cypress install
+
+      - name: Run dev
+        run: yarn dev
+  run-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run tests
+        run: yarn cy:run
