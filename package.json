@@ -52,6 +52,7 @@
     "i": "^0.3.7",
     "lodash-es": "^4.17.21",
     "luxon": "^3.4.4",
+    "mercury-sdk": "^0.1.22",
     "next": "^14.2.3",
     "npm": "^10.2.5",
     "polished": "^4.2.2",
@@ -67,7 +68,7 @@
     "react-virtualized-auto-sizer": "^1.0.20",
     "react-window": "^1.8.9",
     "redux": "^4.2.1",
-    "soroswap-router-sdk": "^1.2.4",
+    "soroswap-router-sdk": "^1.2.6",
     "swr": "^2.2.0",
     "typescript": "5.3.3",
     "use-resize-observer": "^9.1.0"

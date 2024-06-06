@@ -3,10 +3,10 @@ import { useFactory } from 'hooks';
 import { useContext, useMemo } from 'react';
 import { CurrencyAmount, Networks, Protocols, Router, Token, TradeType } from 'soroswap-router-sdk';
 import { AppContext } from 'contexts';
+import axios from 'axios';
 
 const backendUrl = process.env.NEXT_PUBLIC_SOROSWAP_BACKEND_URL;
 const backendApiKey = process.env.NEXT_PUBLIC_SOROSWAP_BACKEND_API_KEY;
-const shouldUseBackend = process.env.NEXT_PUBLIC_SOROSWAP_BACKEND_ENABLED === 'true';
 
 export interface GenerateRouteProps {
   amountTokenAddress: string;
@@ -14,6 +14,11 @@ export interface GenerateRouteProps {
   amount: string;
   tradeType: TradeType;
 }
+
+const queryNetworkDict: { [x: string]: 'mainnet' | 'testnet' } = {
+  [Networks.PUBLIC]: 'mainnet',
+  [Networks.TESTNET]: 'testnet',
+};
 
 export const useRouterSDK = () => {
   const sorobanContext = useSorobanReact();
@@ -32,12 +37,18 @@ export const useRouterSDK = () => {
     }
 
     return new Router({
-      backendUrl,
-      backendApiKey,
+      getPairsFn: async () => {
+        let queryNetwork = queryNetworkDict[network];
+
+        const { data } = await axios.get('/api/pairs', {
+          params: { network: queryNetwork },
+        });
+
+        return data;
+      },
       pairsCacheInSeconds: 60,
       protocols: [Protocols.SOROSWAP],
       network,
-      shouldUseBackend,
       maxHops,
     });
   }, [network, maxHops]);
@@ -62,7 +73,6 @@ export const useRouterSDK = () => {
     tradeType,
   }: GenerateRouteProps) => {
     if (!factory) throw new Error('Factory address not found');
-
     const currencyAmount = fromAddressAndAmountToCurrencyAmount(amountTokenAddress, amount);
     const quoteCurrency = fromAddressToToken(quoteTokenAddress);
 
