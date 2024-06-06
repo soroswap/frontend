@@ -1,9 +1,5 @@
 name: Run tests
 
-env:
-  NEXT_PUBLIC_SOROSWAP_BACKEND_API_KEY: ${{secrets.NEXT_PUBLIC_SOROSWAP_BACKEND_API_KEY}}
-  NEXT_PUBLIC_SOROSWAP_BACKEND_URL: ${{secrets.NEXT_PUBLIC_SOROSWAP_BACKEND_URL}}
-
 on: push
 permissions:
   contents: write
@@ -12,31 +8,15 @@ permissions:
   packages: none
 
 jobs:
-  reads-secrets:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4.1.1
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4.0.2
-        with:
-          node-version: '20.10.0'
-          
-      - name: Read secrets
-        run: echo "The secret is ${{secrets.NEXT_PUBLIC_SECRET}}"
-
-      - name: Read vars
-        run: echo "a var could be ${{vars.NEXT_PUBLIC_BACKEND_URL}}"
-
   run-tests:
     env:
       NEXT_PUBLIC_BACKEND_URL: ${{vars.NEXT_PUBLIC_BACKEND_URL}}
-      NEXT_PUBLIC_SOROSWAP_BACKEND_API_KEY: ${{vars.NEXT_PUBLIC_SOROSWAP_BACKEND_API_KEY}}
+      NEXT_PUBLIC_SOROSWAP_BACKEND_API_KEY: ${{secrets.NEXT_PUBLIC_SOROSWAP_BACKEND_API_KEY}}
       NEXT_PUBLIC_SOROSWAP_BACKEND_URL: ${{vars.NEXT_PUBLIC_SOROSWAP_BACKEND_URL}}
       NEXT_PUBLIC_SOROSWAP_BACKEND_ENABLED: ${{vars.NEXT_PUBLIC_SOROSWAP_BACKEND_ENABLED}}
       NEXT_PUBLIC_DEFAULT_NETWORK: ${{vars.NEXT_PUBLIC_DEFAULT_NETWORK}}
       NEXT_PUBLIC_TRUSTLINE_WALLET_PUBLIC_KEY: ${{vars.NEXT_PUBLIC_TRUSTLINE_WALLET_PUBLIC_KEY}}
-      NEXT_PUBLIC_TEST_TOKENS_ADMIN_SECRET_KEY: ${{vars.NEXT_PUBLIC_TEST_TOKENS_ADMIN_SECRET_KEY}}
+      NEXT_PUBLIC_TEST_TOKENS_ADMIN_SECRET_KEY: ${{secrets.NEXT_PUBLIC_TEST_TOKENS_ADMIN_SECRET_KEY}}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4.1.1
