@@ -1,6 +1,10 @@
-import { getErrorMessage } from "../../helpers/getErrorMessage";
-import { log } from "../../helpers/log";
-import { TransactionStatus } from "../../types/types";
+import { TransactionStatus } from "../types";
+import { getCatchError } from "@stellar/frontend-helpers";
+
+export const getErrorMessage = (error: Error | unknown) => {
+  const e = getCatchError(error);
+  return e.message || e.toString();
+};
 
 export const pollDepositUntilComplete = async ({
   popup,
@@ -23,7 +27,7 @@ export const pollDepositUntilComplete = async ({
   const transactionUrl = new URL(
     `${sep24TransferServerUrl}/transaction?id=${transactionId}`,
   );
-  log.instruction({
+  console.log({
     title: `Polling for updates \`${transactionUrl.toString()}\``,
   });
 
@@ -40,7 +44,7 @@ export const pollDepositUntilComplete = async ({
   const initTransactionJson = await initResponse.json();
 
   if (initTransactionJson?.transaction?.more_info_url) {
-    log.instruction({
+    console.log({
       title: "Transaction MORE INFO URL:",
       link: initTransactionJson.transaction.more_info_url,
     });
@@ -58,12 +62,12 @@ export const pollDepositUntilComplete = async ({
     if (transactionJson.transaction.status !== currentStatus) {
       currentStatus = transactionJson.transaction.status;
 
-      log.instruction({
+      console.log({
         title: "Transaction MORE INFO URL:",
         link: initTransactionJson.transaction.more_info_url,
       });
 
-      log.response({
+      console.log({
         title: `Transaction \`${transactionId}\` is in \`${transactionJson.transaction.status}\` status.`,
         body: transactionJson.transaction,
       });
@@ -74,38 +78,38 @@ export const pollDepositUntilComplete = async ({
             custodialMemoId &&
             transactionJson.transaction.deposit_memo !== custodialMemoId
           ) {
-            log.warning({
+            console.log({
               title: "SEP-24 deposit custodial memo doesn’t match",
               body: `Expected ${custodialMemoId}, got ${transactionJson.transaction.deposit_memo}`,
             });
           }
 
-          log.instruction({
+          console.log({
             title:
               "The anchor is waiting on you to take the action described in the popup",
           });
           break;
         }
         case TransactionStatus.PENDING_ANCHOR: {
-          log.instruction({
+          console.log({
             title: "The anchor is processing the transaction",
           });
           break;
         }
         case TransactionStatus.PENDING_STELLAR: {
-          log.instruction({
+          console.log({
             title: "The Stellar network is processing the transaction",
           });
           break;
         }
         case TransactionStatus.PENDING_EXTERNAL: {
-          log.instruction({
+          console.log({
             title: "The transaction is being processed by an external system",
           });
           break;
         }
         case TransactionStatus.PENDING_TRUST: {
-          log.instruction({
+          console.log({
             title:
               "You must add a trustline to the asset in order to receive your deposit",
           });
@@ -119,14 +123,14 @@ export const pollDepositUntilComplete = async ({
           break;
         }
         case TransactionStatus.PENDING_USER: {
-          log.instruction({
+          console.log({
             title:
               "The anchor is waiting for you to take the action described in the popup",
           });
           break;
         }
         case TransactionStatus.ERROR: {
-          log.instruction({
+          console.log({
             title: "There was a problem processing your transaction",
           });
           break;
@@ -141,10 +145,10 @@ export const pollDepositUntilComplete = async ({
     await new Promise((resolve) => setTimeout(resolve, 2000));
   }
 
-  log.instruction({ title: `Transaction status \`${currentStatus}\`` });
+  console.log({ title: `Transaction status \`${currentStatus}\`` });
 
   if (!endStatuses.includes(currentStatus) && popup.closed) {
-    log.instruction({
+    console.log({
       title: `The popup was closed before the transaction reached a terminal status, if your balance is not updated soon, the transaction may have failed.`,
     });
   }

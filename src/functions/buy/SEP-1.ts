@@ -1,4 +1,4 @@
-import { TomlFields } from '../../interfaces/tomlFields';
+import { TomlFields } from './types';
 import axios from 'axios';
 import toml from 'toml';
 
