@@ -5,9 +5,6 @@ import { CurrencyAmount, Networks, Protocols, Router, Token, TradeType } from 's
 import { AppContext } from 'contexts';
 import axios from 'axios';
 
-const backendUrl = process.env.NEXT_PUBLIC_SOROSWAP_BACKEND_URL;
-const backendApiKey = process.env.NEXT_PUBLIC_SOROSWAP_BACKEND_API_KEY;
-
 export interface GenerateRouteProps {
   amountTokenAddress: string;
   quoteTokenAddress: string;
@@ -30,12 +27,6 @@ export const useRouterSDK = () => {
   const network = sorobanContext.activeChain?.networkPassphrase as Networks;
 
   const router = useMemo(() => {
-    if (!backendUrl || !backendApiKey) {
-      throw new Error(
-        'NEXT_PUBLIC_SOROSWAP_BACKEND_URL and NEXT_PUBLIC_SOROSWAP_BACKEND_API_KEY must be set in the environment variables.',
-      );
-    }
-
     return new Router({
       getPairsFn: async () => {
         let queryNetwork = queryNetworkDict[network];
