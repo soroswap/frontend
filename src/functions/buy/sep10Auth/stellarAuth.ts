@@ -5,11 +5,9 @@ import { getStellarToml, getAuthUrl } from "../SEP-1";
 export async function getChallengeTransaction({ 
   publicKey, 
   homeDomain,
-  clientDomain
 }:{ 
   publicKey: string, 
   homeDomain: string,
-  clientDomain?: string,
 }): Promise<{
   transaction:any, 
   network_passphrase:string
@@ -31,7 +29,6 @@ export async function getChallengeTransaction({
           // Possible parameters are `account`, `memo`, `home_domain`, and
           // `client_domain`. For our purposes, we only supply `account`.
           account: publicKey,
-          client_domain: clientDomain!,
       })}`
   ).catch((e)=>{
     console.log(e)

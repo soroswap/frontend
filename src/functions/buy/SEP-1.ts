@@ -31,3 +31,8 @@ export async function getDepositServerUrl(home_domain: string) {
   const toml = await getStellarToml(home_domain);
   return toml[TomlFields.TRANSFER_SERVER_SEP0024];
 }
+
+export async function getCurrencies(home_domain: string){
+  const toml = await getStellarToml(home_domain);
+  return toml[TomlFields.CURRENCIES];
+}

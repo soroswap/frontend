@@ -44,6 +44,7 @@ export enum TomlFields {
   URI_REQUEST_SIGNING_KEY = "URI_REQUEST_SIGNING_KEY",
   VERSION = "VERSION",
   WEB_AUTH_ENDPOINT = "WEB_AUTH_ENDPOINT",
+  CURRENCIES= "CURRENCIES"
 }
 
 export interface PresetAsset {
