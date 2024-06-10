@@ -122,7 +122,7 @@ export function AdvancedSwapDetails({
           <MouseoverTooltip title={'The impact your trade has on the market price of this pool.'}>
             <BodySmall color="textSecondary">Price Impact</BodySmall>
           </MouseoverTooltip>
-          <BodySmall>{formattedPriceImpact(trade?.priceImpact)}</BodySmall>
+          <BodySmall data-testid="swap__details__priceImpact">{formattedPriceImpact(trade?.priceImpact)}</BodySmall>
         </RowBetween>
       )}
       <RowBetween>
@@ -137,7 +137,9 @@ export function AdvancedSwapDetails({
           </MouseoverTooltip>
         </RowFixed>
         <TextWithLoadingPlaceholder syncing={isLoading} width={65}>
-          <BodySmall style={{ display: 'flex', alignItems: 'center' }} component="div">
+          <BodySmall 
+            data-testid="swap__details__expectedOutput"
+            style={{ display: 'flex', alignItems: 'center' }} component="div">
             {formatTokenAmount(trade?.outputAmount?.value ?? '0')}{' '}
             {trade?.outputAmount?.currency.code}{' '}
             <CurrencyLogo
@@ -160,7 +162,7 @@ export function AdvancedSwapDetails({
             </MouseoverTooltip>
           </RowFixed>
           <TextWithLoadingPlaceholder syncing={pathTokensIsLoading} width={100}>
-            <PathBox>
+            <PathBox data-testid="swap__details__path">
               {pathArray?.map((contract, index) => (
                 <React.Fragment key={index}>
                   {contract}

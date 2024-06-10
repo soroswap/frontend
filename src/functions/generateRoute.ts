@@ -4,6 +4,7 @@ import { useContext, useMemo } from 'react';
 import { CurrencyAmount, Networks, Protocols, Router, Token, TradeType } from 'soroswap-router-sdk';
 import { AppContext } from 'contexts';
 import axios from 'axios';
+import { TokenType } from 'interfaces';
 
 export interface GenerateRouteProps {
   amountTokenAddress: string;
@@ -12,9 +13,9 @@ export interface GenerateRouteProps {
   tradeType: TradeType;
 }
 
-const queryNetworkDict: { [x: string]: 'mainnet' | 'testnet' } = {
-  [Networks.PUBLIC]: 'mainnet',
-  [Networks.TESTNET]: 'testnet',
+const queryNetworkDict: { [x: string]: 'MAINNET' | 'TESTNET' } = {
+  [Networks.PUBLIC]: 'MAINNET',
+  [Networks.TESTNET]: 'TESTNET',
 };
 
 export const useRouterSDK = () => {
@@ -31,11 +32,25 @@ export const useRouterSDK = () => {
       getPairsFn: async () => {
         let queryNetwork = queryNetworkDict[network];
 
-        const { data } = await axios.get('/api/pairs', {
+        const { data } = await axios.get<
+          {
+            tokenA: TokenType;
+            tokenB: TokenType;
+            reserveA: string;
+            reserveB: string;
+          }[]
+        >('https://info.soroswap.finance/api/pairs', {
           params: { network: queryNetwork },
         });
 
-        return data;
+        return data.map((pair) => {
+          return {
+            tokenA: pair.tokenA.contract,
+            tokenB: pair.tokenB.contract,
+            reserveA: pair.reserveA,
+            reserveB: pair.reserveB,
+          };
+        });
       },
       pairsCacheInSeconds: 60,
       protocols: [Protocols.SOROSWAP],

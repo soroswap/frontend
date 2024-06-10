@@ -68,11 +68,21 @@ type TokensType = [string, string];
 interface AddLiquidityComponentProps {
   currencyIdA?: string;
   currencyIdB?: string;
+  handleAddLiquidity?: ({
+    setAttemptingTxn,
+    setTxHash,
+    setTxError,
+  }: {
+    setAttemptingTxn: (value: boolean) => void;
+    setTxHash: (value: string | undefined) => void;
+    setTxError: (value: boolean) => void;
+  }) => void;
 }
 
 export default function AddLiquidityComponent({
   currencyIdA,
   currencyIdB,
+  handleAddLiquidity,
 }: AddLiquidityComponentProps) {
   const theme = useTheme();
   const userSlippage = useUserSlippageToleranceWithDefault(DEFAULT_SLIPPAGE_INPUT_VALUE);
@@ -162,7 +172,13 @@ export default function AddLiquidityComponent({
   const routerCallback = useRouterCallback();
 
   const provideLiquidity = useCallback(() => {
+    if (handleAddLiquidity) {
+      handleAddLiquidity({ setAttemptingTxn, setTxHash, setTxError });
+      return;
+    }
+
     setAttemptingTxn(true);
+
     // TODO: check that amount0 corresponds to token0?
     //TODO: Check all of this, is working weird but using the router, withdraw is not working
 
@@ -255,6 +271,7 @@ export default function AddLiquidityComponent({
     formattedAmounts,
     dependentField,
     userSlippage,
+    handleAddLiquidity,
   ]);
 
   const baseRoute = `/liquidity/add/`;
