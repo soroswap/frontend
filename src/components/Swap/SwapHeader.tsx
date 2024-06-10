@@ -35,11 +35,13 @@ export default function SwapHeader({
   chainId,
   trade,
   active,
+  showConfig,
 }: {
   autoSlippage?: number;
   chainId?: number;
   trade?: boolean;
-    active?: string;
+  active?: string;
+  showConfig: boolean;
 }) {
   const theme = useTheme();
   const fiatOnRampButtonEnabled = true;
@@ -63,9 +65,12 @@ export default function SwapHeader({
           </SwapLink>
         )}
       </HeaderButtonContainer>
-      <RowFixed style={{ padding: '6px 12px' }} hidden={true}>
-        <SettingsTab autoSlippage={0.5} />
-      </RowFixed>
+      {showConfig ? 
+        (<RowFixed style={{ padding: '6px 12px' }}>
+          <SettingsTab autoSlippage={0.5} />
+        </RowFixed>) : 
+       (false)}
+      
     </StyledSwapHeader>
   );
 }
