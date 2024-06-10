@@ -31,11 +31,11 @@ const anchors: anchor[] = [
   },
   {
     name: 'MoneyGram',
-    home_domain: 'https://testanchor.stellar.org'
+    home_domain: 'https://stellar.moneygram.com'
   },
   {
     name: 'MyKobo',
-    home_domain: 'https://testanchor.stellar.org'
+    home_domain: 'https://mykobo.co'
   },
 ]
 
@@ -48,7 +48,12 @@ function BuyComponent() {
 
   const checkTrustline = async () => {
     if(address){
-      const account = await serverHorizon?.loadAccount(address)
+      let account
+      try {
+        account = await serverHorizon?.loadAccount(address)
+      } catch (error) {
+        console.error(error)
+      }
       const balances = account?.balances
       const hasTrustline = balances?.find((bal) =>
         'asset_code' in bal && 'asset_issuer' in bal &&
@@ -58,30 +63,6 @@ function BuyComponent() {
     }
     
   };
-
-  const buy = async () => {
-    await checkTrustline()
-    if(needTrustline){
-      try {
-        setTrustline(
-          {
-            tokenSymbol: selectedToken?.name!,
-            tokenAdmin: selectedToken?.issuer!,
-            sorobanContext
-          }
-        )
-          
-      } catch (error) {
-        console.error(error)
-      }
-    }
-    try {
-      InitDeposit(selectedAnchor?.home_domain!)
-    } catch (error) {
-      console.error(error)
-    }
-  }
-
 
   const sign = async (txn: any) => {
     const signedTransaction = await sorobanContext?.activeConnector?.signTransaction(txn, {
@@ -126,14 +107,42 @@ function BuyComponent() {
 
     popup?.focus()
 
-    window.addEventListener('message', (event) => {
-      if (event.origin === homeDomain) {
-        console.log(event.data)
-        const transaction = event.data.transaction
-        if (transaction.status == 'complete')
-          popup?.close()
+
+  }
+
+  const buy = async () => {
+    if (!selectedToken || !selectedAnchor) {
+      return
+    }
+    await checkTrustline()
+    if (needTrustline) {
+      try {
+        console.log('setting trustline')
+        const res = await setTrustline(
+          {
+            tokenSymbol: selectedToken?.name!,
+            tokenAdmin: selectedToken?.issuer!,
+            sorobanContext
+          }
+        )
+        console.log('response', res)
+        if (res === undefined) {
+          setNeedTrustline(true)
+          console.error('error setting trustline')
+        }
+      } catch (error) {
+        console.log('error setting trustline')
+        console.error(error)
+        setNeedTrustline(true)
+
       }
-    })
+    } else {
+      try {
+        InitDeposit(selectedAnchor?.home_domain!)
+      } catch (error) {
+        console.error(error)
+      }
+    }
   }
 
   useEffect(() => {
@@ -156,7 +165,7 @@ function BuyComponent() {
               <div>Deposit to:</div>
               <Aligner>
                 <RowFixed>
-                  <StyledSelect visible={true} selected={!!selectedAnchor} onClick={()=>setSelectedAnchor(anchors[0])}>
+                  <StyledSelect visible={true} selected={!!selectedAnchor} onClick={() => setSelectedAnchor(anchors[2])}>
                     <StyledTokenName
                       data-testid="Swap__Panel__Selector"
                       sx={{paddingLeft:'16px'}}
@@ -197,6 +206,7 @@ function BuyComponent() {
         {address ? 
         (<ButtonPrimary onClick={buy}>
           <BodyPrimary>
+              {needTrustline ? 'Create Trustline and ' : ''}
             <span> Buy {selectedToken ? selectedToken.name : ''} </span>
           </BodyPrimary>
         </ButtonPrimary>):
