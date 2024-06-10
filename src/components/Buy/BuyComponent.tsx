@@ -1,228 +1,210 @@
-import { Box, Button, CircularProgress, Modal, styled } from '@mui/material';
-import { setTrustline } from '@soroban-react/contracts';
-import { useSorobanReact } from '@soroban-react/core';
-import { ButtonPrimary } from 'components/Buttons/Button';
-import { AutoColumn } from 'components/Column';
-import { AppContext, SnackbarIconType } from 'contexts';
-import { sendNotification } from 'functions/sendNotification';
-import { formatTokenAmount } from 'helpers/format';
-import { requiresTrustline } from 'helpers/stellar';
-import { useToken } from 'hooks/tokens/useToken';
-import useGetNativeTokenBalance from 'hooks/useGetNativeTokenBalance';
-import {
-  ReactNode,
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useReducer,
-  useState,
-} from 'react';
-import { InterfaceTrade, TradeState } from 'state/routing/types';
-import { Field } from 'state/swap/actions';
-import { useDerivedSwapInfo, useSwapActionHandlers } from 'state/swap/hooks';
-import swapReducer, { SwapState, initialState as initialSwapState } from 'state/swap/reducer';
-import { opacify } from 'themes/utils';
-import SwapHeader from 'components/Swap/SwapHeader';
-import { SwapWrapper } from 'components/Swap/styleds';
-import DepositFiatInputPanel from './BuyCryptoPanel';
+import { WalletButton } from 'components/Buttons/WalletButton'
+import StyledWrapper from 'components/Layout/StyledWrapper'
+import React, { useEffect, useState } from 'react'
+import SwapHeader from 'components/Swap/SwapHeader'
+import { useSorobanReact } from '@soroban-react/core'
+import { SwapSection } from 'components/Swap/SwapComponent'
+import { InputPanel, Container, Aligner, StyledTokenName, StyledDropDown } from 'components/CurrencyInputPanel/SwapCurrencyInputPanel'
+import { StyledSelect } from 'components/Layout/StyledSelect'
+import { RowFixed } from 'components/Row'
+import { ButtonPrimary } from 'components/Buttons/Button'
+import { BodyPrimary } from 'components/Text'
+import { getCurrencies } from 'functions/buy/SEP-1'
+import { getChallengeTransaction, submitChallengeTransaction } from 'functions/buy/sep10Auth/stellarAuth'
+import { initInteractiveDepositFlow } from 'functions/buy/sep24Deposit/InteractiveDeposit'
+import { setTrustline } from '@soroban-react/contracts'
 
-export const SwapSection = styled('div')(({ theme }) => ({
-  position: 'relative',
-  backgroundColor: theme.palette.customBackground.module,
-  borderRadius: 12,
-  padding: 16,
-  color: theme.palette.secondary.main,
-  fontSize: 14,
-  lineHeight: '20px',
-  fontWeight: 500,
-  '&:before': {
-    boxSizing: 'border-box',
-    backgroundSize: '100%',
-    borderRadius: 'inherit',
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    width: '100%',
-    height: '100%',
-    pointerEvents: 'none',
-    border: `1px solid ${theme.palette.customBackground.module}`,
-  },
-  '&:hover:before': {
-    borderColor: opacify(8, theme.palette.secondary.main),
-  },
-  '&:focus-within:before': {
-    borderColor: opacify(24, theme.palette.secondary.light),
-  },
-}));
-
-export const OutputSwapSection = styled(SwapSection)`
-  border-bottom: ${({ theme }) => `1px solid ${theme.palette.customBackground.module}`};
-  border-radius: 16px;
-  border: 1px solid rgba(180, 239, 175, 0.2);
-  background: ${({ theme }) => theme.palette.customBackground.outputBackground};
-`;
-
-export const ArrowContainer = styled('div')`
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-
-  width: 100%;
-  height: 100%;
-`;
-
-function getIsValidSwapQuote(
-  trade: InterfaceTrade | undefined,
-  tradeState: TradeState,
-  swapInputError?: ReactNode,
-): boolean {
-  return Boolean(!swapInputError && trade && tradeState === TradeState.VALID);
+interface anchor {
+  name: string
+  home_domain: string
 }
 
-interface BuyStateProps {
-  showConfirm: boolean;
-  tradeToConfirm?: InterfaceTrade;
-  swapError?: Error;
-  swapResult?: any;
+interface token {
+  name: string
+  issuer: string
 }
 
-const INITIAL_SWAP_STATE = {
-  showConfirm: false,
-  tradeToConfirm: undefined,
-  swapError: undefined,
-  swapResult: undefined,
-};
+const anchors: anchor[] = [
+  {
+    name: 'Stellar TestAnchor 1',
+    home_domain: 'https://testanchor.stellar.org'
+  },
+  {
+    name: 'MoneyGram',
+    home_domain: 'https://testanchor.stellar.org'
+  },
+  {
+    name: 'MyKobo',
+    home_domain: 'https://testanchor.stellar.org'
+  },
+]
 
-export function BuyComponent({
-  prefilledState = {},
-  disableTokenInputs = false,
-}: {
-  prefilledState?: Partial<SwapState>;
-  disableTokenInputs?: boolean;
-}) {
-  const sorobanContext = useSorobanReact();
-  const { SnackbarContext } = useContext(AppContext);
-  const [txError, setTxError] = useState<boolean>(false);
+function BuyComponent() {
+  const sorobanContext = useSorobanReact()
+  const {address, serverHorizon, activeChain} = sorobanContext
+  const [selectedAnchor, setSelectedAnchor] = useState<anchor | undefined>(undefined)
+  const [selectedToken, setSelectedToken] = useState<token | undefined>(undefined)
+  const [needTrustline, setNeedTrustline] = useState<boolean>(true)
 
-  const [needTrustline, setNeedTrustline] = useState<boolean>(true);
-
-  const { token: prefilledToken } = useToken(prefilledState.INPUT?.currencyId!);
-
-  // modal and loading
-  const [{ showConfirm, tradeToConfirm, swapError, swapResult }, setSwapState] =
-    useState<BuyStateProps>(INITIAL_SWAP_STATE);
-
-  const [state, dispatch] = useReducer(swapReducer, { ...initialSwapState, ...prefilledState });
-  const { typedValue, recipient, independentField } = state;
-
-  const { onSwitchTokens, onCurrencySelection, onUserInput, onChangeRecipient } =
-    useSwapActionHandlers(dispatch);
-  const dependentField: Field = independentField === Field.INPUT ? Field.OUTPUT : Field.INPUT;
-
-  useEffect(() => {
-    if (prefilledToken) {
-      onCurrencySelection(Field.INPUT, prefilledToken);
+  const checkTrustline = async () => {
+    if(address){
+      const account = await serverHorizon?.loadAccount(address)
+      const balances = account?.balances
+      const hasTrustline = balances?.find((bal) =>
+        'asset_code' in bal && 'asset_issuer' in bal &&
+        bal.asset_code === selectedToken?.name && bal.asset_issuer === selectedToken?.issuer
+      )
+      setNeedTrustline(!hasTrustline)
     }
-  }, [onCurrencySelection, prefilledToken]);
-
-  const {
-    trade: { state: tradeState, trade, resetRouterSdkCache },
-    allowedSlippage,
-    currencyBalances,
-    parsedAmount,
-    currencies,
-    inputError: swapInputError,
-  } = useDerivedSwapInfo(state);
-
-
-
-  const decimals = useMemo(
-    () => ({
-      [Field.INPUT]:
-        independentField === Field.INPUT
-          ? trade?.outputAmount?.currency.decimals ?? 7
-          : trade?.inputAmount?.currency.decimals ?? 7,
-      [Field.OUTPUT]:
-        independentField === Field.OUTPUT
-          ? trade?.inputAmount?.currency.decimals ?? 7
-          : trade?.outputAmount?.currency.decimals ?? 7,
-    }),
-    [independentField, trade],
-  );
-
-
-  const formattedAmounts = useMemo(
-    () => ({
-      [independentField]: typedValue,
-      [dependentField]: formatTokenAmount(trade?.expectedAmount, decimals[independentField]),
-    }),
-    [decimals, dependentField, independentField, trade?.expectedAmount, typedValue],
-  );
-
-  const handleTrustline = () => {
-    const asset = trade?.outputAmount?.currency;
-    if (!asset?.issuer) return;
-
-    setTrustline({ tokenSymbol: asset.code, tokenAdmin: asset.issuer, sorobanContext })
-      .then((result) => {
-        setNeedTrustline(false);
-        sendNotification(
-          `for ${asset.code}`,
-          'Trustline set',
-          SnackbarIconType.MINT,
-          SnackbarContext,
-        );
-      })
-      .catch((error) => {
-        // console.log(error);
-        setTxError(true);
-        setSwapState((currentState) => ({
-          ...currentState,
-          showConfirm: false,
-        }));
-      });
+    
   };
 
+  const buy = async () => {
+    await checkTrustline()
+    if(needTrustline){
+      try {
+        setTrustline(
+          {
+            tokenSymbol: selectedToken?.name!,
+            tokenAdmin: selectedToken?.issuer!,
+            sorobanContext
+          }
+        )
+          
+      } catch (error) {
+        console.error(error)
+      }
+    }
+    try {
+      InitDeposit(selectedAnchor?.home_domain!)
+    } catch (error) {
+      console.error(error)
+    }
+  }
 
 
-  const nativeBalance = useGetNativeTokenBalance();
+  const sign = async (txn: any) => {
+    const signedTransaction = await sorobanContext?.activeConnector?.signTransaction(txn, {
+      networkPassphrase: activeChain?.networkPassphrase,
+      network: activeChain?.id,
+      accountToSign: address
+    })
+    return signedTransaction;
+  }
+
+  const InitDeposit = async (homeDomain: string) => {
+    console.log(homeDomain)
+    const { transaction } = await getChallengeTransaction({
+      publicKey: address! && address,
+      homeDomain: homeDomain
+    })
+    const signedTransaction = await sign(transaction)
+    const submittedTransaction = await submitChallengeTransaction({
+      transactionXDR: signedTransaction,
+      homeDomain: homeDomain
+    })
+    const { url } = await initInteractiveDepositFlow({
+      authToken: submittedTransaction,
+      homeDomain: homeDomain,
+      urlFields: {
+        asset_code: selectedToken?.name,
+        asset_issuer: selectedToken?.issuer
+      }
+    })
+
+    const interactiveUrl = `${url}&callback=postMessage`
+    let popup = window.open(interactiveUrl, 'interactiveDeposit', 'width=450,height=750')
+
+    if (!popup) {
+      alert(
+        "Popups are blocked. You’ll need to enable popups for this demo to work",
+      );
+      console.error(
+        "Popups are blocked. You’ll need to enable popups for this demo to work",
+      )
+    }
+
+    popup?.focus()
+
+    window.addEventListener('message', (event) => {
+      if (event.origin === homeDomain) {
+        console.log(event.data)
+        const transaction = event.data.transaction
+        if (transaction.status == 'complete')
+          popup?.close()
+      }
+    })
+  }
 
   useEffect(() => {
-    const checkTrustline = async () => {
-      if (!trade) return;
-      if (sorobanContext.address) {
-        // Check if we need trustline
-        const needTrustline = await requiresTrustline(
-          sorobanContext,
-          trade?.outputAmount?.currency,
-          trade?.outputAmount?.value,
-        );
+    checkTrustline()
+  }, [selectedToken, address, activeChain])
 
-        if (needTrustline) {
-          setNeedTrustline(true);
-        } else {
-          setNeedTrustline(false);
-        }
-      } else {
-        // Until the user does not connects the wallet, we will think that we need trustline
-        setNeedTrustline(true);
-      }
-    };
-
-    checkTrustline();
-  }, [sorobanContext, trade, nativeBalance.data?.validAccount]);
-
-
+  const fetchCurrencies = async () => {
+    console.log('fetching currencies')
+    const currencies = await getCurrencies(selectedAnchor?.home_domain!)
+    setSelectedToken({name: currencies[0].code, issuer: currencies[0].issuer})
+  }
 
   return (
     <>
-      <SwapWrapper style={{ minHeight: '500px' }}>
-        <SwapHeader />
-        <AutoColumn>
-          <DepositFiatInputPanel />
-        </AutoColumn>
-      </SwapWrapper>
+      <StyledWrapper>
+        <SwapHeader showConfig={false}/>
+        <SwapSection>
+          <InputPanel>
+            <Container hideInput={false}>
+              <div>Deposit to:</div>
+              <Aligner>
+                <RowFixed>
+                  <StyledSelect visible={true} selected={!!selectedAnchor} onClick={()=>setSelectedAnchor(anchors[0])}>
+                    <StyledTokenName
+                      data-testid="Swap__Panel__Selector"
+                      sx={{paddingLeft:'16px'}}
+                    >
+                      {selectedAnchor ? selectedAnchor.name : 'Select Anchor'}
+                    </StyledTokenName>
+                  {<StyledDropDown selected={!!selectedAnchor} />}
+                  </StyledSelect>
+                </RowFixed>
+              </Aligner>
+            </Container>
+          </InputPanel>
+        </SwapSection>
+        <SwapSection>
+        <InputPanel>
+            <Container hideInput={false}>
+              <div>Recieve:</div>
+              <Aligner>
+                <RowFixed>
+                  <StyledSelect visible={true} selected={!!selectedToken} onClick={()=>fetchCurrencies()}>
+                    <StyledTokenName
+                      data-testid="Swap__Panel__Selector"
+                      sx={
+                        {
+                          paddingLeft:'16px',
+                        }
+                      }
+                    >
+                      {selectedToken ? selectedToken.name : 'Select token'}
+                    </StyledTokenName>
+                  {<StyledDropDown selected={!!selectedToken} />}
+                  </StyledSelect>
+                </RowFixed>
+              </Aligner>
+            </Container>
+          </InputPanel>
+        </SwapSection>
+        {address ? 
+        (<ButtonPrimary onClick={buy}>
+          <BodyPrimary>
+            <span> Buy {selectedToken ? selectedToken.name : ''} </span>
+          </BodyPrimary>
+        </ButtonPrimary>):
+        (<WalletButton/>)
+        }
+      </StyledWrapper>
     </>
-  );
+  )
 }
+
+export { BuyComponent }

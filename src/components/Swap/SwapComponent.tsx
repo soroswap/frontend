@@ -388,7 +388,7 @@ export function SwapComponent({
   return (
     <>
       <SwapWrapper>
-        <SwapHeader />
+        <SwapHeader showConfig={true} />
         <Modal
           open={txError}
           onClose={() => setTxError(false)}
