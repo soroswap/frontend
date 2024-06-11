@@ -3,10 +3,8 @@ import { useFactory } from 'hooks';
 import { useContext, useMemo } from 'react';
 import { CurrencyAmount, Networks, Protocols, Router, Token, TradeType } from 'soroswap-router-sdk';
 import { AppContext } from 'contexts';
-
-const backendUrl = process.env.NEXT_PUBLIC_SOROSWAP_BACKEND_URL;
-const backendApiKey = process.env.NEXT_PUBLIC_SOROSWAP_BACKEND_API_KEY;
-const shouldUseBackend = process.env.NEXT_PUBLIC_SOROSWAP_BACKEND_ENABLED === 'true';
+import axios from 'axios';
+import { TokenType } from 'interfaces';
 
 export interface GenerateRouteProps {
   amountTokenAddress: string;
@@ -14,6 +12,11 @@ export interface GenerateRouteProps {
   amount: string;
   tradeType: TradeType;
 }
+
+const queryNetworkDict: { [x: string]: 'MAINNET' | 'TESTNET' } = {
+  [Networks.PUBLIC]: 'MAINNET',
+  [Networks.TESTNET]: 'TESTNET',
+};
 
 export const useRouterSDK = () => {
   const sorobanContext = useSorobanReact();
@@ -25,19 +28,33 @@ export const useRouterSDK = () => {
   const network = sorobanContext.activeChain?.networkPassphrase as Networks;
 
   const router = useMemo(() => {
-    if (!backendUrl || !backendApiKey) {
-      throw new Error(
-        'NEXT_PUBLIC_SOROSWAP_BACKEND_URL and NEXT_PUBLIC_SOROSWAP_BACKEND_API_KEY must be set in the environment variables.',
-      );
-    }
-
     return new Router({
-      backendUrl,
-      backendApiKey,
+      getPairsFn: async () => {
+        let queryNetwork = queryNetworkDict[network];
+
+        const { data } = await axios.get<
+          {
+            tokenA: TokenType;
+            tokenB: TokenType;
+            reserveA: string;
+            reserveB: string;
+          }[]
+        >('https://info.soroswap.finance/api/pairs', {
+          params: { network: queryNetwork },
+        });
+
+        return data.map((pair) => {
+          return {
+            tokenA: pair.tokenA.contract,
+            tokenB: pair.tokenB.contract,
+            reserveA: pair.reserveA,
+            reserveB: pair.reserveB,
+          };
+        });
+      },
       pairsCacheInSeconds: 60,
       protocols: [Protocols.SOROSWAP],
       network,
-      shouldUseBackend,
       maxHops,
     });
   }, [network, maxHops]);
@@ -62,7 +79,6 @@ export const useRouterSDK = () => {
     tradeType,
   }: GenerateRouteProps) => {
     if (!factory) throw new Error('Factory address not found');
-
     const currencyAmount = fromAddressAndAmountToCurrencyAmount(amountTokenAddress, amount);
     const quoteCurrency = fromAddressToToken(quoteTokenAddress);
 
