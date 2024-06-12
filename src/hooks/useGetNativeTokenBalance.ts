@@ -25,12 +25,13 @@ const fetchBalance = async ({ sorobanContext, address }: FetchBalanceProps) => {
     return { data: 0, validAccount: false };
   }
 
-  try {
-    const balance = await tokenBalance(networkNativeToken.address, address, sorobanContext);
-    return { data: balance, validAccount: true };
-  } catch (error) {
-    return { data: 0, validAccount: true };
+  const balance = await tokenBalance(networkNativeToken.address, address, sorobanContext);
+
+  if (balance === null) {
+    throw new Error('Failed to fetch balance');
   }
+
+  return { data: balance, validAccount: true };
 };
 
 const useGetNativeTokenBalance = () => {
