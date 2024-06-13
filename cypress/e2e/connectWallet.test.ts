@@ -41,7 +41,6 @@ describe('Connect Wallet', () => {
       }
       //write logs to a file on cypress/logs/logs.txt
       cy.writeFile('cypress/logs/logs.txt', logs.join('\n'));
-      cy.screenshot();
     });
     // cy.contains('Public Key: publicKey')
   });
