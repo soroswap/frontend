@@ -8,6 +8,7 @@ import { SorobanContextType } from '@soroban-react/core';
 import { tokenBalance } from 'hooks';
 import { TokenMapType, TokenType } from 'interfaces';
 import BigNumber from 'bignumber.js';
+import { getTotalShares } from './LiquidityPools';
 
 export type LpTokensObj = {
   token_0: TokenType | undefined;
@@ -35,28 +36,30 @@ const getLpResultsFromBackendPairs = async (
 
   for (const element of pairsBackend) {
     const pairLpTokens = await tokenBalance(
-      element.contractId,
+      element.address,
       sorobanContext.address,
       sorobanContext,
     );
 
     if (pairLpTokens != 0) {
-      const token_0 = await findToken(element.token0, tokensAsMap, sorobanContext);
-      const token_1 = await findToken(element.token1, tokensAsMap, sorobanContext);
+      const token_0 = await findToken(element.tokenA, tokensAsMap, sorobanContext);
+      const token_1 = await findToken(element.tokenB, tokensAsMap, sorobanContext);
+
+      const totalShares = await getTotalShares(element.address, sorobanContext);
 
       const lpPercentage = BigNumber(pairLpTokens as BigNumber)
-        .dividedBy(Number(element.totalShares))
+        .dividedBy(Number(totalShares))
         .multipliedBy(100)
         .decimalPlaces(7);
 
       if (!token_0 || !token_1) return;
 
       const myReserve0 = BigNumber(pairLpTokens as BigNumber)
-        ?.multipliedBy(BigNumber(element.reserve0))
-        .dividedBy(Number(element.totalShares));
+        ?.multipliedBy(BigNumber(element.reserveA))
+        .dividedBy(Number(totalShares));
       const myReserve1 = BigNumber(pairLpTokens as BigNumber)
-        ?.multipliedBy(BigNumber(element.reserve1))
-        .dividedBy(Number(element.totalShares));
+        ?.multipliedBy(BigNumber(element.reserveB))
+        .dividedBy(Number(totalShares));
 
       const toReturn = {
         token_0,
@@ -64,9 +67,9 @@ const getLpResultsFromBackendPairs = async (
         balance: pairLpTokens,
         lpPercentage: lpPercentage.toString(),
         status: 'Active',
-        reserve0: BigNumber(element.reserve0),
-        reserve1: BigNumber(element.reserve1),
-        totalShares: element.totalShares,
+        reserve0: BigNumber(element.reserveA),
+        reserve1: BigNumber(element.reserveB),
+        totalShares: totalShares,
         myReserve0,
         myReserve1,
       };
