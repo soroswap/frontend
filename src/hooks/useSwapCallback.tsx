@@ -93,13 +93,48 @@ export function useSwapCallback(
   // allowedSlippage: Percent, // in bips
   // permitSignature: PermitSignature | undefined
 ) {
+  console.log(trade?.path)
   const { SnackbarContext } = useContext(AppContext);
   const sorobanContext = useSorobanReact();
-  const { activeChain, address } = sorobanContext;
+  const { activeChain, address, serverHorizon } = sorobanContext;
   const routerCallback = useRouterCallback();
   const allowedSlippage = useUserSlippageToleranceWithDefault(DEFAULT_SLIPPAGE_INPUT_VALUE);
 
   const { mutate } = useSWRConfig();
+
+  const calculateHorizonStrictSendPath = async (assetFrom?: StellarSdk.Asset, assetTo?: StellarSdk.Asset[], amount?: string) => {
+    if (!activeChain?.networkUrl || !serverHorizon) {
+      return
+    }
+    if (!assetFrom || !assetTo || !amount) {
+      console.error('Missing params')
+      return
+    }
+    const horizonPath = await serverHorizon?.strictSendPaths(
+      assetFrom,
+      amount,
+      assetTo
+    ).call()
+    if (!horizonPath) return
+    return horizonPath.records
+  }
+
+  const calculateHorizonStrictReceivePath = async (assetFrom?: StellarSdk.Asset[], assetTo?: StellarSdk.Asset, amount?: string) => {
+    if (!activeChain?.networkUrl || !serverHorizon) {
+      return
+    }
+    if (!assetFrom || !assetTo || !amount) {
+      console.error('Missing params')
+      return
+    }
+    const horizonPath = await serverHorizon?.strictReceivePaths(
+      assetFrom,
+      assetTo,
+      amount
+    ).call()
+    if (!horizonPath) return
+    return horizonPath.records
+  }
 
   const doSwap = async (
     simulation?: boolean,
@@ -114,7 +149,6 @@ export function useSwapCallback(
       outputAmount: trade.outputAmount?.value as string,
       allowedSlippage: allowedSlippage,
     });
-
     const amount0ScVal = bigNumberToI128(amount0);
     const amount1ScVal = bigNumberToI128(amount1);
 
