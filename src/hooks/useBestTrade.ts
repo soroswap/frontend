@@ -11,6 +11,8 @@ const TRADE_NOT_FOUND = {
 } as const;
 const TRADE_LOADING = { state: TradeState.LOADING, trade: undefined } as const;
 
+const TEMP_USE_AGGREGATOR = true;
+
 /**
  * Returns the best v2+v3 trade for a desired swap.
  * @param tradeType whether the swap is an exact in/out
@@ -27,7 +29,7 @@ export function useBestTrade(
   trade?: InterfaceTrade;
   resetRouterSdkCache: () => void;
 } {
-  const { generateRoute, resetRouterSdkCache, maxHops } = useRouterSDK();
+  const { generateRoute, generateDexDistribution, resetRouterSdkCache, maxHops } = useRouterSDK();
 
   const {
     data,
@@ -43,22 +45,43 @@ export function useBestTrade(
           maxHops,
         ]
       : null,
-    ([amountTokenAddress, quoteTokenAddress, tradeType, amount, maxHops]) =>
-      generateRoute({
-        amountTokenAddress,
-        quoteTokenAddress,
-        amount,
-        tradeType:
-          tradeType === TradeType.EXACT_INPUT
-            ? SdkTradeType.EXACT_INPUT
-            : SdkTradeType.EXACT_OUTPUT,
-      }),
+    async ([amountTokenAddress, quoteTokenAddress, tradeType, amount, maxHops]) => {
+      let result;
+      if (TEMP_USE_AGGREGATOR) {
+        result = await generateDexDistribution({
+          amountTokenAddress,
+          quoteTokenAddress,
+          amount,
+          tradeType: tradeType === TradeType.EXACT_INPUT ? SdkTradeType.EXACT_INPUT : SdkTradeType.EXACT_OUTPUT,
+        });
+      } else {
+        result = await generateRoute({
+          amountTokenAddress,
+          quoteTokenAddress,
+          amount,
+          tradeType: tradeType === TradeType.EXACT_INPUT ? SdkTradeType.EXACT_INPUT : SdkTradeType.EXACT_OUTPUT,
+        });
+      }
+  
+      // Normalize the result to match the expected type
+      if (result && 'totalAmount' in result && 'distribution' in result) {
+        return result;
+      } else {
+        // Handle the case where result is of different type
+        return {
+          totalAmount: 0,
+          distribution: [], // or transform the result to the expected structure
+        };
+      }
+    },
     {
       revalidateIfStale: true,
       revalidateOnFocus: true,
       refreshInterval: 0,
     },
   );
+
+  console.log('🚀 « THIS data:', data);
 
   const isLoading = isLoadingSWR || isValidating;
 

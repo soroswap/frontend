@@ -1,9 +1,9 @@
 import { useSorobanReact } from '@soroban-react/core';
+import { AppContext } from 'contexts';
 import { useFactory } from 'hooks';
 import { useContext, useMemo } from 'react';
-import { CurrencyAmount, Networks, Protocols, Router, Token, TradeType } from 'soroswap-router-sdk';
-import { AppContext } from 'contexts';
 import { fetchAllSoroswapPairs } from 'services/pairs';
+import { CurrencyAmount, Networks, Protocols, Router, Token, TradeType } from 'soroswap-router-sdk';
 
 export interface GenerateRouteProps {
   amountTokenAddress: string;
@@ -66,5 +66,18 @@ export const useRouterSDK = () => {
     return router.route(currencyAmount, quoteCurrency, tradeType, factory, sorobanContext as any);
   };
 
-  return { generateRoute, resetRouterSdkCache, maxHops };
+  const generateDexDistribution = async ({
+    amountTokenAddress,
+    quoteTokenAddress,
+    amount,
+    tradeType,
+  }: GenerateRouteProps) => {
+    if (!factory) throw new Error('Factory address not found');
+    const currencyAmount = fromAddressAndAmountToCurrencyAmount(amountTokenAddress, amount);
+    const quoteCurrency = fromAddressToToken(quoteTokenAddress);
+
+    return router.routeSplit(currencyAmount, quoteCurrency, tradeType);
+  };
+
+  return { generateRoute, generateDexDistribution, resetRouterSdkCache, maxHops };
 };
