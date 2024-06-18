@@ -30,13 +30,17 @@ export function useAggregatorCallback() {
 
   return useCallback(
     async (method: AggregatorMethod, args?: StellarSdk.xdr.ScVal[], signAndSend?: boolean) => {
-
-
-
-
-
-
+      if(!args) return 
+      console.log('🚀 « args:', args);
+      console.log('🚀 « method:', method);
       
+      // console.log('🚀 « aggregator_address:', aggregator_address);
+      // const tokenContract = new StellarSdk.Contract(aggregator_address as string);
+      // const op = tokenContract.call('swap', args);
+      // console.log('🚀 « op:', op);
+      
+
+
       let result = (await contractInvoke({
         contractAddress: aggregator_address as string,
         method: method,
@@ -45,9 +49,11 @@ export function useAggregatorCallback() {
         signAndSend: signAndSend,
         reconnectAfterTx: false,
       })) as TxResponse;
+      console.log('🚀 « result:', result);
 
       //If is only a simulation return the result
       if (!signAndSend) return result;
+      console.log('🚀 « result:', result);
 
       if (
         isObject(result) &&

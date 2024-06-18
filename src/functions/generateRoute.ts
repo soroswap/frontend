@@ -3,13 +3,14 @@ import { AppContext } from 'contexts';
 import { useFactory } from 'hooks';
 import { useContext, useMemo } from 'react';
 import { fetchAllSoroswapPairs } from 'services/pairs';
-import { CurrencyAmount, Networks, Protocols, Router, Token, TradeType } from 'soroswap-router-sdk';
+import { CurrencyAmount, Networks, Protocols, Router, Token, TradeType } from '../../temp/src';
 
 export interface GenerateRouteProps {
   amountTokenAddress: string;
   quoteTokenAddress: string;
   amount: string;
   tradeType: TradeType;
+  isAggregator?: boolean;
 }
 
 const queryNetworkDict: { [x: string]: 'MAINNET' | 'TESTNET' } = {
@@ -58,26 +59,18 @@ export const useRouterSDK = () => {
     quoteTokenAddress,
     amount,
     tradeType,
+    isAggregator
   }: GenerateRouteProps) => {
     if (!factory) throw new Error('Factory address not found');
     const currencyAmount = fromAddressAndAmountToCurrencyAmount(amountTokenAddress, amount);
     const quoteCurrency = fromAddressToToken(quoteTokenAddress);
+
+    if (isAggregator) {
+      return router.routeSplit(currencyAmount, quoteCurrency, tradeType);
+    } 
 
     return router.route(currencyAmount, quoteCurrency, tradeType, factory, sorobanContext as any);
   };
 
-  const generateDexDistribution = async ({
-    amountTokenAddress,
-    quoteTokenAddress,
-    amount,
-    tradeType,
-  }: GenerateRouteProps) => {
-    if (!factory) throw new Error('Factory address not found');
-    const currencyAmount = fromAddressAndAmountToCurrencyAmount(amountTokenAddress, amount);
-    const quoteCurrency = fromAddressToToken(quoteTokenAddress);
-
-    return router.routeSplit(currencyAmount, quoteCurrency, tradeType);
-  };
-
-  return { generateRoute, generateDexDistribution, resetRouterSdkCache, maxHops };
+  return { generateRoute, resetRouterSdkCache, maxHops };
 };

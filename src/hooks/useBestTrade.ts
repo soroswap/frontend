@@ -1,17 +1,16 @@
 import { useRouterSDK } from 'functions/generateRoute';
+import { hasDistribution } from 'helpers/aggregator';
 import { CurrencyAmount, TokenType } from 'interfaces';
 import { useEffect, useMemo, useState } from 'react';
-import { TradeType as SdkTradeType } from 'soroswap-router-sdk';
 import { InterfaceTrade, QuoteState, TradeState, TradeType } from 'state/routing/types';
 import useSWR from 'swr';
+import { TradeType as SdkTradeType } from '../../temp/src';
 
 const TRADE_NOT_FOUND = {
   state: TradeState.NO_ROUTE_FOUND,
   trade: undefined,
 } as const;
 const TRADE_LOADING = { state: TradeState.LOADING, trade: undefined } as const;
-
-const TEMP_USE_AGGREGATOR = true;
 
 /**
  * Returns the best v2+v3 trade for a desired swap.
@@ -24,12 +23,13 @@ export function useBestTrade(
   amountSpecified?: CurrencyAmount,
   otherCurrency?: TokenType,
   account?: string,
+  isAggregator?: boolean,
 ): {
   state: TradeState;
   trade?: InterfaceTrade;
   resetRouterSdkCache: () => void;
 } {
-  const { generateRoute, generateDexDistribution, resetRouterSdkCache, maxHops } = useRouterSDK();
+  const { generateRoute, resetRouterSdkCache, maxHops } = useRouterSDK();
 
   const {
     data,
@@ -45,35 +45,17 @@ export function useBestTrade(
           maxHops,
         ]
       : null,
-    async ([amountTokenAddress, quoteTokenAddress, tradeType, amount, maxHops]) => {
-      let result;
-      if (TEMP_USE_AGGREGATOR) {
-        result = await generateDexDistribution({
-          amountTokenAddress,
-          quoteTokenAddress,
-          amount,
-          tradeType: tradeType === TradeType.EXACT_INPUT ? SdkTradeType.EXACT_INPUT : SdkTradeType.EXACT_OUTPUT,
-        });
-      } else {
-        result = await generateRoute({
-          amountTokenAddress,
-          quoteTokenAddress,
-          amount,
-          tradeType: tradeType === TradeType.EXACT_INPUT ? SdkTradeType.EXACT_INPUT : SdkTradeType.EXACT_OUTPUT,
-        });
-      }
-  
-      // Normalize the result to match the expected type
-      if (result && 'totalAmount' in result && 'distribution' in result) {
-        return result;
-      } else {
-        // Handle the case where result is of different type
-        return {
-          totalAmount: 0,
-          distribution: [], // or transform the result to the expected structure
-        };
-      }
-    },
+    ([amountTokenAddress, quoteTokenAddress, tradeType, amount, maxHops]) =>
+      generateRoute({
+        amountTokenAddress,
+        quoteTokenAddress,
+        amount,
+        tradeType:
+          tradeType === TradeType.EXACT_INPUT
+            ? SdkTradeType.EXACT_INPUT
+            : SdkTradeType.EXACT_OUTPUT,
+        isAggregator
+      }),
     {
       revalidateIfStale: true,
       revalidateOnFocus: true,
@@ -81,7 +63,7 @@ export function useBestTrade(
     },
   );
 
-  console.log('🚀 « THIS data:', data);
+  // console.log('🚀 « THIS data:', data);
 
   const isLoading = isLoadingSWR || isValidating;
 
@@ -142,17 +124,26 @@ export function useBestTrade(
   }, [data, currencyIn, currencyOut, tradeType]);
 
   const trade: InterfaceTrade = useMemo(() => {
-    return {
+    const baseTrade = {
       inputAmount,
       outputAmount,
-      expectedAmount, // //isNaN(expectedAmount) ? 0 : expectedAmount,
-      path: data?.trade.path,
-      tradeType: tradeType,
+      expectedAmount,
+      tradeType,
       rawRoute: data,
+      path: data?.trade.path,
       priceImpact: data?.priceImpact,
     };
+  
+    if (data?.trade && hasDistribution(data.trade)) {
+      return {
+        ...baseTrade,
+        distribution: data.trade.distribution,
+      };
+    } 
+  
+    return baseTrade;
   }, [expectedAmount, inputAmount, outputAmount, tradeType, data]);
-
+  
   /*
   If the pairAddress or the trades chenges, we upgrade the tradeResult
   trade can change by changing the amounts, as well as the independent value

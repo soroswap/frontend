@@ -1,19 +1,19 @@
-import { BodySmall } from 'components/Text';
-import { Box, styled } from '@mui/material';
 import { ChevronRight } from '@mui/icons-material';
-import { findToken } from 'hooks/tokens/useToken';
-import { formatTokenAmount } from 'helpers/format';
-import { InterfaceTrade } from 'state/routing/types';
-import { LoadingRows } from 'components/Loader/styled';
-import { MouseoverTooltip } from 'components/Tooltip';
-import { RowBetween, RowFixed } from 'components/Row';
-import { Separator } from 'components/SearchModal/styleds';
-import { useAllTokens } from 'hooks/tokens/useAllTokens';
-import React, { useEffect, useState } from 'react';
+import { Box, styled } from '@mui/material';
 import { useSorobanReact } from '@soroban-react/core';
 import Column from 'components/Column';
+import { LoadingRows } from 'components/Loader/styled';
 import CurrencyLogo from 'components/Logo/CurrencyLogo';
-import { Percent } from 'soroswap-router-sdk';
+import { RowBetween, RowFixed } from 'components/Row';
+import { Separator } from 'components/SearchModal/styleds';
+import { BodySmall } from 'components/Text';
+import { MouseoverTooltip } from 'components/Tooltip';
+import { formatTokenAmount } from 'helpers/format';
+import { useAllTokens } from 'hooks/tokens/useAllTokens';
+import { findToken } from 'hooks/tokens/useToken';
+import React, { useEffect, useState } from 'react';
+import { InterfaceTrade } from 'state/routing/types';
+import { Percent } from '../../../temp/src';
 
 export const PathBox = styled(Box)`
   display: flex;
