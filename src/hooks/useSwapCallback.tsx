@@ -1,5 +1,5 @@
 import { TxResponse } from '@soroban-react/contracts';
-import { useSorobanReact } from '@soroban-react/core';
+import { SorobanContextType, useSorobanReact } from '@soroban-react/core';
 import BigNumber from 'bignumber.js';
 import { DEFAULT_SLIPPAGE_INPUT_VALUE } from 'components/Settings/MaxSlippageSettings';
 import { AppContext, SnackbarIconType } from 'contexts';
@@ -14,6 +14,8 @@ import { useUserSlippageToleranceWithDefault } from 'state/user/hooks';
 import * as StellarSdk from '@stellar/stellar-sdk';
 import { useSWRConfig } from 'swr';
 import { RouterMethod, useRouterCallback } from './useRouterCallback';
+
+
 
 // Returns a function that will execute a swap, if the parameters are all valid
 // and the user has approved the slippage adjusted input amount for the trade
@@ -93,48 +95,12 @@ export function useSwapCallback(
   // allowedSlippage: Percent, // in bips
   // permitSignature: PermitSignature | undefined
 ) {
-  console.log(trade?.path)
   const { SnackbarContext } = useContext(AppContext);
   const sorobanContext = useSorobanReact();
-  const { activeChain, address, serverHorizon } = sorobanContext;
+  const { activeChain, address } = sorobanContext;
   const routerCallback = useRouterCallback();
   const allowedSlippage = useUserSlippageToleranceWithDefault(DEFAULT_SLIPPAGE_INPUT_VALUE);
-
   const { mutate } = useSWRConfig();
-
-  const calculateHorizonStrictSendPath = async (assetFrom?: StellarSdk.Asset, assetTo?: StellarSdk.Asset[], amount?: string) => {
-    if (!activeChain?.networkUrl || !serverHorizon) {
-      return
-    }
-    if (!assetFrom || !assetTo || !amount) {
-      console.error('Missing params')
-      return
-    }
-    const horizonPath = await serverHorizon?.strictSendPaths(
-      assetFrom,
-      amount,
-      assetTo
-    ).call()
-    if (!horizonPath) return
-    return horizonPath.records
-  }
-
-  const calculateHorizonStrictReceivePath = async (assetFrom?: StellarSdk.Asset[], assetTo?: StellarSdk.Asset, amount?: string) => {
-    if (!activeChain?.networkUrl || !serverHorizon) {
-      return
-    }
-    if (!assetFrom || !assetTo || !amount) {
-      console.error('Missing params')
-      return
-    }
-    const horizonPath = await serverHorizon?.strictReceivePaths(
-      assetFrom,
-      assetTo,
-      amount
-    ).call()
-    if (!horizonPath) return
-    return horizonPath.records
-  }
 
   const doSwap = async (
     simulation?: boolean,
