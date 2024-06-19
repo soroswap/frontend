@@ -124,7 +124,6 @@ export function useDerivedSwapInfo(state: SwapState) {
   );
 
   const trade = useBestTrade(
-    sorobanContext,
     isExactIn ? TradeType.EXACT_INPUT : TradeType.EXACT_OUTPUT,
     parsedAmount,
     (isExactIn ? outputCurrency : inputCurrency) ?? undefined,
