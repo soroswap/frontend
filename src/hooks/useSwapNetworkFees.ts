@@ -3,9 +3,9 @@ import { xlmTokenList } from 'constants/xlmToken';
 import { useRouterSDK } from 'functions/generateRoute';
 import { calculateSwapFees } from 'functions/getNetworkFees';
 import { TokenType } from 'interfaces';
+import { TradeType } from 'soroswap-router-sdk';
 import { InterfaceTrade } from 'state/routing/types';
 import useSWRImmutable from 'swr/immutable';
-import { TradeType } from '../../temp/src';
 
 type Currencies = {
   INPUT?: TokenType | null | undefined;

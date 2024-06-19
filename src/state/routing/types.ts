@@ -1,6 +1,6 @@
 import { DexDistribution } from 'helpers/aggregator';
 import { CurrencyAmount } from 'interfaces';
-import { Percent } from '../../../temp/src';
+import { Percent } from 'soroswap-router-sdk';
 
 export enum TradeState {
   LOADING,

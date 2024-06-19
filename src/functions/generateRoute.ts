@@ -3,7 +3,7 @@ import { AppContext } from 'contexts';
 import { useFactory } from 'hooks';
 import { useContext, useMemo } from 'react';
 import { fetchAllSoroswapPairs } from 'services/pairs';
-import { CurrencyAmount, Networks, Protocols, Router, Token, TradeType } from '../../temp/src';
+import { CurrencyAmount, Networks, Protocols, Router, Token, TradeType } from 'soroswap-router-sdk';
 
 export interface GenerateRouteProps {
   amountTokenAddress: string;

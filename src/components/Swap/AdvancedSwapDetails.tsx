@@ -12,8 +12,8 @@ import { formatTokenAmount } from 'helpers/format';
 import { useAllTokens } from 'hooks/tokens/useAllTokens';
 import { findToken } from 'hooks/tokens/useToken';
 import React, { useEffect, useState } from 'react';
+import { Percent } from 'soroswap-router-sdk';
 import { InterfaceTrade } from 'state/routing/types';
-import { Percent } from '../../../temp/src';
 
 export const PathBox = styled(Box)`
   display: flex;
