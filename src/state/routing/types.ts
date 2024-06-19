@@ -233,7 +233,7 @@ export enum TradeType {
   EXACT_OUTPUT = 'EXACT_OUTPUT',
 }
 
-export enum TransactionType {
+export enum PlatformType {
   SOROBAN = 'SOROBAN',
   STELLAR_CLASSIC = 'STELLAR_CLASSIC'
 }
@@ -245,7 +245,7 @@ export type InterfaceTrade = {
   path: string[] | undefined;
   priceImpact?: Percent | undefined;
   [x: string]: any;
-  transctionType: TransactionType;
+  platform: PlatformType;
 };
 
 export enum QuoteState {
