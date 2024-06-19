@@ -3,7 +3,7 @@ import { useFactory } from 'hooks';
 import { useContext, useMemo } from 'react';
 import { CurrencyAmount, Networks, Protocols, Router, Token, TradeType } from 'soroswap-router-sdk';
 import { AppContext } from 'contexts';
-import { fetchAllSoroswapPairs } from 'services/pairs';
+import { fetchAllPhoenixPairs, fetchAllSoroswapPairs } from 'services/pairs';
 
 export interface GenerateRouteProps {
   amountTokenAddress: string;
@@ -28,13 +28,18 @@ export const useRouterSDK = () => {
 
   const router = useMemo(() => {
     return new Router({
-      getPairsFn: async () => {
-        const data = await fetchAllSoroswapPairs(network);
-
-        return data;
-      },
+      getPairsFns: [
+        {
+          protocol: Protocols.SOROSWAP,
+          fn: async () => fetchAllSoroswapPairs(network),
+        },
+        {
+          protocol: Protocols.PHOENIX,
+          fn: async () => fetchAllPhoenixPairs(network),
+        },
+      ],
       pairsCacheInSeconds: 60,
-      protocols: [Protocols.SOROSWAP],
+      protocols: [Protocols.SOROSWAP, Protocols.PHOENIX],
       network,
       maxHops,
     });

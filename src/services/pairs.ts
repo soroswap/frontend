@@ -24,3 +24,17 @@ export const fetchAllSoroswapPairs = async (networkPassphrase: string) => {
   });
   return data;
 };
+
+export const fetchAllPhoenixPairs = async (networkPassphrase: string) => {
+  const networkName = passphraseToBackendNetworkName[networkPassphrase];
+
+  const { data } = await axios.get<MercuryPair[]>(
+    `https://info.soroswap.finance/api/pairs/phoenix`,
+    {
+      params: {
+        network: networkName,
+      },
+    },
+  );
+  return data;
+};
