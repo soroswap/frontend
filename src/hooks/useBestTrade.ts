@@ -33,7 +33,7 @@ const getAmount = (amount: string) => {
 }
 
 const parseHorizonResult = (payload: ServerApi.PaymentPathRecord, tradeType: TradeType) =>{
-  
+  console.log('🔴🔴Object', payload)
   const currecnyIn: TokenType = payload.source_asset_type == 'native' ? {
     code: 'XLM',
     contract: '',
@@ -42,7 +42,6 @@ const parseHorizonResult = (payload: ServerApi.PaymentPathRecord, tradeType: Tra
     issuer: payload.source_asset_issuer,
     contract: `${payload.source_asset_code}:${payload.source_asset_issuer}`
   }
-
   const currencyOut: TokenType = payload.destination_asset_type == 'native' ? {
     code: 'XLM',
     contract: '',
@@ -51,19 +50,15 @@ const parseHorizonResult = (payload: ServerApi.PaymentPathRecord, tradeType: Tra
     issuer: payload.destination_asset_issuer,
     contract: `${payload.destination_asset_code}:${payload.destination_asset_issuer}`
   }
-
   const inputAmount: CurrencyAmount = {
     currency: currecnyIn,
     value: new BigNumber(payload.source_amount).multipliedBy(10000000).toString()
   }
-
   const outputAmount: CurrencyAmount = {
     currency: currencyOut,
     value: new BigNumber(payload.destination_amount).multipliedBy(10000000).toString()
   }
-
   const path = [currecnyIn, ...payload.path, currencyOut]
-
   const parsedResult = {
     inputAmount: inputAmount,
     outputAmount: outputAmount,
@@ -72,7 +67,6 @@ const parseHorizonResult = (payload: ServerApi.PaymentPathRecord, tradeType: Tra
     priceImpact: undefined,
     transctionType: TransactionType.STELLAR_CLASSIC,
   }
-  
   return parsedResult
 } 
 
@@ -170,7 +164,7 @@ export function useBestTrade(
    * @param {number} maxHops - The maximum number of hops allowed for the trade.
    * @returns {object} - The data, isLoading, and isValidating values from the SWR hook.
    */
-  const horizonPayload = {
+  const payload = {
     assetFrom: amountSpecified?.currency,
     assetTo: otherCurrency,
     amount: amountSpecified?.value,
@@ -181,7 +175,7 @@ export function useBestTrade(
 
   const calculatePaths = async () => {
     if(!amountSpecified || !otherCurrency) return;
-    await getHorizonBestPath(horizonPayload, sorobanContext)?.then(res=>{
+    await getHorizonBestPath(payload, sorobanContext)?.then(res=>{
       const parsedResult = parseHorizonResult(res, tradeType)
       setHorizonPath(parsedResult);
     })
@@ -322,7 +316,7 @@ export function useBestTrade(
       transctionType: TransactionType.SOROBAN,
     };
   }, [expectedAmount, inputAmount, outputAmount, tradeType, data]);
-  console.log(trade)
+
   /*
   If the pairAddress or the trades chenges, we upgrade the tradeResult
   trade can change by changing the amounts, as well as the independent value
