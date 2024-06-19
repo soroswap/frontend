@@ -20,7 +20,8 @@ const getClassicAsset = (currency: TokenType) => {
   return asset
 }
 
-const getAmount = (amount: string) => {
+export const getAmount = (amount: string) => {
+  if (!amount) return;
   return new BigNumber(amount).dividedBy(10000000).toString()
 }
 
@@ -112,7 +113,7 @@ export function getHorizonBestPath(
     try {
       const send = serverHorizon?.strictSendPaths(
         args.assetFrom!,
-        args?.amount,
+        args?.amount!,
         [args.assetTo!]
       ).call().then((res) => {
         return res.records;
@@ -125,6 +126,7 @@ export function getHorizonBestPath(
         return maxObj;
           }
         });
+        console.log(maxObj)
         return parseHorizonResult(maxObj, payload.tradeType);
       });
     } catch (error) {
@@ -137,7 +139,7 @@ export function getHorizonBestPath(
       const receive = serverHorizon?.strictReceivePaths(
         [args.assetFrom!],
         args.assetTo!,
-        args?.amount,
+        args?.amount!,
       ).call().then((res) => {
         return res.records;
       });
@@ -150,6 +152,7 @@ export function getHorizonBestPath(
             return minObj;
           }
         });
+        console.log(minObj)
         return parseHorizonResult(minObj, payload.tradeType);
       });
     } catch (error) {
