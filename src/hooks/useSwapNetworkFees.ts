@@ -49,14 +49,14 @@ const useSwapNetworkFees = (trade: InterfaceTrade | undefined, currencies: Curre
   const buildTradeWithOneXlmAsInput = async (): Promise<InterfaceTrade | undefined> => {
     const valueOfOne = '10000000';
 
-    const currencyA = currencies.INPUT;
+    const currencyA = {currency: currencies.INPUT! as TokenType, value: '0'};
     const currencyB = currencies.OUTPUT;
 
     if (!currencyA || !currencyB) return undefined;
 
     const result = await generateRoute({
-      amountTokenAddress: currencyA.contract,
-      quoteTokenAddress: currencyB.contract,
+      amountAsset: currencyA,
+      quoteAsset: currencyB,
       amount: valueOfOne,
       tradeType: TradeType.EXACT_INPUT,
     });
@@ -68,7 +68,7 @@ const useSwapNetworkFees = (trade: InterfaceTrade | undefined, currencies: Curre
     const trade: InterfaceTrade = {
       inputAmount: {
         value: valueOfOne,
-        currency: currencyA,
+        currency: currencyA.currency!,
       },
       outputAmount: {
         value: outputAmount,
