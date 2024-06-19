@@ -1,5 +1,5 @@
 import { calculateSwapFees } from 'functions/getNetworkFees';
-import { InterfaceTrade } from 'state/routing/types';
+import { InterfaceTrade, TransactionType } from 'state/routing/types';
 import { SorobanContextType, useSorobanReact } from '@soroban-react/core';
 import useSWRImmutable from 'swr/immutable';
 import { useRouterSDK } from 'functions/generateRoute';
@@ -76,6 +76,7 @@ const useSwapNetworkFees = (trade: InterfaceTrade | undefined, currencies: Curre
       },
       path: result?.trade.path,
       tradeType: TradeType.EXACT_INPUT,
+      transctionType: TransactionType.SOROBAN
     };
 
     return trade;
