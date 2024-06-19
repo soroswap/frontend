@@ -245,7 +245,7 @@ export type InterfaceTrade = {
   path: string[] | undefined;
   priceImpact?: Percent | undefined;
   [x: string]: any;
-  platform: PlatformType;
+  platform?: PlatformType;
 };
 
 export enum QuoteState {

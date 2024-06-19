@@ -5,10 +5,14 @@ import { CurrencyAmount, Networks, Protocols, Router, Token, TradeType } from 's
 import { AppContext } from 'contexts';
 import axios from 'axios';
 import { TokenType } from 'interfaces';
+import { getBestPath, getHorizonBestPath } from 'helpers/horizon/getHorizonPath';
+import { PlatformType } from 'state/routing/types';
+import { CurrencyAmount as AmountAsset } from 'interfaces';
+
 
 export interface GenerateRouteProps {
-  amountTokenAddress: string;
-  quoteTokenAddress: string;
+  amountAsset: AmountAsset;
+  quoteAsset: TokenType;
   amount: string;
   tradeType: TradeType;
 }
@@ -73,16 +77,35 @@ export const useRouterSDK = () => {
   };
 
   const generateRoute = async ({
-    amountTokenAddress,
-    quoteTokenAddress,
+    amountAsset,
+    quoteAsset,
     amount,
     tradeType,
   }: GenerateRouteProps) => {
     if (!factory) throw new Error('Factory address not found');
-    const currencyAmount = fromAddressAndAmountToCurrencyAmount(amountTokenAddress, amount);
-    const quoteCurrency = fromAddressToToken(quoteTokenAddress);
+    const currencyAmount = fromAddressAndAmountToCurrencyAmount(amountAsset.currency.contract, amount);
+    const quoteCurrency = fromAddressToToken(quoteAsset.contract);
 
-    return router.route(currencyAmount, quoteCurrency, tradeType, factory, sorobanContext as any);
+    const horizonProps = {
+      assetFrom: amountAsset.currency,
+      assetTo: quoteAsset,
+      amount,
+      tradeType,
+    };
+
+    const horizonPath = await getHorizonBestPath(horizonProps, sorobanContext);
+    const routerPath = await router.route(currencyAmount, quoteCurrency, tradeType, factory, sorobanContext as any).then(res=>{
+      if(!res) return;
+      const response = {
+        ...res,
+        platform: PlatformType.SOROBAN,
+      }
+      return response;
+    })
+
+    const bestPath = getBestPath(horizonPath, routerPath, tradeType);
+
+    return bestPath;
   };
 
   return { generateRoute, resetRouterSdkCache, maxHops };

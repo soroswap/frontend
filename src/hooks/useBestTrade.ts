@@ -19,7 +19,6 @@ const TRADE_LOADING = { state: TradeState.LOADING, trade: undefined } as const;
  * @param otherCurrency the desired output/payment currency
  */
 export function useBestTrade(
-  sorobanContext: SorobanContextType,
   tradeType: TradeType,
   amountSpecified?: CurrencyAmount,
   otherCurrency?: TokenType,
@@ -46,17 +45,17 @@ export function useBestTrade(
   } = useSWR(
     amountSpecified && otherCurrency
       ? [
-          amountSpecified.currency.contract,
-          otherCurrency.contract,
+          amountSpecified,
+          otherCurrency,
           tradeType,
           amountSpecified.value,
           maxHops,
         ]
       : null,
-    ([amountTokenAddress, quoteTokenAddress, tradeType, amount, maxHops]) =>
+    ([amountAsset, quoteAsset, tradeType, amount, maxHops]) =>
       generateRoute({
-        amountTokenAddress,
-        quoteTokenAddress,
+        amountAsset,
+        quoteAsset,
         amount,
         tradeType:
           tradeType === TradeType.EXACT_INPUT
@@ -138,7 +137,7 @@ export function useBestTrade(
       tradeType: tradeType,
       rawRoute: data,
       priceImpact: data?.priceImpact,
-      platform: PlatformType.SOROBAN,
+      platform: data?.platform
     };
   }, [expectedAmount, inputAmount, outputAmount, tradeType, data]);
 
