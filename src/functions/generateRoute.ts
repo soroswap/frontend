@@ -17,6 +17,8 @@ const queryNetworkDict: { [x: string]: 'MAINNET' | 'TESTNET' } = {
   [Networks.TESTNET]: 'TESTNET',
 };
 
+const shouldUseBackend = process.env.NEXT_PUBLIC_SOROSWAP_BACKEND_ENABLED === 'true';
+
 export const useRouterSDK = () => {
   const sorobanContext = useSorobanReact();
   const { factory } = useFactory(sorobanContext);
@@ -28,16 +30,18 @@ export const useRouterSDK = () => {
 
   const router = useMemo(() => {
     return new Router({
-      getPairsFns: [
-        {
-          protocol: Protocols.SOROSWAP,
-          fn: async () => fetchAllSoroswapPairs(network),
-        },
-        {
-          protocol: Protocols.PHOENIX,
-          fn: async () => fetchAllPhoenixPairs(network),
-        },
-      ],
+      getPairsFns: shouldUseBackend
+        ? [
+            {
+              protocol: Protocols.SOROSWAP,
+              fn: async () => fetchAllSoroswapPairs(network),
+            },
+            {
+              protocol: Protocols.PHOENIX,
+              fn: async () => fetchAllPhoenixPairs(network),
+            },
+          ]
+        : undefined,
       pairsCacheInSeconds: 60,
       protocols: [Protocols.SOROSWAP, Protocols.PHOENIX],
       network,
