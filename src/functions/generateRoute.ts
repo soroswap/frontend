@@ -2,8 +2,8 @@ import { useSorobanReact } from '@soroban-react/core';
 import { AppContext } from 'contexts';
 import { useFactory } from 'hooks';
 import { useContext, useMemo } from 'react';
-import { fetchAllSoroswapPairs } from 'services/pairs';
 import { CurrencyAmount, Networks, Protocols, Router, Token, TradeType } from 'soroswap-router-sdk';
+import { fetchAllPhoenixPairs, fetchAllSoroswapPairs } from 'services/pairs';
 
 export interface GenerateRouteProps {
   amountTokenAddress: string;
@@ -18,6 +18,8 @@ const queryNetworkDict: { [x: string]: 'MAINNET' | 'TESTNET' } = {
   [Networks.TESTNET]: 'TESTNET',
 };
 
+const shouldUseBackend = process.env.NEXT_PUBLIC_SOROSWAP_BACKEND_ENABLED === 'true';
+
 export const useRouterSDK = () => {
   const sorobanContext = useSorobanReact();
   const { factory } = useFactory(sorobanContext);
@@ -29,13 +31,20 @@ export const useRouterSDK = () => {
 
   const router = useMemo(() => {
     return new Router({
-      getPairsFn: async () => {
-        const data = await fetchAllSoroswapPairs(network);
-
-        return data;
-      },
+      getPairsFns: shouldUseBackend
+        ? [
+            {
+              protocol: Protocols.SOROSWAP,
+              fn: async () => fetchAllSoroswapPairs(network),
+            },
+            // {
+            //   protocol: Protocols.PHOENIX,
+            //   fn: async () => fetchAllPhoenixPairs(network),
+            // },
+          ]
+        : undefined,
       pairsCacheInSeconds: 60,
-      protocols: [Protocols.SOROSWAP],
+      protocols: [Protocols.SOROSWAP], //, Protocols.PHOENIX],
       network,
       maxHops,
     });
@@ -59,7 +68,7 @@ export const useRouterSDK = () => {
     quoteTokenAddress,
     amount,
     tradeType,
-    isAggregator
+    isAggregator,
   }: GenerateRouteProps) => {
     if (!factory) throw new Error('Factory address not found');
     const currencyAmount = fromAddressAndAmountToCurrencyAmount(amountTokenAddress, amount);
@@ -67,7 +76,7 @@ export const useRouterSDK = () => {
 
     if (isAggregator) {
       return router.routeSplit(currencyAmount, quoteCurrency, tradeType);
-    } 
+    }
 
     return router.route(currencyAmount, quoteCurrency, tradeType, factory, sorobanContext as any);
   };
