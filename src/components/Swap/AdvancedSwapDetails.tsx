@@ -84,29 +84,24 @@ export function AdvancedSwapDetails({
       if (!trade?.path || isLoading) return;
       if (trade.platform == PlatformType.SOROBAN) {
         setPathTokensIsLoading(true);
-        console.log(trade.path)
         const promises = trade.path.map(async (contract) => {
           const asset = await findToken(contract, tokensAsMap, sorobanContext);
           const code = asset?.code == 'native' ? 'XLM' : asset?.code;
           return code;
         });
         const results = await Promise.allSettled(promises);
-        console.log(results)
 
         const fulfilledValues = results
           .filter((result) => result.status === 'fulfilled' && result.value)
           .map((result) => (result.status === 'fulfilled' && result.value ? result.value : ''));
-
         setPathArray(fulfilledValues);
         setPathTokensIsLoading(false);
       } else if (trade.platform == PlatformType.STELLAR_CLASSIC) {
         setPathTokensIsLoading(true);
-        console.log(trade.path)
         const codes = trade.path.map((address) => {
           if (address == "native") return "XLM"
           return address.split(":")[0]
         })
-        console.log(codes)
         setPathArray(codes);
         setPathTokensIsLoading(false);
       }
@@ -184,6 +179,14 @@ export function AdvancedSwapDetails({
           </TextWithLoadingPlaceholder>
         </RowBetween>
       }
+      {trade?.platform && (
+        <RowBetween>
+          <MouseoverTooltip title={'The platform where the swap will be made.'}>
+            <BodySmall color="textSecondary">Platform</BodySmall>
+          </MouseoverTooltip>
+          <BodySmall data-testid="swap__details__platform">{trade.platform}</BodySmall>
+        </RowBetween>
+      )}
     </Column>
   );
 }

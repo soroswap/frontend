@@ -15,7 +15,7 @@ import useGetReservesByPair from 'hooks/useGetReservesByPair';
 import { getSwapAmounts } from 'hooks/useSwapCallback';
 import React, { ReactNode, useEffect, useState } from 'react';
 import { AlertTriangle, ChevronRight } from 'react-feather';
-import { InterfaceTrade, TradeType } from 'state/routing/types';
+import { InterfaceTrade, PlatformType, TradeType } from 'state/routing/types';
 import { PathBox, TextWithLoadingPlaceholder, formattedPriceImpact } from './AdvancedSwapDetails';
 import { Label } from './SwapModalHeaderAmount';
 import { getExpectedAmountOfOne } from './TradePrice';
@@ -107,23 +107,29 @@ export default function SwapModalFooter({
   useEffect(() => {
     (async () => {
       if (!trade?.path || isLoading) return;
+      if (trade.platform == PlatformType.SOROBAN) {
+        setPathTokensIsLoading(true);
+        const promises = trade.path.map(async (contract) => {
+          const asset = await findToken(contract, tokensAsMap, sorobanContext);
+          const code = asset?.code == 'native' ? 'XLM' : asset?.code;
+          return code;
+        });
+        const results = await Promise.allSettled(promises);
 
-      setPathTokensIsLoading(true);
-
-      const promises = trade.path.map(async (contract) => {
-        const asset = await findToken(contract, tokensAsMap, sorobanContext);
-        const code = asset?.code == 'native' ? 'XLM' : asset?.code;
-        return code;
-      });
-
-      const results = await Promise.allSettled(promises);
-
-      const fulfilledValues = results
-        .filter((result) => result.status === 'fulfilled' && result.value)
-        .map((result) => (result.status === 'fulfilled' && result.value ? result.value : ''));
-
-      setPathArray(fulfilledValues);
-      setPathTokensIsLoading(false);
+        const fulfilledValues = results
+          .filter((result) => result.status === 'fulfilled' && result.value)
+          .map((result) => (result.status === 'fulfilled' && result.value ? result.value : ''));
+        setPathArray(fulfilledValues);
+        setPathTokensIsLoading(false);
+      } else if (trade.platform == PlatformType.STELLAR_CLASSIC) {
+        setPathTokensIsLoading(true);
+        const codes = trade.path.map((address) => {
+          if (address == "native") return "XLM"
+          return address.split(":")[0]
+        })
+        setPathArray(codes);
+        setPathTokensIsLoading(false);
+      }
     })();
   }, [trade?.path, isLoading, sorobanContext]);
 
@@ -220,6 +226,14 @@ export default function SwapModalFooter({
             </PathBox>
           </TextWithLoadingPlaceholder>
         </RowBetween>
+        {trade?.platform && (
+          <RowBetween>
+            <MouseoverTooltip title={'The platform where the swap will be made.'}>
+              <Label>Platform</Label>
+            </MouseoverTooltip>
+            <BodySmall data-testid="swap__details__platform">{trade.platform}</BodySmall>
+          </RowBetween>
+        )}
       </DetailsContainer>
       {showAcceptChanges ? (
         <SwapShowAcceptChanges data-testid="show-accept-changes">

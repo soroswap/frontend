@@ -234,8 +234,8 @@ export enum TradeType {
 }
 
 export enum PlatformType {
-  SOROBAN = 'SOROBAN',
-  STELLAR_CLASSIC = 'STELLAR_CLASSIC'
+  SOROBAN = 'Soroban',
+  STELLAR_CLASSIC = 'SDEX'
 }
 
 export type InterfaceTrade = {
