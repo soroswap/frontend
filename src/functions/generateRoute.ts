@@ -3,6 +3,7 @@ import { useFactory } from 'hooks';
 import { useContext, useMemo } from 'react';
 import { Currency, CurrencyAmount, Networks, Percent, Protocols, Route, Router, Token, TradeType } from 'soroswap-router-sdk';
 import { AppContext } from 'contexts';
+import { fetchAllPhoenixPairs, fetchAllSoroswapPairs } from 'services/pairs';
 import axios from 'axios';
 import { TokenType } from 'interfaces';
 import { getBestPath, getHorizonBestPath } from 'helpers/horizon/getHorizonPath';
@@ -37,6 +38,8 @@ const queryNetworkDict: { [x: string]: 'MAINNET' | 'TESTNET' } = {
   [Networks.TESTNET]: 'TESTNET',
 };
 
+const shouldUseBackend = process.env.NEXT_PUBLIC_SOROSWAP_BACKEND_ENABLED === 'true';
+
 export const useRouterSDK = () => {
   const sorobanContext = useSorobanReact();
   const { factory } = useFactory(sorobanContext);
@@ -48,31 +51,20 @@ export const useRouterSDK = () => {
 
   const router = useMemo(() => {
     return new Router({
-      getPairsFn: async () => {
-        let queryNetwork = queryNetworkDict[network];
-
-        const { data } = await axios.get<
-          {
-            tokenA: TokenType;
-            tokenB: TokenType;
-            reserveA: string;
-            reserveB: string;
-          }[]
-        >('https://info.soroswap.finance/api/pairs', {
-          params: { network: queryNetwork },
-        });
-
-        return data.map((pair) => {
-          return {
-            tokenA: pair.tokenA.contract,
-            tokenB: pair.tokenB.contract,
-            reserveA: pair.reserveA,
-            reserveB: pair.reserveB,
-          };
-        });
-      },
+      getPairsFns: shouldUseBackend
+        ? [
+            {
+              protocol: Protocols.SOROSWAP,
+              fn: async () => fetchAllSoroswapPairs(network),
+            },
+            // {
+            //   protocol: Protocols.PHOENIX,
+            //   fn: async () => fetchAllPhoenixPairs(network),
+            // },
+          ]
+        : undefined,
       pairsCacheInSeconds: 60,
-      protocols: [Protocols.SOROSWAP],
+      protocols: [Protocols.SOROSWAP], //, Protocols.PHOENIX],
       network,
       maxHops,
     });
