@@ -4,6 +4,8 @@ import { SorobanContextType } from '@soroban-react/core';
 import BigNumber from 'bignumber.js';
 import { CurrencyAmount, TokenType } from 'interfaces';
 import { PlatformType, TradeType } from 'state/routing/types';
+import { Percent } from 'soroswap-router-sdk';
+import { BuildTradeRoute } from 'functions/generateRoute';
 
 
 
@@ -25,7 +27,7 @@ export const getAmount = (amount: string) => {
   return new BigNumber(amount).dividedBy(10000000).toString()
 }
 
-export const parseHorizonResult = (payload: ServerApi.PaymentPathRecord | undefined, tradeType: TradeType) =>{
+export const parseHorizonResult = (payload: ServerApi.PaymentPathRecord | undefined, tradeType: TradeType) => {
   if (!payload) return;
   const currecnyIn: TokenType = payload.source_asset_type == 'native' ? {
     code: 'XLM',
@@ -71,13 +73,14 @@ export const parseHorizonResult = (payload: ServerApi.PaymentPathRecord | undefi
       path: formattedPath
     }
   }
+  const priceImpact = new Percent(0)
   const result = {
     amountCurrency: inputAmount,
     quoteCurrency: outputAmount,
     tradeType: tradeType,
     routeCurrency:[currecnyIn, ...payload.path, currencyOut],
     trade: trade,
-    priceImpact: undefined,
+    priceImpact: priceImpact,
     platform: PlatformType.STELLAR_CLASSIC,
   }
   return result
@@ -126,7 +129,6 @@ export function getHorizonBestPath(
         return maxObj;
           }
         });
-        console.log(maxObj)
         return parseHorizonResult(maxObj, payload.tradeType);
       });
     } catch (error) {
@@ -152,7 +154,6 @@ export function getHorizonBestPath(
             return minObj;
           }
         });
-        console.log(minObj)
         return parseHorizonResult(minObj, payload.tradeType);
       });
     } catch (error) {
@@ -161,43 +162,23 @@ export function getHorizonBestPath(
   }
 }
 
-export const getBestPath = (horizonPath: any, routerPath: any, tradeType: TradeType)=>{
-  if(!horizonPath && !routerPath || !routerPath) return;
+export const getBestPath = (horizonPath: BuildTradeRoute, routerPath: BuildTradeRoute, tradeType: TradeType)=>{
+  if(!tradeType) return;
+  if(!horizonPath) return routerPath
+  if(!routerPath) return horizonPath
   if (tradeType === TradeType.EXACT_INPUT) {
     const horizonAmountOutMin = parseInt(horizonPath?.trade.amountOutMin || '0');
     const routerAmountOutMin = parseInt(routerPath?.trade.amountOutMin || '0');
     if (horizonAmountOutMin !== 0 && routerAmountOutMin !== 0) {
-      if (routerAmountOutMin > horizonAmountOutMin) {
-        console.log('returning routerPath')
-        return routerPath;
-      } else {
-        console.log('returning horizonPath')
-        return horizonPath;
-      }
-    } else if (routerPath?.trade.amountOutMin) {
-      console.log('returning routerPath')
-      return routerPath;
-    } else if (horizonPath?.trade.amountOutMin) {
-      console.log('returning horizonPath')
-      return horizonPath;
-    }
+      if (routerAmountOutMin > horizonAmountOutMin) return routerPath;
+      else return horizonPath;
+    } 
   } else if (tradeType === TradeType.EXACT_OUTPUT) {
     const horizonAmountInMax = parseInt(horizonPath?.trade.amountInMax || '0');
     const routerAmountInMax = parseInt(routerPath?.trade.amountInMax || '0');
     if (horizonAmountInMax !== 0 && routerAmountInMax !== 0) {
-      if (routerAmountInMax < horizonAmountInMax) {
-        console.log('returning routerPath')
-        return routerPath;
-      } else {
-        console.log('returning horizonPath')
-        return horizonPath;
-      }
-    } else if (routerPath?.trade.amountInMax) {
-      console.log('returning routerPath')
-      return routerPath;
-    } else if (horizonPath?.trade.amountInMax) {
-      console.log('returning horizonPath')
-      return horizonPath;
+      if (routerAmountInMax < horizonAmountInMax) return routerPath; 
+      else return horizonPath;
     }
   }
 }

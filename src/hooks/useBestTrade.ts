@@ -2,9 +2,8 @@ import { useRouterSDK } from 'functions/generateRoute';
 import { CurrencyAmount, TokenType } from 'interfaces';
 import { useEffect, useMemo, useState } from 'react';
 import { TradeType as SdkTradeType } from 'soroswap-router-sdk';
-import { InterfaceTrade, PlatformType, QuoteState, TradeState, TradeType } from 'state/routing/types';
+import { InterfaceTrade, QuoteState, TradeState, TradeType } from 'state/routing/types';
 import useSWR from 'swr';
-import { SorobanContextType } from '@soroban-react/core';
 
 const TRADE_NOT_FOUND = {
   state: TradeState.NO_ROUTE_FOUND,
