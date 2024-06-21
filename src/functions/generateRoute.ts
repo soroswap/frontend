@@ -36,14 +36,14 @@ export const useRouterSDK = () => {
               protocol: Protocols.SOROSWAP,
               fn: async () => fetchAllSoroswapPairs(network),
             },
-            {
-              protocol: Protocols.PHOENIX,
-              fn: async () => fetchAllPhoenixPairs(network),
-            },
+            // {
+            //   protocol: Protocols.PHOENIX,
+            //   fn: async () => fetchAllPhoenixPairs(network),
+            // },
           ]
         : undefined,
       pairsCacheInSeconds: 60,
-      protocols: [Protocols.SOROSWAP, Protocols.PHOENIX],
+      protocols: [Protocols.SOROSWAP], //, Protocols.PHOENIX],
       network,
       maxHops,
     });
