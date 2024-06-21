@@ -1,5 +1,7 @@
 // cypress/integration/navigation.ts
 
+import { is } from "cypress/types/bluebird"
+
 
 //Bridge flow
 describe('Bridge flow', () => {
@@ -17,7 +19,59 @@ describe('Bridge flow', () => {
 
 // Swap flow
 describe('Select tokens & input ammount', () => {
-  it('should select token in, select token out and type an input ammount', () => {
+  it('should navigate to swap', () => {
+    cy.visit('/swap')
+    cy.contains('You sell')
+  })
+  it('should select token in', () => {
+    cy.visit('/swap')
+    cy.get('[data-testid="swap__input__panel"]').within(()=>{
+      cy.get('[data-testid="swap__token__select"]').click()
+    })
+    cy.get('[data-testid="token-search-input"]').type('usdc')
+    cy.get('[data-testid="currency__list__USDC"]').click()
+  })
+  it('should select token out', () => {
+    cy.visit('/swap')
+    cy.get('[data-testid="swap__output__panel"]').within(()=>{
+      cy.get('[data-testid="swap__token__select"]').click()
+    })
+    cy.get('[data-testid="token-search-input"]').type('xlm')
+    cy.get('[data-testid="currency__list__XLM"]').click()
+
+  })
+  it('should type an input ammount & expect for a token out', () => {
+    cy.visit('/swap')
+    //Select input asset
+    cy.get('[data-testid="swap__input__panel"]').within(()=>{
+      cy.get('[data-testid="swap__token__select"]').click()
+      })
+    cy.get('[data-testid="token-search-input"]').type('usdc')
+    cy.get('[data-testid="currency__list__USDC"]').click()
+    
+    //Select output asset
+    cy.get('[data-testid="swap__output__panel"]').within(()=>{
+      cy.get('[data-testid="swap__token__select"]').click()
+      })
+      cy.get('[data-testid="currency__list__XLM"]').click()
+    
+    //Input amount
+    cy.get('[data-testid="swap__input__panel"]').within(()=>{
+      cy.get('.token-amount-input').type('32456')
+    })
+    //await for calcs
+    cy.wait(5000)
+
+    //Get the output ammount
+    cy.get('[data-testid="swap__output__panel"]').within(()=>{
+      cy.get('.token-amount-input').invoke('val').as('outputAmount')
+    })
+    cy.get('@outputAmount').should('not.be.empty')
+    cy.get('@outputAmount').should('have.length.greaterThan', 7)
+
+
+  })
+  it('should display more details of the swap in dropdown', () => {
     cy.visit('/swap')
     //Select input asset
     cy.get('[data-testid="swap__input__panel"]').within(()=>{
@@ -38,7 +92,7 @@ describe('Select tokens & input ammount', () => {
     })
 
     //await for calcs
-    cy.wait(1500)
+    cy.wait(2500)
 
     //Get the output ammount
     cy.get('[data-testid="swap__output__panel"]').within(()=>{
@@ -47,6 +101,7 @@ describe('Select tokens & input ammount', () => {
     cy.get('@outputAmount').should('not.be.empty')
     cy.get('@outputAmount').should('have.length.greaterThan', 7)
 
+    //Show more details
     cy.get('[data-testid="swap-details-header-row"]').click()
 
     cy.contains('Price Impact')
@@ -65,8 +120,6 @@ describe('Select tokens & input ammount', () => {
     cy.get('@expectedOutput').contains('XLM')
     cy.get('@path').contains('XLM')
     cy.get('@path').contains('USDC')
-    
-    cy.screenshot()
   })
 })
 
@@ -107,6 +160,5 @@ describe('Navigation flow', () => {
     cy.get('a[href*="https://info.soroswap.finance"]').click()
     cy.wait(1500)
     cy.url().should('match', /https:\/\/info\.soroswap\.finance\//)
-    cy.screenshot()
   })
 })
