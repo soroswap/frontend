@@ -18,7 +18,7 @@ describe('Bridge flow', () => {
 })
 
 // Swap flow
-describe('Select tokens & input ammount', () => {
+describe('Select tokens & input amount', () => {
   it('should navigate to swap', () => {
     cy.visit('/swap')
     cy.contains('You sell')
@@ -40,7 +40,7 @@ describe('Select tokens & input ammount', () => {
     cy.get('[data-testid="currency__list__XLM"]').click()
 
   })
-  it('should type an input ammount & expect for a token out', () => {
+  it('should type an input amount & wait for output amount', () => {
     cy.visit('/swap')
     //Select input asset
     cy.get('[data-testid="swap__input__panel"]').within(()=>{
@@ -62,7 +62,7 @@ describe('Select tokens & input ammount', () => {
     //await for calcs
     cy.wait(5000)
 
-    //Get the output ammount
+    //Get the output amount
     cy.get('[data-testid="swap__output__panel"]').within(()=>{
       cy.get('.token-amount-input').invoke('val').as('outputAmount')
     })
@@ -94,7 +94,7 @@ describe('Select tokens & input ammount', () => {
     //await for calcs
     cy.wait(2500)
 
-    //Get the output ammount
+    //Get the output amount
     cy.get('[data-testid="swap__output__panel"]').within(()=>{
       cy.get('.token-amount-input').invoke('val').as('outputAmount')
     })
@@ -111,10 +111,12 @@ describe('Select tokens & input ammount', () => {
     cy.get('[data-testid="swap__details__priceImpact"]').as('priceImpact')
     cy.get('[data-testid="swap__details__expectedOutput"]').as('expectedOutput')
     cy.get('[data-testid="swap__details__path"]').as('path')
+    cy.get('[data-testid="swap__details__platform"]').as('platform')
     
     cy.get('@priceImpact').should('exist')
     cy.get('@expectedOutput').should('exist')
     cy.get('@path').should('exist')
+    cy.get('@platform').should('exist')
 
     cy.get('@priceImpact').contains('%')
     cy.get('@expectedOutput').contains('XLM')
