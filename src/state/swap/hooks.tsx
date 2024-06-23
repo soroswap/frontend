@@ -123,14 +123,11 @@ export function useDerivedSwapInfo(state: SwapState) {
     [inputCurrency, isExactIn, outputCurrency, typedValue],
   );
 
-  const isAggregator = sorobanContext?.activeChain?.id == "testnet" ? true : false
-
   const trade = useBestTrade(
     isExactIn ? TradeType.EXACT_INPUT : TradeType.EXACT_OUTPUT,
     parsedAmount,
     (isExactIn ? outputCurrency : inputCurrency) ?? undefined,
     account,
-    isAggregator
   );
 
   const currencyBalances = useMemo(

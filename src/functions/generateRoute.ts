@@ -10,7 +10,6 @@ export interface GenerateRouteProps {
   quoteTokenAddress: string;
   amount: string;
   tradeType: TradeType;
-  isAggregator?: boolean;
 }
 
 const queryNetworkDict: { [x: string]: 'MAINNET' | 'TESTNET' } = {
@@ -29,7 +28,13 @@ export const useRouterSDK = () => {
 
   const network = sorobanContext.activeChain?.networkPassphrase as Networks;
 
+  const isAggregator = sorobanContext?.activeChain?.id == 'testnet' ? true : false;
+
   const router = useMemo(() => {
+    const protocols = [Protocols.SOROSWAP];
+
+    if (isAggregator) protocols.push(Protocols.PHOENIX);
+
     return new Router({
       getPairsFns: shouldUseBackend
         ? [
@@ -37,18 +42,18 @@ export const useRouterSDK = () => {
               protocol: Protocols.SOROSWAP,
               fn: async () => fetchAllSoroswapPairs(network),
             },
-            // {
-            //   protocol: Protocols.PHOENIX,
-            //   fn: async () => fetchAllPhoenixPairs(network),
-            // },
+            {
+              protocol: Protocols.PHOENIX,
+              fn: async () => fetchAllPhoenixPairs(network),
+            },
           ]
         : undefined,
       pairsCacheInSeconds: 60,
-      protocols: [Protocols.SOROSWAP], //, Protocols.PHOENIX],
+      protocols: protocols,
       network,
       maxHops,
     });
-  }, [network, maxHops]);
+  }, [network, maxHops, isAggregator]);
 
   const fromAddressToToken = (address: string) => {
     return new Token(network, address, 18);
@@ -68,7 +73,6 @@ export const useRouterSDK = () => {
     quoteTokenAddress,
     amount,
     tradeType,
-    isAggregator,
   }: GenerateRouteProps) => {
     if (!factory) throw new Error('Factory address not found');
     const currencyAmount = fromAddressAndAmountToCurrencyAmount(amountTokenAddress, amount);

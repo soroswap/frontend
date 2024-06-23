@@ -23,7 +23,6 @@ export function useBestTrade(
   amountSpecified?: CurrencyAmount,
   otherCurrency?: TokenType,
   account?: string,
-  isAggregator?: boolean,
 ): {
   state: TradeState;
   trade?: InterfaceTrade;
@@ -54,7 +53,6 @@ export function useBestTrade(
           tradeType === TradeType.EXACT_INPUT
             ? SdkTradeType.EXACT_INPUT
             : SdkTradeType.EXACT_OUTPUT,
-        isAggregator
       }),
     {
       revalidateIfStale: true,
@@ -133,17 +131,17 @@ export function useBestTrade(
       path: data?.trade.path,
       priceImpact: data?.priceImpact,
     };
-  
+
     if (data?.trade && hasDistribution(data.trade)) {
       return {
         ...baseTrade,
         distribution: data.trade.distribution,
       };
-    } 
-  
+    }
+
     return baseTrade;
   }, [expectedAmount, inputAmount, outputAmount, tradeType, data]);
-  
+
   /*
   If the pairAddress or the trades chenges, we upgrade the tradeResult
   trade can change by changing the amounts, as well as the independent value
