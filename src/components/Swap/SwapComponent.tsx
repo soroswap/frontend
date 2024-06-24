@@ -14,12 +14,13 @@ import { requiresTrustline } from 'helpers/stellar';
 import { relevantTokensType } from 'hooks';
 import { useToken } from 'hooks/tokens/useToken';
 import useGetNativeTokenBalance from 'hooks/useGetNativeTokenBalance';
-import { useSwapCallback } from 'hooks/useSwapCallback';
+import { SuccessfullSwapResponse, useSwapCallback } from 'hooks/useSwapCallback';
 import useSwapMainButton from 'hooks/useSwapMainButton';
 import useSwapNetworkFees from 'hooks/useSwapNetworkFees';
 import { TokenType } from 'interfaces';
 import {
   ReactNode,
+  SetStateAction,
   useCallback,
   useContext,
   useEffect,
@@ -36,6 +37,7 @@ import { opacify } from 'themes/utils';
 import SwapCurrencyInputPanel from '../CurrencyInputPanel/SwapCurrencyInputPanel';
 import SwapHeader from './SwapHeader';
 import { ArrowWrapper, SwapWrapper } from './styleds';
+import * as StellarSdk from '@stellar/stellar-sdk';
 
 export const SwapSection = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -90,7 +92,7 @@ function getIsValidSwapQuote(
   return Boolean(!swapInputError && trade && tradeState === TradeState.VALID);
 }
 
-interface SwapStateProps {
+export interface SwapStateProps {
   showConfirm: boolean;
   tradeToConfirm?: InterfaceTrade;
   swapError?: Error;
@@ -107,9 +109,11 @@ const INITIAL_SWAP_STATE = {
 export function SwapComponent({
   prefilledState = {},
   disableTokenInputs = false,
+  handleDoSwap,
 }: {
   prefilledState?: Partial<SwapState>;
   disableTokenInputs?: boolean;
+  handleDoSwap?: (setSwapState: (value: SetStateAction<SwapStateProps>) => void) => void;
 }) {
   const sorobanContext = useSorobanReact();
   const { SnackbarContext } = useContext(AppContext);
@@ -170,8 +174,8 @@ export function SwapComponent({
 
   const userHasSpecifiedInputOutput = Boolean(
     currencies[Field.INPUT] &&
-      currencies[Field.OUTPUT] &&
-      Number(parsedAmounts[independentField]?.value) > 0,
+    currencies[Field.OUTPUT] &&
+    Number(parsedAmounts[independentField]?.value) > 0,
   );
 
   const fiatValueInput = { data: 0, isLoading: true }; //useUSDPrice(parsedAmounts[Field.INPUT]) //TODO: create USDPrice function when available method to get this, for now it will be shown as loading
@@ -263,6 +267,11 @@ export function SwapComponent({
   );
 
   const handleSwap = () => {
+    if (handleDoSwap) {
+      handleDoSwap(setSwapState);
+      return;
+    }
+
     if (!swapCallback) {
       return;
     }
@@ -387,7 +396,7 @@ export function SwapComponent({
 
   return (
     <>
-      <SwapWrapper>
+      <SwapWrapper data-testid="swap__section">
         <SwapHeader showConfig={true} />
         <Modal
           open={txError}
@@ -433,7 +442,7 @@ export function SwapComponent({
         <div style={{ display: 'relative' }}>
           <SwapSection>
             <SwapCurrencyInputPanel
-              data-testid="Swap__panel"
+              data-testid="swap__input__panel"
               label={
                 independentField === Field.OUTPUT ? <span>From (at most)</span> : <span>From</span>
               }
@@ -473,6 +482,7 @@ export function SwapComponent({
           <div>
             <OutputSwapSection>
               <SwapCurrencyInputPanel
+                data-testid="swap__output__panel"
                 id={'swap-output'}
                 value={formattedAmounts[Field.OUTPUT]}
                 //disabled={disableTokenInputs}
@@ -483,7 +493,7 @@ export function SwapComponent({
                 }
                 showMaxButton={false}
                 hideBalance={false}
-                onMax={() => {}}
+                onMax={() => { }}
                 fiatValue={showFiatValueOutput ? fiatValueOutput : undefined}
                 //priceImpact={stablecoinPriceImpact}
                 currency={currencies[Field.OUTPUT] ?? null}
@@ -509,6 +519,7 @@ export function SwapComponent({
           {/* {showPriceImpactWarning && <PriceImpactWarning priceImpact={largerPriceImpact} />} */}
           <div>
             <ButtonPrimary
+              data-testid="primary-button"
               disabled={isMainButtonDisabled() || routeIsLoading}
               onClick={handleMainButtonClick}
               sx={{ height: '64px' }}

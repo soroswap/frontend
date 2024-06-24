@@ -152,9 +152,8 @@ const ConnectWalletContent = ({
   };
 
   const connectWallet = async (wallet: Connector) => {
-    const connect = setActiveConnectorAndConnect && setActiveConnectorAndConnect(wallet);
     try {
-      await connect;
+      await setActiveConnectorAndConnect?.(wallet);
       setConnectWalletModalOpen(false);
     } catch (err) {
       const errorMessage = `${err}`;
@@ -184,7 +183,8 @@ const ConnectWalletContent = ({
   useEffect(() => {
     const newWalletsStatus = walletsStatus.map(async (walletStatus) => {
       if (walletStatus.name === 'freighter') {
-        const connected = await isConnected();
+        const freighterConnector = sorobanContext.connectors.find((c) => c.id === 'freighter');
+        const connected = await freighterConnector?.isConnected();
         return { name: walletStatus.name, isInstalled: connected, isLoading: false };
       }
       if (walletStatus.name === 'xbull') {
@@ -201,7 +201,7 @@ const ConnectWalletContent = ({
     });
 
     Promise.all(newWalletsStatus).then((updatedWalletsStatus) => {
-      setWalletsStatus(updatedWalletsStatus);
+      setWalletsStatus(updatedWalletsStatus as any);
     });
   }, []);
 

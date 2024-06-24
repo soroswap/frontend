@@ -18,10 +18,9 @@
     "downlevelIteration": true,
     "types": [
       "node",
-      "@wdio/globals/types",
-      "@wdio/mocha-framework",
       "vitest/importMeta",
-      "vitest/globals"
+      "vitest/globals",
+      "cypress"
     ]
   },
   "include": [
