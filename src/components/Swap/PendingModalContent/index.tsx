@@ -170,7 +170,7 @@ function getContent(args: ContentArgs): PendingModalStep {
         title: `Setting trustline for ${approvalCurrency?.code ?? 'this token'}`,
         subtitle: (
           <CustomLink
-            href="https://support.uniswap.org/hc/en-us/articles/8120520483085"
+            href="https://developers.stellar.org/docs/learn/fundamentals/stellar-data-structures/accounts#trustlines"
             target="_blank"
           >
             Why is this required?
