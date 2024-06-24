@@ -111,7 +111,7 @@ export function useSwapCallback(
     if (!trade.tradeType) throw new Error('tradeType must be defined');
 
     switch (trade.platform) {
-      case PlatformType.SOROBAN:
+      case PlatformType.ROUTER:
         const { amount0, amount1, routerMethod } = getSwapAmounts({
           tradeType: trade.tradeType,
           inputAmount: trade.inputAmount?.value as string,

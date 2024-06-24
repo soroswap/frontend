@@ -105,7 +105,7 @@ export const useRouterSDK = () => {
       if(!res) return;
       const response = {
         ...res,
-        platform: PlatformType.SOROBAN,
+        platform: PlatformType.ROUTER,
       }
       return response;
     })

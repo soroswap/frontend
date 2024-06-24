@@ -234,7 +234,7 @@ export enum TradeType {
 }
 
 export enum PlatformType {
-  SOROBAN = 'Soroban',
+  ROUTER = 'Soroswap Router',
   STELLAR_CLASSIC = 'SDEX'
 }
 

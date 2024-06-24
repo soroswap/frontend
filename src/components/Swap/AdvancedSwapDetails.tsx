@@ -82,7 +82,7 @@ export function AdvancedSwapDetails({
   useEffect(() => {
     (async () => {
       if (!trade?.path || isLoading) return;
-      if (trade.platform == PlatformType.SOROBAN) {
+      if (trade.platform == PlatformType.ROUTER) {
         setPathTokensIsLoading(true);
         const promises = trade.path.map(async (contract) => {
           const asset = await findToken(contract, tokensAsMap, sorobanContext);

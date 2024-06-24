@@ -76,7 +76,7 @@ const useSwapNetworkFees = (trade: InterfaceTrade | undefined, currencies: Curre
       },
       path: result?.trade.path,
       tradeType: TradeType.EXACT_INPUT,
-      platform: PlatformType.SOROBAN
+      platform: PlatformType.ROUTER
     };
 
     return trade;
