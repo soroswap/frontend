@@ -153,7 +153,7 @@ function getContent(args: ContentArgs): PendingModalStep {
       return {
         title: `Wrap ETH`,
         subtitle: (
-          <CustomLink href="https://support.uniswap.org/hc/en-us/articles/16015852009997">
+          <CustomLink href="https://docs.soroswap.finance/05-tutorial/summary/01-wrapping-stellar-classic-assets">
             Why is this required?
           </CustomLink>
         ),
