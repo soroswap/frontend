@@ -1,67 +1,96 @@
-import { WalletButton } from 'components/Buttons/WalletButton'
-import StyledWrapper from 'components/Layout/StyledWrapper'
-import React, { useEffect, useMemo, useState } from 'react'
-import SwapHeader from 'components/Swap/SwapHeader'
+import React, { useEffect, useState } from 'react'
+import { CircularProgress } from '@mui/material'
+import { setTrustline } from '@soroban-react/contracts'
 import { useSorobanReact } from '@soroban-react/core'
-import { SwapSection } from 'components/Swap/SwapComponent'
+import BuyModal from './BuyModal'
+import { WalletButton } from 'components/Buttons/WalletButton'
+import { ButtonPrimary } from 'components/Buttons/Button'
 import { InputPanel, Container, Aligner, StyledTokenName, StyledDropDown } from 'components/CurrencyInputPanel/SwapCurrencyInputPanel'
+import StyledWrapper from 'components/Layout/StyledWrapper'
 import { StyledSelect } from 'components/Layout/StyledSelect'
 import { RowFixed } from 'components/Row'
-import { ButtonPrimary } from 'components/Buttons/Button'
+import SwapHeader from 'components/Swap/SwapHeader'
+import { SwapSection } from 'components/Swap/SwapComponent'
 import { BodyPrimary } from 'components/Text'
-import { getCurrencies } from 'functions/buy/SEP-1'
 import { getChallengeTransaction, submitChallengeTransaction } from 'functions/buy/sep10Auth/stellarAuth'
 import { initInteractiveDepositFlow } from 'functions/buy/sep24Deposit/InteractiveDeposit'
-import { setTrustline } from '@soroban-react/contracts'
-import { set } from 'cypress/types/lodash'
-import { balances } from '@polkadot/types/interfaces/definitions'
-import { a } from 'react-spring'
+import { getCurrencies } from 'functions/buy/SEP-1'
 
 
-interface anchor {
+export interface anchor {
   name: string
   home_domain: string
-}
+  currency?: string
+};
 
-interface token {
-  name: string
-  issuer: string
-}
+export interface currency {
+  code: string;
+  desc?: string;
+  is_asset_anchored?: boolean;
+  issuer: string;
+  status?: string;
+};
 
 const anchors: anchor[] = [
   {
     name: 'Stellar TestAnchor 1',
-    home_domain: 'https://testanchor.stellar.org'
+    home_domain: 'testanchor.stellar.org',
+    currency: 'SRT'
   },
   {
     name: 'MoneyGram',
-    home_domain: 'https://stellar.moneygram.com'
+    home_domain: 'stellar.moneygram.com',
+    currency: 'USD'
   },
   {
     name: 'MyKobo',
-    home_domain: 'https://mykobo.co'
+    home_domain: 'mykobo.co',
+    currency: 'EURC'
   },
-]
+];
 
 function BuyComponent() {
-  const sorobanContext = useSorobanReact()
-  const { address, serverHorizon, activeChain, activeConnector } = sorobanContext
-  const [selectedAnchor, setSelectedAnchor] = useState<anchor | undefined>(undefined)
-  const [selectedToken, setSelectedToken] = useState<token | undefined>(undefined)
-  const [needTrustline, setNeedTrustline] = useState<boolean>(true)
-  const [buttonText, setButtonText] = useState<string>('Select Anchor')
+  const sorobanContext = useSorobanReact();
+  const { address, serverHorizon, activeChain, activeConnector } = sorobanContext;
+  const [selectedAnchor, setSelectedAnchor] = useState<anchor | undefined>(undefined);
+  const [currencies, setCurrencies] = useState<currency[] | undefined>(undefined);
+  const [selectedAsset, setSelectedAsset] = useState<currency | undefined>(undefined);
+  const [needTrustline, setNeedTrustline] = useState<boolean>(true);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [buttonText, setButtonText] = useState<string>('Select Anchor');
+  const [modalState, setModalState] = useState<{
+    anchorModal: {
+      visible: boolean,
+      selectedAnchor: anchor | undefined,
+    },
+    assetModal: {
+      visible: boolean,
+      selectedAsset: anchor | undefined,
+    },
+  }>({
+    anchorModal: {
+      visible: false,
+      selectedAnchor: undefined,
+    },
+    assetModal: {
+      visible: false,
+      selectedAsset: undefined,
+    }
+  });
 
   const checkTrustline = async () => {
     if(address){
-      let account
+      setIsLoading(true);
+      let account;
       try {
-        account = await serverHorizon?.loadAccount(address)
+        account = await serverHorizon?.loadAccount(address);
       } catch (error) {
-        console.error(error)
+        console.error(error);
       }
       const balances = account?.balances
-      const hasTrustline = balances?.find((bal: any) => bal.asset_code === selectedToken?.name && bal.asset_issuer == selectedToken?.issuer)
-      setNeedTrustline(!!!hasTrustline)
+      const hasTrustline = balances?.find((bal: any) => bal.asset_code === selectedAsset?.code && bal.asset_issuer == selectedAsset?.issuer);
+      setNeedTrustline(!!!hasTrustline);
+      setIsLoading(false);
     }
     
   }
@@ -70,32 +99,31 @@ function BuyComponent() {
       networkPassphrase: activeChain?.networkPassphrase,
       network: activeChain?.id,
       accountToSign: address
-    })
+    });
     return signedTransaction;
   }
 
   const InitDeposit = async (homeDomain: string) => {
-    console.log(homeDomain)
     const { transaction } = await getChallengeTransaction({
       publicKey: address! && address,
       homeDomain: homeDomain
-    })
+    });
     const signedTransaction = await sign(transaction)
     const submittedTransaction = await submitChallengeTransaction({
       transactionXDR: signedTransaction,
       homeDomain: homeDomain
-    })
+    });
     const { url } = await initInteractiveDepositFlow({
       authToken: submittedTransaction,
       homeDomain: homeDomain,
       urlFields: {
-        asset_code: selectedToken?.name,
-        asset_issuer: selectedToken?.issuer
+        asset_code: selectedAsset?.code,
+        asset_issuer: selectedAsset?.issuer
       }
-    })
+    });
 
     const interactiveUrl = `${url}&callback=postMessage`
-    let popup = window.open(interactiveUrl, 'interactiveDeposit', 'width=450,height=750')
+    let popup = window.open(interactiveUrl, 'interactiveDeposit', 'width=450,height=750');
 
     if (!popup) {
       alert(
@@ -103,94 +131,144 @@ function BuyComponent() {
       );
       console.error(
         "Popups are blocked. You’ll need to enable popups for this demo to work",
-      )
+      );
     }
 
-    popup?.focus()
+    popup?.focus();
 
 
   }
 
   const buy = async () => {
-    if (!selectedToken || !selectedAnchor) {
-      return
+    if (!selectedAsset || !selectedAnchor) {
+      console.error('No asset or anchor selected');
+      return;
     }
-    await checkTrustline()
-    console.log('need trustline', needTrustline)
+    await checkTrustline();
     if (needTrustline) {
       try {
-        console.log('setting trustline')
-        const res = await setTrustline(
-          {
-            tokenSymbol: selectedToken?.name!,
-            tokenAdmin: selectedToken?.issuer!,
-            sorobanContext
-          }
-        )
-        if (res === undefined) {
-          throw new Error('The response is undefined')
-        }
-        await checkTrustline()
-        console.log('trustline set')
+        setIsLoading(true);
+        const res = await setTrustline({
+          tokenSymbol: selectedAsset?.code!,
+          tokenAdmin: selectedAsset?.issuer!,
+          sorobanContext
+        });
+        if (res === undefined) throw new Error('The response is undefined');
+        await checkTrustline();
+        console.log('trustline set');
       } catch (error) {
-        console.log('error setting trustline')
-        console.error(error)
-        setNeedTrustline(true)
+        console.log('error setting trustline');
+        console.error(error);
+        setNeedTrustline(true);
+        setIsLoading(false);
       }
     } else {
       try {
+        setIsLoading(true);
         InitDeposit(selectedAnchor?.home_domain!)
+        setIsLoading(false);
       } catch (error) {
-        console.error(error)
+        console.error(error);
+        setIsLoading(false);
       }
     }
   }
 
   useEffect(() => {
-    checkTrustline()
-  }, [selectedToken, address, activeChain])
+    checkTrustline();
+  }, [selectedAsset, address, activeChain, selectedAnchor, activeConnector])
 
   useEffect(() => {
-    if ((selectedAnchor != undefined) && (selectedToken == undefined)) {
-      console.log('seleciona token')
-      setButtonText('Select Token')
-    } else if (selectedAnchor && selectedToken) {
+    if ((selectedAnchor != undefined) && (selectedAsset == undefined)) {
+      setButtonText('Select Token');
+    } else if (selectedAnchor && selectedAsset) {
       if (needTrustline) {
-        setButtonText(`Set trustline to ${selectedToken.name}`)
-      } else {
-        setButtonText(`Buy ${selectedToken.name}`)
+        setButtonText(`Set trustline to ${selectedAsset.code}`);
+      } else if (!needTrustline) {
+        setButtonText(`Buy ${selectedAsset.code}`);
       }
     } else {
-      setButtonText('Select Anchor')
+      setButtonText('Select Anchor');
     }
-  }, [needTrustline, address, selectedToken, selectedAnchor])
+  }, [needTrustline, address, selectedAsset, selectedAnchor]);
 
-  useEffect(() => {
-    console.log('selected anchor', selectedAnchor)
-  }, [selectedAnchor])
   const fetchCurrencies = async () => {
-    console.log('fetching currencieeees')
-    const currencies = await getCurrencies(selectedAnchor?.home_domain!)
-    console.log(currencies)
-    setSelectedToken({name: currencies[0].code, issuer: currencies[0].issuer})
+    setIsLoading(true);
+    const currencies = await getCurrencies(selectedAnchor?.home_domain!);
+    setCurrencies(currencies);
+    setIsLoading(false);
+    handleOpen('asset');
+  }
+
+  const handleOpen = (modal: string) => {
+    if (modal == 'anchor') {
+      setModalState({
+        ...modalState,
+        anchorModal: {
+          visible: true,
+          selectedAnchor: modalState.anchorModal.selectedAnchor
+        }
+      });
+    } else if (modal == 'asset') {
+      setModalState({
+        ...modalState,
+        assetModal: {
+          visible: true,
+          selectedAsset: modalState.assetModal.selectedAsset
+        }
+      });
+    }
+  }
+
+  const handleClose = (modal: string) => {
+    if (modal == 'anchor') {
+      setModalState({
+        ...modalState,
+        anchorModal: {
+          visible: false,
+          selectedAnchor: modalState.anchorModal.selectedAnchor
+        }
+      });
+    } else if (modal == 'asset') {
+      setModalState({
+        ...modalState,
+        assetModal: {
+          visible: false,
+          selectedAsset: modalState.anchorModal.selectedAnchor
+        }
+      });
+    }
+  }
+
+
+  const handleSelect = (modal: string, anchor?: anchor, asset?: currency) => {
+    if (anchor) {
+      setSelectedAnchor(anchor);
+      setSelectedAsset(undefined);
+    } else if (modal) {
+      setSelectedAsset(asset);
+    }
+    handleClose(modal);
   }
 
   return (
     <>
-      <StyledWrapper>
+      <BuyModal isOpen={modalState.anchorModal.visible} anchors={anchors} onClose={() => { handleClose('anchor') }} handleSelect={(e) => handleSelect('anchor', e)} />
+      <BuyModal isOpen={modalState.assetModal.visible} assets={currencies} onClose={() => { handleClose('asset') }} handleSelect={(e) => handleSelect('asset', undefined, e)} />
+      <StyledWrapper sx={{ pt: 3 }}>
         <SwapHeader showConfig={false}/>
-        <SwapSection>
+        <SwapSection sx={{ my: 3 }}>
           <InputPanel>
-            <Container hideInput={false}>
-              <div>You pay:</div>
+            <Container hideInput={false} >
+              <div>You pay with:</div>
               <Aligner>
-                <RowFixed>
-                  <StyledSelect visible={true} selected={!!selectedAnchor} onClick={() => setSelectedAnchor(anchors[0])}>
+                <RowFixed sx={{ my: 1 }}>
+                  <StyledSelect visible="true" selected={!!selectedAnchor} onClick={() => handleOpen('anchor')}>
                     <StyledTokenName
                       data-testid="Swap__Panel__Selector"
-                      sx={{paddingLeft:'16px'}}
+                      sx={{ paddingLeft: '4px' }}
                     >
-                      {selectedAnchor ? selectedAnchor.name : 'Select Anchor'}
+                      {selectedAnchor ? selectedAnchor.name : 'Select currency'}
                     </StyledTokenName>
                   {<StyledDropDown selected={!!selectedAnchor} />}
                   </StyledSelect>
@@ -199,24 +277,24 @@ function BuyComponent() {
             </Container>
           </InputPanel>
         </SwapSection>
-        <SwapSection>
+        <SwapSection sx={{ my: 3 }}>
         <InputPanel>
             <Container hideInput={false}>
               <div>Recieve:</div>
               <Aligner>
-                <RowFixed>
-                  <StyledSelect visible={true} selected={!!selectedToken} onClick={()=>fetchCurrencies()}>
+                <RowFixed sx={{ my: 1 }}>
+                  <StyledSelect visible='true' selected={!!selectedAsset} onClick={() => fetchCurrencies()} disabled={!!!selectedAnchor}>
                     <StyledTokenName
                       data-testid="Swap__Panel__Selector"
                       sx={
                         {
-                          paddingLeft:'16px',
+                          paddingLeft: '4px',
                         }
                       }
                     >
-                      {selectedToken ? selectedToken.name : 'Select token'}
+                      {selectedAsset ? selectedAsset.code : 'Select asset'}
                     </StyledTokenName>
-                  {<StyledDropDown selected={!!selectedToken} />}
+                    {<StyledDropDown selected={!!selectedAsset} />}
                   </StyledSelect>
                 </RowFixed>
               </Aligner>
@@ -224,12 +302,15 @@ function BuyComponent() {
           </InputPanel>
         </SwapSection>
         {address ? 
-        (<ButtonPrimary onClick={buy}>
-          <BodyPrimary>
-              {buttonText}
-          </BodyPrimary>
-        </ButtonPrimary>):
-        (<WalletButton/>)
+          (<ButtonPrimary onClick={buy} disabled={isLoading}>
+            {isLoading ?
+              <CircularProgress /> :
+              <BodyPrimary>
+                {buttonText}
+              </BodyPrimary>
+            }
+          </ButtonPrimary>) :
+          (<WalletButton />)
         }
       </StyledWrapper>
     </>

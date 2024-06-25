@@ -6,7 +6,7 @@ import { opacify } from '../../themes/utils';
 export const StyledSelect = styled(ButtonBase, {
   shouldForwardProp: (prop) => prop !== 'selected',
 })<{
-  visible: boolean;
+    visible: boolean | string;
   selected?: boolean;
   hideInput?: boolean;
   disabled?: boolean;
