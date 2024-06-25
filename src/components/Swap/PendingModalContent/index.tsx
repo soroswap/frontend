@@ -181,14 +181,7 @@ function getContent(args: ContentArgs): PendingModalStep {
     case ConfirmModalState.PERMITTING:
       return {
         title: `Allow ${approvalCurrency?.code ?? 'this token'} to be used for swapping`,
-        subtitle: (
-          <CustomLink
-            href="https://support.uniswap.org/hc/en-us/articles/8120520483085"
-            target="_blank"
-          >
-            Why is this required?
-          </CustomLink>
-        ),
+        subtitle: <CustomLink href="#">Why is this required?</CustomLink>,
         label: `Proceed in your wallet`,
       };
     case ConfirmModalState.PENDING_CONFIRMATION: {
