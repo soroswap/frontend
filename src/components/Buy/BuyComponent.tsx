@@ -204,10 +204,6 @@ function BuyComponent() {
 
       const interactiveUrl = `${url}&callback=postMessage`
 
-      setTimeout(() => {
-        handleNextStep();
-      }, 20000);
-
       let popup = window.open(interactiveUrl, 'interactiveDeposit', 'width=450,height=750');
       if (!popup) {
         alert(
@@ -219,10 +215,21 @@ function BuyComponent() {
         throw new Error("Popups are blocked. You’ll need to enable popups for this demo to work",)
       }
       popup?.focus();
-      setTimeout(() => {
-        popup?.close()
-      }, 35000);
-
+      window.addEventListener('message', (event): void => {
+        if (event.origin.includes(homeDomain)) {
+          console.log(event)
+          popup?.close()
+          handleNextStep();
+        }
+      })
+      function checkPopupClosed() {
+        if (popup?.closed) {
+          setDepositError('The popup was closed before submitting the transaction')
+          // Limpia el intervalo si el popup está cerrado
+          clearInterval(popupCheckInterval);
+        }
+      }
+      let popupCheckInterval = setInterval(checkPopupClosed, 500);
     } catch (error: any) {
       setDepositError(error.toString());
       console.error(error);
