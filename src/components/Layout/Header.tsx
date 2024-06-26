@@ -11,7 +11,7 @@ import lightModeSun from 'assets/svg/lightModeSun.svg';
 import { ColorModeContext } from 'contexts';
 import ProfileSection, { ActiveChainHeaderChip } from './ProfileSection';
 
-const MainBox = styled('div')<{ isMobile: boolean }>`
+const MainBox = styled('div') <{ isMobile: boolean }>`
   display: flex;
   width: 100%;
   padding: ${({ isMobile }) => (isMobile ? '24px 15px' : '24px 75px')};
@@ -58,7 +58,7 @@ const ButtonsBox = styled('div')`
 
 const NavItem = styled(Link, {
   shouldForwardProp: (prop) => prop !== 'active',
-})<{ active?: boolean }>`
+}) <{ active?: boolean }>`
   display: flex;
   padding: 4px 24px;
   align-items: center;
@@ -75,7 +75,7 @@ const NavItem = styled(Link, {
 
 const NavItemMobile = styled(Link, {
   shouldForwardProp: (prop) => prop !== 'active',
-})<{ active?: boolean }>`
+}) <{ active?: boolean }>`
   display: flex;
   padding: 8px 18px;
   align-items: center;
@@ -162,13 +162,13 @@ export default function Header({ isDrawerOpen, setDrawerOpen }: HeaderProps) {
   }
 
   const navItems: NavItem[] = [
-    { href: '/balance', label: 'Balance',  target:'_self', test_id:'balance__link'},
-    { href: '/swap', label: 'Swap', target:'_self' , test_id:'swap__link"'},
-    { href: '/liquidity', label: 'Liquidity',  target:'_self', test_id:'liquidity__link"'},
-    { href: '/bridge', label: 'Bridge',  target:'_self', test_id:'bridge__link"'},
-    { href: 'https://info.soroswap.finance', label: 'Info', target:'_blank', test_id:'info__link"'},
+    { href: '/balance', label: 'Balance', target: '_self', test_id: 'balance__link' },
+    { href: '/swap', label: 'Swap', target: '_self', test_id: 'swap__link"' },
+    { href: '/liquidity', label: 'Liquidity', target: '_self', test_id: 'liquidity__link"' },
+    { href: '/bridge', label: 'Bridge', target: '_self', test_id: 'bridge__link"' },
+    { href: 'https://info.soroswap.finance', label: 'Info', target: '_blank', test_id: 'info__link"' },
   ];
-  
+
   return (
     <>
       <MainBox isMobile={isMobile}>
@@ -197,7 +197,7 @@ export default function Header({ isDrawerOpen, setDrawerOpen }: HeaderProps) {
                 <NavItem
                   key={item.href}
                   href={item.href}
-                  active={item.label === 'Swap' ? (pathname.includes(item.href) || pathname === '/') : pathname.includes(item.href)}
+                  active={item.label === 'Swap' ? (pathname.includes(item.href) || pathname === '/' || pathname === '/buy') : pathname.includes(item.href)}
                   target={item.target}
                   data-testid={item.test_id}
                 >
@@ -231,7 +231,7 @@ export default function Header({ isDrawerOpen, setDrawerOpen }: HeaderProps) {
                   <NavItemMobile
                     key={item.href}
                     href={item.href}
-                    active={item.label === 'Swap' ? (pathname.includes(item.href) ||  pathname === '/') : pathname.includes(item.href)}
+                    active={item.label === 'Swap' ? (pathname.includes(item.href) || pathname === '/' || pathname === '/buy') : pathname.includes(item.href)}
                     data-testid={item.test_id}
                   >
                     {item.label}

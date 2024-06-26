@@ -174,8 +174,8 @@ export function SwapComponent({
 
   const userHasSpecifiedInputOutput = Boolean(
     currencies[Field.INPUT] &&
-      currencies[Field.OUTPUT] &&
-      Number(parsedAmounts[independentField]?.value) > 0,
+    currencies[Field.OUTPUT] &&
+    Number(parsedAmounts[independentField]?.value) > 0,
   );
 
   const fiatValueInput = { data: 0, isLoading: true }; //useUSDPrice(parsedAmounts[Field.INPUT]) //TODO: create USDPrice function when available method to get this, for now it will be shown as loading
@@ -397,7 +397,7 @@ export function SwapComponent({
   return (
     <>
       <SwapWrapper data-testid="swap__section">
-        <SwapHeader />
+        <SwapHeader showConfig={true} />
         <Modal
           open={txError}
           onClose={() => setTxError(false)}
@@ -493,7 +493,7 @@ export function SwapComponent({
                 }
                 showMaxButton={false}
                 hideBalance={false}
-                onMax={() => {}}
+                onMax={() => { }}
                 fiatValue={showFiatValueOutput ? fiatValueOutput : undefined}
                 //priceImpact={stablecoinPriceImpact}
                 currency={currencies[Field.OUTPUT] ?? null}
