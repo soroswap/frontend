@@ -79,8 +79,8 @@ export const useRouterSDK = () => {
     const quoteCurrency = fromAddressToToken(quoteTokenAddress);
 
     if (isAggregator) {
-      console.log('Returning routeSplit');
-      console.log(await router.routeSplit(currencyAmount, quoteCurrency, tradeType));
+      // console.log('Returning routeSplit');
+      // console.log(await router.routeSplit(currencyAmount, quoteCurrency, tradeType));
       return router.routeSplit(currencyAmount, quoteCurrency, tradeType);
     }
 
