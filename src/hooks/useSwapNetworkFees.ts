@@ -26,7 +26,6 @@ const useSwapNetworkFees = (trade: InterfaceTrade | undefined, currencies: Curre
   const sorobanContext = useSorobanReact();
 
   const { generateRoute } = useRouterSDK();
-  const isAggregator = sorobanContext?.activeChain?.id == "testnet" ? true : false
 
   const isFirstTokenXLMAndHasSecondTokenSelected = () => {
     const currencyA = currencies.INPUT;
@@ -59,7 +58,6 @@ const useSwapNetworkFees = (trade: InterfaceTrade | undefined, currencies: Curre
       quoteTokenAddress: currencyB.contract,
       amount: valueOfOne,
       tradeType: TradeType.EXACT_INPUT,
-      isAggregator,
     });
 
     if (!result) return undefined;
