@@ -183,8 +183,8 @@ export function useDerivedSwapInfo(state: SwapState) {
 
     //if amountin is more than reserves | expectedoutput is infinity
     if (
-      trade.trade?.outputAmount?.value.includes('Infinity') ||
-      trade.trade?.outputAmount?.value.includes('-')
+      trade.trade?.outputAmount?.value?.includes('Infinity') ||
+      trade.trade?.outputAmount?.value?.includes('-')
     ) {
       inputError = 'Insufficient liquidity for this trade.';
     }

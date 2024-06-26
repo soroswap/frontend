@@ -2,8 +2,8 @@ import { useSorobanReact } from '@soroban-react/core';
 import { AppContext } from 'contexts';
 import { useFactory } from 'hooks';
 import { useContext, useMemo } from 'react';
-import { CurrencyAmount, Networks, Protocols, Router, Token, TradeType } from 'soroswap-router-sdk';
 import { fetchAllPhoenixPairs, fetchAllSoroswapPairs } from 'services/pairs';
+import { CurrencyAmount, Networks, Protocols, Router, Token, TradeType } from 'soroswap-router-sdk';
 
 export interface GenerateRouteProps {
   amountTokenAddress: string;
@@ -79,9 +79,12 @@ export const useRouterSDK = () => {
     const quoteCurrency = fromAddressToToken(quoteTokenAddress);
 
     if (isAggregator) {
+      // console.log('Returning routeSplit');
+      // console.log(await router.routeSplit(currencyAmount, quoteCurrency, tradeType));
       return router.routeSplit(currencyAmount, quoteCurrency, tradeType);
     }
 
+    // console.log('returning route');
     return router.route(currencyAmount, quoteCurrency, tradeType, factory, sorobanContext as any);
   };
 
