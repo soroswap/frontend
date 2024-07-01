@@ -4,6 +4,7 @@ import { isAddress } from 'helpers/address';
 import { relevantTokensType, tokenBalances } from 'hooks';
 import { useToken } from 'hooks/tokens/useToken';
 import { useBestTrade } from 'hooks/useBestTrade';
+import useHorizonLoadAccount from 'hooks/useHorizonLoadAccount';
 import { TokenType } from 'interfaces';
 import tryParseCurrencyAmount from 'lib/utils/tryParseCurrencyAmount';
 import { ParsedQs } from 'qs';
@@ -13,7 +14,6 @@ import { TradeType } from 'state/routing/types';
 import { useUserSlippageToleranceWithDefault } from 'state/user/hooks';
 import { Field, selectCurrency, setRecipient, switchCurrencies, typeInput } from './actions';
 import { SwapState } from './reducer';
-import useHorizonLoadAccount from 'hooks/useHorizonLoadAccount';
 
 export function useSwapActionHandlers(dispatch: React.Dispatch<AnyAction>): {
   onCurrencySelection: (field: Field, currency: TokenType) => void;
@@ -183,8 +183,8 @@ export function useDerivedSwapInfo(state: SwapState) {
 
     //if amountin is more than reserves | expectedoutput is infinity
     if (
-      trade.trade?.outputAmount?.value.includes('Infinity') ||
-      trade.trade?.outputAmount?.value.includes('-')
+      trade.trade?.outputAmount?.value?.includes('Infinity') ||
+      trade.trade?.outputAmount?.value?.includes('-')
     ) {
       inputError = 'Insufficient liquidity for this trade.';
     }
