@@ -1,5 +1,5 @@
 // import { Percent } from '@uniswap/sdk-core'
-import { styled } from '@mui/material';
+import { styled } from 'soroswap-ui';
 import AnimatedDropdown from 'components/AnimatedDropdown';
 import { AutoColumn } from 'components/Column';
 import { useOnClickOutside } from 'hooks/useOnClickOutside';

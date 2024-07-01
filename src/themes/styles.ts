@@ -1,5 +1,5 @@
 import { css, keyframes } from '@emotion/react';
-import { styled } from '@mui/material';
+import { styled } from 'soroswap-ui';
 
 export const flexColumnNoWrap = css`
   display: flex;

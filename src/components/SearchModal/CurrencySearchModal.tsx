@@ -1,4 +1,4 @@
-import { Modal } from '@mui/material';
+import { Modal } from 'soroswap-ui';
 import { memo, useCallback, useEffect, useState } from 'react';
 import useLast from '../../hooks/useLast';
 import { TokenType } from '../../interfaces';

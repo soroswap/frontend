@@ -3,6 +3,7 @@
   "version": "0.1.1",
   "private": true,
   "type": "module",
+  "packageManager": "yarn@1.22.22",
   "scripts": {
     "test": "vitest --config ./vitest.config.ts",
     "dev": "next dev",
@@ -72,6 +73,7 @@
     "react-window": "^1.8.9",
     "redux": "^4.2.1",
     "soroswap-router-sdk": "^1.2.8",
+    "soroswap-ui": "^0.0.9",
     "swr": "^2.2.0",
     "typescript": "5.3.3",
     "use-resize-observer": "^9.1.0"

@@ -1,4 +1,4 @@
-import { Box, styled, useMediaQuery, useTheme } from '@mui/material';
+import { Box, styled, useMediaQuery, useTheme } from 'soroswap-ui';
 import Column from 'components/Column';
 import CurrencyLogo from 'components/Logo/CurrencyLogo';
 import Row from 'components/Row';
@@ -65,12 +65,7 @@ export function SwapModalHeaderAmount({
   const isSmallDevice = useMediaQuery('(max-width: 400px)');
 
   return (
-    <CustomRow
-      align='end'
-      justify="space-between"
-      flexDirection='row'
-      gap="8px"
-    >
+    <CustomRow align="end" justify="space-between" flexDirection="row" gap="8px">
       <Column gap="4px" alignItems="flex-start">
         <BodySecondary component="div">
           <MouseoverTooltip title={tooltipText} disableInteractive={!tooltipText}>
@@ -88,7 +83,9 @@ export function SwapModalHeaderAmount({
       <Column gap="4px" alignItems={isSmallDevice ? 'flex-start' : 'flex-end'}>
         <ResponsiveMediumText>{formattedAmount}</ResponsiveMediumText>
         {usdAmount !== undefined && (
-          <BodySmall alignSelf={'end'} color={theme.palette.custom.textTertiary}>{usdAmount}</BodySmall>
+          <BodySmall alignSelf={'end'} color={theme.palette.custom.textTertiary}>
+            {usdAmount}
+          </BodySmall>
         )}
       </Column>
     </CustomRow>
