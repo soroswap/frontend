@@ -3,7 +3,7 @@ import { Box, styled } from '@mui/material';
 import { ChevronRight } from '@mui/icons-material';
 import { findToken } from 'hooks/tokens/useToken';
 import { formatTokenAmount } from 'helpers/format';
-import { InterfaceTrade } from 'state/routing/types';
+import { InterfaceTrade, PlatformType } from 'state/routing/types';
 import { LoadingRows } from 'components/Loader/styled';
 import { MouseoverTooltip } from 'components/Tooltip';
 import { RowBetween, RowFixed } from 'components/Row';
@@ -82,23 +82,29 @@ export function AdvancedSwapDetails({
   useEffect(() => {
     (async () => {
       if (!trade?.path || isLoading) return;
+      if (trade.platform == PlatformType.ROUTER) {
+        setPathTokensIsLoading(true);
+        const promises = trade.path.map(async (contract) => {
+          const asset = await findToken(contract, tokensAsMap, sorobanContext);
+          const code = asset?.code == 'native' ? 'XLM' : asset?.code;
+          return code;
+        });
+        const results = await Promise.allSettled(promises);
 
-      setPathTokensIsLoading(true);
-
-      const promises = trade.path.map(async (contract) => {
-        const asset = await findToken(contract, tokensAsMap, sorobanContext);
-        const code = asset?.code == 'native' ? 'XLM' : asset?.code;
-        return code;
-      });
-
-      const results = await Promise.allSettled(promises);
-
-      const fulfilledValues = results
-        .filter((result) => result.status === 'fulfilled' && result.value)
-        .map((result) => (result.status === 'fulfilled' && result.value ? result.value : ''));
-
-      setPathArray(fulfilledValues);
-      setPathTokensIsLoading(false);
+        const fulfilledValues = results
+          .filter((result) => result.status === 'fulfilled' && result.value)
+          .map((result) => (result.status === 'fulfilled' && result.value ? result.value : ''));
+        setPathArray(fulfilledValues);
+        setPathTokensIsLoading(false);
+      } else if (trade.platform == PlatformType.STELLAR_CLASSIC) {
+        setPathTokensIsLoading(true);
+        const codes = trade.path.map((address) => {
+          if (address == "native") return "XLM"
+          return address.split(":")[0]
+        })
+        setPathArray(codes);
+        setPathTokensIsLoading(false);
+      }
     })();
   }, [trade?.path, isLoading, sorobanContext]);
 
@@ -173,6 +179,14 @@ export function AdvancedSwapDetails({
           </TextWithLoadingPlaceholder>
         </RowBetween>
       }
+      {trade?.platform && (
+        <RowBetween>
+          <MouseoverTooltip title={'The platform where the swap will be made.'}>
+            <BodySmall color="textSecondary">Platform</BodySmall>
+          </MouseoverTooltip>
+          <BodySmall data-testid="swap__details__platform">{trade.platform}</BodySmall>
+        </RowBetween>
+      )}
     </Column>
   );
 }

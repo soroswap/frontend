@@ -28,7 +28,15 @@ export function useBestTrade(
   resetRouterSdkCache: () => void;
 } {
   const { generateRoute, resetRouterSdkCache, maxHops } = useRouterSDK();
-
+  /**
+   * Custom hook that fetches the best trade based on the specified amount and trade type.
+   *
+   * @param {object} amountSpecified - The specified amount for the trade.
+   * @param {object} otherCurrency - The other currency involved in the trade.
+   * @param {number} maxHops - The maximum number of hops allowed for the trade.
+   * @returns {object} - The data, isLoading, and isValidating values from the SWR hook.
+   */
+  // Fetch or save the route in cache
   const {
     data,
     isLoading: isLoadingSWR,
@@ -36,17 +44,17 @@ export function useBestTrade(
   } = useSWR(
     amountSpecified && otherCurrency
       ? [
-          amountSpecified.currency.contract,
-          otherCurrency.contract,
+          amountSpecified,
+          otherCurrency,
           tradeType,
           amountSpecified.value,
           maxHops,
         ]
       : null,
-    ([amountTokenAddress, quoteTokenAddress, tradeType, amount, maxHops]) =>
+    ([amountAsset, quoteAsset, tradeType, amount, maxHops]) =>
       generateRoute({
-        amountTokenAddress,
-        quoteTokenAddress,
+        amountAsset,
+        quoteAsset,
         amount,
         tradeType:
           tradeType === TradeType.EXACT_INPUT
@@ -59,9 +67,9 @@ export function useBestTrade(
       refreshInterval: 0,
     },
   );
-
   const isLoading = isLoadingSWR || isValidating;
 
+  //Define the input and output currency based on the trade type
   const [currencyIn, currencyOut]: [TokenType | undefined, TokenType | undefined] = useMemo(
     () =>
       tradeType === TradeType.EXACT_INPUT
@@ -118,6 +126,7 @@ export function useBestTrade(
     }
   }, [data, currencyIn, currencyOut, tradeType]);
 
+  // Create the trade object
   const trade: InterfaceTrade = useMemo(() => {
     return {
       inputAmount,
@@ -127,6 +136,7 @@ export function useBestTrade(
       tradeType: tradeType,
       rawRoute: data,
       priceImpact: data?.priceImpact,
+      platform: data?.platform
     };
   }, [expectedAmount, inputAmount, outputAmount, tradeType, data]);
 
