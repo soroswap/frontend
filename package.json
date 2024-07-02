@@ -5,13 +5,13 @@
   "type": "module",
   "packageManager": "yarn@1.22.22",
   "scripts": {
-    "test": "cypress run",
+    "test": "cypress run --browser chrome",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
     "format": "prettier --write \"src/**/*.ts\" \"pages/**/*.ts\"",
-    "cy:run": "cypress run",
+    "cy:run": "cypress run --browser chrome",
     "cy:run:w": "cypress run --spec cypress/e2e/connectWallet.test.ts"
   },
   "dependencies": {

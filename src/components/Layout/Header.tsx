@@ -98,7 +98,7 @@ const HeaderNavbar = () => {
     <Navbar
       onClickItem={(item) => {
         if (item.label === 'Info') {
-          window.open(`https://info.soroswap.finance`, '_blank');
+          window.open(`https://info.soroswap.finance`, '_self');
         } else {
           router.push(item.path);
         }
