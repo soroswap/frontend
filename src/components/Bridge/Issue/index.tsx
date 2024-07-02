@@ -1,4 +1,4 @@
-import { Box, Button, MenuItem, Select, TextField } from '@mui/material';
+import { Box, Button, MenuItem, Select, TextField } from 'soroswap-ui';
 import { useInkathon } from '@scio-labs/use-inkathon';
 import { useSorobanReact } from '@soroban-react/core';
 import { deriveShortenedRequestId } from 'helpers/bridge/pendulum/spacewalk';

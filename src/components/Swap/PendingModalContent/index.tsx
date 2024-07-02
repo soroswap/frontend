@@ -1,4 +1,4 @@
-import { css, keyframes, styled, useTheme } from '@mui/material';
+import { css, keyframes, styled, useTheme } from 'soroswap-ui';
 import Column, { ColumnCenter } from 'components/Column';
 import CopyTxHash from 'components/CopyTxHash/CopyTxHash';
 import Row from 'components/Row';

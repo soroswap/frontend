@@ -1,4 +1,4 @@
-import { Box, styled } from '@mui/material';
+import { Box, styled } from 'soroswap-ui';
 
 const Card = styled(Box, {
   shouldForwardProp: (prop) => prop !== '$borderRadius',

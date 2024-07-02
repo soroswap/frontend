@@ -1,12 +1,12 @@
-import { InputBase, styled } from '@mui/material';
+import { InputBase, styled } from 'soroswap-ui';
 
 const CustomInput = styled(InputBase)`
   background-color: transparent;
   width: 100%;
-  border: ${({ theme }) => `1px solid ${theme.palette.customBackground.accentAction}`}; 
-  color: ${({ theme }) => theme.palette.primary.main}; 
-  border-radius: 20px; 
-  padding: 8px; 
+  border: ${({ theme }) => `1px solid ${theme.palette.customBackground.accentAction}`};
+  color: ${({ theme }) => theme.palette.primary.main};
+  border-radius: 20px;
+  padding: 8px;
 `;
 
 interface SwapButtonProps {
@@ -14,7 +14,7 @@ interface SwapButtonProps {
   type?: string;
   value?: string | number;
   onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  isNumeric? : boolean;
+  isNumeric?: boolean;
 }
 
 export function TextInput({
@@ -22,9 +22,11 @@ export function TextInput({
   type,
   value,
   onChange,
-  isNumeric = false
-}: SwapButtonProps) { 
-  const inputProps = isNumeric ? { min: 0, max: 9999999999999999, maxLength: 20, pattern:/^[0-9]$/ } : {};
+  isNumeric = false,
+}: SwapButtonProps) {
+  const inputProps = isNumeric
+    ? { min: 0, max: 9999999999999999, maxLength: 20, pattern: /^[0-9]$/ }
+    : {};
   return (
     <CustomInput
       inputProps={inputProps}

@@ -1,4 +1,4 @@
-import { styled } from '@mui/material/styles';
+import { styled } from 'soroswap-ui';
 import { AutoColumn } from 'components/Column';
 import { transparentize } from 'polished';
 import { ReactNode } from 'react';

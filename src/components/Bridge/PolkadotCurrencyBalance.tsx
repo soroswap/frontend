@@ -1,4 +1,4 @@
-import { styled, useTheme } from '@mui/material';
+import { styled, useTheme } from 'soroswap-ui';
 import { RowFixed } from 'components/Row';
 import { TextWithLoadingPlaceholder } from 'components/Swap/AdvancedSwapDetails';
 import { BodySmall } from 'components/Text';
@@ -51,37 +51,30 @@ export default function PolkadotCurrencyBalance({
   hideBalance,
   showMaxButton,
 }: CurrencyBalanceProps) {
-
-  const assetBalance = useMemo(()=>{
+  const assetBalance = useMemo(() => {
     if (!selectedAsset || !balances) {
       return 0;
     }
     for (let balance in balances) {
-      if(balances[balance].asset === selectedAsset.code){
-        return Number(balances[balance].balance)
+      if (balances[balance].asset === selectedAsset.code) {
+        return Number(balances[balance].balance);
       }
     }
-    
-    return 0
-  },[balances, selectedAsset])
+
+    return 0;
+  }, [balances, selectedAsset]);
 
   const theme = useTheme();
 
   return (
-    <TextWithLoadingPlaceholder
-      syncing={isLoading}
-      width={150}
-    >
+    <TextWithLoadingPlaceholder syncing={isLoading} width={150}>
       <RowFixed style={{ height: '17px' }}>
-
         <BodySmall color={theme.palette.secondary.main}>
           {!hideBalance && selectedAsset && `Balance: ${assetBalance}`}
         </BodySmall>
 
-        {showMaxButton && assetBalance > 0  && (
-          <StyledBalanceMax onClick={() => onMax!(assetBalance.toString())}>
-            Max
-          </StyledBalanceMax>
+        {showMaxButton && assetBalance > 0 && (
+          <StyledBalanceMax onClick={() => onMax!(assetBalance.toString())}>Max</StyledBalanceMax>
         )}
       </RowFixed>
     </TextWithLoadingPlaceholder>

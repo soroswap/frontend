@@ -6,7 +6,7 @@ import { FixedSizeList } from 'react-window';
 import { AccountResponse } from '@stellar/stellar-sdk/lib/horizon';
 import useSWRImmutable from 'swr/immutable';
 
-import { CircularProgress, Typography, styled } from '@mui/material';
+import { CircularProgress, Typography, styled } from 'soroswap-ui';
 import Column, { AutoColumn } from 'components/Column';
 import Loader from 'components/Icons/LoadingSpinner';
 import CurrencyLogo from 'components/Logo/CurrencyLogo';

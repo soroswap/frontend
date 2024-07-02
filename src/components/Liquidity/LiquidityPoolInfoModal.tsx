@@ -1,4 +1,4 @@
-import { Modal, Typography, styled, useMediaQuery, useTheme } from '@mui/material';
+import { Modal, Typography, styled, useMediaQuery, useTheme } from 'soroswap-ui';
 import BigNumber from 'bignumber.js';
 import { ButtonOutlined, ButtonPrimary } from 'components/Buttons/Button';
 import { CloseButton } from 'components/Buttons/CloseButton';

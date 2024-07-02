@@ -1,4 +1,4 @@
-import { Divider, styled } from '@mui/material';
+import { Divider, styled } from 'soroswap-ui';
 import Column, { AutoColumn } from 'components/Column';
 import { Caption } from 'components/Text';
 import { TokenType } from 'interfaces';
