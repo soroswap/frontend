@@ -127,6 +127,17 @@ export default function Header() {
   const logoWidth = isMobile ? 88 : 162;
   const logoHeight = isMobile ? 30 : 56;
 
+  const HeaderContainer = ({ children }: { children: React.ReactNode }) => {
+    if (isMobile) {
+      return (
+        <Box display="flex" alignItems="flex-start" gap="18px">
+          {children}
+        </Box>
+      );
+    }
+    return <>{children}</>;
+  };
+
   return (
     <>
       <MainBox isMobile={isMobile}>
@@ -148,9 +159,12 @@ export default function Header() {
           }}
           alt={'Soroswap'}
         />
-        {!isMobile ? (
-          <>
+        <HeaderContainer>
+          {isMobile && <ActiveChainHeaderChip isMobile={isMobile} />}
+          <Box data-testid="navbar__container">
             <HeaderNavbar />
+          </Box>
+          {!isMobile && (
             <ButtonsBox>
               <ModeSwitch
                 sx={{ m: 1 }}
@@ -159,15 +173,8 @@ export default function Header() {
               />
               <ProfileSection />
             </ButtonsBox>
-          </>
-        ) : (
-          <>
-            <Box display="flex" alignItems="flex-start" gap="18px">
-              <ActiveChainHeaderChip isMobile={isMobile} />
-              <HeaderNavbar />
-            </Box>
-          </>
-        )}
+          )}
+        </HeaderContainer>
       </MainBox>
     </>
   );

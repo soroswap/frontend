@@ -59,20 +59,20 @@ export default function Providers({
 
   return (
     <Provider store={store}>
-      <ColorModeContext.Provider value={colorMode}>
-        <SoroswapThemeProvider theme={mode}>
-          <MySorobanReactProvider {...sorobanReactProviderProps}>
-            <InkathonProvider>
+      <InkathonProvider>
+        <ColorModeContext.Provider value={colorMode}>
+          <SoroswapThemeProvider theme={mode}>
+            <MySorobanReactProvider {...sorobanReactProviderProps}>
               <AppContext.Provider value={appContextValues}>
                 <MainLayout>
                   {children}
                   <Analytics />
                 </MainLayout>
               </AppContext.Provider>
-            </InkathonProvider>
-          </MySorobanReactProvider>
-        </SoroswapThemeProvider>
-      </ColorModeContext.Provider>
+            </MySorobanReactProvider>
+          </SoroswapThemeProvider>
+        </ColorModeContext.Provider>
+      </InkathonProvider>
     </Provider>
   );
 }
