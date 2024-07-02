@@ -1,5 +1,5 @@
-import { css, keyframes } from "@emotion/react"
-import { styled } from "@mui/material"
+import { css, keyframes } from '@emotion/react';
+import { styled } from 'soroswap-ui';
 
 export const loadingAnimation = keyframes`
   0% {
@@ -8,7 +8,7 @@ export const loadingAnimation = keyframes`
   100% {
     background-position: 0% 50%;
   }
-`
+`;
 
 export const LoadingRows = styled('div')`
   display: grid;
@@ -27,14 +27,14 @@ export const LoadingRows = styled('div')`
     height: 2.4em;
     will-change: background-position;
   }
-`
+`;
 
 export const loadingOpacityMixin = css`
   filter: grayscale(1);
   opacity: 0.4;
   transition: opacity 0.2s ease-in-out;
-`
+`;
 
 export const LoadingOpacityContainer = styled('div')<{ $loading: boolean }>`
   ${loadingOpacityMixin}
-`
+`;

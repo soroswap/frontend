@@ -1,7 +1,7 @@
 import { useContext, useState, useEffect } from 'react';
 
-import { Box, CircularProgress, Modal, useMediaQuery } from '@mui/material';
-import { styled, useTheme } from '@mui/material/styles';
+import { Box, CircularProgress, Modal, useMediaQuery } from 'soroswap-ui';
+import { styled, useTheme } from 'soroswap-ui';
 import { useSorobanReact } from '@soroban-react/core';
 import { AppContext } from 'contexts';
 import Image from 'next/image';

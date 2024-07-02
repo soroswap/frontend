@@ -3,7 +3,7 @@ import Column from 'components/Column';
 import React, { PropsWithChildren, ReactElement } from 'react';
 import { ChevronDown } from 'react-feather';
 // import styled from 'styled-components/macro'
-import { styled } from '@mui/material';
+import { styled } from 'soroswap-ui';
 
 import Row, { RowBetween } from '../Row';
 

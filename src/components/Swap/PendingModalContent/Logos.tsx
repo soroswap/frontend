@@ -1,4 +1,4 @@
-import { css, keyframes, styled, useTheme } from '@mui/material';
+import { css, keyframes, styled, useTheme } from 'soroswap-ui';
 import { LoaderV3 } from 'components/Icons/LoadingSpinner';
 import CurrencyLogo from 'components/Logo/CurrencyLogo';
 import { useUnmountingAnimation } from 'hooks/useUnmountingAnimation';

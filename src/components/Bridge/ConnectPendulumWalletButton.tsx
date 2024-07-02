@@ -7,7 +7,7 @@ import {
   nightlyConnect,
   useInkathon,
 } from '@scio-labs/use-inkathon';
-import { Box, CircularProgress, Modal, useMediaQuery, useTheme } from '@mui/material';
+import { Box, CircularProgress, Modal, useMediaQuery, useTheme } from 'soroswap-ui';
 import { ButtonPrimary } from 'components/Buttons/Button';
 import { ButtonText } from 'components/Text';
 import { ConnectWalletStyles } from 'components/Modals/ConnectWalletModal';

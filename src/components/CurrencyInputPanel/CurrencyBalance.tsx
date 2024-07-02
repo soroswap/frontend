@@ -1,4 +1,4 @@
-import { styled, useTheme } from '@mui/material';
+import { styled, useTheme } from 'soroswap-ui';
 import { RowFixed } from 'components/Row';
 import { BodySmall } from 'components/Text';
 import { MouseoverTooltip } from 'components/Tooltip';

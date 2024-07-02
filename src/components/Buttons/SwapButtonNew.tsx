@@ -1,4 +1,4 @@
-import { ButtonProps as ButtonPropsOriginal, Button as MuiButton, styled } from '@mui/material';
+import { ButtonProps as ButtonPropsOriginal, Button as MuiButton, styled } from 'soroswap-ui';
 import { contractTransaction, useSendTransaction } from '@soroban-react/contracts';
 import { SorobanContextType } from '@soroban-react/core';
 import BigNumber from 'bignumber.js';

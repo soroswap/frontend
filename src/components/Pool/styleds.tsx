@@ -1,17 +1,17 @@
-import { Typography, styled } from '@mui/material'
-import { LoadingRows as BaseLoadingRows } from 'components/Loader/styled'
+import { Typography, styled } from 'soroswap-ui';
+import { LoadingRows as BaseLoadingRows } from 'components/Loader/styled';
 
 export const Wrapper = styled('div')`
   position: relative;
   padding: 20px;
-`
+`;
 
 export const ClickableText = styled(Typography)`
   :hover {
     cursor: pointer;
   }
   color: ${({ theme }) => theme.palette.customBackground.accentAction};
-`
+`;
 export const MaxButton = styled('button')<{ width: string }>`
   padding: 0.5rem 1rem;
   background-color: ${({ theme }) => theme.palette.custom.deprecated_primary5};
@@ -30,7 +30,7 @@ export const MaxButton = styled('button')<{ width: string }>`
     border: 1px solid ${({ theme }) => theme.palette.customBackground.accentAction};
     outline: none;
   }
-`
+`;
 
 export const Dots = styled('span')`
   &::after {
@@ -51,7 +51,7 @@ export const Dots = styled('span')`
       content: '...';
     }
   }
-`
+`;
 
 export const LoadingRows = styled(BaseLoadingRows)`
   padding-top: 36px;
@@ -69,4 +69,4 @@ export const LoadingRows = styled(BaseLoadingRows)`
     grid-column: 3 / 4;
     margin-bottom: 2em;
   }
-`
+`;

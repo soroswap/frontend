@@ -1,4 +1,4 @@
-import { CircularProgress, styled, useTheme } from '@mui/material';
+import { CircularProgress, styled, useTheme } from 'soroswap-ui';
 import { useSorobanReact } from '@soroban-react/core';
 import BigNumber from 'bignumber.js';
 import { ButtonError, SmallButtonPrimary } from 'components/Buttons/Button';

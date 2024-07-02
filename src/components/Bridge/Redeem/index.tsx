@@ -1,13 +1,13 @@
-import { Box, MenuItem, Select, TextField } from "@mui/material";
-import { useInkathon } from "@scio-labs/use-inkathon";
-import { useSorobanReact } from "@soroban-react/core";
-import BigNumber from "bignumber.js";
-import { decimalToStellarNative, isPublicKey } from "helpers/bridge/pendulum/stellar";
-import { getEventBySectionAndMethod, getSubstrateErrors } from "helpers/bridge/pendulum/substrate";
-import { useRedeemPallet } from "hooks/bridge/pendulum/useRedeemPallet";
-import useSpacewalkBridge from "hooks/bridge/pendulum/useSpacewalkBridge";
-import { useCallback, useMemo, useState } from "react";
-import { BridgeButton } from "../BridgeButton";
+import { Box, MenuItem, Select, TextField } from 'soroswap-ui';
+import { useInkathon } from '@scio-labs/use-inkathon';
+import { useSorobanReact } from '@soroban-react/core';
+import BigNumber from 'bignumber.js';
+import { decimalToStellarNative, isPublicKey } from 'helpers/bridge/pendulum/stellar';
+import { getEventBySectionAndMethod, getSubstrateErrors } from 'helpers/bridge/pendulum/substrate';
+import { useRedeemPallet } from 'hooks/bridge/pendulum/useRedeemPallet';
+import useSpacewalkBridge from 'hooks/bridge/pendulum/useSpacewalkBridge';
+import { useCallback, useMemo, useState } from 'react';
+import { BridgeButton } from '../BridgeButton';
 
 export type RedeemFormValues = {
   amount: number;
@@ -18,7 +18,7 @@ export function RedeemComponent() {
   const { activeAccount, activeSigner, api } = useInkathon();
   const { createRedeemRequestExtrinsic, getRedeemRequest } = useRedeemPallet();
   const { address } = useSorobanReact();
-  const { selectedVault, wrappedAssets, selectedAsset, setSelectedAsset } = useSpacewalkBridge()
+  const { selectedVault, wrappedAssets, selectedAsset, setSelectedAsset } = useSpacewalkBridge();
   const [submissionPending, setSubmissionPending] = useState(false);
   const [amount, setAmount] = useState<string>('');
 
@@ -33,14 +33,14 @@ export function RedeemComponent() {
 
     return createRedeemRequestExtrinsic(amountRaw, stellarAddress, selectedVault);
   }, [amountRaw, api, createRedeemRequestExtrinsic, selectedVault, stellarAddress]);
-  
+
   const submitRequestRedeemExtrinsic = useCallback(() => {
     if (!requestRedeemExtrinsic || !api || !selectedVault) {
       return;
     }
 
     if (!activeAccount?.address) {
-      console.log("Error: No Polkadot wallet connected");
+      console.log('Error: No Polkadot wallet connected');
       return;
     }
 
@@ -58,7 +58,7 @@ export function RedeemComponent() {
             console.log(errorMessage);
           }
         } else if (status.isFinalized) {
-          const requestRedeemEvents = getEventBySectionAndMethod(events, "redeem", "RequestRedeem");
+          const requestRedeemEvents = getEventBySectionAndMethod(events, 'redeem', 'RequestRedeem');
 
           // We only expect one event but loop over all of them just in case
           for (const requestRedeemEvent of requestRedeemEvents) {
@@ -66,39 +66,53 @@ export function RedeemComponent() {
             const redeemId = (requestRedeemEvent.data as any).redeemId;
 
             getRedeemRequest(redeemId).then((redeemRequest) => {
-              console.log("request", redeemRequest);
+              console.log('request', redeemRequest);
             });
           }
 
           setSubmissionPending(false);
 
           if (errors.length === 0) {
-            console.log("transaction successfull")
+            console.log('transaction successfull');
           }
         }
       })
       .catch((error: unknown) => {
-        console.error("Transaction submission failed", error);
+        console.error('Transaction submission failed', error);
         setSubmissionPending(false);
       });
-  }, [requestRedeemExtrinsic, api, selectedVault, activeAccount?.address, activeSigner, getRedeemRequest]);
+  }, [
+    requestRedeemExtrinsic,
+    api,
+    selectedVault,
+    activeAccount?.address,
+    activeSigner,
+    getRedeemRequest,
+  ]);
 
-  
   async function handleRedeem() {
-    const res = await submitRequestRedeemExtrinsic()
-    console.log(res)
+    const res = await submitRequestRedeemExtrinsic();
+    console.log(res);
   }
 
   const handleAssetSelection = (assetCode: string) => {
-    const newAsset = wrappedAssets?.find((ast) => ast.code == assetCode)
-    setSelectedAsset(newAsset)
-  }
+    const newAsset = wrappedAssets?.find((ast) => ast.code == assetCode);
+    setSelectedAsset(newAsset);
+  };
 
   return (
-    <Box component="form" noValidate autoComplete="off" sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-      {wrappedAssets && wrappedAssets.length > 0 && (   
+    <Box
+      component="form"
+      noValidate
+      autoComplete="off"
+      sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}
+    >
+      {wrappedAssets && wrappedAssets.length > 0 && (
         <Box mb={2}>
-          <Select value={selectedAsset?.code} onChange={(e) => handleAssetSelection(e.target.value)}>
+          <Select
+            value={selectedAsset?.code}
+            onChange={(e) => handleAssetSelection(e.target.value)}
+          >
             {wrappedAssets?.map((asset, index) => (
               <MenuItem key={index} value={asset.code}>
                 {asset.code}
@@ -116,9 +130,7 @@ export function RedeemComponent() {
         fullWidth
         type="number"
       />
-      <Box>
-        You will receive: {amount} XLM
-      </Box>
+      <Box>You will receive: {amount} XLM</Box>
       <BridgeButton isLoading={submissionPending} callback={handleRedeem} />
     </Box>
   );

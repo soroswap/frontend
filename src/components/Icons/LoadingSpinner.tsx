@@ -1,7 +1,6 @@
-
-import { useTheme } from '@mui/material'
-import { StyledRotatingSVG, StyledSVG } from './shared'
-import { opacify } from 'themes/utils'
+import { useTheme } from 'soroswap-ui';
+import { StyledRotatingSVG, StyledSVG } from './shared';
+import { opacify } from 'themes/utils';
 
 /**
  * Takes in custom size and stroke for circle color, default to primary color as fill,
@@ -13,12 +12,12 @@ export default function Loader({
   strokeWidth,
   ...rest
 }: {
-  size?: string
-  stroke?: string
-  strokeWidth?: number
-  [k: string]: any
+  size?: string;
+  stroke?: string;
+  strokeWidth?: number;
+  [k: string]: any;
 }) {
-  const theme = useTheme()
+  const theme = useTheme();
   return (
     <StyledRotatingSVG
       viewBox="0 0 24 24"
@@ -35,21 +34,36 @@ export default function Loader({
         strokeLinejoin="round"
       />
     </StyledRotatingSVG>
-  )
+  );
 }
 
 export function LoaderV2() {
-  const theme = useTheme()
+  const theme = useTheme();
   return (
-    <StyledRotatingSVG size="16px" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <StyledSVG size="16px" viewBox="0 0 16 16" fill={opacify(24, theme.palette.secondary.main)} xmlns="http://www.w3.org/2000/svg">
+    <StyledRotatingSVG
+      size="16px"
+      viewBox="0 0 16 16"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <StyledSVG
+        size="16px"
+        viewBox="0 0 16 16"
+        fill={opacify(24, theme.palette.secondary.main)}
+        xmlns="http://www.w3.org/2000/svg"
+      >
         <path
           fillRule="evenodd"
           clipRule="evenodd"
           d="M8 2.66667C5.05448 2.66667 2.66667 5.05448 2.66667 8C2.66667 10.9455 5.05448 13.3333 8 13.3333C10.9455 13.3333 13.3333 10.9455 13.3333 8C13.3333 5.05448 10.9455 2.66667 8 2.66667ZM0 8C0 3.58172 3.58172 0 8 0C12.4183 0 16 3.58172 16 8C16 12.4183 12.4183 16 8 16C3.58172 16 0 12.4183 0 8Z"
         />
       </StyledSVG>
-      <StyledSVG size="16px" viewBox="0 0 16 16" fill={theme.palette.custom.borderColor} xmlns="http://www.w3.org/2000/svg">
+      <StyledSVG
+        size="16px"
+        viewBox="0 0 16 16"
+        fill={theme.palette.custom.borderColor}
+        xmlns="http://www.w3.org/2000/svg"
+      >
         <path
           fillRule="evenodd"
           clipRule="evenodd"
@@ -57,11 +71,19 @@ export function LoaderV2() {
         />
       </StyledSVG>
     </StyledRotatingSVG>
-  )
+  );
 }
 
-export function LoaderV3({ size = '16px', color, ...rest }: { size?: string; color?: string; [k: string]: any }) {
-  const theme = useTheme()
+export function LoaderV3({
+  size = '16px',
+  color,
+  ...rest
+}: {
+  size?: string;
+  color?: string;
+  [k: string]: any;
+}) {
+  const theme = useTheme();
   return (
     <StyledRotatingSVG
       size={size}
@@ -81,5 +103,5 @@ export function LoaderV3({ size = '16px', color, ...rest }: { size?: string; col
         fill={color ?? theme.palette.custom.textTertiary}
       />
     </StyledRotatingSVG>
-  )
+  );
 }

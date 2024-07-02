@@ -1,5 +1,5 @@
 import { AppContext } from 'contexts';
-import { Box, Typography, useTheme } from '@mui/material';
+import { Box, Typography, useTheme } from 'soroswap-ui';
 import { Input, InputContainer } from '../Input';
 import QuestionHelper from 'components/QuestionHelper';
 import React, { useContext } from 'react';

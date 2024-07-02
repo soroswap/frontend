@@ -16,12 +16,7 @@
     "jsx": "preserve",
     "incremental": true,
     "downlevelIteration": true,
-    "types": [
-      "node",
-      "vitest/importMeta",
-      "vitest/globals",
-      "cypress"
-    ]
+    "types": ["node", "cypress"]
   },
   "include": [
     "next-env.d.ts",

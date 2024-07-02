@@ -1,4 +1,4 @@
-import { Box, Button } from '@mui/material';
+import { Box, Button } from 'soroswap-ui';
 import { useInkathon } from '@scio-labs/use-inkathon';
 import { useSorobanReact } from '@soroban-react/core';
 import BigNumber from 'bignumber.js';
@@ -30,7 +30,6 @@ import PendulumChainIcon from './ChainIcons/PendulumChainIcon';
 import StellarChainIcon from './ChainIcons/StellarChainIcon';
 import PolkadotCurrencyBalance from './PolkadotCurrencyBalance';
 
-
 import { useModalStepper } from 'hooks/bridge/pendulum/useModalStepper';
 import { StepKeys, IssueStepsByKeys } from 'components/Bridge/BridgeSteps';
 
@@ -59,7 +58,7 @@ const BridgeComponent = () => {
 
   const refreshSpaceWalkBalances = () => {
     mutate();
-  }
+  };
   const {
     tokenBalancesResponse,
     availableNativeBalance,
@@ -219,13 +218,13 @@ const BridgeComponent = () => {
     );
   }, [amount, fees.issueFee, fees.redeemFee, selectedChainFrom]);
 
-  const maxLengthAmount = (value:string, maxLength?:number) => {
-    if(maxLength === 0 || !maxLength || value.length <= maxLength){
+  const maxLengthAmount = (value: string, maxLength?: number) => {
+    if (maxLength === 0 || !maxLength || value.length <= maxLength) {
       setAmount(value);
     } else {
       return false;
     }
-  }
+  };
   //Auto select the other chain when the user selects one
   useEffect(() => {
     if (selectedChainFrom === BridgeChains.PENDULUM && selectedChainTo !== BridgeChains.STELLAR) {
@@ -235,11 +234,9 @@ const BridgeComponent = () => {
     if (selectedChainFrom === BridgeChains.STELLAR && selectedChainTo !== BridgeChains.PENDULUM) {
       setSelectedChainTo(BridgeChains.PENDULUM);
     }
-    
   }, [selectedChainFrom]);
 
   useEffect(() => {
-
     if (selectedChainTo === BridgeChains.PENDULUM && selectedChainFrom !== BridgeChains.STELLAR) {
       setSelectedChainFrom(BridgeChains.STELLAR);
     }
@@ -249,10 +246,10 @@ const BridgeComponent = () => {
     }
   }, [selectedChainTo]);
 
-  useEffect(()=>{
+  useEffect(() => {
     refetch();
     refreshSpaceWalkBalances();
-  },[modalStatus.isSuccess, modalStatus.isError, modalStatus.isPending])
+  }, [modalStatus.isSuccess, modalStatus.isError, modalStatus.isPending]);
 
   return (
     <>

@@ -1,14 +1,11 @@
-import { useMediaQuery } from '@mui/material';
-import AppBar from '@mui/material/AppBar';
-import Toolbar from '@mui/material/Toolbar';
-import { styled, useTheme } from '@mui/material/styles';
+import { AppBar, Toolbar, useMediaQuery } from 'soroswap-ui';
+
+import { styled, useTheme } from 'soroswap-ui';
 import ConnectWalletModal from 'components/Modals/ConnectWalletModal';
 import SnackbarNotification from 'components/Notifications/SnackbarNotification';
 import React, { useState } from 'react';
 import background1 from '../../assets/images/bg1.png';
 import Header from './Header';
-import MobileDrawer from './MobileDrawer';
-import Banner from './Banner';
 
 const MainBackground = styled('main')<{ isMobile: boolean; showBanner: boolean }>`
   background-image: url(${background1.src});
@@ -26,7 +23,6 @@ const MainBackground = styled('main')<{ isMobile: boolean; showBanner: boolean }
 
 export default function MainLayout({ children }: { children: React.ReactNode }) {
   const theme = useTheme();
-  const [isDrawerOpen, setDrawerOpen] = useState<boolean>(false);
   const isMobile = useMediaQuery(theme.breakpoints.down(1220));
 
   const [showBanner, setShowBanner] = useState<boolean>(false);
@@ -45,14 +41,12 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
         {/* <Banner show={showBanner} setShow={setShowBanner} /> */}
 
         <Toolbar>
-          <Header isDrawerOpen={isDrawerOpen} setDrawerOpen={setDrawerOpen} />
+          <Header />
         </Toolbar>
       </AppBar>
 
       <ConnectWalletModal />
       <SnackbarNotification />
-
-      <MobileDrawer isDrawerOpen={isDrawerOpen} setDrawerOpen={setDrawerOpen} />
 
       <MainBackground isMobile={isMobile} theme={theme} showBanner={showBanner}>
         {children}

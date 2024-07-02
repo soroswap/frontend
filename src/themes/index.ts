@@ -1,4 +1,4 @@
-import { PaletteMode, createTheme } from '@mui/material';
+import { PaletteMode, createTheme } from 'soroswap-ui';
 import { opacify } from './utils';
 
 declare module '@mui/material/styles/createPalette' {

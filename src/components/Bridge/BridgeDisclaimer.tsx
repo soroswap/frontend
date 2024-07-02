@@ -1,13 +1,5 @@
 import { FiberManualRecord, Notifications } from '@mui/icons-material';
-import {
-  List,
-  ListItem,
-  ListItemIcon,
-  Typography,
-  keyframes,
-  styled,
-  useTheme,
-} from '@mui/material';
+import { List, ListItem, ListItemIcon, Typography, keyframes, styled, useTheme } from 'soroswap-ui';
 import AnimatedDropdown from 'components/AnimatedDropdown';
 import Column from 'components/Column';
 import { RowBetween, RowFixed } from 'components/Row';
@@ -46,7 +38,7 @@ const Wrapper = styled(Column)`
   overflow: hidden;
 `;
 
-const accentColor = {color: '#B295F8'};
+const accentColor = { color: '#B295F8' };
 
 export default function BridgeDisclaimerDropdown() {
   const theme = useTheme();
@@ -96,9 +88,9 @@ export default function BridgeDisclaimerDropdown() {
                   rel="noreferrer"
                   className="mx-1 text-primary"
                 >
-                  support 
-                </Link>
-                {' '}if your transaction is still pending after 10 minutes.
+                  support
+                </Link>{' '}
+                if your transaction is still pending after 10 minutes.
               </>,
             ].map((text, index) => (
               <ListItem
@@ -108,7 +100,7 @@ export default function BridgeDisclaimerDropdown() {
                   py: 0.4,
                   opacity: 0.5,
                 }}
-                style={{textWrap:'pretty'}}
+                style={{ textWrap: 'pretty' }}
               >
                 <ListItemIcon sx={{ minWidth: '20px' }}>
                   <FiberManualRecord sx={{ fontSize: 'x-small', color: 'action.active' }} />

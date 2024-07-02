@@ -1,4 +1,4 @@
-import { styled } from '@mui/material';
+import { styled } from 'soroswap-ui';
 import { BodySmall } from 'components/Text';
 import { useCallback, useState } from 'react';
 import { AlertCircle } from 'react-feather';

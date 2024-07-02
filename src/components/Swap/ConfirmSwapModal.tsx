@@ -1,6 +1,6 @@
 // import { Trans } from '@lingui/macro' //This is for localization and translation on all languages
-import { Modal } from '@mui/material';
-import { styled } from '@mui/material/styles';
+import { Modal } from 'soroswap-ui';
+import { styled } from 'soroswap-ui';
 import { useSorobanReact } from '@soroban-react/core';
 import { ConfirmationModalContent } from 'components/TransactionConfirmationModal';
 import { TokenType } from 'interfaces';

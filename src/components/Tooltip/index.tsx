@@ -1,4 +1,4 @@
-import { Tooltip, TooltipProps, styled, tooltipClasses } from '@mui/material';
+import { Tooltip, TooltipProps, styled, tooltipClasses } from 'soroswap-ui';
 // import { PropsWithChildren, ReactNode, useEffect, useState } from 'react'
 // import Popover, { PopoverProps } from '../Popover'
 // import noop from 'utils/noop'

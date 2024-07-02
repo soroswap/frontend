@@ -1,14 +1,14 @@
-import { styled } from '@mui/material'
-import { lighten } from 'polished'
-import { loadingAnimation } from '../Loader/styled'
+import { styled } from 'soroswap-ui';
+import { lighten } from 'polished';
+import { loadingAnimation } from '../Loader/styled';
 
 /* Loading state bubbles (animation style from: src/components/Loader/styled.tsx) */
 export const LoadingBubble = styled('div')<{
-  height?: string
-  width?: string
-  round?: boolean
-  delay?: string
-  margin?: string
+  height?: string;
+  width?: string;
+  round?: boolean;
+  delay?: string;
+  margin?: string;
 }>`
   border-radius: 12px;
   border-radius: ${({ round }) => (round ? '50%' : '12px')};
@@ -27,4 +27,4 @@ export const LoadingBubble = styled('div')<{
   );
   will-change: background-position;
   background-size: 400%;
-`
+`;

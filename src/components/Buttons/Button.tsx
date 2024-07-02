@@ -7,7 +7,7 @@ import {
   styled,
   useTheme,
   Theme,
-} from '@mui/material';
+} from 'soroswap-ui';
 
 import { RowBetween } from '../Row';
 

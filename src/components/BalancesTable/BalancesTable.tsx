@@ -1,14 +1,19 @@
-import { Card, Stack, Switch, Tooltip, Typography } from '@mui/material';
-import Box from '@mui/material/Box';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TablePagination from '@mui/material/TablePagination';
-import TableRow from '@mui/material/TableRow';
-import TableSortLabel from '@mui/material/TableSortLabel';
+import { Card, Stack, Switch, Tooltip, Typography } from 'soroswap-ui';
+
+import {
+  Box,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TablePagination,
+  TableRow,
+  TableSortLabel,
+} from 'soroswap-ui';
+
 import { visuallyHidden } from '@mui/utils';
+
 import ClipboardComponent from 'components/Clipboard/ClipboardComponent';
 import CurrencyLogo from 'components/Logo/CurrencyLogo';
 import { shortenAddress } from 'helpers/address';
@@ -123,11 +128,11 @@ export default function BalancesTable(props: any) {
   const { nativeToken } = props;
   const { tokens, tokenBalancesResponse } = useGetMyBalances();
   const rows =
-  tokenBalancesResponse?.balances?.map((x) => ({
+    tokenBalancesResponse?.balances?.map((x) => ({
       ...x,
       type: x.issuer
         ? 'Stellar Classic Asset'
-        : (x.contract === nativeToken.contract && x.code === nativeToken.code)
+        : x.contract === nativeToken.contract && x.code === nativeToken.code
         ? 'Native'
         : 'Soroban Token',
     })) ?? [];

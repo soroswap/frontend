@@ -1,4 +1,4 @@
-import { styled } from '@mui/material';
+import { styled } from 'soroswap-ui';
 import { TokenType } from 'interfaces';
 import CurrencyLogo from './CurrencyLogo';
 
@@ -7,22 +7,22 @@ const Wrapper = styled('div')<{ margin: boolean; sizeraw: number }>`
   display: flex;
   flex-direction: row;
   margin-left: ${({ sizeraw, margin }) => margin && (sizeraw / 3 + 8).toString() + 'px'};
-`
+`;
 
 interface DoubleCurrencyLogoProps {
-  margin?: boolean
-  size?: number
-  currency0?: TokenType | undefined | null
-  currency1?: TokenType | undefined | null
+  margin?: boolean;
+  size?: number;
+  currency0?: TokenType | undefined | null;
+  currency1?: TokenType | undefined | null;
 }
 
 const HigherLogoWrapper = styled('div')`
   z-index: 1;
-`
+`;
 const CoveredLogoWapper = styled('div')<{ sizeraw: number }>`
   position: absolute;
   left: ${({ sizeraw }) => '-' + (sizeraw / 2).toString() + 'px'} !important;
-`
+`;
 
 export default function DoubleCurrencyLogo({
   currency0,
@@ -43,5 +43,5 @@ export default function DoubleCurrencyLogo({
         </CoveredLogoWapper>
       )}
     </Wrapper>
-  )
+  );
 }

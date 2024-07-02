@@ -1,15 +1,15 @@
 import { Analytics } from '@vercel/analytics/react';
 import { AppContext, AppContextType, ColorModeContext, SnackbarIconType } from 'contexts';
-import { CssBaseline, ThemeProvider } from '@mui/material';
+import { CssBaseline, ThemeProvider } from 'soroswap-ui';
 import { Provider } from 'react-redux';
-import { theme } from 'themes';
+import { theme } from 'soroswap-ui';
 import { useMemo, useState } from 'react';
 import InkathonProvider from 'inkathon/InkathonProvider';
 import MainLayout from './Layout/MainLayout';
 import MySorobanReactProvider from 'soroban/MySorobanReactProvider';
 import store from 'state';
 import { SorobanContextType } from '@soroban-react/core';
-
+import { SoroswapThemeProvider } from 'soroswap-ui';
 export default function Providers({
   children,
   sorobanReactProviderProps,
@@ -59,21 +59,20 @@ export default function Providers({
 
   return (
     <Provider store={store}>
-      <ColorModeContext.Provider value={colorMode}>
-        <ThemeProvider theme={theme(mode)}>
-          <CssBaseline />
-          <MySorobanReactProvider {...sorobanReactProviderProps}>
-            <InkathonProvider>
+      <InkathonProvider>
+        <ColorModeContext.Provider value={colorMode}>
+          <SoroswapThemeProvider theme={mode}>
+            <MySorobanReactProvider {...sorobanReactProviderProps}>
               <AppContext.Provider value={appContextValues}>
                 <MainLayout>
                   {children}
                   <Analytics />
                 </MainLayout>
               </AppContext.Provider>
-            </InkathonProvider>
-          </MySorobanReactProvider>
-        </ThemeProvider>
-      </ColorModeContext.Provider>
+            </MySorobanReactProvider>
+          </SoroswapThemeProvider>
+        </ColorModeContext.Provider>
+      </InkathonProvider>
     </Provider>
   );
 }

@@ -1,4 +1,4 @@
-import { Box, Modal, Typography, styled, useMediaQuery, useTheme } from '@mui/material';
+import { Box, Modal, Typography, styled, useMediaQuery, useTheme } from 'soroswap-ui';
 import Column from 'components/Column';
 import {
   Aligner,

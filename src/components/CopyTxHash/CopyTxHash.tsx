@@ -1,4 +1,4 @@
-import { Box } from '@mui/material';
+import { Box } from 'soroswap-ui';
 import { Clipboard } from 'react-feather';
 import { LabelSmall } from 'components/Text';
 import { SnackbarIconType } from 'contexts';

@@ -4,8 +4,8 @@ import * as StellarSdk from '@stellar/stellar-sdk';
 
 import { AppContext, SnackbarIconType } from 'contexts';
 
-import { Box, CircularProgress, Stack, Typography } from '@mui/material';
-import CardContent from '@mui/material/CardContent';
+import { Box, CircularProgress, Stack, Typography } from 'soroswap-ui';
+import { CardContent } from 'soroswap-ui';
 import { ButtonPrimary } from './Buttons/Button';
 import { TextInput } from './Inputs/TextInput';
 import WrapStellarAssetModal from './Modals/WrapStellarAssetModal';
@@ -179,7 +179,11 @@ export function MintCustomToken() {
       if (isAddress(newTokenAddress)) {
         const tokenInfo = await findToken(newTokenAddress, tokensAsMap, sorobanContext);
         setTokenSymbol(tokenInfo?.code as string);
-        const requiresTrust = await requiresTrustline(sorobanContext, tokenInfo, String(tokenAmount));
+        const requiresTrust = await requiresTrustline(
+          sorobanContext,
+          tokenInfo,
+          String(tokenAmount),
+        );
         if (requiresTrust) {
           setButtonText('Set Trustline');
           setNeedToSetTrustline(true);

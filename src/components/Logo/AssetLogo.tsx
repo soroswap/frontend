@@ -1,4 +1,4 @@
-import { css, styled } from '@mui/material';
+import { css, styled } from 'soroswap-ui';
 import React from 'react';
 
 export const MissingImageLogo = styled('div')<{ size?: string }>`
@@ -12,7 +12,7 @@ export const MissingImageLogo = styled('div')<{ size?: string }>`
   line-height: ${({ size }) => size ?? '24px'};
   text-align: center;
   width: ${({ size }) => size ?? '24px'};
-`
+`;
 
 export const LogoImage = styled('img')<{ size: string; useBG?: boolean }>`
   width: ${({ size }) => size};
@@ -25,39 +25,37 @@ export const LogoImage = styled('img')<{ size: string; useBG?: boolean }>`
       background: radial-gradient(white 60%, #ffffff00 calc(70% + 1px));
       box-shadow: 0 0 1px white;
     `}
-`
+`;
 
 export type AssetLogoBaseProps = {
-  symbol?: string | null
-  backupImg?: string | null
-  size?: string
-  style?: React.CSSProperties
-  hideL2Icon?: boolean
-  icon?: string | null
-}
-type AssetLogoProps = AssetLogoBaseProps & { isNative?: boolean; address?: string | null; chainId?: number }
+  symbol?: string | null;
+  backupImg?: string | null;
+  size?: string;
+  style?: React.CSSProperties;
+  hideL2Icon?: boolean;
+  icon?: string | null;
+};
+type AssetLogoProps = AssetLogoBaseProps & {
+  isNative?: boolean;
+  address?: string | null;
+  chainId?: number;
+};
 
 const LogoContainer = styled('div')`
   position: relative;
   display: flex;
-`
+`;
 
 /**
  * Renders an image by prioritizing a list of sources, and then eventually a fallback triangle alert
  */
-export default function AssetLogo({
-  address,
-  symbol,
-  size = '24px',
-  style,
-  icon,
-}: AssetLogoProps) {
+export default function AssetLogo({ address, symbol, size = '24px', style, icon }: AssetLogoProps) {
   const imageProps = {
     alt: `${symbol ?? 'token'} logo`,
     size,
-  }
+  };
 
-  const src = icon
+  const src = icon;
 
   return (
     <LogoContainer style={style}>
@@ -70,5 +68,5 @@ export default function AssetLogo({
         </MissingImageLogo>
       )}
     </LogoContainer>
-  )
+  );
 }

@@ -1,4 +1,4 @@
-import { Typography, styled } from '@mui/material';
+import { Typography, styled } from 'soroswap-ui';
 
 export const SubHeaderLarge = styled(Typography)<{
   color?: string;

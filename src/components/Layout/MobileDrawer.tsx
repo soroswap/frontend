@@ -1,8 +1,7 @@
 import * as React from 'react';
-import Box from '@mui/material/Box';
-import Drawer from '@mui/material/Drawer';
+import { Box, Drawer } from 'soroswap-ui';
 import { ModeSwitch } from './Header';
-import { styled, useTheme } from '@mui/material';
+import { styled, useTheme } from 'soroswap-ui';
 import { ColorModeContext } from 'contexts';
 import ProfileSection from './ProfileSection';
 

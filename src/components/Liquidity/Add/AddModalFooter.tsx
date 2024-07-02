@@ -1,4 +1,4 @@
-import { styled, useTheme } from '@mui/material';
+import { styled, useTheme } from 'soroswap-ui';
 import BigNumber from 'bignumber.js';
 import { ButtonError } from 'components/Buttons/Button';
 import Column from 'components/Column';

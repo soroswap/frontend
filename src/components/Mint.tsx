@@ -1,13 +1,16 @@
-import { Typography } from '@mui/material';
-import Card from '@mui/material/Card';
-import CardActions from '@mui/material/CardActions';
-import CardContent from '@mui/material/CardContent';
-import FormControl from '@mui/material/FormControl';
-import InputAdornment from '@mui/material/InputAdornment';
-import InputLabel from '@mui/material/InputLabel';
-import MenuItem from '@mui/material/MenuItem';
-import OutlinedInput from '@mui/material/OutlinedInput';
-import TextField from '@mui/material/TextField';
+import {
+  Typography,
+  Card,
+  CardActions,
+  CardContent,
+  FormControl,
+  InputAdornment,
+  InputLabel,
+  MenuItem,
+  OutlinedInput,
+  TextField,
+} from 'soroswap-ui';
+
 import { SorobanContextType, useSorobanReact } from '@soroban-react/core';
 import React, { useEffect, useState } from 'react';
 

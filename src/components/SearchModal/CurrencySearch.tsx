@@ -1,4 +1,4 @@
-import { Box, CircularProgress, Modal, Typography, styled, useTheme } from '@mui/material';
+import { Box, CircularProgress, Modal, Typography, styled, useTheme } from 'soroswap-ui';
 import { useSorobanReact } from '@soroban-react/core';
 import WrapStellarAssetModal from 'components/Modals/WrapStellarAssetModal';
 import { SubHeader } from 'components/Text';
