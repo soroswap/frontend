@@ -22,7 +22,7 @@ const activeChainName = process.env.NEXT_PUBLIC_DEFAULT_NETWORK || 'testnet';
 const activeChain: WalletChain = findWalletChainByName(activeChainName) || testnet;
 
 // Set allowed connectors
-const connectors: Connector[] = [freighter(), xbull(), lobstr(), hana()];
+export const walletConnectors: Connector[] = [freighter(), xbull(), lobstr(), hana()];
 
 export default function MySorobanReactProvider({
   children,
@@ -39,7 +39,7 @@ export default function MySorobanReactProvider({
     <SorobanReactProvider
       chains={chains}
       appName={'Soroswap'}
-      connectors={connectors}
+      connectors={walletConnectors}
       activeChain={activeChain}
       {...rest}
     >

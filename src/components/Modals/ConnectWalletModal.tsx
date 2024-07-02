@@ -5,18 +5,14 @@ import { styled, useTheme } from 'soroswap-ui';
 import { useSorobanReact } from '@soroban-react/core';
 import { AppContext } from 'contexts';
 import Image from 'next/image';
-import freighterLogoBlack from '../../assets/svg/FreighterWalletBlack.svg';
-import freighterLogoWhite from '../../assets/svg/FreighterWalletWhite.svg';
 import ModalBox from './ModalBox';
 import { ButtonPrimary } from 'components/Buttons/Button';
 import { AlertCircle } from 'react-feather';
 
 import * as Bowser from 'bowser';
-import { isConnected } from '@stellar/freighter-api';
 import { isConnected as isConnectedLobstr } from '@lobstrco/signer-extension-api';
-
 import { Connector } from '@soroban-react/types';
-import { hana } from '@soroban-react/hana';
+import { walletConnectors } from 'soroban/MySorobanReactProvider';
 
 const Title = styled('div')`
   font-size: 24px;
@@ -88,6 +84,15 @@ export const ConnectWalletStyles = {
   FooterText,
 };
 
+const buildWalletsStatus = () => {
+  return walletConnectors.map((w) => ({
+    isInstalled: false,
+    isLoading: true,
+    name: w.id,
+    connector: w,
+  }));
+};
+
 const ConnectWalletContent = ({
   isMobile,
   wallets,
@@ -100,66 +105,14 @@ const ConnectWalletContent = ({
   const theme = useTheme();
   const { ConnectWalletModal } = useContext(AppContext);
   const { setConnectWalletModalOpen } = ConnectWalletModal;
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const sorobanContext = useSorobanReact();
   const { setActiveConnectorAndConnect } = sorobanContext;
   const [walletsStatus, setWalletsStatus] = useState<
     { name: string; isInstalled: boolean; isLoading: boolean }[]
-  >([
-    { name: 'freighter', isInstalled: false, isLoading: true },
-    { name: 'xbull', isInstalled: false, isLoading: true },
-    { name: 'lobstr', isInstalled: false, isLoading: true },
-    { name: 'hana', isInstalled: false, isLoading: true },
-  ]);
-  const browser = Bowser.getParser(window.navigator.userAgent).getBrowserName();
+  >(buildWalletsStatus());
 
-  const installWallet = (wallet: any) => {
-    if (wallet.id === 'freighter') {
-      switch (browser) {
-        case 'Firefox':
-          window.open('https://addons.mozilla.org/en-US/firefox/addon/freighter/', '_blank');
-          break;
-        default:
-          window.open(
-            'https://chromewebstore.google.com/detail/freighter/bcacfldlkkdogcmkkibnjlakofdplcbk',
-            '_blank',
-          );
-          break;
-      }
-    } else if (wallet.id === 'xbull') {
-      switch (browser) {
-        case 'Firefox':
-          window.open('https://addons.mozilla.org/es/firefox/addon/xbull-wallet/', '_blank');
-          break;
-        default:
-          window.open(
-            'https://chromewebstore.google.com/detail/xbull-wallet/omajpeaffjgmlpmhbfdjepdejoemifpe',
-            '_blank',
-          );
-          break;
-      }
-    } else if (wallet.id === 'lobstr') {
-      switch (browser) {
-        default:
-          window.open(
-            'https://chromewebstore.google.com/detail/lobstr-signer-extension/ldiagbjmlmjiieclmdkagofdjcgodjle',
-            '_blank',
-          );
-          break;
-      }
-    } else if (wallet.id === 'hana') {
-      switch (browser) {
-        default:
-          window.open(
-            'https://chromewebstore.google.com/detail/hana-wallet/jfdlamikmbghhapbgfoogdffldioobgl',
-            '_blank',
-          );
-          break;
-      }
-    }
-    setTimeout(() => {
-      window.location.reload();
-    }, 30000);
+  const installWallet = (wallet: Connector) => {
+    window.open(wallet.downloadUrls?.browserExtension, '_blank');
   };
 
   const connectWallet = async (wallet: Connector) => {
@@ -193,26 +146,22 @@ const ConnectWalletContent = ({
 
   useEffect(() => {
     const newWalletsStatus = walletsStatus.map(async (walletStatus) => {
-      if (walletStatus.name === 'freighter') {
-        const freighterConnector = sorobanContext.connectors.find((c) => c.id === 'freighter');
-        const connected = await freighterConnector?.isConnected();
-        return { name: walletStatus.name, isInstalled: connected, isLoading: false };
-      }
-      if (walletStatus.name === 'xbull') {
-        if ((window as any).xBullSDK) {
-          return { name: walletStatus.name, isInstalled: true, isLoading: false };
+      const contextConnector = sorobanContext.connectors.find((c) => c.id === walletStatus.name);
+
+      if (contextConnector) {
+        let connected = await contextConnector.isConnected();
+
+        if (walletStatus.name === 'lobstr') {
+          connected = await isConnectedLobstr();
         }
-      }
-      if (walletStatus.name === 'lobstr') {
-        const connected = await isConnectedLobstr();
+
+        if (walletStatus.name === 'xbull') {
+          connected = (window as any).xBullSDK ? true : false;
+        }
 
         return { name: walletStatus.name, isInstalled: connected, isLoading: false };
       }
-      if (walletStatus.name === 'hana') {
-        const connected = hana().isConnected();
 
-        return { name: walletStatus.name, isInstalled: connected, isLoading: false };
-      }
       return { ...walletStatus, isLoading: false };
     });
 
