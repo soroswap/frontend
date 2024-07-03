@@ -5,7 +5,6 @@ import useSWRImmutable from 'swr/immutable';
 import { useRouterSDK } from 'functions/generateRoute';
 import { TokenType } from 'interfaces';
 import { xlmTokenList } from 'constants/xlmToken';
-import { Networks } from '@stellar/stellar-sdk';
 import { TradeType } from 'soroswap-router-sdk';
 
 type Currencies = {
@@ -18,7 +17,6 @@ const fetchNetworkFees = async (
   sorobanContext: SorobanContextType,
 ) => {
   if (!trade || !sorobanContext) return 0;
-
   const fees = await calculateSwapFees(sorobanContext, trade);
   return fees ? Number(fees) / 10 ** 7 : 0;
 };
@@ -60,7 +58,6 @@ const useSwapNetworkFees = (trade: InterfaceTrade | undefined, currencies: Curre
       amount: valueOfOne,
       tradeType: TradeType.EXACT_INPUT,
     });
-
     if (!result) return undefined;
 
     const outputAmount = result?.trade.amountOutMin || '0';
@@ -76,7 +73,7 @@ const useSwapNetworkFees = (trade: InterfaceTrade | undefined, currencies: Curre
       },
       path: result?.trade.path,
       tradeType: TradeType.EXACT_INPUT,
-      platform: PlatformType.ROUTER
+      platform: result.platform
     };
 
     return trade;
@@ -90,7 +87,7 @@ const useSwapNetworkFees = (trade: InterfaceTrade | undefined, currencies: Curre
   const tradeToBeUsed = output.data || trade;
 
   const { data, error, isLoading, mutate } = useSWRImmutable(
-    tradeToBeUsed ? ['swap-network-fees', sorobanContext] : null,
+    tradeToBeUsed ? ['swap-network-fees', sorobanContext, tradeToBeUsed] : null,
     ([key, sorobanContext]) => fetchNetworkFees(tradeToBeUsed, sorobanContext),
   );
 

@@ -114,12 +114,12 @@ export function AdvancedSwapDetails({
       {networkFees != 0 && (
         <RowBetween>
           <MouseoverTooltip
-            title={'The fee paid to miners who process your transaction. This must be paid in XLM.'}
+            title={'The fee paid to process your transaction. This must be paid always in XLM.'}
           >
             <BodySmall color="textSecondary">Network fee</BodySmall>
           </MouseoverTooltip>
           <TextWithLoadingPlaceholder syncing={syncing} width={50}>
-            <BodySmall>~{networkFees} XLM</BodySmall>
+            <BodySmall display={'flex'}>~{networkFees} XLM</BodySmall>
           </TextWithLoadingPlaceholder>
         </RowBetween>
       )}
