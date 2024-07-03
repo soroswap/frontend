@@ -1,4 +1,4 @@
-import { CircularProgress, styled, useMediaQuery, useTheme } from '@mui/material';
+import { CircularProgress, styled, useMediaQuery, useTheme } from 'soroswap-ui';
 import { useSorobanReact } from '@soroban-react/core';
 import { ButtonPrimary } from 'components/Buttons/Button';
 import { WalletButton } from 'components/Buttons/WalletButton';

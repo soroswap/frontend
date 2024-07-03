@@ -1,12 +1,12 @@
+import { BodySmall } from 'components/Text';
+import { Box, styled } from 'soroswap-ui';
 import { ChevronRight } from '@mui/icons-material';
-import { Box, styled } from '@mui/material';
 import { useSorobanReact } from '@soroban-react/core';
 import Column from 'components/Column';
 import { LoadingRows } from 'components/Loader/styled';
 import CurrencyLogo from 'components/Logo/CurrencyLogo';
 import { RowBetween, RowFixed } from 'components/Row';
 import { Separator } from 'components/SearchModal/styleds';
-import { BodySmall } from 'components/Text';
 import { MouseoverTooltip } from 'components/Tooltip';
 import { formatTokenAmount } from 'helpers/format';
 import { useAllTokens } from 'hooks/tokens/useAllTokens';
@@ -122,7 +122,9 @@ export function AdvancedSwapDetails({
           <MouseoverTooltip title={'The impact your trade has on the market price of this pool.'}>
             <BodySmall color="textSecondary">Price Impact</BodySmall>
           </MouseoverTooltip>
-          <BodySmall data-testid="swap__details__priceImpact">{formattedPriceImpact(trade?.priceImpact)}</BodySmall>
+          <BodySmall data-testid="swap__details__priceImpact">
+            {formattedPriceImpact(trade?.priceImpact)}
+          </BodySmall>
         </RowBetween>
       )}
       <RowBetween>
@@ -137,9 +139,11 @@ export function AdvancedSwapDetails({
           </MouseoverTooltip>
         </RowFixed>
         <TextWithLoadingPlaceholder syncing={isLoading} width={65}>
-          <BodySmall 
+          <BodySmall
             data-testid="swap__details__expectedOutput"
-            style={{ display: 'flex', alignItems: 'center' }} component="div">
+            style={{ display: 'flex', alignItems: 'center' }}
+            component="div"
+          >
             {formatTokenAmount(trade?.outputAmount?.value ?? '0')}{' '}
             {trade?.outputAmount?.currency.code}{' '}
             <CurrencyLogo

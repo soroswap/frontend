@@ -1,4 +1,4 @@
-import { Box, Modal, useMediaQuery, useTheme } from '@mui/material';
+import { Box, Modal, useMediaQuery, useTheme } from 'soroswap-ui';
 import { useSorobanReact } from '@soroban-react/core';
 import { ButtonLight, ButtonPrimary } from 'components/Buttons/Button';
 import { CloseButton } from 'components/Buttons/CloseButton';

@@ -1,10 +1,10 @@
 // import { Trans } from '@lingui/macro' //This is for localization and translation on all languages
-import { styled, useTheme } from '@mui/material/styles';
+import { styled, useTheme } from 'soroswap-ui';
 import { RowBetween, RowFixed } from '../Row';
 import { SubHeader } from '../Text';
 import TuneRoundedIcon from '@mui/icons-material/TuneRounded';
 import SettingsTab from '../Settings/index';
-import { useMediaQuery } from '@mui/material';
+import { useMediaQuery } from 'soroswap-ui';
 const StyledSwapHeader = styled(RowBetween)(({ theme }) => ({
   marginBottom: 10,
   color: theme.palette.secondary.main,
