@@ -3,7 +3,7 @@ import { TxResponse, contractInvoke } from '@soroban-react/contracts';
 import { useSorobanReact } from '@soroban-react/core';
 import * as StellarSdk from '@stellar/stellar-sdk';
 import { useCallback } from 'react';
-import { useAggregatorAddress } from './useAggregatorAddress';
+import { useAggregator } from './useAggregator';
 
 export enum AggregatorMethod {
   SWAP = 'swap',
@@ -26,12 +26,12 @@ const isObject = (val: any) => typeof val === 'object' && val !== null && !Array
 
 export function useAggregatorCallback() {
   const sorobanContext = useSorobanReact();
-  const { aggregator: aggregator_address } = useAggregatorAddress();
+  const { address: aggregator_address } = useAggregator();
 
   return useCallback(
     async (method: AggregatorMethod, args?: StellarSdk.xdr.ScVal[], signAndSend?: boolean) => {
-      if(!args) return 
-    
+      if (!args) return;
+
       let result = (await contractInvoke({
         contractAddress: aggregator_address as string,
         method: method,

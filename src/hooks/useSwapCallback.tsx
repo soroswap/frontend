@@ -16,6 +16,7 @@ import { useUserSlippageToleranceWithDefault } from 'state/user/hooks';
 import { useSWRConfig } from 'swr';
 import { AggregatorMethod, useAggregatorCallback } from './useAggregatorCallback';
 import { RouterMethod, useRouterCallback } from './useRouterCallback';
+import { extractContractError } from 'functions/extractContractError';
 
 // Returns a function that will execute a swap, if the parameters are all valid
 // and the user has approved the slippage adjusted input amount for the trade
@@ -124,19 +125,19 @@ export function useSwapCallback(
 
     switch (isUsingAggregator) {
       case true:
-        console.log("USING AGGREGATOR")
-        if(!isUsingAggregator) throw Error("Non distribution")
-        const dexDistributionScValVec = dexDistributionParser(trade?.distribution)
+        console.log('USING AGGREGATOR');
+        if (!isUsingAggregator) throw Error('Non distribution');
+        const dexDistributionScValVec = dexDistributionParser(trade?.distribution);
         console.log('🚀 « dexDistributionScValVec:', dexDistributionScValVec);
-        
+
         const aggregatorSwapParams: StellarSdk.xdr.ScVal[] = [
-          new StellarSdk.Address(trade.inputAmount?.currency.contract ?? "").toScVal(), //_from_token: Address,
-          new StellarSdk.Address(trade.outputAmount?.currency.contract ?? "").toScVal(), //_dest_token: Address,
+          new StellarSdk.Address(trade.inputAmount?.currency.contract ?? '').toScVal(), //_from_token: Address,
+          new StellarSdk.Address(trade.outputAmount?.currency.contract ?? '').toScVal(), //_dest_token: Address,
           amount0ScVal,
           amount1ScVal,
           dexDistributionScValVec, // proxy_addresses: Vec<ProxyAddressPair>,
           new StellarSdk.Address(address).toScVal(), //admin: Address,
-          StellarSdk.nativeToScVal(getCurrentTimePlusOneHour()), //deadline 
+          StellarSdk.nativeToScVal(getCurrentTimePlusOneHour()), //deadline
         ];
         console.log('🚀 « aggregatorSwapParams:', aggregatorSwapParams);
 
@@ -146,35 +147,40 @@ export function useSwapCallback(
             aggregatorSwapParams,
             !simulation,
           )) as StellarSdk.SorobanRpc.Api.GetTransactionResponse;
-    
+
           console.log('🚀 « result:', result);
           //if it is a simulation should return the result
           if (simulation) return result;
-    
-          if (result.status !== StellarSdk.SorobanRpc.Api.GetTransactionStatus.SUCCESS) throw result;
-    
+
+          if (result.status !== StellarSdk.SorobanRpc.Api.GetTransactionStatus.SUCCESS)
+            throw result;
+
           const switchValues: string[] = scValToJs(result.returnValue!);
-    
+
           const currencyA = switchValues?.[0];
           const currencyB = switchValues?.[switchValues?.length - 1];
-    
+
           const notificationMessage = `${formatTokenAmount(currencyA ?? '0')} ${trade?.inputAmount
             ?.currency.code} for ${formatTokenAmount(currencyB ?? '0')} ${trade?.outputAmount
             ?.currency.code}`;
-    
+
           sendNotification(notificationMessage, 'Swapped', SnackbarIconType.SWAP, SnackbarContext);
-    
+
           return { ...result, switchValues };
         } catch (error) {
-          console.log('🚀 « error:', error);
-          throw error;
+          if (error instanceof Error) {
+            const parsedError = extractContractError(error.message);
+            throw parsedError;
+          } else {
+            throw error;
+          }
         }
-      case false:   
-        console.log("USING ROUTER")
+      case false:
+        console.log('USING ROUTER');
         const path = trade.path?.map((address) => new StellarSdk.Address(address));
-    
+
         const pathScVal = StellarSdk.nativeToScVal(path);
-    
+
         const args = [
           amount0ScVal,
           amount1ScVal,
@@ -189,29 +195,29 @@ export function useSwapCallback(
             args,
             !simulation,
           )) as StellarSdk.SorobanRpc.Api.GetTransactionResponse;
-    
+
           //if it is a simulation should return the result
           if (simulation) return result;
-    
-          if (result.status !== StellarSdk.SorobanRpc.Api.GetTransactionStatus.SUCCESS) throw result;
-    
+
+          if (result.status !== StellarSdk.SorobanRpc.Api.GetTransactionStatus.SUCCESS)
+            throw result;
+
           const switchValues: string[] = scValToJs(result.returnValue!);
-    
+
           const currencyA = switchValues?.[0];
           const currencyB = switchValues?.[switchValues?.length - 1];
-    
+
           const notificationMessage = `${formatTokenAmount(currencyA ?? '0')} ${trade?.inputAmount
             ?.currency.code} for ${formatTokenAmount(currencyB ?? '0')} ${trade?.outputAmount
             ?.currency.code}`;
-    
+
           sendNotification(notificationMessage, 'Swapped', SnackbarIconType.SWAP, SnackbarContext);
-    
+
           return { ...result, switchValues };
         } catch (error) {
           throw error;
         }
     }
-    
   };
 
   return { doSwap, isLoading: trade?.isLoading };

@@ -1,6 +1,7 @@
 import { useSorobanReact } from '@soroban-react/core';
 import { AppContext } from 'contexts';
 import { useFactory } from 'hooks';
+import { useAggregator } from 'hooks/useAggregator';
 import { useContext, useMemo } from 'react';
 import { fetchAllPhoenixPairs, fetchAllSoroswapPairs } from 'services/pairs';
 import { CurrencyAmount, Networks, Protocols, Router, Token, TradeType } from 'soroswap-router-sdk';
@@ -22,13 +23,12 @@ const shouldUseBackend = process.env.NEXT_PUBLIC_SOROSWAP_BACKEND_ENABLED === 't
 export const useRouterSDK = () => {
   const sorobanContext = useSorobanReact();
   const { factory } = useFactory(sorobanContext);
+  const { isEnabled: isAggregator } = useAggregator();
 
   const { Settings } = useContext(AppContext);
   const { maxHops } = Settings;
 
   const network = sorobanContext.activeChain?.networkPassphrase as Networks;
-
-  const isAggregator = sorobanContext?.activeChain?.id == 'testnet' ? true : false;
 
   const router = useMemo(() => {
     const protocols = [Protocols.SOROSWAP];
