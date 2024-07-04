@@ -8,9 +8,6 @@ import Image from 'next/image';
 import ModalBox from './ModalBox';
 import { ButtonPrimary } from 'components/Buttons/Button';
 import { AlertCircle } from 'react-feather';
-
-import * as Bowser from 'bowser';
-import { isConnected as isConnectedLobstr } from '@lobstrco/signer-extension-api';
 import { Connector } from '@soroban-react/types';
 import { walletConnectors } from 'soroban/MySorobanReactProvider';
 
@@ -150,14 +147,6 @@ const ConnectWalletContent = ({
 
       if (contextConnector) {
         let connected = await contextConnector.isConnected();
-
-        if (walletStatus.name === 'lobstr') {
-          connected = await isConnectedLobstr();
-        }
-
-        if (walletStatus.name === 'xbull') {
-          connected = (window as any).xBullSDK ? true : false;
-        }
 
         return { name: walletStatus.name, isInstalled: connected, isLoading: false };
       }
