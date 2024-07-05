@@ -4,8 +4,8 @@ import { contractTransaction } from '@soroban-react/contracts';
 import axios from 'axios';
 import { fetchRouter } from 'services/router';
 import { useSwapCallback } from 'hooks/useSwapCallback';
-import { InterfaceTrade } from 'state/routing/types';
-import { RouterMethod } from 'hooks/useRouterCallback';
+import { InterfaceTrade, PlatformType } from 'state/routing/types';
+import { RouterMethod, useRouterCallback } from 'hooks/useRouterCallback';
 
 const getCurrentTimePlusOneHour = (): number => {
   // Get the current time in milliseconds
@@ -26,26 +26,29 @@ export async function calculateSwapFees(
     console.error('Trade data is not available.');
     return;
   }
-
   if (!sorobanContext.activeChain || !sorobanContext.activeChain.sorobanRpcUrl) {
     console.error('Error getting Soroban context.');
     return;
+  }
+  if (trade.platform === PlatformType.STELLAR_CLASSIC) {
+    return await sorobanContext.serverHorizon?.fetchBaseFee()
   }
 
   let op = RouterMethod.SWAP_EXACT_OUT;
   if (trade.tradeType === 'EXACT_INPUT') {
     op = RouterMethod.SWAP_EXACT_IN;
   }
-
-  const passphrase = sorobanContext.activeChain.networkPassphrase;
-  const network = sorobanContext.activeChain.id;
-
+  const {activeChain} = sorobanContext;
+  const { networkPassphrase:passphrase,
+          id: network, 
+          sorobanRpcUrl,
+        } = activeChain;
+  if(!passphrase || !network || !sorobanRpcUrl) throw new Error('Missing soroban context')
   const adminPublicKey = process.env.NEXT_PUBLIC_TRUSTLINE_WALLET_PUBLIC_KEY;
   if (!adminPublicKey) {
     console.error('No secret key found.');
     return;
   }
-  const sorobanRpcUrl = sorobanContext.activeChain.sorobanRpcUrl;
   const routerData = await fetchRouter(network);
   const routerId = routerData.address;
   const path = trade.path?.map((address) => new StellarSdk.Address(address));

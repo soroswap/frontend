@@ -154,7 +154,7 @@ export default function SwapModalFooter({
               >
                 <Label cursor="help">Network fees</Label>
               </MouseoverTooltip>
-              <DetailRowValue>~{networkFees} XML</DetailRowValue>
+              <DetailRowValue display={'flex'}>~{networkFees}{' '}XML</DetailRowValue>
               {/* <MouseoverTooltip placement="right" title={'<GasBreakdownTooltip trade={trade} />'}>
               </MouseoverTooltip> */}
             </Row>
