@@ -1,9 +1,10 @@
 import { useSorobanReact } from '@soroban-react/core';
-import { useFactory } from 'hooks';
-import { useContext, useMemo } from 'react';
-import { CurrencyAmount, Networks, Protocols, Router, Token, TradeType } from 'soroswap-router-sdk';
 import { AppContext } from 'contexts';
+import { useFactory } from 'hooks';
+import { useAggregator } from 'hooks/useAggregator';
+import { useContext, useMemo } from 'react';
 import { fetchAllPhoenixPairs, fetchAllSoroswapPairs } from 'services/pairs';
+import { CurrencyAmount, Networks, Protocols, Router, Token, TradeType } from 'soroswap-router-sdk';
 
 export interface GenerateRouteProps {
   amountTokenAddress: string;
@@ -22,6 +23,7 @@ const shouldUseBackend = process.env.NEXT_PUBLIC_SOROSWAP_BACKEND_ENABLED === 't
 export const useRouterSDK = () => {
   const sorobanContext = useSorobanReact();
   const { factory } = useFactory(sorobanContext);
+  const { isEnabled: isAggregator } = useAggregator();
 
   const { Settings } = useContext(AppContext);
   const { maxHops } = Settings;
@@ -29,6 +31,10 @@ export const useRouterSDK = () => {
   const network = sorobanContext.activeChain?.networkPassphrase as Networks;
 
   const router = useMemo(() => {
+    const protocols = [Protocols.SOROSWAP];
+
+    if (isAggregator) protocols.push(Protocols.PHOENIX);
+
     return new Router({
       getPairsFns: shouldUseBackend
         ? [
@@ -36,18 +42,18 @@ export const useRouterSDK = () => {
               protocol: Protocols.SOROSWAP,
               fn: async () => fetchAllSoroswapPairs(network),
             },
-            // {
-            //   protocol: Protocols.PHOENIX,
-            //   fn: async () => fetchAllPhoenixPairs(network),
-            // },
+            {
+              protocol: Protocols.PHOENIX,
+              fn: async () => fetchAllPhoenixPairs(network),
+            },
           ]
         : undefined,
       pairsCacheInSeconds: 60,
-      protocols: [Protocols.SOROSWAP], //, Protocols.PHOENIX],
+      protocols: protocols,
       network,
       maxHops,
     });
-  }, [network, maxHops]);
+  }, [network, maxHops, isAggregator]);
 
   const fromAddressToToken = (address: string) => {
     return new Token(network, address, 18);
@@ -72,6 +78,13 @@ export const useRouterSDK = () => {
     const currencyAmount = fromAddressAndAmountToCurrencyAmount(amountTokenAddress, amount);
     const quoteCurrency = fromAddressToToken(quoteTokenAddress);
 
+    if (isAggregator) {
+      // console.log('Returning routeSplit');
+      // console.log(await router.routeSplit(currencyAmount, quoteCurrency, tradeType));
+      return router.routeSplit(currencyAmount, quoteCurrency, tradeType);
+    }
+
+    // console.log('returning route');
     return router.route(currencyAmount, quoteCurrency, tradeType, factory, sorobanContext as any);
   };
 
