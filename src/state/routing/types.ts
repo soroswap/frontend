@@ -243,7 +243,7 @@ export type InterfaceTrade = {
   outputAmount: CurrencyAmount | undefined;
   tradeType: TradeType | undefined;
   path: string[] | undefined;
-  priceImpact?: Percent | undefined;
+  priceImpact?: Percent | Number | undefined;
   [x: string]: any;
   platform?: PlatformType;
 };

@@ -27,8 +27,6 @@ export const getAmount = (amount: string) => {
   return new BigNumber(amount).dividedBy(10000000).toString()
 }
 
-//Con las reservas, puedo calcular el precio de cada pool antes y después de la transacción
-//Con los precios, puedo calcular el impact
 const getPools = async (path: any, sorobanContext:SorobanContextType)=>{
   const {serverHorizon} = sorobanContext;
   if(!serverHorizon) return;

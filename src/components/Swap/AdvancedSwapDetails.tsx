@@ -47,7 +47,7 @@ export function TextWithLoadingPlaceholder({
   );
 }
 
-export const formattedPriceImpact = (priceImpact: Percent | undefined) => {
+export const formattedPriceImpact = (priceImpact: Percent | Number | undefined) => {
   if (!priceImpact) return 0;
 
   const value = priceImpact?.toFixed(3);

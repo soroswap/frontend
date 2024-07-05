@@ -22,7 +22,7 @@ export interface BuildTradeRoute {
       amountInMax?: string;
       path: string[];
   };
-  priceImpact: Percent;
+  priceImpact: Percent | Number;
   platform: PlatformType;
 }
 
