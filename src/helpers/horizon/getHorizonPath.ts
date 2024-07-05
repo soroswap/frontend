@@ -42,10 +42,10 @@ const getPools = async (path: any, sorobanContext:SorobanContextType)=>{
       const response = await serverHorizon?.liquidityPools().forAssets(...pair).call();
       const reserve_A = parseFloat(response.records[0].reserves[0].amount);
       const reserve_B = parseFloat(response.records[0].reserves[1].amount);
-      const price = reserve_A * reserve_B;
+      const constant = reserve_A * reserve_B;
       const poolReserves = {
         ...response.records[0].reserves,
-        price: price
+        constant: constant
       }
       return poolReserves;
     } catch (e) {
@@ -57,22 +57,25 @@ const getPools = async (path: any, sorobanContext:SorobanContextType)=>{
 
 const calculateExactInPriceImpact = (pool:any, amount:any)=>{
   const reserve_A = parseFloat(pool[0].amount);
-  const price = pool.price;
+  const reserve_B = parseFloat(pool[1].amount);
   const newReserve_A = reserve_A + parseFloat(amount);
-  const newReserve_B = price / (reserve_A + parseFloat(amount));
-  const newPrice = newReserve_A * newReserve_B;
-  const priceImpact = (newPrice - price) / price;
-  console.log('🔎',price, newPrice)
+  const constant = pool.constant;
+  const price_A = constant / reserve_B;
+  const newReserve_B = constant / newReserve_A
+  const newPrice_A = constant / newReserve_B;
+  const priceImpact = ((newPrice_A - price_A) / price_A)*100;
   return priceImpact;
 }
 
 const calculateExactOutPriceImpact = (pool:any, amount:any)=>{
+  const reserve_A = parseFloat(pool[0].amount);
   const reserve_B = parseFloat(pool[1].amount);
-  const price = pool.price;
   const newReserve_B = reserve_B + parseFloat(amount);
-  const newReserve_A = price / newReserve_B;
-  const newPrice = newReserve_A * newReserve_B;
-  const priceImpact = (newPrice - price) / price;
+  const constant = pool.constant;
+  const price_B = constant / reserve_A;
+  const newReserve_A = constant / newReserve_B
+  const newPrice_B = constant / newReserve_A;
+  const priceImpact = ((newPrice_B - price_B) / price_B)*100;
   return priceImpact;
 }
 
@@ -119,6 +122,7 @@ export const parseHorizonResult = async (payload: ServerApi.PaymentPathRecord | 
     return `${asset.asset_code}:${asset.asset_issuer}`
   })
   const poolsPath = payload.path.map((asset) => {
+    if(asset.asset_type=='native') return 'native'
     return `${asset.asset_code}:${asset.asset_issuer}`
   })
   const addressFrom = !currecnyIn.issuer && currecnyIn.code === 'XLM' ? 'native' : currecnyIn.issuer ? `${currecnyIn.code}:${currecnyIn.issuer}` : `${currecnyIn.code}`
@@ -139,17 +143,15 @@ export const parseHorizonResult = async (payload: ServerApi.PaymentPathRecord | 
       path: formattedPath
     }
   }
-  const priceImpact = calculateAveragePriceImpact(pools, inputAmount.value, tradeType);
-  console.log(priceImpact)
-  const parsedPriceImpact = new Percent(priceImpact)
-  console.log(parsedPriceImpact)
+  const ammountToCalculate = tradeType === TradeType.EXACT_INPUT ? payload.source_amount : payload.destination_amount;
+  const priceImpact = calculateAveragePriceImpact(pools, ammountToCalculate, tradeType);
   const result = {
     amountCurrency: inputAmount,
     quoteCurrency: outputAmount,
     tradeType: tradeType,
     routeCurrency:[currecnyIn, ...payload.path, currencyOut],
     trade: trade,
-    priceImpact: parsedPriceImpact,
+    priceImpact: priceImpact,
     platform: PlatformType.STELLAR_CLASSIC,
   }
   return result
