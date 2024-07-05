@@ -1,4 +1,4 @@
-import { Box, CircularProgress, Modal, styled } from '@mui/material';
+import { Box, CircularProgress, Modal, styled } from 'soroswap-ui';
 import { setTrustline } from '@soroban-react/contracts';
 import { useSorobanReact } from '@soroban-react/core';
 import { ButtonPrimary } from 'components/Buttons/Button';

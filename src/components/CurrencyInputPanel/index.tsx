@@ -13,7 +13,7 @@
 // import { flexColumnNoWrap, flexRowNoWrap } from 'theme/styles'
 // import { formatCurrencyAmount } from 'utils/formatCurrencyAmount'
 
-import { ButtonBase, styled, useTheme } from '@mui/material';
+import { ButtonBase, styled, useTheme } from 'soroswap-ui';
 import { useSorobanReact } from '@soroban-react/core';
 import { LoadingOpacityContainer } from 'components/Loader/styled';
 import CurrencyLogo from 'components/Logo/CurrencyLogo';

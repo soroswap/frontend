@@ -1,5 +1,5 @@
 // import { Trans } from '@lingui/macro'
-import { ButtonBase, styled, useMediaQuery, useTheme } from '@mui/material';
+import { ButtonBase, styled, useMediaQuery, useTheme } from 'soroswap-ui';
 import { useSorobanReact } from '@soroban-react/core';
 import { darken } from 'polished';
 import { ReactNode, useCallback, useState } from 'react';

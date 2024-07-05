@@ -1,4 +1,4 @@
-import { styled, useTheme } from '@mui/material';
+import { styled, useTheme } from 'soroswap-ui';
 import { TxResponse } from '@soroban-react/contracts';
 import { useSorobanReact } from '@soroban-react/core';
 import BigNumber from 'bignumber.js';

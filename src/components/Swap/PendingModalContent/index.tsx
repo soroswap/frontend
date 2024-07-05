@@ -1,4 +1,4 @@
-import { css, keyframes, styled, useTheme } from '@mui/material';
+import { css, keyframes, styled, useTheme } from 'soroswap-ui';
 import Column, { ColumnCenter } from 'components/Column';
 import CopyTxHash from 'components/CopyTxHash/CopyTxHash';
 import Row from 'components/Row';
@@ -153,7 +153,7 @@ function getContent(args: ContentArgs): PendingModalStep {
       return {
         title: `Wrap ETH`,
         subtitle: (
-          <CustomLink href="https://support.uniswap.org/hc/en-us/articles/16015852009997">
+          <CustomLink href="https://docs.soroswap.finance/05-tutorial/summary/01-wrapping-stellar-classic-assets">
             Why is this required?
           </CustomLink>
         ),
@@ -170,7 +170,7 @@ function getContent(args: ContentArgs): PendingModalStep {
         title: `Setting trustline for ${approvalCurrency?.code ?? 'this token'}`,
         subtitle: (
           <CustomLink
-            href="https://support.uniswap.org/hc/en-us/articles/8120520483085"
+            href="https://developers.stellar.org/docs/learn/fundamentals/stellar-data-structures/accounts#trustlines"
             target="_blank"
           >
             Why is this required?
@@ -181,14 +181,7 @@ function getContent(args: ContentArgs): PendingModalStep {
     case ConfirmModalState.PERMITTING:
       return {
         title: `Allow ${approvalCurrency?.code ?? 'this token'} to be used for swapping`,
-        subtitle: (
-          <CustomLink
-            href="https://support.uniswap.org/hc/en-us/articles/8120520483085"
-            target="_blank"
-          >
-            Why is this required?
-          </CustomLink>
-        ),
+        subtitle: <CustomLink href="#">Why is this required?</CustomLink>,
         label: `Proceed in your wallet`,
       };
     case ConfirmModalState.PENDING_CONFIRMATION: {

@@ -1,5 +1,5 @@
 import { BodySmall } from 'components/Text';
-import { Box, styled } from '@mui/material';
+import { Box, styled } from 'soroswap-ui';
 import { ChevronRight } from '@mui/icons-material';
 import { findToken } from 'hooks/tokens/useToken';
 import { formatTokenAmount } from 'helpers/format';
@@ -128,7 +128,9 @@ export function AdvancedSwapDetails({
           <MouseoverTooltip title={'The impact your trade has on the market price of this pool.'}>
             <BodySmall color="textSecondary">Price Impact</BodySmall>
           </MouseoverTooltip>
-          <BodySmall data-testid="swap__details__priceImpact">{formattedPriceImpact(trade?.priceImpact)}</BodySmall>
+          <BodySmall data-testid="swap__details__priceImpact">
+            {formattedPriceImpact(trade?.priceImpact)}
+          </BodySmall>
         </RowBetween>
       )}
       <RowBetween>
@@ -143,9 +145,11 @@ export function AdvancedSwapDetails({
           </MouseoverTooltip>
         </RowFixed>
         <TextWithLoadingPlaceholder syncing={isLoading} width={65}>
-          <BodySmall 
+          <BodySmall
             data-testid="swap__details__expectedOutput"
-            style={{ display: 'flex', alignItems: 'center' }} component="div">
+            style={{ display: 'flex', alignItems: 'center' }}
+            component="div"
+          >
             {formatTokenAmount(trade?.outputAmount?.value ?? '0')}{' '}
             {trade?.outputAmount?.currency.code}{' '}
             <CurrencyLogo

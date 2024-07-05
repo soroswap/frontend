@@ -10,15 +10,15 @@
 // import { ThemedText } from 'theme'
 // import { flexRowNoWrap } from 'theme/styles'
 
-import { Box, styled, useTheme } from "@mui/material"
-import Row, { RowBetween, RowFixed } from "components/Row"
-import SettingsTab from "components/Settings"
-import { SubHeader } from "components/Text"
+import { Box, styled, useTheme } from 'soroswap-ui';
+import Row, { RowBetween, RowFixed } from 'components/Row';
+import SettingsTab from 'components/Settings';
+import { SubHeader } from 'components/Text';
 // import { SubHeader } from "components/Text"
-import Link from "next/link"
-import { ReactNode } from "react"
-import { ArrowLeft, Settings } from "react-feather"
-import { flexRowNoWrap } from "themes/styles"
+import Link from 'next/link';
+import { ReactNode } from 'react';
+import { ArrowLeft, Settings } from 'react-feather';
+import { flexRowNoWrap } from 'themes/styles';
 
 // import Row, { RowBetween } from '../Row'
 // import SettingsTab from '../Settings'
@@ -28,11 +28,11 @@ const Tabs = styled('div')`
   align-items: center;
   border-radius: 3rem;
   justify-content: space-evenly;
-`
+`;
 
-const StyledHistoryLink = styled(Link) <{ flex?: string }>`
+const StyledHistoryLink = styled(Link)<{ flex?: string }>`
   flex: ${({ flex }) => flex ?? 'none'};
-`
+`;
 
 // const ActiveText = styled('div')`
 //   font-weight: 500;
@@ -41,7 +41,7 @@ const StyledHistoryLink = styled(Link) <{ flex?: string }>`
 
 const StyledArrowLeft = styled(ArrowLeft)`
   color: ${({ theme }) => theme.palette.primary.main};
-`
+`;
 
 // export function FindPoolTabs({ origin }: { origin: string }) {
 //   return (
@@ -65,14 +65,14 @@ export function AddRemoveTabs({
   positionID,
   children,
 }: {
-  adding: boolean
-  creating: boolean
-  autoSlippage: any//Percent
-  positionID?: string
-  showBackLink?: boolean
-  children?: ReactNode
+  adding: boolean;
+  creating: boolean;
+  autoSlippage: any; //Percent
+  positionID?: string;
+  showBackLink?: boolean;
+  children?: ReactNode;
 }) {
-  const theme = useTheme()
+  const theme = useTheme();
   // reset states on back
   // const dispatch = useAppDispatch()
   // const location = useLocation()
@@ -86,7 +86,7 @@ export function AddRemoveTabs({
     <Tabs>
       <RowBetween style={{ padding: '1rem 1rem 0 1rem' }}>
         <StyledHistoryLink
-          href={"/liquidity"}
+          href={'/liquidity'}
           // onClick={() => {
           //   if (adding) {
           //     // not 100% sure both of these are needed
@@ -103,21 +103,15 @@ export function AddRemoveTabs({
           fontSize={20}
           style={{ flex: '1', margin: 'auto', textAlign: children ? 'start' : 'center' }}
         >
-          {creating ? (
-            <>Create a pair</>
-          ) : adding ? (
-            <>Add Liquidity</>
-          ) : (
-            <>Remove Liquidity</>
-          )}
+          {creating ? <>Create a pair</> : adding ? <>Add Liquidity</> : <>Remove Liquidity</>}
         </SubHeader>
         <Box style={{ marginRight: '.5rem' }}>{children}</Box>
-        <RowFixed style={{ padding: "6px 12px" }}>
+        <RowFixed style={{ padding: '6px 12px' }}>
           <SettingsTab autoSlippage={0.5} />
         </RowFixed>
       </RowBetween>
     </Tabs>
-  )
+  );
 }
 
 // export function CreateProposalTabs() {

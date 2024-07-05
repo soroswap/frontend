@@ -1,7 +1,7 @@
 import React from 'react';
 
-import { styled, useTheme } from '@mui/material/styles';
-import { Box } from '@mui/material';
+import { styled, useTheme } from 'soroswap-ui';
+import { Box } from 'soroswap-ui';
 
 const ContentWrapper = styled(Box)`
   position: absolute;

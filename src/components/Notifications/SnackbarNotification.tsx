@@ -1,6 +1,5 @@
-import Box from '@mui/material/Box';
-import Snackbar from '@mui/material/Snackbar';
-import { SnackbarContent, styled, useTheme } from '@mui/material';
+import { Box, Snackbar } from 'soroswap-ui';
+import { SnackbarContent, styled, useTheme } from 'soroswap-ui';
 import swapIconDark from '../../assets/svg/swapIconDark.svg';
 import swapIconLight from '../../assets/svg/swapIconLight.svg';
 import Image from 'next/image';

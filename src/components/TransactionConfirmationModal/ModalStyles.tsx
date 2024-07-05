@@ -1,4 +1,4 @@
-import { styled } from '@mui/material';
+import { styled } from 'soroswap-ui';
 
 import { AutoColumn, ColumnCenter } from 'components/Column';
 
@@ -27,13 +27,13 @@ export const Wrapper = styled('div')`
   ::-webkit-scrollbar {
     width: 8px;
   }
-  
+
   ::-webkit-scrollbar-track {
-    background: rgba(0, 0, 0, 0.15);        /* color of the tracking area */
+    background: rgba(0, 0, 0, 0.15); /* color of the tracking area */
   }
-  
+
   ::-webkit-scrollbar-thumb {
-    background-color: rgb(100, 102, 108, 0.25);    /* color of the scroll thumb */
+    background-color: rgb(100, 102, 108, 0.25); /* color of the scroll thumb */
     border-radius: 6px;
     border: solid 1px rgba(0, 0, 0, 1);
   }

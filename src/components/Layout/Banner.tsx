@@ -1,4 +1,4 @@
-import { Box, Typography, useMediaQuery, useTheme } from '@mui/material';
+import { Box, Typography, useMediaQuery, useTheme } from 'soroswap-ui';
 import Link from 'next/link';
 import { X } from 'react-feather';
 
@@ -25,9 +25,9 @@ const Banner = ({ show, setShow }: Props) => {
       alignItems="center"
       justifyContent="center"
       paddingRight={isMobile ? '35px' : '0px'}
-      sx={{ 
-        backgroundColor: theme.palette.customBackground.accentAction, 
-        minWidth: '100vw' 
+      sx={{
+        backgroundColor: theme.palette.customBackground.accentAction,
+        minWidth: '100vw',
       }}
     >
       <Typography fontSize="14px" textAlign="center" color="white">
