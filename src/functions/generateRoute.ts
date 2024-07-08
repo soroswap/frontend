@@ -1,26 +1,37 @@
 import { useSorobanReact } from '@soroban-react/core';
-import { useFactory } from 'hooks';
-import { useContext, useMemo } from 'react';
-import { Currency, CurrencyAmount, Networks, Percent, Protocols, Route, Router, Token, TradeType } from 'soroswap-router-sdk';
 import { AppContext } from 'contexts';
+import { useFactory } from 'hooks';
+import { useAggregator } from 'hooks/useAggregator';
+import { useContext, useMemo } from 'react';
 import { fetchAllPhoenixPairs, fetchAllSoroswapPairs } from 'services/pairs';
-import axios from 'axios';
+import {
+  Currency,
+  CurrencyAmount,
+  Networks,
+  Percent,
+  Protocols,
+  Route,
+  Router,
+  Token,
+  TradeType,
+} from 'soroswap-router-sdk';
 import { TokenType } from 'interfaces';
 import { getBestPath, getHorizonBestPath } from 'helpers/horizon/getHorizonPath';
 import { PlatformType } from 'state/routing/types';
 import { CurrencyAmount as AmountAsset } from 'interfaces';
+import { DexDistribution } from 'helpers/aggregator';
 
 export interface BuildTradeRoute {
   amountCurrency: AmountAsset | CurrencyAmount<Currency>;
   quoteCurrency: AmountAsset | CurrencyAmount<Currency>;
   tradeType: TradeType;
-  routeCurrency: any[] | Route<Currency, Currency>;
   trade: {
-      amountIn?: string;
-      amountOut?: string;
-      amountOutMin?: string;
-      amountInMax?: string;
-      path: string[];
+    amountIn?: string;
+    amountOut?: string;
+    amountOutMin?: string;
+    amountInMax?: string;
+    distribution?: DexDistribution[];
+    path: string[];
   };
   priceImpact: Percent | Number;
   platform: PlatformType;
@@ -43,6 +54,7 @@ const shouldUseBackend = process.env.NEXT_PUBLIC_SOROSWAP_BACKEND_ENABLED === 't
 export const useRouterSDK = () => {
   const sorobanContext = useSorobanReact();
   const { factory } = useFactory(sorobanContext);
+  const { isEnabled: isAggregator } = useAggregator();
 
   const { Settings } = useContext(AppContext);
   const { maxHops } = Settings;
@@ -50,6 +62,10 @@ export const useRouterSDK = () => {
   const network = sorobanContext.activeChain?.networkPassphrase as Networks;
 
   const router = useMemo(() => {
+    const protocols = [Protocols.SOROSWAP];
+
+    if (isAggregator) protocols.push(Protocols.PHOENIX);
+
     return new Router({
       getPairsFns: shouldUseBackend
         ? [
@@ -57,18 +73,18 @@ export const useRouterSDK = () => {
               protocol: Protocols.SOROSWAP,
               fn: async () => fetchAllSoroswapPairs(network),
             },
-            // {
-            //   protocol: Protocols.PHOENIX,
-            //   fn: async () => fetchAllPhoenixPairs(network),
-            // },
+            {
+              protocol: Protocols.PHOENIX,
+              fn: async () => fetchAllPhoenixPairs(network),
+            },
           ]
         : undefined,
       pairsCacheInSeconds: 60,
-      protocols: [Protocols.SOROSWAP], //, Protocols.PHOENIX],
+      protocols: protocols,
       network,
       maxHops,
     });
-  }, [network, maxHops]);
+  }, [network, maxHops, isAggregator]);
 
   const fromAddressToToken = (address: string) => {
     return new Token(network, address, 18);
@@ -90,7 +106,10 @@ export const useRouterSDK = () => {
     tradeType,
   }: GenerateRouteProps) => {
     if (!factory) throw new Error('Factory address not found');
-    const currencyAmount = fromAddressAndAmountToCurrencyAmount(amountAsset.currency.contract, amount);
+    const currencyAmount = fromAddressAndAmountToCurrencyAmount(
+      amountAsset.currency.contract,
+      amount,
+    );
     const quoteCurrency = fromAddressToToken(quoteAsset.contract);
 
     const horizonProps = {
@@ -100,17 +119,39 @@ export const useRouterSDK = () => {
       tradeType,
     };
 
-    const horizonPath: BuildTradeRoute | undefined = await getHorizonBestPath(horizonProps, sorobanContext);
-    const routerPath: BuildTradeRoute | undefined = await router.route(currencyAmount, quoteCurrency, tradeType, factory, sorobanContext as any).then(res=>{
-      if(!res) return;
-      const response = {
-        ...res,
-        platform: PlatformType.ROUTER,
-      }
-      return response;
-    })
+    const horizonPath: BuildTradeRoute | undefined = await getHorizonBestPath(
+      horizonProps,
+      sorobanContext,
+    );
 
-    const bestPath = getBestPath(horizonPath!, routerPath!, tradeType);
+    let sorobanPath;
+
+    if (isAggregator) {
+      // console.log('Returning routeSplit');
+      // console.log(await router.routeSplit(currencyAmount, quoteCurrency, tradeType));
+      sorobanPath = await router.routeSplit(currencyAmount, quoteCurrency, tradeType);
+      sorobanPath = { ...sorobanPath, platform: PlatformType.AGGREGATOR };
+    } else {
+      sorobanPath = await router.route(
+        currencyAmount,
+        quoteCurrency,
+        tradeType,
+        factory,
+        sorobanContext as any,
+      );
+      sorobanPath = { ...sorobanPath, platform: PlatformType.AGGREGATOR };
+    }
+
+    const bestPath = getBestPath(horizonPath!, sorobanPath!, tradeType);
+
+    // .then((res) => {
+    //   if (!res) return;
+    //   const response = {
+    //     ...res,
+    //     platform: PlatformType.ROUTER,
+    //   };
+    //   return response;
+    // });
 
     return bestPath;
   };

@@ -1,4 +1,5 @@
-import { TokenType, CurrencyAmount } from 'interfaces';
+import { DexDistribution } from 'helpers/aggregator';
+import { CurrencyAmount } from 'interfaces';
 import { Percent } from 'soroswap-router-sdk';
 
 export enum TradeState {
@@ -234,8 +235,9 @@ export enum TradeType {
 }
 
 export enum PlatformType {
+  AGGREGATOR = 'Soroswap Aggregator',
   ROUTER = 'Soroswap Router',
-  STELLAR_CLASSIC = 'SDEX'
+  STELLAR_CLASSIC = 'SDEX',
 }
 
 export type InterfaceTrade = {
@@ -243,7 +245,8 @@ export type InterfaceTrade = {
   outputAmount: CurrencyAmount | undefined;
   tradeType: TradeType | undefined;
   path: string[] | undefined;
-  priceImpact?: Percent | Number | undefined;
+  distribution?: DexDistribution[] | undefined;
+  priceImpact?: Percent | undefined;
   [x: string]: any;
   platform?: PlatformType;
 };

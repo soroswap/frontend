@@ -1,11 +1,11 @@
 import { calculateSwapFees } from 'functions/getNetworkFees';
-import { InterfaceTrade, PlatformType } from 'state/routing/types';
+import { InterfaceTrade } from 'state/routing/types';
 import { SorobanContextType, useSorobanReact } from '@soroban-react/core';
-import useSWRImmutable from 'swr/immutable';
+import { xlmTokenList } from 'constants/xlmToken';
 import { useRouterSDK } from 'functions/generateRoute';
 import { TokenType } from 'interfaces';
-import { xlmTokenList } from 'constants/xlmToken';
 import { TradeType } from 'soroswap-router-sdk';
+import useSWRImmutable from 'swr/immutable';
 
 type Currencies = {
   INPUT?: TokenType | null | undefined;
@@ -47,7 +47,7 @@ const useSwapNetworkFees = (trade: InterfaceTrade | undefined, currencies: Curre
   const buildTradeWithOneXlmAsInput = async (): Promise<InterfaceTrade | undefined> => {
     const valueOfOne = '10000000';
 
-    const currencyA = {currency: currencies.INPUT! as TokenType, value: '0'};
+    const currencyA = { currency: currencies.INPUT! as TokenType, value: '0' };
     const currencyB = currencies.OUTPUT;
 
     if (!currencyA || !currencyB) return undefined;
@@ -73,7 +73,7 @@ const useSwapNetworkFees = (trade: InterfaceTrade | undefined, currencies: Curre
       },
       path: result?.trade.path,
       tradeType: TradeType.EXACT_INPUT,
-      platform: result.platform
+      platform: result.platform,
     };
 
     return trade;
