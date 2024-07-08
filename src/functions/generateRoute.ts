@@ -142,7 +142,7 @@ export const useRouterSDK = () => {
       sorobanPath = { ...sorobanPath, platform: PlatformType.AGGREGATOR };
     }
 
-    const bestPath = getBestPath(horizonPath!, sorobanPath!, tradeType);
+    const bestPath = getBestPath(horizonPath!, sorobanPath! as BuildTradeRoute, tradeType);
 
     // .then((res) => {
     //   if (!res) return;

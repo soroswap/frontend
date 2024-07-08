@@ -246,7 +246,7 @@ export type InterfaceTrade = {
   tradeType: TradeType | undefined;
   path: string[] | undefined;
   distribution?: DexDistribution[] | undefined;
-  priceImpact?: Percent | undefined;
+  priceImpact?: Percent | Number | undefined;
   [x: string]: any;
   platform?: PlatformType;
 };
