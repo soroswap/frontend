@@ -29,11 +29,12 @@ export async function getChallengeTransaction({
           // Possible parameters are `account`, `memo`, `home_domain`, and
           // `client_domain`. For our purposes, we only supply `account`.
           account: publicKey,
+  /*         memo: '1', */
+/*           client_domain: 'lobstr.co', */
       })}`
   ).catch((e)=>{
     console.log(e)
   })
-  console.log(res)
   let json = await res?.json()
   // Validate the challenge transaction meets all the requirements for SEP-10
   validateChallengeTransaction({

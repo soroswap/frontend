@@ -217,7 +217,6 @@ function BuyComponent() {
       popup?.focus();
       window.addEventListener('message', (event): void => {
         if (event.origin.includes(homeDomain)) {
-          console.log(event)
           popup?.close()
           handleNextStep();
         }
