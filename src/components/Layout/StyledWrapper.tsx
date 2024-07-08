@@ -1,4 +1,4 @@
-import { styled } from '@mui/material/styles';
+import { styled } from 'soroswap-ui';
 import { opacify } from 'themes/utils';
 
 export const StyledWrapper = styled('main')`

@@ -1,8 +1,9 @@
 // import { Trans } from '@lingui/macro' //This is for localization and translation on all languages
-import { styled, useTheme } from 'soroswap-ui';
+import { Link, styled, useTheme } from 'soroswap-ui';
 import { RowBetween, RowFixed } from '../Row';
 import SettingsTab from '../Settings/index';
 import { useMediaQuery } from 'soroswap-ui';
+import { useState } from 'react';
 const StyledSwapHeader = styled(RowBetween)(({ theme }) => ({
   marginBottom: 10,
   color: theme.palette.secondary.main,
@@ -46,9 +47,7 @@ export default function SwapHeader({
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const [activeAction, setActiveAction] = useState<'swap' | 'buy'>('swap');
   const href = window.location.pathname;
-  useEffect(() => {
-    setActiveAction(href === '/swap' || href === '/' ? 'swap' : 'buy');
-  }, [href])
+
 
 
   return (

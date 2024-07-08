@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import ModalBox from 'components/Modals/ModalBox'
-import { styled } from '@mui/material/styles';
-import { Box, Button, CircularProgress, Container, Modal, Typography, useMediaQuery } from '@mui/material';
+import { styled } from 'soroswap-ui';
+import { Box, Button, CircularProgress, Container, Modal, Typography, useMediaQuery } from 'soroswap-ui';
 import { BodyPrimary, BodySmall, Caption } from 'components/Text';
 import { Step, StepContent, StepLabel, Stepper } from '@mui/material';
 import { AlertTriangle, CheckCircle } from 'react-feather'
@@ -13,6 +13,7 @@ const ContentWrapper = styled('div') <{ isMobile: boolean }>`
   gap: 24px;
   font-family: Inter;
   text-align: ${({ isMobile }) => (isMobile ? 'center' : 'left')};
+  bacjground-color: red;
 `;
 
 

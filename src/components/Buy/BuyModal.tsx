@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import ModalBox from 'components/Modals/ModalBox'
-import { styled } from '@mui/material/styles';
+import { styled } from 'soroswap-ui';
 import { Box, Container, Modal, useMediaQuery } from '@mui/material';
 import { BodyPrimary, BodySmall, Caption } from 'components/Text';
 import { anchor, currency } from './BuyComponent'

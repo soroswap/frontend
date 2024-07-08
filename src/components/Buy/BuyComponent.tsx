@@ -45,7 +45,12 @@ const anchors: anchor[] = [
   {
     name: 'MyKobo',
     home_domain: 'mykobo.co',
-    currency: 'EURC'
+    currency: 'EUR'
+  },
+  {
+    name: 'Anclap',
+    home_domain: 'api.anclap.com',
+    currency: 'ARS/PEN'
   },
 ];
 
@@ -198,7 +203,8 @@ function BuyComponent() {
         homeDomain: homeDomain,
         urlFields: {
           asset_code: selectedAsset?.code,
-          asset_issuer: selectedAsset?.issuer
+          asset_issuer: selectedAsset?.issuer,
+          account: address
         }
       });
 
