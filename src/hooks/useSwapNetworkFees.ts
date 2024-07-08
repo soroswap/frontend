@@ -1,12 +1,11 @@
-import { calculateSwapFees } from 'functions/getNetworkFees';
-import { InterfaceTrade } from 'state/routing/types';
 import { SorobanContextType, useSorobanReact } from '@soroban-react/core';
-import useSWRImmutable from 'swr/immutable';
-import { useRouterSDK } from 'functions/generateRoute';
-import { TokenType } from 'interfaces';
 import { xlmTokenList } from 'constants/xlmToken';
-import { Networks } from '@stellar/stellar-sdk';
+import { useRouterSDK } from 'functions/generateRoute';
+import { calculateSwapFees } from 'functions/getNetworkFees';
+import { TokenType } from 'interfaces';
 import { TradeType } from 'soroswap-router-sdk';
+import { InterfaceTrade } from 'state/routing/types';
+import useSWRImmutable from 'swr/immutable';
 
 type Currencies = {
   INPUT?: TokenType | null | undefined;

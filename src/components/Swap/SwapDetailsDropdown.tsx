@@ -1,4 +1,4 @@
-import { keyframes, styled, useTheme } from '@mui/material';
+import { keyframes, styled, useTheme } from 'soroswap-ui';
 import AnimatedDropdown from 'components/AnimatedDropdown';
 import Column from 'components/Column';
 import { LoadingOpacityContainer } from 'components/Loader/styled';

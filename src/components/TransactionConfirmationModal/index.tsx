@@ -1,4 +1,4 @@
-import { Box, Modal, useMediaQuery, useTheme } from '@mui/material';
+import { Box, Modal, useMediaQuery, useTheme } from 'soroswap-ui';
 import { useSorobanReact } from '@soroban-react/core';
 import { ButtonLight, ButtonPrimary } from 'components/Buttons/Button';
 import { CloseButton } from 'components/Buttons/CloseButton';
@@ -9,7 +9,13 @@ import {
   AnimatedEntranceConfirmationIcon,
   LoadingIndicatorOverlay,
 } from 'components/Swap/PendingModalContent/Logos';
-import { HeadlineMedium, SubHeader, SubHeaderLarge, SubHeaderSmall } from 'components/Text';
+import {
+  BodySmall,
+  HeadlineMedium,
+  SubHeader,
+  SubHeaderLarge,
+  SubHeaderSmall,
+} from 'components/Text';
 import { TokenType } from 'interfaces';
 import { ReactNode, useState } from 'react';
 import { CheckCircle, XCircle } from 'react-feather';
@@ -21,7 +27,13 @@ import {
   Wrapper,
 } from './ModalStyles';
 
-export const TransactionFailedContent = ({ onDismiss }: { onDismiss: () => void }) => {
+export const TransactionFailedContent = ({
+  onDismiss,
+  message,
+}: {
+  onDismiss: () => void;
+  message?: string;
+}) => {
   const theme = useTheme();
 
   return (
@@ -40,7 +52,7 @@ export const TransactionFailedContent = ({ onDismiss }: { onDismiss: () => void 
             />
           </RowFixed>
           <HeadlineMedium textAlign="center">Transaction Failed</HeadlineMedium>
-
+          {message && <BodySmall>{message}</BodySmall>}
           <ButtonPrimary
             onClick={onDismiss}
             style={{ margin: '20px 0 0 0' }}

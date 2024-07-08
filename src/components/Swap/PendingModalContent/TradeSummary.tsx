@@ -1,4 +1,4 @@
-import { styled } from '@mui/material';
+import { styled } from 'soroswap-ui';
 import Column from 'components/Column';
 import CurrencyLogo from 'components/Logo/CurrencyLogo';
 import Row from 'components/Row';

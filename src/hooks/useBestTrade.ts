@@ -1,4 +1,5 @@
 import { useRouterSDK } from 'functions/generateRoute';
+import { hasDistribution } from 'helpers/aggregator';
 import { CurrencyAmount, TokenType } from 'interfaces';
 import { useEffect, useMemo, useState } from 'react';
 import { TradeType as SdkTradeType } from 'soroswap-router-sdk';
@@ -60,6 +61,8 @@ export function useBestTrade(
     },
   );
 
+  // console.log('🚀 « THIS data:', data);
+
   const isLoading = isLoadingSWR || isValidating;
 
   const [currencyIn, currencyOut]: [TokenType | undefined, TokenType | undefined] = useMemo(
@@ -119,15 +122,24 @@ export function useBestTrade(
   }, [data, currencyIn, currencyOut, tradeType]);
 
   const trade: InterfaceTrade = useMemo(() => {
-    return {
+    const baseTrade = {
       inputAmount,
       outputAmount,
-      expectedAmount, // //isNaN(expectedAmount) ? 0 : expectedAmount,
-      path: data?.trade.path,
-      tradeType: tradeType,
+      expectedAmount,
+      tradeType,
       rawRoute: data,
+      path: data?.trade.path,
       priceImpact: data?.priceImpact,
     };
+
+    if (data?.trade && hasDistribution(data.trade)) {
+      return {
+        ...baseTrade,
+        distribution: data.trade.distribution,
+      };
+    }
+
+    return baseTrade;
   }, [expectedAmount, inputAmount, outputAmount, tradeType, data]);
 
   /*

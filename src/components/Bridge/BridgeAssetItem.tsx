@@ -1,5 +1,5 @@
 import { Asset } from 'stellar-sdk';
-import { Box, Typography } from '@mui/material';
+import { Box, Typography } from 'soroswap-ui';
 import { BridgeChains } from './BridgeComponent';
 import { useGetBridgeAssetInfo } from 'hooks/bridge/pendulum/useGetBridgeAssetInfo';
 import CurrencyLogo from 'components/Logo/CurrencyLogo';

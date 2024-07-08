@@ -1,4 +1,4 @@
-import { Box, CircularProgress, Paper, Typography, styled } from '@mui/material';
+import { Box, CircularProgress, Paper, Typography, styled } from 'soroswap-ui';
 import { AppContext } from 'contexts';
 import useGetMyBalances from 'hooks/useGetMyBalances';
 import { useMintTestToken } from 'hooks/useMintTestToken';
@@ -51,13 +51,13 @@ export function Balances() {
       default:
         return 'Unknown';
     }
-  }
+  };
 
   const getNativeToken = () => {
     const network = getNetwork();
     const nativeToken = xlmTokenList.find((token) => token.network === network);
     return nativeToken?.assets[0];
-  }
+  };
 
   const handleMint = () => {
     setIsMinting(true);

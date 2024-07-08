@@ -1,5 +1,5 @@
 /* eslint-disable @next/next/no-img-element */
-import { Box, CircularProgress } from '@mui/material';
+import { Box, CircularProgress } from 'soroswap-ui';
 import { ButtonPrimary } from 'components/Buttons/Button';
 import { ButtonText } from 'components/Text';
 import { ConnectPendulumWalletButton } from './ConnectPendulumWalletButton';

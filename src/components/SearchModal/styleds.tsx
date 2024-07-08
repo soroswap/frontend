@@ -3,7 +3,7 @@ import searchIconLight from 'assets/svg/searchLight.svg';
 
 import { AutoColumn } from '../Column';
 import { RowBetween } from '../Row';
-import { styled } from '@mui/material';
+import { styled } from 'soroswap-ui';
 import { opacify } from '../../themes/utils';
 import { LoadingRows as BaseLoadingRows } from 'components/Loader/styled';
 

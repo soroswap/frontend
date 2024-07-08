@@ -1,4 +1,4 @@
-import { Box, Modal, Typography, useTheme } from '@mui/material';
+import { Box, Modal, Typography, useTheme } from 'soroswap-ui';
 import { SubmittableExtrinsic } from '@polkadot/api/promise/types';
 import BigNumber from 'bignumber.js';
 import { useEffect, useMemo, useState } from 'react';
@@ -10,7 +10,7 @@ import { useGetBridgeAssetInfo } from 'hooks/bridge/pendulum/useGetBridgeAssetIn
 import { useSpacewalkFees } from 'hooks/bridge/pendulum/useSpacewalkFees';
 import { UseBooleanReturnProps } from 'hooks/useBoolean';
 
-import { Step, StepContent, StepLabel, Stepper } from '@mui/material';
+import { Step, StepContent, StepLabel, Stepper } from 'soroswap-ui';
 import { ButtonPrimary } from 'components/Buttons/Button';
 import { CloseButton } from 'components/Buttons/CloseButton';
 import { AutoColumn } from 'components/Column';
@@ -33,7 +33,7 @@ import {
   StepKeys,
   StepType,
   StepsProps,
-  allSteps
+  allSteps,
 } from './BridgeSteps';
 interface BridgeStepperProps {
   steps: any;
@@ -42,7 +42,7 @@ interface BridgeStepperProps {
 }
 
 const BridgeStepper = (props: BridgeStepperProps) => {
-  const {activeStep, steps, stepsData} = props;
+  const { activeStep, steps, stepsData } = props;
   return (
     <>
       <Box textAlign={'end'}>
@@ -55,10 +55,14 @@ const BridgeStepper = (props: BridgeStepperProps) => {
             error?: boolean;
           } = {};
           if (
-              stepsData.isError && step.key === StepKeys.RESULT ||
-              stepsData.isError && (stepsData.selectedChainFrom === 'Stellar' && step.key === StepKeys.SIGN_TX) ||
-              stepsData.isError && (stepsData.selectedChainFrom === 'Pendulum' && step.key === StepKeys.SIGN_RQ)
-            ) {
+            (stepsData.isError && step.key === StepKeys.RESULT) ||
+            (stepsData.isError &&
+              stepsData.selectedChainFrom === 'Stellar' &&
+              step.key === StepKeys.SIGN_TX) ||
+            (stepsData.isError &&
+              stepsData.selectedChainFrom === 'Pendulum' &&
+              step.key === StepKeys.SIGN_RQ)
+          ) {
             labelProps.optional = (
               <Typography variant="caption" color="error">
                 Alert message
@@ -66,19 +70,16 @@ const BridgeStepper = (props: BridgeStepperProps) => {
             );
             labelProps.error = true;
           }
-          return(
-          <Step key={step.key}>
-            <StepLabel  {...labelProps}>
-              {step.label}
-            </StepLabel>
-            <StepContent>
-              <Box sx={{pr:4}}>
-                { 
-                  (stepsData && step.key === StepKeys.REVIEW) && (
+          return (
+            <Step key={step.key}>
+              <StepLabel {...labelProps}>{step.label}</StepLabel>
+              <StepContent>
+                <Box sx={{ pr: 4 }}>
+                  {stepsData && step.key === StepKeys.REVIEW && (
                     <>
                       <Box mt={3}>
                         <Typography variant="h6">From {stepsData.selectedChainFrom}</Typography>
-              
+
                         <Box display="flex" gap={1}>
                           <div> {stepsData.amount}</div>
                           <BridgeAssetItem
@@ -88,10 +89,10 @@ const BridgeStepper = (props: BridgeStepperProps) => {
                           />
                         </Box>
                       </Box>
-              
+
                       <Box mt={3}>
                         <Typography variant="h6">To {stepsData.selectedChainTo}</Typography>
-              
+
                         <Box display="flex" gap={1}>
                           <div> {stepsData.amount}</div>
                           <BridgeAssetItem
@@ -101,8 +102,12 @@ const BridgeStepper = (props: BridgeStepperProps) => {
                           />
                         </Box>
                       </Box>
-              
-                      <Box mt={3} pt={3} borderTop={(theme) => `1px solid ${theme.palette.divider}`}>
+
+                      <Box
+                        mt={3}
+                        pt={3}
+                        borderTop={(theme) => `1px solid ${theme.palette.divider}`}
+                      >
                         <Box display="flex" justifyContent="space-between" gap={1}>
                           <MouseoverTooltip
                             title="Currently zero fee, transitioning to 0.1% per transaction soon."
@@ -113,29 +118,30 @@ const BridgeStepper = (props: BridgeStepperProps) => {
                               <Label>Bridge fee:</Label>
                             </Box>
                           </MouseoverTooltip>
-              
+
                           <DetailRowValue>
                             {stepsData.bridgeFee.toString()} {stepsData.assetInfo.code}
                           </DetailRowValue>
                         </Box>
                         <Box display="flex" justifyContent="space-between" gap={1}>
                           <Label>Security deposit:</Label>
-                          <DetailRowValue>{stepsData.griefingCollateral.toString()} PEN</DetailRowValue>
+                          <DetailRowValue>
+                            {stepsData.griefingCollateral.toString()} PEN
+                          </DetailRowValue>
                         </Box>
                         <Box display="flex" justifyContent="space-between" gap={1}>
                           <Label>Transaction fee:</Label>
                           <DetailRowValue>{Number(stepsData.txFee).toFixed(12)} PEN</DetailRowValue>
                         </Box>
                       </Box>
-              
+
                       <ButtonPrimary sx={{ mt: 3 }} onClick={stepsData.onClickConfirmButton}>
                         <ButtonText>Confirm</ButtonText>
                       </ButtonPrimary>
                     </>
-                  )
-                }
-                { stepsData && step.key === StepKeys.SIGN_RQ && (
-                    <Box sx={{pt:4}}>
+                  )}
+                  {stepsData && step.key === StepKeys.SIGN_RQ && (
+                    <Box sx={{ pt: 4 }}>
                       <ConfirmedIcon>
                         <LoadingIndicatorOverlay />
                       </ConfirmedIcon>
@@ -144,7 +150,11 @@ const BridgeStepper = (props: BridgeStepperProps) => {
                           Waiting for confirmation
                         </SubHeaderLarge>
                         <Box textAlign="center">
-                          <Typography color="textSecondary"> Request {stepsData.selectedChainFrom == 'Stellar' ? 'Issue ' : 'Reedem '}</Typography>
+                          <Typography color="textSecondary">
+                            {' '}
+                            Request{' '}
+                            {stepsData.selectedChainFrom == 'Stellar' ? 'Issue ' : 'Reedem '}
+                          </Typography>
                           <Box display="flex" gap={1}>
                             <div>{stepsData.amount}</div>
                             <BridgeAssetItem
@@ -158,22 +168,24 @@ const BridgeStepper = (props: BridgeStepperProps) => {
                               chain={stepsData.selectedChainTo}
                               flexDirection="row-reverse"
                             />
-
                           </Box>
                           <Typography color="textSecondary">
                             from {stepsData.selectedChainFrom} to {stepsData.selectedChainTo}
                           </Typography>
                         </Box>
-                        <SubHeaderSmall color="textSecondary" textAlign="center" marginBottom="12px">
-                          Confirm this transaction in your Pendulum wallet and await for chain confirmation.
+                        <SubHeaderSmall
+                          color="textSecondary"
+                          textAlign="center"
+                          marginBottom="12px"
+                        >
+                          Confirm this transaction in your Pendulum wallet and await for chain
+                          confirmation.
                         </SubHeaderSmall>
                       </AutoColumn>
                     </Box>
-                  )
-                }
-                {
-                  stepsData && step.key === StepKeys.SIGN_TX && (
-                    <Box sx={{mt: 4}}>
+                  )}
+                  {stepsData && step.key === StepKeys.SIGN_TX && (
+                    <Box sx={{ mt: 4 }}>
                       <ConfirmedIcon>
                         <LoadingIndicatorOverlay />
                       </ConfirmedIcon>
@@ -182,26 +194,34 @@ const BridgeStepper = (props: BridgeStepperProps) => {
                           Waiting for {stepsData.selectedChainFrom} confirmation
                         </SubHeaderLarge>
                         <Box textAlign="center">
-                        <Typography variant="body2" color="textSecondary" marginBottom="12px">
-                            Review and confirm this transaction in your Stellar wallet and await for chain confirmation.
+                          <Typography variant="body2" color="textSecondary" marginBottom="12px">
+                            Review and confirm this transaction in your Stellar wallet and await for
+                            chain confirmation.
                           </Typography>
                         </Box>
                       </AutoColumn>
                     </Box>
-                  )
-                }
-                {
-                  stepsData && step.key === StepKeys.RESULT && (
+                  )}
+                  {stepsData && step.key === StepKeys.RESULT && (
                     <Box>
-                      <Box textAlign={'center'} sx={{my:2}}>
+                      <Box textAlign={'center'} sx={{ my: 2 }}>
                         {stepsData.isSuccess ? (
                           <AnimatedEntranceConfirmationIcon />
-                        ) : (stepsData.isError && stepsData.errorMessage) && (
-                          <AlertTriangle strokeWidth={2} color={stepsData.theme.palette.error.main} size="56px" />
+                        ) : (
+                          stepsData.isError &&
+                          stepsData.errorMessage && (
+                            <AlertTriangle
+                              strokeWidth={2}
+                              color={stepsData.theme.palette.error.main}
+                              size="56px"
+                            />
+                          )
                         )}
                       </Box>
                       <SubHeaderLarge color="textPrimary" textAlign="center">
-                        {stepsData.isSuccess ? 'Transaction completed': stepsData.isError && 'Transaction failed'}
+                        {stepsData.isSuccess
+                          ? 'Transaction completed'
+                          : stepsData.isError && 'Transaction failed'}
                       </SubHeaderLarge>
                       <AutoColumn gap="16px" sx={{ mt: 2, mb: 2 }} justify="center">
                         <Box textAlign="center">
@@ -227,14 +247,20 @@ const BridgeStepper = (props: BridgeStepperProps) => {
                             from {stepsData.selectedChainFrom} to {stepsData.selectedChainTo}.
                           </Typography>
                         </Box>
-                  
-                        {(stepsData.isError && stepsData.errorMessage) && (
+
+                        {stepsData.isError && stepsData.errorMessage && (
                           <Box>
-                            <SubHeaderSmall color="textSecondary" textAlign="center" marginBottom="12px">
+                            <SubHeaderSmall
+                              color="textSecondary"
+                              textAlign="center"
+                              marginBottom="12px"
+                            >
                               {stepsData.errorMessage}
                             </SubHeaderSmall>
                             {stepsData.tryAgain && stepsData.tryAgain.show ? (
-                              <ButtonPrimary onClick={stepsData.tryAgain.fn}>Try again</ButtonPrimary>
+                              <ButtonPrimary onClick={stepsData.tryAgain.fn}>
+                                Try again
+                              </ButtonPrimary>
                             ) : null}
                           </Box>
                         )}
@@ -245,16 +271,16 @@ const BridgeStepper = (props: BridgeStepperProps) => {
                         )}
                       </AutoColumn>
                     </Box>
-                  )
-                }
-              </Box>
-            </StepContent>
-          </Step>
-        )})}
+                  )}
+                </Box>
+              </StepContent>
+            </Step>
+          );
+        })}
       </Stepper>
     </>
   );
-}
+};
 
 interface Props {
   confirmModal: UseBooleanReturnProps;
@@ -291,7 +317,7 @@ const BridgeConfirmModal = (props: Props) => {
     extrinsic,
     errorMessage,
     tryAgain,
-    stepper
+    stepper,
   } = props;
 
   const [txFee, setTxFee] = useState<BigNumber>(new BigNumber(0));
@@ -299,7 +325,7 @@ const BridgeConfirmModal = (props: Props) => {
   const { getTransactionFee, getFees } = useSpacewalkFees();
   const fees = getFees();
   const theme = useTheme();
-  const {activeStep, setActiveStep} = stepper;
+  const { activeStep, setActiveStep } = stepper;
 
   const bridgeFee = useMemo(() => {
     return nativeStellarToDecimal(
@@ -314,27 +340,27 @@ const BridgeConfirmModal = (props: Props) => {
       new BigNumber(amount).shiftedBy(12).multipliedBy(fees.issueGriefingCollateral),
     );
   }, [amount, fees]);
-  
+
   const stepsProps: StepsProps = {
-      amount,
-      assetInfo,
-      bridgeFee,
-      errorMessage,
-      griefingCollateral,
-      isError,
-      isSuccess,
-      selectedAsset,
-      selectedChainFrom,
-      selectedChainTo,
-      theme,
-      txFee,
-      tryAgain,
-      txHash,
-      isPending,
-      onClickConfirmButton,
-      onCloseConfirmModal,
-      setActiveStep 
-    };
+    amount,
+    assetInfo,
+    bridgeFee,
+    errorMessage,
+    griefingCollateral,
+    isError,
+    isSuccess,
+    selectedAsset,
+    selectedChainFrom,
+    selectedChainTo,
+    theme,
+    txFee,
+    tryAgain,
+    txHash,
+    isPending,
+    onClickConfirmButton,
+    onCloseConfirmModal,
+    setActiveStep,
+  };
 
   const [steps, setSteps] = useState<StepType[] | null>(null);
 
@@ -346,10 +372,10 @@ const BridgeConfirmModal = (props: Props) => {
   const issueSteps: StepType[] = useMemo(() => {
     const StepKeys = Object.keys(IssueStepsByKeys);
     return allSteps.filter((step: any) => StepKeys.includes(step.key));
-  } , [allSteps]);
+  }, [allSteps]);
 
   useEffect(() => {
-    if(selectedChainFrom === 'Stellar') {
+    if (selectedChainFrom === 'Stellar') {
       setSteps(issueSteps);
     } else if (selectedChainFrom === 'Pendulum') {
       setSteps(redeemSteps);
@@ -364,7 +390,7 @@ const BridgeConfirmModal = (props: Props) => {
       setTxFee(nativePendulumToDecimal(fee));
     });
   }, [extrinsic, getTransactionFee, setTxFee]);
-  
+
   useEffect(() => {
     if (isSuccess) {
       setActiveStep(steps && steps.length - 1);

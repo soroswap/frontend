@@ -1,10 +1,8 @@
 // import { Trans } from '@lingui/macro' //This is for localization and translation on all languages
-import { styled, useTheme } from '@mui/material/styles';
+import { styled, useTheme } from 'soroswap-ui';
 import { RowBetween, RowFixed } from '../Row';
 import SettingsTab from '../Settings/index';
-import { Typography, useMediaQuery } from '@mui/material';
-import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useMediaQuery } from 'soroswap-ui';
 const StyledSwapHeader = styled(RowBetween)(({ theme }) => ({
   marginBottom: 10,
   color: theme.palette.secondary.main,
@@ -65,12 +63,12 @@ export default function SwapHeader({
           </SwapLink>
         )}
       </HeaderButtonContainer>
-      {showConfig ? 
+      {showConfig ?
         (<RowFixed style={{ padding: '6px 12px' }}>
           <SettingsTab autoSlippage={0.5} />
-        </RowFixed>) : 
-       (false)}
-      
+        </RowFixed>) :
+        (false)}
+
     </StyledSwapHeader>
   );
 }

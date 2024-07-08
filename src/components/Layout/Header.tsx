@@ -1,9 +1,7 @@
 import React from 'react';
-import Link from 'next/link';
 import Image from 'next/image';
-import { Menu } from 'react-feather';
 import { useRouter } from 'next/router';
-import { Box, Switch, SwitchProps, useMediaQuery, styled, useTheme } from '@mui/material';
+import { Box, Switch, SwitchProps, useMediaQuery, styled, useTheme, Navbar } from 'soroswap-ui';
 import soroswapLogoPurpleBlack from 'assets/svg/SoroswapPurpleBlack.svg';
 import soroswapLogoPurpleWhite from 'assets/svg/SoroswapPurpleWhite.svg';
 import darkModeMoon from 'assets/svg/darkModeMoon.svg';
@@ -20,74 +18,9 @@ const MainBox = styled('div') <{ isMobile: boolean }>`
   gap: 40px;
 `;
 
-const NavBar = styled('div')`
-  display: flex;
-  height: 56px;
-  padding: 8px 16px;
-  align-items: center;
-  gap: 8px;
-  border-radius: 32px;
-  background: ${({ theme }) => theme.palette.background.paper};
-  box-shadow: 0px 4px 10px 0px rgba(136, 102, 221, 0.03);
-`;
-
-const NavBarMobile = styled('div')`
-  display: flex;
-  height: 48px;
-  width: 100%;
-  padding: 8px 16px;
-  align-items: center;
-  gap: 8px;
-  border-radius: 32px;
-  background: ${({ theme }) => theme.palette.background.paper};
-  box-shadow: 0px 4px 10px 0px rgba(136, 102, 221, 0.03);
-`;
-
-const NavBarContainer = styled('div')`
-  position: fixed;
-  bottom: 1rem;
-  display: flex;
-  left: 50%;
-  transform: translateX(-50%);
-`;
-
 const ButtonsBox = styled('div')`
   display: flex;
   align-items: center;
-`;
-
-const NavItem = styled(Link, {
-  shouldForwardProp: (prop) => prop !== 'active',
-}) <{ active?: boolean }>`
-  display: flex;
-  padding: 4px 24px;
-  align-items: center;
-  gap: 10px;
-  border-radius: 32px;
-  background: ${({ active }) => (active ? '#8866DD' : '')};
-  text-align: center;
-  color: ${({ theme, active }) => (active ? '#FFFFFF' : theme.palette.custom.textTertiary)};
-  font-family: Inter;
-  font-size: 20px;
-  font-weight: 600;
-  line-height: 140%;
-`;
-
-const NavItemMobile = styled(Link, {
-  shouldForwardProp: (prop) => prop !== 'active',
-}) <{ active?: boolean }>`
-  display: flex;
-  padding: 8px 18px;
-  align-items: center;
-  gap: 10px;
-  border-radius: 18px;
-  background: ${({ active }) => (active ? '#8866DD' : '')};
-  text-align: center;
-  color: ${({ theme, active }) => (active ? '#FFFFFF' : theme.palette.custom.textTertiary)};
-  font-family: Inter;
-  font-size: 16px;
-  font-weight: 600;
-  line-height: 100%;
 `;
 
 export const ModeSwitch = styled((props: SwitchProps) => (
@@ -137,22 +70,73 @@ export const ModeSwitch = styled((props: SwitchProps) => (
   },
 }));
 
-interface HeaderProps {
-  isDrawerOpen: boolean;
-  setDrawerOpen: React.Dispatch<React.SetStateAction<boolean>>;
-}
-
-export default function Header({ isDrawerOpen, setDrawerOpen }: HeaderProps) {
+const DrawerExtraContent = () => {
   const theme = useTheme();
   const colorMode = React.useContext(ColorModeContext);
 
+  return (
+    <Box>
+      <Box display="flex" alignItems="center" justifyContent="space-between" flexWrap="wrap" p={1}>
+        <ProfileSection />
+        <ModeSwitch
+          sx={{ m: 1 }}
+          defaultChecked={theme.palette.mode === 'dark' ? true : false}
+          onChange={(e) => colorMode.toggleColorMode()}
+        />
+      </Box>
+    </Box>
+  );
+};
+
+const HeaderNavbar = () => {
+  const theme = useTheme();
   const router = useRouter();
   const { pathname } = router;
+  const isMobile = useMediaQuery(theme.breakpoints.down(1220));
+
+  return (
+    <Navbar
+      onClickItem={(item) => {
+        if (item.label === 'Info') {
+          window.open(`https://info.soroswap.finance`, '_self');
+        } else {
+          router.push(item.path);
+        }
+      }}
+      isActiveItem={(item) => {
+        if (item.label === 'Info') return false;
+        if (item.label === 'Swap' && pathname === '/') return true;
+        return item.path === pathname;
+      }}
+      isMobile={isMobile}
+      size="lg"
+      mobileProps={{
+        drawerMarginTop: 78,
+        extraContent: <DrawerExtraContent />,
+      }}
+    />
+  );
+};
+
+export default function Header() {
+  const theme = useTheme();
+  const colorMode = React.useContext(ColorModeContext);
 
   const isMobile = useMediaQuery(theme.breakpoints.down(1220));
 
   const logoWidth = isMobile ? 88 : 162;
   const logoHeight = isMobile ? 30 : 56;
+
+  const HeaderContainer = ({ children }: { children: React.ReactNode }) => {
+    if (isMobile) {
+      return (
+        <Box display="flex" alignItems="flex-start" gap="18px">
+          {children}
+        </Box>
+      );
+    }
+    return <>{children}</>;
+  };
 
   interface NavItem {
     href: string;
@@ -190,21 +174,12 @@ export default function Header({ isDrawerOpen, setDrawerOpen }: HeaderProps) {
           }}
           alt={'Soroswap'}
         />
-        {!isMobile ? (
-          <>
-            <NavBar data-testid='navbar__container'>
-              {navItems.map((item) => (
-                <NavItem
-                  key={item.href}
-                  href={item.href}
-                  active={item.label === 'Swap' ? (pathname.includes(item.href) || pathname === '/' || pathname === '/buy') : pathname.includes(item.href)}
-                  target={item.target}
-                  data-testid={item.test_id}
-                >
-                  {item.label}
-                </NavItem>
-              ))}
-            </NavBar>
+        <HeaderContainer>
+          {isMobile && <ActiveChainHeaderChip isMobile={isMobile} />}
+          <Box data-testid="navbar__container">
+            <HeaderNavbar />
+          </Box>
+          {!isMobile && (
             <ButtonsBox>
               <ModeSwitch
                 sx={{ m: 1 }}
@@ -213,34 +188,8 @@ export default function Header({ isDrawerOpen, setDrawerOpen }: HeaderProps) {
               />
               <ProfileSection />
             </ButtonsBox>
-          </>
-        ) : (
-          <>
-            <Box display="flex" alignItems="center" gap="18px">
-              <ActiveChainHeaderChip isMobile={isMobile} />
-              <Menu
-                onClick={() => setDrawerOpen(!isDrawerOpen)}
-                width={24}
-                height={24}
-                color={theme.palette.custom.borderColor}
-              />
-            </Box>
-            <NavBarContainer data-testid='navbar__container'>
-              <NavBarMobile>
-                {navItems.map((item) => (
-                  <NavItemMobile
-                    key={item.href}
-                    href={item.href}
-                    active={item.label === 'Swap' ? (pathname.includes(item.href) || pathname === '/' || pathname === '/buy') : pathname.includes(item.href)}
-                    data-testid={item.test_id}
-                  >
-                    {item.label}
-                  </NavItemMobile>
-                ))}
-              </NavBarMobile>
-            </NavBarContainer>
-          </>
-        )}
+          )}
+        </HeaderContainer>
       </MainBox>
     </>
   );
