@@ -14,7 +14,8 @@ const getClassicAsset = (currency: TokenType) => {
     return nativeAsset;
   }
   if (!currency.issuer) {
-    throw new Error(`Can't convert ${currency.code} to stellar classic asset`);
+    //throw new Error(`Can't convert ${currency.code} to stellar classic asset`);
+    return;
   }
   const asset = new Asset(currency.code, currency.issuer);
   return asset;
@@ -196,26 +197,20 @@ export function getHorizonBestPath(
   if (!payload.assetFrom || !payload.assetTo || !payload.amount || !sorobanContext) {
     return;
   }
-
   const { serverHorizon, activeChain } = sorobanContext;
   if (!serverHorizon || !activeChain) {
     console.error('no serverHorizon or activeChain');
   }
-
   const args = {
     assetFrom: getClassicAsset(payload.assetFrom),
     assetTo: getClassicAsset(payload.assetTo),
     amount: getAmount(payload.amount),
   };
-
+  if (!args.amount || !args.assetFrom || !args.assetTo || !serverHorizon) return;
   if (payload.tradeType === TradeType.EXACT_INPUT) {
     try {
-      const send = serverHorizon
-        ?.strictSendPaths(args.assetFrom!, args?.amount!, [args.assetTo!])
-        .call()
-        .then((res) => {
-          return res.records;
-        });
+      const send = serverHorizon?.strictSendPaths(args.assetFrom, args.amount, [args.assetTo])
+        .call().then((res) => res.records);
       return send?.then((res) => {
         const maxObj = res.reduce((maxObj, obj) => {
           if (obj.destination_amount > maxObj.destination_amount) {
@@ -225,21 +220,16 @@ export function getHorizonBestPath(
           }
         });
         return parseHorizonResult(maxObj, payload.tradeType, sorobanContext);
+      }).catch((error) => {
+        console.error(error);
       });
     } catch (error) {
       console.error(error);
     }
-  }
-
-  if (payload.tradeType === TradeType.EXACT_OUTPUT) {
+  } else if (payload.tradeType === TradeType.EXACT_OUTPUT) {
     try {
-      const receive = serverHorizon
-        ?.strictReceivePaths([args.assetFrom!], args.assetTo!, args?.amount!)
-        .call()
-        .then((res) => {
-          return res.records;
-        });
-
+      const receive = serverHorizon?.strictReceivePaths([args.assetFrom!], args.assetTo!, args?.amount!)
+        .call().then((res) => res.records);
       return receive?.then((res) => {
         const minObj = res.reduce((minObj, obj) => {
           if (obj.destination_amount < minObj.destination_amount) {
@@ -257,11 +247,15 @@ export function getHorizonBestPath(
 }
 
 export const getBestPath = (
-  horizonPath: BuildTradeRoute,
-  routerPath: BuildTradeRoute,
+  horizonPath: BuildTradeRoute | undefined,
+  routerPath: BuildTradeRoute | undefined,
   tradeType: TradeType,
 ) => {
-  if (!tradeType) return;
+  console.log('✨Calculating best path')
+  if (!tradeType) throw new Error('Trade type not found');
+  console.log('📚 bestPath args;')
+  console.log('📚 horizonPath:', horizonPath)
+  console.log('📚 routerPath:', routerPath)
   if (!horizonPath) return routerPath;
   if (!routerPath) return horizonPath;
   if (tradeType === TradeType.EXACT_INPUT) {

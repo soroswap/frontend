@@ -1,4 +1,4 @@
-import { useSorobanReact } from '@soroban-react/core';
+import { SorobanContextType, useSorobanReact } from '@soroban-react/core';
 import { AppContext } from 'contexts';
 import { useFactory } from 'hooks';
 import { useAggregator } from 'hooks/useAggregator';
@@ -119,31 +119,41 @@ export const useRouterSDK = () => {
       tradeType,
     };
 
-    const horizonPath: BuildTradeRoute | undefined = await getHorizonBestPath(
+    const horizonPath = await getHorizonBestPath(
       horizonProps,
       sorobanContext,
-    );
+    ) as BuildTradeRoute;
 
-    let sorobanPath;
-
+    let sorobanPath: BuildTradeRoute;
     if (isAggregator) {
-      // console.log('Returning routeSplit');
-      // console.log(await router.routeSplit(currencyAmount, quoteCurrency, tradeType));
-      sorobanPath = await router.routeSplit(currencyAmount, quoteCurrency, tradeType);
-      sorobanPath = { ...sorobanPath, platform: PlatformType.AGGREGATOR };
+      sorobanPath = (await router.routeSplit(currencyAmount, quoteCurrency, tradeType).then((response)=>{
+        if(!response) return undefined;
+        const result = {
+          ...response,
+          platform: PlatformType.ROUTER,
+        };
+        return result;
+      }
+    )) as BuildTradeRoute;
     } else {
-      sorobanPath = await router.route(
+      sorobanPath = (await router.route(
         currencyAmount,
         quoteCurrency,
         tradeType,
         factory,
-        sorobanContext as any,
-      );
-      sorobanPath = { ...sorobanPath, platform: PlatformType.AGGREGATOR };
+        sorobanContext as SorobanContextType,
+      ).then((response)=>{
+          if(!response) return undefined;
+          const result = {
+            ...response,
+            platform: PlatformType.ROUTER,
+          };
+          return result;
+        }
+      )) as BuildTradeRoute;
     }
-
-    const bestPath = getBestPath(horizonPath!, sorobanPath! as BuildTradeRoute, tradeType);
-
+    const bestPath = getBestPath(horizonPath, sorobanPath, tradeType);
+    console.log('🔎 bestPath', bestPath) 
     // .then((res) => {
     //   if (!res) return;
     //   const response = {
