@@ -153,7 +153,6 @@ export const useRouterSDK = () => {
       )) as BuildTradeRoute;
     }
     const bestPath = getBestPath(horizonPath, sorobanPath, tradeType);
-    console.log('🔎 bestPath', bestPath) 
     // .then((res) => {
     //   if (!res) return;
     //   const response = {

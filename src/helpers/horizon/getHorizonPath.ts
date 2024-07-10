@@ -251,11 +251,7 @@ export const getBestPath = (
   routerPath: BuildTradeRoute | undefined,
   tradeType: TradeType,
 ) => {
-  console.log('✨Calculating best path')
   if (!tradeType) throw new Error('Trade type not found');
-  console.log('📚 bestPath args;')
-  console.log('📚 horizonPath:', horizonPath)
-  console.log('📚 routerPath:', routerPath)
   if (!horizonPath) return routerPath;
   if (!routerPath) return horizonPath;
   if (tradeType === TradeType.EXACT_INPUT) {

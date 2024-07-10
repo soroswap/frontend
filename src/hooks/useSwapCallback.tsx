@@ -223,15 +223,16 @@ export function useSwapCallback(
         }
       case PlatformType.STELLAR_CLASSIC:
         try {
-          const result = await createStellarPathPayment(trade, sorobanContext);
+          const result = await createStellarPathPayment(trade, allowedSlippage, sorobanContext);
           const notificationMessage = `${formatTokenAmount(trade.inputAmount?.value ?? '0')} ${trade
             ?.inputAmount?.currency.code} for ${formatTokenAmount(
             trade.outputAmount?.value ?? '0',
           )} ${trade?.outputAmount?.currency.code}`;
           sendNotification(notificationMessage, 'Swapped', SnackbarIconType.SWAP, SnackbarContext);
           return result!;
-        } catch (error) {
+        } catch (error: any) {
           console.error(error);
+          throw new Error('Cannot create path payment')
         }
       default:
         throw new Error('Unsupported platform');
