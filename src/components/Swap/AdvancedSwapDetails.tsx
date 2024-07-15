@@ -1,19 +1,19 @@
 import { BodySmall } from 'components/Text';
 import { Box, styled } from 'soroswap-ui';
 import { ChevronRight } from '@mui/icons-material';
-import { findToken } from 'hooks/tokens/useToken';
-import { formatTokenAmount } from 'helpers/format';
-import { InterfaceTrade } from 'state/routing/types';
-import { LoadingRows } from 'components/Loader/styled';
-import { MouseoverTooltip } from 'components/Tooltip';
-import { RowBetween, RowFixed } from 'components/Row';
-import { Separator } from 'components/SearchModal/styleds';
-import { useAllTokens } from 'hooks/tokens/useAllTokens';
-import React, { useEffect, useState } from 'react';
 import { useSorobanReact } from '@soroban-react/core';
 import Column from 'components/Column';
+import { LoadingRows } from 'components/Loader/styled';
 import CurrencyLogo from 'components/Logo/CurrencyLogo';
+import { RowBetween, RowFixed } from 'components/Row';
+import { Separator } from 'components/SearchModal/styleds';
+import { MouseoverTooltip } from 'components/Tooltip';
+import { formatTokenAmount } from 'helpers/format';
+import { useAllTokens } from 'hooks/tokens/useAllTokens';
+import { findToken } from 'hooks/tokens/useToken';
+import React, { useEffect, useState } from 'react';
 import { Percent } from 'soroswap-router-sdk';
+import { InterfaceTrade } from 'state/routing/types';
 
 export const PathBox = styled(Box)`
   display: flex;

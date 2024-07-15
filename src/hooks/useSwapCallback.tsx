@@ -1,19 +1,22 @@
 import { TxResponse } from '@soroban-react/contracts';
 import { useSorobanReact } from '@soroban-react/core';
+import * as StellarSdk from '@stellar/stellar-sdk';
 import BigNumber from 'bignumber.js';
 import { DEFAULT_SLIPPAGE_INPUT_VALUE } from 'components/Settings/MaxSlippageSettings';
 import { AppContext, SnackbarIconType } from 'contexts';
 import { getCurrentTimePlusOneHour } from 'functions/getCurrentTimePlusOneHour';
 import { sendNotification } from 'functions/sendNotification';
+import { dexDistributionParser, hasDistribution } from 'helpers/aggregator';
 import { scValToJs } from 'helpers/convert';
 import { formatTokenAmount } from 'helpers/format';
 import { bigNumberToI128, bigNumberToU64 } from 'helpers/utils';
 import { useContext } from 'react';
 import { InterfaceTrade, TradeType } from 'state/routing/types';
 import { useUserSlippageToleranceWithDefault } from 'state/user/hooks';
-import * as StellarSdk from '@stellar/stellar-sdk';
 import { useSWRConfig } from 'swr';
+import { AggregatorMethod, useAggregatorCallback } from './useAggregatorCallback';
 import { RouterMethod, useRouterCallback } from './useRouterCallback';
+import { extractContractError } from 'functions/extractContractError';
 
 // Returns a function that will execute a swap, if the parameters are all valid
 // and the user has approved the slippage adjusted input amount for the trade
@@ -97,7 +100,9 @@ export function useSwapCallback(
   const sorobanContext = useSorobanReact();
   const { activeChain, address } = sorobanContext;
   const routerCallback = useRouterCallback();
+  const aggregatorCallback = useAggregatorCallback();
   const allowedSlippage = useUserSlippageToleranceWithDefault(DEFAULT_SLIPPAGE_INPUT_VALUE);
+  const isUsingAggregator = hasDistribution(trade);
 
   const { mutate } = useSWRConfig();
 
@@ -118,62 +123,100 @@ export function useSwapCallback(
     const amount0ScVal = bigNumberToI128(amount0);
     const amount1ScVal = bigNumberToI128(amount1);
 
-    //   fn swap_exact_tokens_for_tokens(
-    //     e: Env,
-    //     amount_in: i128,
-    //     amount_out_min: i128,
-    //     path: Vec<Address>,
-    //     to: Address,
-    //     deadline: u64,
-    // ) -> Vec<i128>;
+    switch (isUsingAggregator) {
+      case true:
+        console.log('USING AGGREGATOR');
+        if (!isUsingAggregator) throw Error('Non distribution');
+        const dexDistributionScValVec = dexDistributionParser(trade?.distribution);
+        console.log('🚀 « dexDistributionScValVec:', dexDistributionScValVec);
 
-    //   fn swap_tokens_for_exact_tokens(
-    //     e: Env,
-    //     amount_out: i128,
-    //     amount_in_max: i128,
-    //     path: Vec<Address>,
-    //     to: Address,
-    //     deadline: u64,
-    // ) -> Vec<i128>;
+        const aggregatorSwapParams: StellarSdk.xdr.ScVal[] = [
+          new StellarSdk.Address(trade.inputAmount?.currency.contract ?? '').toScVal(), //_from_token: Address,
+          new StellarSdk.Address(trade.outputAmount?.currency.contract ?? '').toScVal(), //_dest_token: Address,
+          amount0ScVal,
+          amount1ScVal,
+          dexDistributionScValVec, // proxy_addresses: Vec<ProxyAddressPair>,
+          new StellarSdk.Address(address).toScVal(), //admin: Address,
+          StellarSdk.nativeToScVal(getCurrentTimePlusOneHour()), //deadline
+        ];
+        console.log('🚀 « aggregatorSwapParams:', aggregatorSwapParams);
 
-    const path = trade.path?.map((address) => new StellarSdk.Address(address));
+        try {
+          const result = (await aggregatorCallback(
+            AggregatorMethod.SWAP,
+            aggregatorSwapParams,
+            !simulation,
+          )) as StellarSdk.SorobanRpc.Api.GetTransactionResponse;
 
-    const pathScVal = StellarSdk.nativeToScVal(path);
+          console.log('🚀 « result:', result);
+          //if it is a simulation should return the result
+          if (simulation) return result;
 
-    const args = [
-      amount0ScVal,
-      amount1ScVal,
-      pathScVal, // path
-      new StellarSdk.Address(address!).toScVal(),
-      bigNumberToU64(BigNumber(getCurrentTimePlusOneHour())),
-    ];
+          if (result.status !== StellarSdk.SorobanRpc.Api.GetTransactionStatus.SUCCESS)
+            throw result;
 
-    try {
-      const result = (await routerCallback(
-        routerMethod,
-        args,
-        !simulation,
-      )) as StellarSdk.SorobanRpc.Api.GetTransactionResponse;
+          const switchValues: string[] = scValToJs(result.returnValue!);
 
-      //if it is a simulation should return the result
-      if (simulation) return result;
+          const currencyA = switchValues?.[0];
+          const currencyB = switchValues?.[switchValues?.length - 1];
 
-      if (result.status !== StellarSdk.SorobanRpc.Api.GetTransactionStatus.SUCCESS) throw result;
+          const notificationMessage = `${formatTokenAmount(currencyA ?? '0')} ${trade?.inputAmount
+            ?.currency.code} for ${formatTokenAmount(currencyB ?? '0')} ${trade?.outputAmount
+            ?.currency.code}`;
 
-      const switchValues: string[] = scValToJs(result.returnValue!);
+          sendNotification(notificationMessage, 'Swapped', SnackbarIconType.SWAP, SnackbarContext);
 
-      const currencyA = switchValues?.[0];
-      const currencyB = switchValues?.[switchValues?.length - 1];
+          return { ...result, switchValues };
+        } catch (error) {
+          if (error instanceof Error) {
+            const parsedError = extractContractError(error.message);
+            throw parsedError;
+          } else {
+            throw error;
+          }
+        }
+      case false:
+        console.log('USING ROUTER');
+        const path = trade.path?.map((address) => new StellarSdk.Address(address));
 
-      const notificationMessage = `${formatTokenAmount(currencyA ?? '0')} ${trade?.inputAmount
-        ?.currency.code} for ${formatTokenAmount(currencyB ?? '0')} ${trade?.outputAmount
-        ?.currency.code}`;
+        const pathScVal = StellarSdk.nativeToScVal(path);
 
-      sendNotification(notificationMessage, 'Swapped', SnackbarIconType.SWAP, SnackbarContext);
+        const args = [
+          amount0ScVal,
+          amount1ScVal,
+          pathScVal, // path
+          new StellarSdk.Address(address!).toScVal(),
+          bigNumberToU64(BigNumber(getCurrentTimePlusOneHour())),
+        ];
 
-      return { ...result, switchValues };
-    } catch (error) {
-      throw error;
+        try {
+          const result = (await routerCallback(
+            routerMethod,
+            args,
+            !simulation,
+          )) as StellarSdk.SorobanRpc.Api.GetTransactionResponse;
+
+          //if it is a simulation should return the result
+          if (simulation) return result;
+
+          if (result.status !== StellarSdk.SorobanRpc.Api.GetTransactionStatus.SUCCESS)
+            throw result;
+
+          const switchValues: string[] = scValToJs(result.returnValue!);
+
+          const currencyA = switchValues?.[0];
+          const currencyB = switchValues?.[switchValues?.length - 1];
+
+          const notificationMessage = `${formatTokenAmount(currencyA ?? '0')} ${trade?.inputAmount
+            ?.currency.code} for ${formatTokenAmount(currencyB ?? '0')} ${trade?.outputAmount
+            ?.currency.code}`;
+
+          sendNotification(notificationMessage, 'Swapped', SnackbarIconType.SWAP, SnackbarContext);
+
+          return { ...result, switchValues };
+        } catch (error) {
+          throw error;
+        }
     }
   };
 

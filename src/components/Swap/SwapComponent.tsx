@@ -119,6 +119,7 @@ export function SwapComponent({
   const { SnackbarContext } = useContext(AppContext);
   const [showPriceImpactModal, setShowPriceImpactModal] = useState<boolean>(false);
   const [txError, setTxError] = useState<boolean>(false);
+  const [txErrorMessage, setTxErrorMessage] = useState<string>();
 
   const [needTrustline, setNeedTrustline] = useState<boolean>(true);
 
@@ -294,6 +295,7 @@ export function SwapComponent({
       .catch((error) => {
         console.log(error);
         setTxError(true);
+        setTxErrorMessage(error.message);
         setSwapState((currentState) => ({
           ...currentState,
           showConfirm: false,
@@ -394,18 +396,24 @@ export function SwapComponent({
     useConfirmModal.resetStates();
   }, [onUserInput, swapResult, useConfirmModal, resetRouterSdkCache]);
 
+  const handleErrorDismiss = () => {
+    setTxError(false);
+    setTxErrorMessage(undefined);
+    handleConfirmDismiss();
+  };
+
   return (
     <>
       <SwapWrapper data-testid="swap__section">
         <SwapHeader />
         <Modal
           open={txError}
-          onClose={() => setTxError(false)}
+          onClose={handleErrorDismiss}
           aria-labelledby="modal-modal-title"
           aria-describedby="modal-modal-description"
         >
           <div>
-            <TransactionFailedContent onDismiss={() => setTxError(false)} />
+            <TransactionFailedContent onDismiss={handleErrorDismiss} message={txErrorMessage} />
           </div>
         </Modal>
         {(trade || routeIsLoading) && showConfirm && (
