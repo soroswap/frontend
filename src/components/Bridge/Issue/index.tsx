@@ -1,6 +1,6 @@
-import { Box, Button, MenuItem, Select, TextField } from 'soroswap-ui';
 import { useInkathon } from '@scio-labs/use-inkathon';
 import { useSorobanReact } from '@soroban-react/core';
+import { BASE_FEE, Memo, Operation, TransactionBuilder } from '@stellar/stellar-sdk';
 import { deriveShortenedRequestId } from 'helpers/bridge/pendulum/spacewalk';
 import {
   convertRawHexKeyToPublicKey,
@@ -10,7 +10,7 @@ import { getEventBySectionAndMethod, getSubstrateErrors } from 'helpers/bridge/p
 import { useIssuePallet } from 'hooks/bridge/pendulum/useIssuePallet';
 import useSpacewalkBridge from 'hooks/bridge/pendulum/useSpacewalkBridge';
 import { useCallback, useMemo, useState } from 'react';
-import { BASE_FEE, Memo, Operation, TransactionBuilder } from 'stellar-sdk';
+import { Box, Button, MenuItem, Select, TextField } from 'soroswap-ui';
 import { BridgeButton } from '../BridgeButton';
 
 export type IssueFormValues = {

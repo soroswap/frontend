@@ -1,8 +1,8 @@
-import { Asset } from 'stellar-sdk';
-import { BridgeChains } from 'components/Bridge/BridgeComponent';
 import { useSorobanReact } from '@soroban-react/core';
-import { SpacewalkCodeToSymbol } from './useSpacewalkVaults';
+import { Asset } from '@stellar/stellar-sdk';
+import { BridgeChains } from 'components/Bridge/BridgeComponent';
 import { useAllTokens } from 'hooks/tokens/useAllTokens';
+import { SpacewalkCodeToSymbol } from './useSpacewalkVaults';
 
 interface UseGetAssetInfoProps {
   asset: Asset | undefined;

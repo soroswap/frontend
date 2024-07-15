@@ -1,15 +1,14 @@
-import { useContext, useState, useEffect } from 'react';
+import { useContext, useEffect, useState } from 'react';
 
-import { Box, CircularProgress, Modal, useMediaQuery } from 'soroswap-ui';
-import { styled, useTheme } from 'soroswap-ui';
 import { useSorobanReact } from '@soroban-react/core';
+import { Connector } from '@soroban-react/types';
+import { ButtonPrimary } from 'components/Buttons/Button';
 import { AppContext } from 'contexts';
 import Image from 'next/image';
-import ModalBox from './ModalBox';
-import { ButtonPrimary } from 'components/Buttons/Button';
 import { AlertCircle } from 'react-feather';
-import { Connector } from '@soroban-react/types';
 import { walletConnectors } from 'soroban/MySorobanReactProvider';
+import { Box, CircularProgress, Modal, styled, useMediaQuery, useTheme } from 'soroswap-ui';
+import ModalBox from './ModalBox';
 
 const Title = styled('div')`
   font-size: 24px;
@@ -114,7 +113,7 @@ const ConnectWalletContent = ({
 
   const connectWallet = async (wallet: Connector) => {
     try {
-      await setActiveConnectorAndConnect?.(wallet);
+      setActiveConnectorAndConnect?.(wallet);
       setConnectWalletModalOpen(false);
     } catch (err) {
       const errorMessage = `${err}`;

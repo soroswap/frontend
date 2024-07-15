@@ -2,12 +2,12 @@ import { ApiPromise } from '@polkadot/api';
 import { UInt, u128 } from '@polkadot/types';
 import type { Enum, Struct, u8 } from '@polkadot/types-codec';
 import { U8aFixed } from '@polkadot/types-codec';
+import { Asset, Keypair } from '@stellar/stellar-sdk';
 import { TenantName } from 'BridgeStateProvider/models';
 import BigNumber from 'bignumber.js';
 import bs58 from 'bs58';
 import { SpacewalkCodeToSymbol, SpacewalkStellarAssetType } from 'hooks/bridge/pendulum/useSpacewalkVaults';
 import { DateTime } from 'luxon';
-import { Asset, Keypair } from 'stellar-sdk';
 import { convertRawHexKeyToPublicKey } from './stellar';
 
 interface SpacewalkPrimitivesCurrencyId extends Enum {
