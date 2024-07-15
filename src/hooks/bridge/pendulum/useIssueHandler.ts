@@ -5,15 +5,15 @@ import {
 
 import { useInkathon } from '@scio-labs/use-inkathon';
 import { useSorobanReact } from '@soroban-react/core';
+import { Asset, BASE_FEE, Memo, Operation, TransactionBuilder } from '@stellar/stellar-sdk';
 import BigNumber from 'bignumber.js';
+import { IssueStepsByKeys, StepKeys } from 'components/Bridge/BridgeSteps';
 import { deriveShortenedRequestId } from 'helpers/bridge/pendulum/spacewalk';
 import { getEventBySectionAndMethod, getSubstrateErrors } from 'helpers/bridge/pendulum/substrate';
 import { useIssuePallet } from 'hooks/bridge/pendulum/useIssuePallet';
 import { useCallback, useMemo, useState } from 'react';
-import { Asset, BASE_FEE, Memo, Operation, TransactionBuilder } from 'stellar-sdk';
-import { VaultId } from './useSpacewalkVaults';
 import { UseStepperState } from './useModalStepper';
-import { StepKeys, IssueStepsByKeys  } from 'components/Bridge/BridgeSteps';
+import { VaultId } from './useSpacewalkVaults';
 interface Props {
   amount: string;
   selectedAsset: Asset | undefined;

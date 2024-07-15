@@ -1,4 +1,4 @@
-import { Box, Modal, Typography, styled, useMediaQuery, useTheme } from 'soroswap-ui';
+import { Asset } from '@stellar/stellar-sdk';
 import Column from 'components/Column';
 import {
   Aligner,
@@ -10,7 +10,7 @@ import CurrencyLogo from 'components/Logo/CurrencyLogo';
 import { RowFixed } from 'components/Row';
 import { useGetBridgeAssetInfo } from 'hooks/bridge/pendulum/useGetBridgeAssetInfo';
 import useBoolean from 'hooks/useBoolean';
-import { Asset } from 'stellar-sdk';
+import { Box, Modal, Typography, styled, useMediaQuery, useTheme } from 'soroswap-ui';
 import { opacify } from 'themes/utils';
 import BridgeAssetItem from './BridgeAssetItem';
 import { BridgeChains } from './BridgeComponent';

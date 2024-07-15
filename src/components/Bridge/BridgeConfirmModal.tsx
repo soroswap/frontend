@@ -1,16 +1,15 @@
-import { Box, Modal, Typography, useTheme } from 'soroswap-ui';
 import { SubmittableExtrinsic } from '@polkadot/api/promise/types';
+import { Asset } from '@stellar/stellar-sdk';
 import BigNumber from 'bignumber.js';
 import { useEffect, useMemo, useState } from 'react';
 import { AlertTriangle, Info } from 'react-feather';
-import { Asset } from 'stellar-sdk';
+import { Box, Modal, Typography, useTheme } from 'soroswap-ui';
 
 import { nativePendulumToDecimal, nativeStellarToDecimal } from 'helpers/bridge/pendulum/spacewalk';
 import { useGetBridgeAssetInfo } from 'hooks/bridge/pendulum/useGetBridgeAssetInfo';
 import { useSpacewalkFees } from 'hooks/bridge/pendulum/useSpacewalkFees';
 import { UseBooleanReturnProps } from 'hooks/useBoolean';
 
-import { Step, StepContent, StepLabel, Stepper } from 'soroswap-ui';
 import { ButtonPrimary } from 'components/Buttons/Button';
 import { CloseButton } from 'components/Buttons/CloseButton';
 import { AutoColumn } from 'components/Column';
@@ -24,6 +23,7 @@ import {
 import { ButtonText, SubHeaderLarge, SubHeaderSmall } from 'components/Text';
 import { MouseoverTooltip } from 'components/Tooltip';
 import { ConfirmedIcon } from 'components/TransactionConfirmationModal/ModalStyles';
+import { Step, StepContent, StepLabel, Stepper } from 'soroswap-ui';
 import BridgeAssetItem from './BridgeAssetItem';
 import { BridgeChains } from './BridgeComponent';
 import { ModalContentWrapper } from './BridgeSelector';

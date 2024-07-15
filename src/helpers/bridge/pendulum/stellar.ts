@@ -1,6 +1,6 @@
+import { Asset, Keypair, StrKey } from '@stellar/stellar-sdk';
 import BigNumber from 'bignumber.js';
 import { Buffer } from 'buffer';
-import { Asset, Keypair, StrKey } from 'stellar-sdk';
 
 // Applying this assignment to the global object here - because Buffer is used only in this file. If Buffer is to be used in several places - it should be added to the global object in the entry file of the application.
 // Ref: https://github.com/pendulum-chain/portal/issues/344

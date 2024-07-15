@@ -1,6 +1,6 @@
+import { Asset } from '@stellar/stellar-sdk';
 import BigNumber from 'bignumber.js';
 import { BridgeChains } from './BridgeComponent';
-import { Asset } from 'stellar-sdk';
 
 export interface StepType {
   label: string;

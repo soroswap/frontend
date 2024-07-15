@@ -1,10 +1,10 @@
 import { useSorobanReact } from '@soroban-react/core';
+import { Asset } from '@stellar/stellar-sdk';
 import { TenantName } from 'BridgeStateProvider/models';
 import { convertCurrencyToStellarAsset, shouldFilterOut } from 'helpers/bridge/pendulum/spacewalk';
 import { stringifyStellarAsset } from 'helpers/bridge/pendulum/stellar';
 import _ from 'lodash-es';
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
-import { Asset } from 'stellar-sdk';
 import {
   ExtendedSpacewalkVault,
   SpacewalkCodeToSymbol,
