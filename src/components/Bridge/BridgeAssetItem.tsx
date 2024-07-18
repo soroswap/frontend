@@ -1,8 +1,8 @@
-import { Asset } from 'stellar-sdk';
+import { Asset } from '@stellar/stellar-sdk';
+import CurrencyLogo from 'components/Logo/CurrencyLogo';
+import { useGetBridgeAssetInfo } from 'hooks/bridge/pendulum/useGetBridgeAssetInfo';
 import { Box, Typography } from 'soroswap-ui';
 import { BridgeChains } from './BridgeComponent';
-import { useGetBridgeAssetInfo } from 'hooks/bridge/pendulum/useGetBridgeAssetInfo';
-import CurrencyLogo from 'components/Logo/CurrencyLogo';
 
 export const BridgeAssetItem = ({
   asset,
