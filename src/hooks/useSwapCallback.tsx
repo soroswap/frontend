@@ -69,6 +69,11 @@ export const getSwapAmounts = ({
   const routerMethod =
     tradeType == TradeType.EXACT_INPUT ? RouterMethod.SWAP_EXACT_IN : RouterMethod.SWAP_EXACT_OUT;
 
+  const aggregatorMethod =
+    tradeType == TradeType.EXACT_INPUT
+      ? AggregatorMethod.SWAP_EXACT_IN
+      : AggregatorMethod.SWAP_EXACT_OUT;
+
   const factorLess = BigNumber(100).minus(allowedSlippage).dividedBy(100);
   const factorMore = BigNumber(100).plus(allowedSlippage).dividedBy(100);
 
@@ -82,7 +87,7 @@ export const getSwapAmounts = ({
       ? BigNumber(outputAmount).multipliedBy(factorLess).decimalPlaces(0)
       : BigNumber(inputAmount).multipliedBy(factorMore).decimalPlaces(0);
 
-  return { amount0, amount1, routerMethod };
+  return { amount0, amount1, routerMethod, aggregatorMethod };
 };
 
 export type SuccessfullSwapResponse = StellarSdk.SorobanRpc.Api.GetSuccessfulTransactionResponse &
@@ -113,7 +118,7 @@ export function useSwapCallback(
     if (!address || !activeChain) throw new Error('wallet must be connected to swap');
     if (!trade.tradeType) throw new Error('tradeType must be defined');
 
-    const { amount0, amount1, routerMethod } = getSwapAmounts({
+    const { amount0, amount1, routerMethod, aggregatorMethod } = getSwapAmounts({
       tradeType: trade.tradeType,
       inputAmount: trade.inputAmount?.value as string,
       outputAmount: trade.outputAmount?.value as string,
@@ -128,22 +133,34 @@ export function useSwapCallback(
         console.log('USING AGGREGATOR');
         if (!isUsingAggregator) throw Error('Non distribution');
         const dexDistributionScValVec = dexDistributionParser(trade?.distribution);
-        console.log('🚀 « dexDistributionScValVec:', dexDistributionScValVec);
+
+        console.log({
+          aggparams: [
+            trade.inputAmount?.currency?.contract, //token_in
+            trade.outputAmount?.currency?.contract, //token_out
+            amount0, // amount_in - amount_out
+            amount1, // amount_out_min - amount_in_max
+            trade?.distribution, // proxy_addresses: Vec<ProxyAddressPair>,
+            address, //admin: Address,
+            getCurrentTimePlusOneHour(), //deadline
+          ],
+        });
 
         const aggregatorSwapParams: StellarSdk.xdr.ScVal[] = [
-          new StellarSdk.Address(trade.inputAmount?.currency.contract ?? '').toScVal(), //_from_token: Address,
-          new StellarSdk.Address(trade.outputAmount?.currency.contract ?? '').toScVal(), //_dest_token: Address,
-          amount0ScVal,
-          amount1ScVal,
+          new StellarSdk.Address(trade.inputAmount?.currency?.contract ?? '').toScVal(), //token_in
+          new StellarSdk.Address(trade.outputAmount?.currency?.contract ?? '').toScVal(), //token_out
+          amount0ScVal, // amount_in - amount_out
+          amount1ScVal, // amount_out_min - amount_in_max
           dexDistributionScValVec, // proxy_addresses: Vec<ProxyAddressPair>,
           new StellarSdk.Address(address).toScVal(), //admin: Address,
           StellarSdk.nativeToScVal(getCurrentTimePlusOneHour()), //deadline
         ];
+
         console.log('🚀 « aggregatorSwapParams:', aggregatorSwapParams);
 
         try {
           const result = (await aggregatorCallback(
-            AggregatorMethod.SWAP,
+            aggregatorMethod,
             aggregatorSwapParams,
             !simulation,
           )) as StellarSdk.SorobanRpc.Api.GetTransactionResponse;
@@ -168,6 +185,7 @@ export function useSwapCallback(
 
           return { ...result, switchValues };
         } catch (error) {
+          console.log({ error });
           if (error instanceof Error) {
             const parsedError = extractContractError(error.message);
             throw parsedError;

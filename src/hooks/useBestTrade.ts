@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { TradeType as SdkTradeType } from 'soroswap-router-sdk';
 import { InterfaceTrade, QuoteState, TradeState, TradeType } from 'state/routing/types';
 import useSWR from 'swr';
+import { useAggregator } from './useAggregator';
 
 const TRADE_NOT_FOUND = {
   state: TradeState.NO_ROUTE_FOUND,
@@ -77,6 +78,8 @@ export function useBestTrade(
   const [inputAmount, setInputAmount] = useState<CurrencyAmount | undefined>();
   const [outputAmount, setOutputAmount] = useState<CurrencyAmount | undefined>();
 
+  const { isEnabled: isAggregatorEnabled } = useAggregator();
+
   useEffect(() => {
     if (!data || !currencyIn || !currencyOut) return;
 
@@ -104,22 +107,41 @@ export function useBestTrade(
       const result = data.trade as {
         amountInMax: string;
         amountOut: string;
+        amountIn: string;
+        amountOutMin: string;
         path: string[];
       };
 
-      setInputAmount({
-        value: result?.amountInMax,
-        currency: currencyIn,
-      });
+      if (isAggregatorEnabled) {
+        /*Work around for the aggregator as routeSplit only returns 
+        amountIn and amountOutMin - we should fix this in the router-sdk
+        */
 
-      setOutputAmount({
-        value: result?.amountOut,
-        currency: currencyOut,
-      });
+        setInputAmount({
+          value: result?.amountOutMin,
+          currency: currencyIn,
+        });
+        setOutputAmount({
+          value: result?.amountIn,
+          currency: currencyOut,
+        });
 
-      setExpectedAmount(result?.amountInMax);
+        setExpectedAmount(result?.amountOutMin);
+      } else {
+        setInputAmount({
+          value: result?.amountInMax,
+          currency: currencyIn,
+        });
+
+        setOutputAmount({
+          value: result?.amountOut,
+          currency: currencyOut,
+        });
+
+        setExpectedAmount(result?.amountInMax);
+      }
     }
-  }, [data, currencyIn, currencyOut, tradeType]);
+  }, [data, currencyIn, currencyOut, tradeType, isAggregatorEnabled]);
 
   const trade: InterfaceTrade = useMemo(() => {
     const baseTrade = {

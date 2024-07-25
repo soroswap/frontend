@@ -22,6 +22,7 @@ export const fetchAllSoroswapPairs = async (networkPassphrase: string) => {
       network: networkName,
     },
   });
+
   return data;
 };
 

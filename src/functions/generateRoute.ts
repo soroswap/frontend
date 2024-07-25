@@ -33,7 +33,7 @@ export const useRouterSDK = () => {
   const router = useMemo(() => {
     const protocols = [Protocols.SOROSWAP];
 
-    if (isAggregator) protocols.push(Protocols.PHOENIX);
+    // if (isAggregator) protocols.push(Protocols.PHOENIX);
 
     return new Router({
       getPairsFns: shouldUseBackend
@@ -53,7 +53,7 @@ export const useRouterSDK = () => {
       network,
       maxHops,
     });
-  }, [network, maxHops, isAggregator]);
+  }, [network, maxHops]);
 
   const fromAddressToToken = (address: string) => {
     return new Token(network, address, 18);
@@ -84,7 +84,6 @@ export const useRouterSDK = () => {
       return router.routeSplit(currencyAmount, quoteCurrency, tradeType);
     }
 
-    // console.log('returning route');
     return router.route(currencyAmount, quoteCurrency, tradeType, factory, sorobanContext as any);
   };
 
