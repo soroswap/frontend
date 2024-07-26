@@ -7797,10 +7797,10 @@ soroban-client@1.0.0-beta.4:
     stellar-base v10.0.0-beta.4
     urijs "^1.19.1"
 
-soroswap-router-sdk@^1.2.9:
-  version "1.2.9"
-  resolved "https://registry.yarnpkg.com/soroswap-router-sdk/-/soroswap-router-sdk-1.2.9.tgz#89eb7eb10e8ae7ca1f2bd36620d82ce0f65f6faf"
-  integrity sha512-rcN1KGh+gMFFTugGpbDhdsGV8ePB9IV3E7AzoeXaKr+spCU4UU0kcvpSmpG9BZwjjoQvWxf9gce7AI1KIEUDYg==
+soroswap-router-sdk@^1.2.10:
+  version "1.2.10"
+  resolved "https://registry.yarnpkg.com/soroswap-router-sdk/-/soroswap-router-sdk-1.2.10.tgz#401aab42b41c974459f9a0874a34868339c5dc6b"
+  integrity sha512-Ucm9G9ZCgEC/P1mgZppGjPOzpotpUHa9vw/4gkfC153qvZGiT6RrLnmu2sxejaWT7e96MHkSV9Cc0qCQIYllvw==
   dependencies:
     "@stellar/stellar-sdk" "^11.3.0"
     axios "^1.6.5"
