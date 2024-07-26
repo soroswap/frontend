@@ -1,10 +1,10 @@
+import { calculateSwapFees } from 'functions/getNetworkFees';
+import { InterfaceTrade } from 'state/routing/types';
 import { SorobanContextType, useSorobanReact } from '@soroban-react/core';
 import { xlmTokenList } from 'constants/xlmToken';
 import { useRouterSDK } from 'functions/generateRoute';
-import { calculateSwapFees } from 'functions/getNetworkFees';
 import { TokenType } from 'interfaces';
 import { TradeType } from 'soroswap-router-sdk';
-import { InterfaceTrade } from 'state/routing/types';
 import useSWRImmutable from 'swr/immutable';
 
 type Currencies = {
@@ -17,7 +17,6 @@ const fetchNetworkFees = async (
   sorobanContext: SorobanContextType,
 ) => {
   if (!trade || !sorobanContext) return 0;
-
   const fees = await calculateSwapFees(sorobanContext, trade);
   return fees ? Number(fees) / 10 ** 7 : 0;
 };
@@ -48,18 +47,17 @@ const useSwapNetworkFees = (trade: InterfaceTrade | undefined, currencies: Curre
   const buildTradeWithOneXlmAsInput = async (): Promise<InterfaceTrade | undefined> => {
     const valueOfOne = '10000000';
 
-    const currencyA = currencies.INPUT;
+    const currencyA = { currency: currencies.INPUT! as TokenType, value: '0' };
     const currencyB = currencies.OUTPUT;
 
     if (!currencyA || !currencyB) return undefined;
 
     const result = await generateRoute({
-      amountTokenAddress: currencyA.contract,
-      quoteTokenAddress: currencyB.contract,
+      amountAsset: currencyA,
+      quoteAsset: currencyB,
       amount: valueOfOne,
       tradeType: TradeType.EXACT_INPUT,
     });
-
     if (!result) return undefined;
 
     const outputAmount = result?.trade.amountOutMin || '0';
@@ -67,7 +65,7 @@ const useSwapNetworkFees = (trade: InterfaceTrade | undefined, currencies: Curre
     const trade: InterfaceTrade = {
       inputAmount: {
         value: valueOfOne,
-        currency: currencyA,
+        currency: currencyA.currency!,
       },
       outputAmount: {
         value: outputAmount,
@@ -75,6 +73,7 @@ const useSwapNetworkFees = (trade: InterfaceTrade | undefined, currencies: Curre
       },
       path: result?.trade.path,
       tradeType: TradeType.EXACT_INPUT,
+      platform: result.platform,
     };
 
     return trade;
@@ -88,7 +87,7 @@ const useSwapNetworkFees = (trade: InterfaceTrade | undefined, currencies: Curre
   const tradeToBeUsed = output.data || trade;
 
   const { data, error, isLoading, mutate } = useSWRImmutable(
-    tradeToBeUsed ? ['swap-network-fees', sorobanContext] : null,
+    tradeToBeUsed ? ['swap-network-fees', sorobanContext, tradeToBeUsed] : null,
     ([key, sorobanContext]) => fetchNetworkFees(tradeToBeUsed, sorobanContext),
   );
 

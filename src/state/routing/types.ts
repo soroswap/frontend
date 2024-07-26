@@ -233,14 +233,22 @@ export enum TradeType {
   EXACT_INPUT = 'EXACT_INPUT',
   EXACT_OUTPUT = 'EXACT_OUTPUT',
 }
+
+export enum PlatformType {
+  AGGREGATOR = 'Soroswap Aggregator',
+  ROUTER = 'Soroswap Router',
+  STELLAR_CLASSIC = 'SDEX',
+}
+
 export type InterfaceTrade = {
   inputAmount: CurrencyAmount | undefined;
   outputAmount: CurrencyAmount | undefined;
   tradeType: TradeType | undefined;
   path: string[] | undefined;
   distribution?: DexDistribution[] | undefined;
-  priceImpact?: Percent | undefined;
+  priceImpact?: Percent | Number | undefined;
   [x: string]: any;
+  platform?: PlatformType;
 };
 
 export enum QuoteState {
