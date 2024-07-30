@@ -141,7 +141,7 @@ export const useRouterSDK = () => {
         quoteCurrency,
         tradeType,
         factory,
-        sorobanContext as SorobanContextType,
+        sorobanContext as any,
       ).then((response)=>{
           if(!response) return undefined;
           const result = {
