@@ -31,14 +31,22 @@ export function TradeSummary({
   trade: Pick<InterfaceTrade, 'inputAmount' | 'outputAmount'>;
 }) {
   const getSwappedAmounts = () => {
-    let input = '0';
-    let output = '0';
+    let input = 0;
+    let output = 0;
     if (swapResult && swapResult?.switchValues) {
-      input = swapResult?.switchValues?.[0];
-      output = swapResult?.switchValues?.[swapResult?.switchValues?.length - 1];
+      if (Array.isArray(swapResult?.switchValues?.[0])) {
+        for (let i = 0; i < swapResult?.switchValues.length; i++) {
+          const values = swapResult?.switchValues[i];
+          input += Number(values[0]);
+          output += Number(values[values.length - 1]);
+        }
+      } else {
+        input = Number(swapResult?.switchValues?.[0]);
+        output = Number(swapResult?.switchValues?.[swapResult?.switchValues?.length - 1]);
+      }
     } else {
-      input = trade?.inputAmount?.value ?? '0';
-      output = trade?.outputAmount?.value ?? '0';
+      input = Number(trade?.inputAmount?.value ?? '0');
+      output = Number(trade?.outputAmount?.value ?? '0');
     }
 
     const formattedInput = formatTokenAmount(input);

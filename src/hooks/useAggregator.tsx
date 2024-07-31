@@ -16,13 +16,13 @@ export const useAggregator = () => {
 
     if (activeChain?.id == 'mainnet') {
       //TODO: Add mainnet aggregator address
-      setAddress('CD4NUEFTQU53SM7LPAQX5RHJOWOLOHRBM4HCNGA7UBQJ6MPIJNVGYEVL');
+      setAddress('CA4VZX7N577XGPSKDG4RT24CZ6XGR37TM2652SO2AASERVUWP72N4UGZ');
       setIsAggregatorEnabled(false && shouldUseAggregator);
     } else if (activeChain?.id == 'testnet') {
-      setAddress('CD4NUEFTQU53SM7LPAQX5RHJOWOLOHRBM4HCNGA7UBQJ6MPIJNVGYEVL');
+      setAddress('CA4VZX7N577XGPSKDG4RT24CZ6XGR37TM2652SO2AASERVUWP72N4UGZ');
       setIsAggregatorEnabled(true && shouldUseAggregator);
     } else {
-      setAddress('CD4NUEFTQU53SM7LPAQX5RHJOWOLOHRBM4HCNGA7UBQJ6MPIJNVGYEVL');
+      setAddress('CA4VZX7N577XGPSKDG4RT24CZ6XGR37TM2652SO2AASERVUWP72N4UGZ');
       setIsAggregatorEnabled(false && shouldUseAggregator);
     }
   }, [activeChain?.id, sorobanContext]);

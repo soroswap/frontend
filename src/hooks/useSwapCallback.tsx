@@ -70,6 +70,11 @@ export const getSwapAmounts = ({
   const routerMethod =
     tradeType == TradeType.EXACT_INPUT ? RouterMethod.SWAP_EXACT_IN : RouterMethod.SWAP_EXACT_OUT;
 
+  const aggregatorMethod =
+    tradeType == TradeType.EXACT_INPUT
+      ? AggregatorMethod.SWAP_EXACT_IN
+      : AggregatorMethod.SWAP_EXACT_OUT;
+
   const factorLess = BigNumber(100).minus(allowedSlippage).dividedBy(100);
   const factorMore = BigNumber(100).plus(allowedSlippage).dividedBy(100);
 
@@ -83,7 +88,7 @@ export const getSwapAmounts = ({
       ? BigNumber(outputAmount).multipliedBy(factorLess).decimalPlaces(0)
       : BigNumber(inputAmount).multipliedBy(factorMore).decimalPlaces(0);
 
-  return { amount0, amount1, routerMethod };
+  return { amount0, amount1, routerMethod, aggregatorMethod };
 };
 
 export type SuccessfullSwapResponse = StellarSdk.SorobanRpc.Api.GetSuccessfulTransactionResponse &
@@ -118,7 +123,7 @@ export function useSwapCallback(
     if (!address || !activeChain) throw new Error('wallet must be connected to swap');
     if (!trade.tradeType) throw new Error('tradeType must be defined');
 
-    const { amount0, amount1, routerMethod } = getSwapAmounts({
+    const { amount0, amount1, routerMethod, aggregatorMethod } = getSwapAmounts({
       tradeType: trade.tradeType,
       inputAmount: trade.inputAmount?.value as string,
       outputAmount: trade.outputAmount?.value as string,
@@ -189,7 +194,7 @@ export function useSwapCallback(
 
         try {
           const result = (await aggregatorCallback(
-            AggregatorMethod.SWAP,
+            aggregatorMethod,
             aggregatorSwapParams,
             !simulation,
           )) as StellarSdk.SorobanRpc.Api.GetTransactionResponse;
@@ -203,12 +208,19 @@ export function useSwapCallback(
 
           const switchValues: string[] = scValToJs(result.returnValue!);
 
-          const currencyA = switchValues?.[0];
-          const currencyB = switchValues?.[switchValues?.length - 1];
+          let currencyA = 0;
+          let currencyB = 0;
 
-          const notificationMessage = `${formatTokenAmount(currencyA ?? '0')} ${trade?.inputAmount
-            ?.currency.code} for ${formatTokenAmount(currencyB ?? '0')} ${trade?.outputAmount
-            ?.currency.code}`;
+          for (let i = 0; i < switchValues.length; i++) {
+            const values = switchValues[i];
+
+            currencyA += Number(values[0]);
+            currencyB += Number(values[values.length - 1]);
+          }
+
+          const notificationMessage = `${formatTokenAmount(currencyA)} ${trade?.inputAmount
+            ?.currency.code} for ${formatTokenAmount(currencyB)} ${trade?.outputAmount?.currency
+            .code}`;
 
           sendNotification(notificationMessage, 'Swapped', SnackbarIconType.SWAP, SnackbarContext);
 
@@ -232,7 +244,7 @@ export function useSwapCallback(
           return result!;
         } catch (error: any) {
           console.error(error);
-          throw new Error('Cannot create path payment')
+          throw new Error('Cannot create path payment');
         }
       default:
         throw new Error('Unsupported platform');

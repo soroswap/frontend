@@ -64,7 +64,7 @@ export const useRouterSDK = () => {
   const router = useMemo(() => {
     const protocols = [Protocols.SOROSWAP];
 
-    if (isAggregator) protocols.push(Protocols.PHOENIX);
+    // if (isAggregator) protocols.push(Protocols.PHOENIX);
 
     return new Router({
       getPairsFns: shouldUseBackend
@@ -119,38 +119,31 @@ export const useRouterSDK = () => {
       tradeType,
     };
 
-    const horizonPath = await getHorizonBestPath(
-      horizonProps,
-      sorobanContext,
-    ) as BuildTradeRoute;
+    const horizonPath = (await getHorizonBestPath(horizonProps, sorobanContext)) as BuildTradeRoute;
 
     let sorobanPath: BuildTradeRoute;
     if (isAggregator) {
-      sorobanPath = (await router.routeSplit(currencyAmount, quoteCurrency, tradeType).then((response)=>{
-        if(!response) return undefined;
-        const result = {
-          ...response,
-          platform: PlatformType.ROUTER,
-        };
-        return result;
-      }
-    )) as BuildTradeRoute;
+      sorobanPath = (await router
+        .routeSplit(currencyAmount, quoteCurrency, tradeType)
+        .then((response) => {
+          if (!response) return undefined;
+          const result = {
+            ...response,
+            platform: PlatformType.AGGREGATOR,
+          };
+          return result;
+        })) as BuildTradeRoute;
     } else {
-      sorobanPath = (await router.route(
-        currencyAmount,
-        quoteCurrency,
-        tradeType,
-        factory,
-        sorobanContext as any,
-      ).then((response)=>{
-          if(!response) return undefined;
+      sorobanPath = (await router
+        .route(currencyAmount, quoteCurrency, tradeType, factory, sorobanContext as any)
+        .then((response) => {
+          if (!response) return undefined;
           const result = {
             ...response,
             platform: PlatformType.ROUTER,
           };
           return result;
-        }
-      )) as BuildTradeRoute;
+        })) as BuildTradeRoute;
     }
     const bestPath = getBestPath(horizonPath, sorobanPath, tradeType);
     // .then((res) => {
