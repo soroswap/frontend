@@ -272,6 +272,7 @@ export default function SwapCurrencyInputPanel({
               onUserInput={onUserInput}
               disabled={!chainAllowed || disabled || disableInput}
               $loading={loading}
+              data-testid={`${id}-input-panel`}
             />
           )}
         </InputRow>
