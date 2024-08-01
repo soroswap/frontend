@@ -162,7 +162,7 @@ export function useSwapCallback(
 
           const notificationMessage = `${formatTokenAmount(currencyA ?? '0')} ${trade?.inputAmount
             ?.currency.code} for ${formatTokenAmount(currencyB ?? '0')} ${trade?.outputAmount
-            ?.currency.code}`;
+              ?.currency.code}`;
 
           sendNotification(notificationMessage, 'Swapped', SnackbarIconType.SWAP, SnackbarContext);
 
@@ -208,7 +208,7 @@ export function useSwapCallback(
 
           const notificationMessage = `${formatTokenAmount(currencyA ?? '0')} ${trade?.inputAmount
             ?.currency.code} for ${formatTokenAmount(currencyB ?? '0')} ${trade?.outputAmount
-            ?.currency.code}`;
+              ?.currency.code}`;
 
           sendNotification(notificationMessage, 'Swapped', SnackbarIconType.SWAP, SnackbarContext);
 
@@ -226,12 +226,16 @@ export function useSwapCallback(
           const result = await createStellarPathPayment(trade, allowedSlippage, sorobanContext);
           const notificationMessage = `${formatTokenAmount(trade.inputAmount?.value ?? '0')} ${trade
             ?.inputAmount?.currency.code} for ${formatTokenAmount(
-            trade.outputAmount?.value ?? '0',
-          )} ${trade?.outputAmount?.currency.code}`;
+              trade.outputAmount?.value ?? '0',
+            )} ${trade?.outputAmount?.currency.code}`;
           sendNotification(notificationMessage, 'Swapped', SnackbarIconType.SWAP, SnackbarContext);
           return result!;
         } catch (error: any) {
           console.error(error);
+          // If error comes from throw new Error("Try increasing slippage"); throw that error
+          if (error.message === 'Try increasing slippage') {
+            throw error;
+          }
           throw new Error('Cannot create path payment')
         }
       default:
