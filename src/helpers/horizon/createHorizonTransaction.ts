@@ -14,14 +14,9 @@ export const createStellarPathPayment = async (trade: InterfaceTrade, allowedSli
   const account = await serverHorizon?.loadAccount(address!);
   const path = trade.path?.map((asset) => {
     const assetParts = asset.split(":")
-    console.log('🚀 ~ path ~ assetParts:', assetParts);
     if (assetParts.length == 1 && assetParts[0] == "native") {
-      console.log('🚀 ~ path ~ assetParts native:', assetParts);
-
       return Asset.native()
     }
-    console.log('🚀 ~ path ~ assetParts no native:', assetParts);
-
     return new Asset(assetParts[0], assetParts[1])
   })
 
@@ -73,7 +68,6 @@ export const createStellarPathPayment = async (trade: InterfaceTrade, allowedSli
   );
   try {
     const transactionResult = await serverHorizon?.submitTransaction(transactionToSubmit);
-    console.log('🚀 ~ createStellarPathPayment ~ transactionResult:', transactionResult);
     return transactionResult;
   } catch (e) {
     console.log("Error", e);
