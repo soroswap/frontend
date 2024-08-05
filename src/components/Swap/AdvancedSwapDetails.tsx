@@ -13,7 +13,7 @@ import { useAllTokens } from 'hooks/tokens/useAllTokens';
 import { findToken } from 'hooks/tokens/useToken';
 import React, { useEffect, useState } from 'react';
 import { Percent } from 'soroswap-router-sdk';
-import { InterfaceTrade } from 'state/routing/types';
+import { InterfaceTrade, PlatformType } from 'state/routing/types';
 
 export const PathBox = styled(Box)`
   display: flex;
@@ -47,7 +47,7 @@ export function TextWithLoadingPlaceholder({
   );
 }
 
-export const formattedPriceImpact = (priceImpact: Percent | undefined) => {
+export const formattedPriceImpact = (priceImpact: Percent | Number | undefined) => {
   if (!priceImpact) return 0;
 
   const value = priceImpact?.toFixed(3);
@@ -82,23 +82,29 @@ export function AdvancedSwapDetails({
   useEffect(() => {
     (async () => {
       if (!trade?.path || isLoading) return;
+      if (trade.platform == PlatformType.ROUTER) {
+        setPathTokensIsLoading(true);
+        const promises = trade.path.map(async (contract) => {
+          const asset = await findToken(contract, tokensAsMap, sorobanContext);
+          const code = asset?.code == 'native' ? 'XLM' : asset?.code;
+          return code;
+        });
+        const results = await Promise.allSettled(promises);
 
-      setPathTokensIsLoading(true);
-
-      const promises = trade.path.map(async (contract) => {
-        const asset = await findToken(contract, tokensAsMap, sorobanContext);
-        const code = asset?.code == 'native' ? 'XLM' : asset?.code;
-        return code;
-      });
-
-      const results = await Promise.allSettled(promises);
-
-      const fulfilledValues = results
-        .filter((result) => result.status === 'fulfilled' && result.value)
-        .map((result) => (result.status === 'fulfilled' && result.value ? result.value : ''));
-
-      setPathArray(fulfilledValues);
-      setPathTokensIsLoading(false);
+        const fulfilledValues = results
+          .filter((result) => result.status === 'fulfilled' && result.value)
+          .map((result) => (result.status === 'fulfilled' && result.value ? result.value : ''));
+        setPathArray(fulfilledValues);
+        setPathTokensIsLoading(false);
+      } else if (trade.platform == PlatformType.STELLAR_CLASSIC) {
+        setPathTokensIsLoading(true);
+        const codes = trade.path.map((address) => {
+          if (address == 'native') return 'XLM';
+          return address.split(':')[0];
+        });
+        setPathArray(codes);
+        setPathTokensIsLoading(false);
+      }
     })();
   }, [trade?.path, isLoading, sorobanContext]);
 
@@ -108,12 +114,12 @@ export function AdvancedSwapDetails({
       {networkFees != 0 && (
         <RowBetween>
           <MouseoverTooltip
-            title={'The fee paid to miners who process your transaction. This must be paid in XLM.'}
+            title={'The fee paid to process your transaction. This must be paid always in XLM.'}
           >
             <BodySmall color="textSecondary">Network fee</BodySmall>
           </MouseoverTooltip>
           <TextWithLoadingPlaceholder syncing={syncing} width={50}>
-            <BodySmall>~{networkFees} XLM</BodySmall>
+            <BodySmall display={'flex'}>~{networkFees} XLM</BodySmall>
           </TextWithLoadingPlaceholder>
         </RowBetween>
       )}
@@ -177,6 +183,14 @@ export function AdvancedSwapDetails({
           </TextWithLoadingPlaceholder>
         </RowBetween>
       }
+      {trade?.platform && (
+        <RowBetween>
+          <MouseoverTooltip title={'The platform where the swap will be made.'}>
+            <BodySmall color="textSecondary">Platform</BodySmall>
+          </MouseoverTooltip>
+          <BodySmall data-testid="swap__details__platform">{trade.platform}</BodySmall>
+        </RowBetween>
+      )}
     </Column>
   );
 }

@@ -11,11 +11,12 @@ import { scValToJs } from 'helpers/convert';
 import { formatTokenAmount } from 'helpers/format';
 import { bigNumberToI128, bigNumberToU64 } from 'helpers/utils';
 import { useContext } from 'react';
-import { InterfaceTrade, TradeType } from 'state/routing/types';
+import { InterfaceTrade, PlatformType, TradeType } from 'state/routing/types';
 import { useUserSlippageToleranceWithDefault } from 'state/user/hooks';
 import { useSWRConfig } from 'swr';
 import { AggregatorMethod, useAggregatorCallback } from './useAggregatorCallback';
 import { RouterMethod, useRouterCallback } from './useRouterCallback';
+import { createStellarPathPayment } from 'helpers/horizon/createHorizonTransaction';
 import { extractContractError } from 'functions/extractContractError';
 
 // Returns a function that will execute a swap, if the parameters are all valid
@@ -98,7 +99,7 @@ export function useSwapCallback(
 ) {
   const { SnackbarContext } = useContext(AppContext);
   const sorobanContext = useSorobanReact();
-  const { activeChain, address } = sorobanContext;
+  const { activeChain, address, activeConnector } = sorobanContext;
   const routerCallback = useRouterCallback();
   const aggregatorCallback = useAggregatorCallback();
   const allowedSlippage = useUserSlippageToleranceWithDefault(DEFAULT_SLIPPAGE_INPUT_VALUE);
@@ -108,7 +109,11 @@ export function useSwapCallback(
 
   const doSwap = async (
     simulation?: boolean,
-  ): Promise<SuccessfullSwapResponse | StellarSdk.SorobanRpc.Api.GetTransactionResponse> => {
+  ): Promise<
+    | SuccessfullSwapResponse
+    | StellarSdk.SorobanRpc.Api.GetTransactionResponse
+    | StellarSdk.Horizon.HorizonApi.SubmitTransactionResponse
+  > => {
     if (!trade) throw new Error('missing trade');
     if (!address || !activeChain) throw new Error('wallet must be connected to swap');
     if (!trade.tradeType) throw new Error('tradeType must be defined');
@@ -119,12 +124,53 @@ export function useSwapCallback(
       outputAmount: trade.outputAmount?.value as string,
       allowedSlippage: allowedSlippage,
     });
-
     const amount0ScVal = bigNumberToI128(amount0);
     const amount1ScVal = bigNumberToI128(amount1);
 
-    switch (isUsingAggregator) {
-      case true:
+    switch (trade.platform) {
+      case PlatformType.ROUTER:
+        console.log('USING ROUTER');
+        const path = trade.path?.map((address) => new StellarSdk.Address(address));
+
+        const pathScVal = StellarSdk.nativeToScVal(path);
+
+        const args = [
+          amount0ScVal,
+          amount1ScVal,
+          pathScVal, // path
+          new StellarSdk.Address(address!).toScVal(),
+          bigNumberToU64(BigNumber(getCurrentTimePlusOneHour())),
+        ];
+
+        try {
+          const result = (await routerCallback(
+            routerMethod,
+            args,
+            !simulation,
+          )) as StellarSdk.SorobanRpc.Api.GetTransactionResponse;
+
+          //if it is a simulation should return the result
+          if (simulation) return result;
+
+          if (result.status !== StellarSdk.SorobanRpc.Api.GetTransactionStatus.SUCCESS)
+            throw result;
+
+          const switchValues: string[] = scValToJs(result.returnValue!);
+
+          const currencyA = switchValues?.[0];
+          const currencyB = switchValues?.[switchValues?.length - 1];
+
+          const notificationMessage = `${formatTokenAmount(currencyA ?? '0')} ${trade?.inputAmount
+            ?.currency.code} for ${formatTokenAmount(currencyB ?? '0')} ${trade?.outputAmount
+              ?.currency.code}`;
+
+          sendNotification(notificationMessage, 'Swapped', SnackbarIconType.SWAP, SnackbarContext);
+
+          return { ...result, switchValues };
+        } catch (error) {
+          throw error;
+        }
+      case PlatformType.AGGREGATOR:
         console.log('USING AGGREGATOR');
         if (!isUsingAggregator) throw Error('Non distribution');
         const dexDistributionScValVec = dexDistributionParser(trade?.distribution);
@@ -162,7 +208,7 @@ export function useSwapCallback(
 
           const notificationMessage = `${formatTokenAmount(currencyA ?? '0')} ${trade?.inputAmount
             ?.currency.code} for ${formatTokenAmount(currencyB ?? '0')} ${trade?.outputAmount
-            ?.currency.code}`;
+              ?.currency.code}`;
 
           sendNotification(notificationMessage, 'Swapped', SnackbarIconType.SWAP, SnackbarContext);
 
@@ -175,48 +221,25 @@ export function useSwapCallback(
             throw error;
           }
         }
-      case false:
-        console.log('USING ROUTER');
-        const path = trade.path?.map((address) => new StellarSdk.Address(address));
-
-        const pathScVal = StellarSdk.nativeToScVal(path);
-
-        const args = [
-          amount0ScVal,
-          amount1ScVal,
-          pathScVal, // path
-          new StellarSdk.Address(address!).toScVal(),
-          bigNumberToU64(BigNumber(getCurrentTimePlusOneHour())),
-        ];
-
+      case PlatformType.STELLAR_CLASSIC:
         try {
-          const result = (await routerCallback(
-            routerMethod,
-            args,
-            !simulation,
-          )) as StellarSdk.SorobanRpc.Api.GetTransactionResponse;
-
-          //if it is a simulation should return the result
-          if (simulation) return result;
-
-          if (result.status !== StellarSdk.SorobanRpc.Api.GetTransactionStatus.SUCCESS)
-            throw result;
-
-          const switchValues: string[] = scValToJs(result.returnValue!);
-
-          const currencyA = switchValues?.[0];
-          const currencyB = switchValues?.[switchValues?.length - 1];
-
-          const notificationMessage = `${formatTokenAmount(currencyA ?? '0')} ${trade?.inputAmount
-            ?.currency.code} for ${formatTokenAmount(currencyB ?? '0')} ${trade?.outputAmount
-            ?.currency.code}`;
-
+          const result = await createStellarPathPayment(trade, allowedSlippage, sorobanContext);
+          const notificationMessage = `${formatTokenAmount(trade.inputAmount?.value ?? '0')} ${trade
+            ?.inputAmount?.currency.code} for ${formatTokenAmount(
+              trade.outputAmount?.value ?? '0',
+            )} ${trade?.outputAmount?.currency.code}`;
           sendNotification(notificationMessage, 'Swapped', SnackbarIconType.SWAP, SnackbarContext);
-
-          return { ...result, switchValues };
-        } catch (error) {
-          throw error;
+          return result!;
+        } catch (error: any) {
+          console.error(error);
+          // If error comes from throw new Error("Try increasing slippage"); throw that error
+          if (error.message === 'Try increasing slippage') {
+            throw error;
+          }
+          throw new Error('Cannot create path payment')
         }
+      default:
+        throw new Error('Unsupported platform');
     }
   };
 
