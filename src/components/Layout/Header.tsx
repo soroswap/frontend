@@ -9,7 +9,7 @@ import lightModeSun from 'assets/svg/lightModeSun.svg';
 import { ColorModeContext } from 'contexts';
 import ProfileSection, { ActiveChainHeaderChip } from './ProfileSection';
 
-const MainBox = styled('div')<{ isMobile: boolean }>`
+const MainBox = styled('div') <{ isMobile: boolean }>`
   display: flex;
   width: 100%;
   padding: ${({ isMobile }) => (isMobile ? '24px 15px' : '24px 75px')};
@@ -137,6 +137,21 @@ export default function Header() {
     }
     return <>{children}</>;
   };
+
+  interface NavItem {
+    href: string;
+    label: string;
+    target?: string;
+    test_id?: string;
+  }
+
+  const navItems: NavItem[] = [
+    { href: '/balance', label: 'Balance', target: '_self', test_id: 'balance__link' },
+    { href: '/swap', label: 'Swap', target: '_self', test_id: 'swap__link"' },
+    { href: '/liquidity', label: 'Liquidity', target: '_self', test_id: 'liquidity__link"' },
+    { href: '/bridge', label: 'Bridge', target: '_self', test_id: 'bridge__link"' },
+    { href: 'https://info.soroswap.finance', label: 'Info', target: '_blank', test_id: 'info__link"' },
+  ];
 
   return (
     <>
