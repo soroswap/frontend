@@ -229,7 +229,8 @@ export function useSwapCallback(
               trade.outputAmount?.value ?? '0',
             )} ${trade?.outputAmount?.currency.code}`;
           sendNotification(notificationMessage, 'Swapped', SnackbarIconType.SWAP, SnackbarContext);
-          return result!;
+          if (!result) throw new Error('Cannot create path payment')
+          return result;
         } catch (error: any) {
           console.error(error);
           // If error comes from throw new Error("Try increasing slippage"); throw that error
