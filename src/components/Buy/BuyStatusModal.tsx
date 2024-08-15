@@ -86,11 +86,13 @@ function BuyStatusModal({
               ) :
                 ((depositError === '') ? (<Stepper orientation='vertical' activeStep={activeStep} >
                   <Step>
-                    <StepLabel>
-                      Requesting authorization
+                    <StepLabel StepIconProps={{ sx: {} }}>
+                      <Typography sx={{ color: '#fff' }}>
+                        Requesting authorization
+                      </Typography>
                     </StepLabel>
                     <StepContent>
-                      <Typography>Please, confirm the transaction in your wallet to allow Soroswap send your addres to anchor.</Typography>
+                      <Typography sx={{ fontWeight: 200, fontSize: '12px' }}>Please, confirm the transaction in your wallet to allow Soroswap send your addres to anchor.</Typography>
                       <Box sx={{ mt: 4 }} textAlign={'center'}>
                         <CircularProgress />
                       </Box>
@@ -98,10 +100,12 @@ function BuyStatusModal({
                   </Step>
                   <Step>
                     <StepLabel>
-                      Fill the interactive deposit
+                      <Typography sx={{ color: '#fff' }}>
+                        Fill the interactive deposit
+                      </Typography>
                     </StepLabel>
                     <StepContent>
-                      <Typography>Please, fill the requested information in the new window and wait for the deposit</Typography>
+                      <Typography sx={{ fontWeight: 200, fontSize: '12px' }}>Please, fill the requested information in the new window and wait for the deposit</Typography>
                       <Box sx={{ mt: 4 }} textAlign={'center'}>
                         <CircularProgress />
                       </Box>
@@ -109,10 +113,12 @@ function BuyStatusModal({
                   </Step>
                   <Step>
                     <StepLabel>
-                      Await for the deposit:
+                      <Typography sx={{ color: '#fff' }}>
+                        Await for the deposit:
+                      </Typography>
                     </StepLabel>
                     <StepContent>
-                      <Typography>Everything is handled on our end. Please relax and take a break. Your funds should update automatically once the anchor completes the deposit.</Typography>
+                      <Typography sx={{ fontWeight: 200, fontSize: '12px' }}>Everything is handled on our end. Please relax and take a break. Your funds should update automatically once the anchor completes the deposit.</Typography>
                       <Box sx={{ mb: 2, pt: 4 }} textAlign={'center'}>
                         <CheckCircle data-testid="pending-modal-success-icon" strokeWidth={2} color={theme.palette.success.main} size="48px" />
                       </Box>

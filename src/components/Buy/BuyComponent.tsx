@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { CircularProgress } from '@mui/material'
+import { CircularProgress, Skeleton } from '@mui/material'
 import { setTrustline } from '@soroban-react/contracts'
 import { useSorobanReact } from '@soroban-react/core'
 import BuyModal from './BuyModal'
@@ -49,7 +49,7 @@ const anchors: anchor[] = [
   },
   {
     name: 'Anclap',
-    home_domain: 'api.anclap.com',
+    home_domain: 'api-stage.anclap.ar',
     currency: 'ARS/PEN'
   },
 ];
@@ -67,19 +67,23 @@ function BuyComponent() {
     anchorModal: {
       visible: boolean,
       selectedAnchor: anchor | undefined,
+      isLoading: boolean
     },
     assetModal: {
       visible: boolean,
       selectedAsset: anchor | undefined,
+      isLoading: boolean
     },
   }>({
     anchorModal: {
       visible: false,
       selectedAnchor: undefined,
+      isLoading: false,
     },
     assetModal: {
       visible: false,
       selectedAsset: undefined,
+      isLoading: false,
     }
   });
 
@@ -234,7 +238,7 @@ function BuyComponent() {
           clearInterval(popupCheckInterval);
         }
       }
-      let popupCheckInterval = setInterval(checkPopupClosed, 500);
+      let popupCheckInterval = setInterval(checkPopupClosed, 200);
     } catch (error: any) {
       setDepositError(error.toString());
       console.error(error);
@@ -316,9 +320,23 @@ function BuyComponent() {
 
   const fetchCurrencies = async () => {
     setIsLoading(true);
+    setModalState({
+      ...modalState,
+      assetModal: {
+        ...modalState.assetModal,
+        isLoading: true,
+      }
+    })
     const currencies = await getCurrencies(selectedAnchor?.home_domain!);
     setCurrencies(currencies);
     setIsLoading(false);
+    setModalState({
+      ...modalState,
+      assetModal: {
+        ...modalState.assetModal,
+        isLoading: false,
+      }
+    })
     handleOpen('asset');
   }
 
@@ -327,16 +345,18 @@ function BuyComponent() {
       setModalState({
         ...modalState,
         anchorModal: {
+          ...modalState.anchorModal,
           visible: true,
-          selectedAnchor: modalState.anchorModal.selectedAnchor
+          selectedAnchor: modalState.anchorModal.selectedAnchor,
         }
       });
     } else if (modal == 'asset') {
       setModalState({
         ...modalState,
         assetModal: {
+          ...modalState.assetModal,
           visible: true,
-          selectedAsset: modalState.assetModal.selectedAsset
+          selectedAsset: modalState.assetModal.selectedAsset,
         }
       });
     }
@@ -347,16 +367,18 @@ function BuyComponent() {
       setModalState({
         ...modalState,
         anchorModal: {
+          ...modalState.anchorModal,
           visible: false,
-          selectedAnchor: modalState.anchorModal.selectedAnchor
+          selectedAnchor: modalState.anchorModal.selectedAnchor,
         }
       });
     } else if (modal == 'asset') {
       setModalState({
         ...modalState,
         assetModal: {
+          ...modalState.assetModal,
           visible: false,
-          selectedAsset: modalState.anchorModal.selectedAnchor
+          selectedAsset: modalState.anchorModal.selectedAnchor,
         }
       });
     }
@@ -425,19 +447,38 @@ function BuyComponent() {
               <div>Recieve:</div>
               <Aligner>
                 <RowFixed sx={{ my: 1 }}>
-                  <StyledSelect visible='true' selected={!!selectedAsset} onClick={() => fetchCurrencies()} disabled={!!!selectedAnchor}>
-                    <StyledTokenName
-                      data-testid="Swap__Panel__Selector"
-                      sx={
-                        {
-                          paddingLeft: '4px',
+                  {modalState.assetModal.isLoading && (
+                    <Skeleton variant="rounded" animation="wave" sx={{ borderRadius: 16 }}>
+                      <StyledSelect visible='true' selected={!!selectedAsset} onClick={() => fetchCurrencies()} disabled={!!!selectedAnchor}>
+                        <StyledTokenName
+                          data-testid="Swap__Panel__Selector"
+                          sx={
+                            {
+                              paddingLeft: '4px',
+                            }
+                          }
+                        >
+                          {selectedAsset ? selectedAsset.code : 'Select asset'}
+                        </StyledTokenName>
+                        {<StyledDropDown selected={!!selectedAsset} />}
+                      </StyledSelect>
+                    </Skeleton>
+                  )}
+                  {!modalState.assetModal.isLoading && (
+                    <StyledSelect visible='true' selected={!!selectedAsset} onClick={() => fetchCurrencies()} disabled={!!!selectedAnchor}>
+                      <StyledTokenName
+                        data-testid="Swap__Panel__Selector"
+                        sx={
+                          {
+                            paddingLeft: '4px',
+                          }
                         }
-                      }
-                    >
-                      {selectedAsset ? selectedAsset.code : 'Select asset'}
-                    </StyledTokenName>
-                    {<StyledDropDown selected={!!selectedAsset} />}
-                  </StyledSelect>
+                      >
+                        {selectedAsset ? selectedAsset.code : 'Select asset'}
+                      </StyledTokenName>
+                      {<StyledDropDown selected={!!selectedAsset} />}
+                    </StyledSelect>
+                  )}
                 </RowFixed>
               </Aligner>
             </Container>
