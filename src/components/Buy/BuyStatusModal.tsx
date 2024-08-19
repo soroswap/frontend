@@ -13,8 +13,11 @@ const ContentWrapper = styled('div') <{ isMobile: boolean }>`
   gap: 24px;
   font-family: Inter;
   text-align: ${({ isMobile }) => (isMobile ? 'center' : 'left')};
-  bacjground-color: red;
 `;
+
+const stepperStyle = {
+
+};
 
 
 function BuyStatusModal({
@@ -86,7 +89,7 @@ function BuyStatusModal({
               ) :
                 ((depositError === '') ? (<Stepper orientation='vertical' activeStep={activeStep} >
                   <Step>
-                    <StepLabel StepIconProps={{ sx: {} }}>
+                    <StepLabel style={stepperStyle}>
                       <Typography sx={{ color: '#fff' }}>
                         Requesting authorization
                       </Typography>
