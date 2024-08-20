@@ -167,7 +167,7 @@ export function useSwapCallback(
 
           const notificationMessage = `${formatTokenAmount(currencyA ?? '0')} ${trade?.inputAmount
             ?.currency.code} for ${formatTokenAmount(currencyB ?? '0')} ${trade?.outputAmount
-            ?.currency.code}`;
+              ?.currency.code}`;
 
           sendNotification(notificationMessage, 'Swapped', SnackbarIconType.SWAP, SnackbarContext);
 
@@ -218,8 +218,8 @@ export function useSwapCallback(
             currencyB += Number(values[values.length - 1]);
           }
 
-          const notificationMessage = `${formatTokenAmount(currencyA)} ${trade?.inputAmount
-            ?.currency.code} for ${formatTokenAmount(currencyB)} ${trade?.outputAmount?.currency
+          const notificationMessage = `${formatTokenAmount(currencyA ?? '0')} ${trade?.inputAmount
+            ?.currency.code} for ${formatTokenAmount(currencyB ?? '0')} ${trade?.outputAmount?.currency
             .code}`;
 
           sendNotification(notificationMessage, 'Swapped', SnackbarIconType.SWAP, SnackbarContext);
@@ -238,8 +238,8 @@ export function useSwapCallback(
           const result = await createStellarPathPayment(trade, allowedSlippage, sorobanContext);
           const notificationMessage = `${formatTokenAmount(trade.inputAmount?.value ?? '0')} ${trade
             ?.inputAmount?.currency.code} for ${formatTokenAmount(
-            trade.outputAmount?.value ?? '0',
-          )} ${trade?.outputAmount?.currency.code}`;
+              trade.outputAmount?.value ?? '0',
+            )} ${trade?.outputAmount?.currency.code}`;
           sendNotification(notificationMessage, 'Swapped', SnackbarIconType.SWAP, SnackbarContext);
           return result!;
         } catch (error: any) {

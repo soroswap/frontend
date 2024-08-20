@@ -209,7 +209,7 @@ export function getHorizonBestPath(
   if (!args.amount || !args.assetFrom || !args.assetTo || !serverHorizon) return;
   if (payload.tradeType === TradeType.EXACT_INPUT) {
     try {
-      const send = serverHorizon?.strictSendPaths(args.assetFrom, args.amount, [args.assetTo])
+      const send = serverHorizon.strictSendPaths(args.assetFrom, args.amount, [args.assetTo])
         .call().then((res) => res.records);
       return send?.then((res) => {
         const maxObj = res.reduce((maxObj, obj) => {
@@ -228,7 +228,7 @@ export function getHorizonBestPath(
     }
   } else if (payload.tradeType === TradeType.EXACT_OUTPUT) {
     try {
-      const receive = serverHorizon?.strictReceivePaths([args.assetFrom!], args.assetTo!, args?.amount!)
+      const receive = serverHorizon.strictReceivePaths([args.assetTo], args.assetFrom, args.amount)
         .call().then((res) => res.records);
       return receive?.then((res) => {
         const minObj = res.reduce((minObj, obj) => {
