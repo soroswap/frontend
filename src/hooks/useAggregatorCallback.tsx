@@ -6,9 +6,10 @@ import { useCallback } from 'react';
 import { useAggregator } from './useAggregator';
 
 export enum AggregatorMethod {
-  SWAP = 'swap',
   GET_PROTOCOLS = 'get_protocols',
   IS_PROTOCOL_PAUSED = 'is_protocol_paused',
+  SWAP_EXACT_IN = 'swap_exact_tokens_for_tokens',
+  SWAP_EXACT_OUT = 'swap_tokens_for_exact_tokens',
 }
 
 // fn swap(
