@@ -32,7 +32,6 @@ export const findToken = async (
   //   decimals,
   //   icon: logo,
   // };
-  console.log("🚀 ~ token, findToken, classicAssetSearch, formattedAddress:", token, classicAssetSearch, formattedAddress)
   
   if (!token?.name || !token?.code) return undefined;
   // Here from token.name we will try to understand if this is a classic asset (even if we got a soroban contracta as address).
@@ -80,7 +79,6 @@ export function useToken(tokenAddress: string | undefined) {
       findToken(tokenAddress, tokensAsMap, sorobanContext),
   );
 
-  console.log("findToken returned ", data)
   const handleTokenRefresh = () => {
     mutate((key: any) => revalidateKeysCondition(key), undefined, { revalidate: true });
   };
@@ -96,6 +94,7 @@ export function useToken(tokenAddress: string | undefined) {
   const bothLoading = isLoading || isStellarClassicAssetLoading;
 
   const needsWrapping = !data && isStellarClassicAsset;
+  
 
   const needsWrappingOnAddLiquidity = (!data && isStellarClassicAsset) || !name;
 
@@ -117,8 +116,6 @@ export function useToken(tokenAddress: string | undefined) {
       }
     }
   }
-  console.log("🚀 ~ useToken ~ newTokenData:", newTokenData)
-  console.log("🚀 ~ useToken ~ data:", data)
 
   //if not data and AssetExists return isWrapped: false
   return {
