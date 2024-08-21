@@ -155,7 +155,7 @@ export default function MaxSlippageSettings({ autoSlippage }: { autoSlippage: nu
             }}
             isActive={isAuto}
           >
-            <Typography color={theme.palette.primary.main} component="div">
+            <Typography color={theme.palette.primary.main} component="div" data-testid='slippage-auto-button'>
               Auto
             </Typography>
           </Option>
@@ -186,14 +186,14 @@ export default function MaxSlippageSettings({ autoSlippage }: { autoSlippage: nu
       </RowBetween>
       {tooLow || tooHigh ? (
         <RowBetween gap="md">
-          <Alert severity="warning">
+          <Alert severity="warning" data-testid='slippage-alert'>
             {tooLow ? (
-              <div>
+              <div data-testid='slippage-alert-too-low'>
                 Slippage below {MINIMUM_RECOMMENDED_SLIPPAGE.toFixed(2)}% may result in a failed
                 transaction
               </div>
             ) : (
-              <div>Your transaction may be frontrun and result in an unfavorable trade.</div>
+                <div data-testid='slippage-alert-too-high'>Your transaction may be frontrun and result in an unfavorable trade.</div>
             )}
           </Alert>
         </RowBetween>
