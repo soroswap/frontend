@@ -103,15 +103,16 @@ export default function MaxSlippageSettings({ autoSlippage }: { autoSlippage: nu
 
   function setCustomSlippage() {
     // When switching to custom slippage, use `auto` value as a default.
-    setUserSlippageTolerance(autoSlippage);
     selectSlippageInput();
   }
 
-  const removeTrailingZeroes = (num: number) => {
-    return num
+  const removeTrailingZeroes = (num: number | SlippageTolerance.Auto) => {
+    if (num === SlippageTolerance.Auto) return;
+    const parsedNum = num
       .toFixed(2)
       .toString()
       .replace(/0{1,}$/, '');
+    return parsedNum[parsedNum.length - 1] === '.' ? parsedNum.slice(0, -1) : parsedNum;
   };
 
   useEffect(function () {
@@ -139,8 +140,8 @@ export default function MaxSlippageSettings({ autoSlippage }: { autoSlippage: nu
         </Row>
       }
       button={
-        <Typography color={theme.palette.primary.main}>
-          {isAuto ? <>Auto</> : `${removeTrailingZeroes(userSlippageTolerance)}%`}
+        <Typography>
+          {isAuto ? 'Auto' : `${removeTrailingZeroes(userSlippageTolerance)}%`}
         </Typography>
       }
     >
@@ -173,11 +174,11 @@ export default function MaxSlippageSettings({ autoSlippage }: { autoSlippage: nu
             onChange={(e) => parseSlippageInput(e.target.value)}
             onBlur={() => {
               // When the input field is blurred, reset the input field to the default value
-              setSlippageInput(DEFAULT_SLIPPAGE_INPUT_VALUE);
-              setSlippageError(false);
+              //setSlippageInput(DEFAULT_SLIPPAGE_INPUT_VALUE);
+              //setSlippageError(false);
             }}
             onFocus={setCustomSlippage}
-            type="number"
+            type="text"
             step="0.1"
           />
           <Typography color={theme.palette.primary.main}>%</Typography>
