@@ -146,7 +146,6 @@ describe('Input & output amount validation', () => {
     });
     //await for calcs
     cy.wait(5000);
-    cy.screenshot()
     //Get the output amount
     cy.get('[data-testid="swap-output-input-panel"]').invoke('val').as('outputAmount');
     //Get the input amount
@@ -170,7 +169,6 @@ describe('Input & output amount validation', () => {
         cy.get('.token-amount-input').type('1');
       });
       cy.wait(2500);
-      cy.screenshot()
       cy.get('[data-testid="swap-input-input-panel"]').invoke('val').then((inputAmount: any)=>{
         const belowOutput = Math.floor(parseFloat(outputAmount) * 0.5);
         const aboveOutput = Math.ceil(parseFloat(outputAmount) * 1.5);
