@@ -241,7 +241,8 @@ export function useSwapCallback(
               trade.outputAmount?.value ?? '0',
             )} ${trade?.outputAmount?.currency.code}`;
           sendNotification(notificationMessage, 'Swapped', SnackbarIconType.SWAP, SnackbarContext);
-          return result!;
+          if (!result) throw new Error('Cannot create path payment')
+          return result;
         } catch (error: any) {
           console.error(error);
           throw new Error('Cannot create path payment');
