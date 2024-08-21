@@ -121,6 +121,10 @@ interface PendingModalContentProps {
   revocationPending?: boolean;
 }
 
+interface SuccessfullSwapResponseWithSDEXHash extends SuccessfullSwapResponse {
+  hash: string;
+}
+
 interface ContentArgs {
   step: PendingConfirmModalState;
   approvalCurrency?: TokenType;
@@ -130,7 +134,7 @@ interface ContentArgs {
   wrapPending: boolean;
   tokenApprovalPending: boolean;
   revocationPending: boolean;
-  swapResult?: SuccessfullSwapResponse; //SwapResult
+  swapResult?: SuccessfullSwapResponseWithSDEXHash; //SwapResult
   chainId?: number;
   order?: any; //UniswapXOrderDetails
 }
@@ -188,7 +192,7 @@ function getContent(args: ContentArgs): PendingModalStep {
       let label: React.ReactNode | null | string = null;
 
       if (swapConfirmed && swapResult) {
-        label = <CopyTxHash txHash={swapResult?.txHash} />;
+        label = <CopyTxHash txHash={swapResult.txHash ? swapResult.txHash : swapResult.hash} />;
       } else if (swapPending) {
         label = `Proceed in your wallet`;
       }
