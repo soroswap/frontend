@@ -1,6 +1,5 @@
 // cypress/integration/navigation.ts
 
-import { is } from 'cypress/types/bluebird';
 
 //Bridge flow
 describe('Bridge flow', () => {
@@ -91,9 +90,8 @@ describe('Select tokens & input amount', () => {
     cy.wait(2500);
 
     //Get the output amount
-    cy.get('[data-testid="swap__output__panel"]').within(() => {
-      cy.get('.token-amount-input').invoke('val').as('outputAmount');
-    });
+    cy.get('[data-testid="swap-output-input-panel"]').invoke('val').as('outputAmount');
+
     cy.get('@outputAmount').should('not.be.empty');
     cy.get('@outputAmount').should('have.length.greaterThan', 7);
 
@@ -132,6 +130,63 @@ describe('Select tokens & input amount', () => {
   });
 });
 
+describe('Input & output amount validation', () => {
+  it('should type an input amount & wait for output amount', () => {
+    cy.visit('/swap');
+    //Select input asset
+/*     cy.get('[data-testid="swap__input__panel"]').within(() => {
+      cy.get('[data-testid="swap__token__select"]').click();
+    });
+    cy.get('[data-testid="currency__list__XLM"]').click();
+ */
+    //Select output asset
+    cy.get('[data-testid="swap__output__panel"]').within(() => {
+      cy.get('[data-testid="swap__token__select"]').click();
+    });
+    cy.get('[data-testid="token-search-input"]').type('ngnt');
+    cy.get('[data-testid="currency__list__NGNT"]').click();
+
+
+    //Input amount
+    cy.get('[data-testid="swap__input__panel"]').within(() => {
+      cy.get('.token-amount-input').type('1');
+    });
+    //await for calcs
+    cy.wait(5000);
+    cy.screenshot()
+    //Get the output amount
+    cy.get('[data-testid="swap-output-input-panel"]').invoke('val').as('outputAmount');
+    //Get the input amount
+    cy.get('[data-testid="swap-input-input-panel"]').invoke('val').as('inputAmount');
+
+    //Validate type in
+    cy.get('@inputAmount').should('eq', '1');
+    
+    cy.get('[data-testid="swap-output-input-panel"]').invoke('val')
+    .then((outputAmount: any) => {
+       //reselect input asset
+      cy.get('[data-testid="swap__input__panel"]').within(() => {
+        cy.get('[data-testid="swap__token__select"]').click();
+      });
+      cy.get('[data-testid="token-search-input"]').type('ngnt');
+      cy.get('[data-testid="currency__list__NGNT"]').click();
+       //Input amount
+      cy.get('[data-testid="swap__output__panel"]').within(() => {
+        cy.get('.token-amount-input').type('{backspace}');
+        cy.get('.token-amount-input').type('{backspace}');
+        cy.get('.token-amount-input').type('1');
+      });
+      cy.wait(2500);
+      cy.screenshot()
+      cy.get('[data-testid="swap-input-input-panel"]').invoke('val').then((inputAmount: any)=>{
+        const belowOutput = Math.floor(parseFloat(outputAmount) * 0.9);
+        const aboveOutput = Math.ceil(parseFloat(outputAmount) * 1.1);
+        expect(parseFloat(inputAmount)).within(belowOutput, aboveOutput)
+      })
+    })
+
+  })
+});
 // Navigation flow
 describe('Navigation flow', () => {
   it('should render the navbar', () => {
