@@ -39,6 +39,7 @@
     "@soroban-react/wallet-data": "9.1.13",
     "@soroban-react/xbull": "9.1.13",
     "@stellar/freighter-api": "1.7.1",
+    "@stellar/frontend-helpers": "^2.1.4",
     "@stellar/stellar-sdk": "12.2.0",
     "@types/qs": "^6.9.7",
     "@types/react": "18.2.33",
