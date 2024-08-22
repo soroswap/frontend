@@ -11,7 +11,7 @@ import { StyledSelect } from 'components/Layout/StyledSelect'
 import { RowFixed } from 'components/Row'
 import SwapHeader from 'components/Swap/SwapHeader'
 import { SwapSection } from 'components/Swap/SwapComponent'
-import { BodyPrimary } from 'components/Text'
+import { BodyPrimary, ButtonText } from 'components/Text'
 import { getChallengeTransaction, submitChallengeTransaction } from 'functions/buy/sep10Auth/stellarAuth'
 import { initInteractiveDepositFlow } from 'functions/buy/sep24Deposit/InteractiveDeposit'
 import { getCurrencies } from 'functions/buy/SEP-1'
@@ -31,28 +31,41 @@ export interface currency {
   status?: string;
 };
 
-const anchors: anchor[] = [
+const anchors = [
   {
-    name: 'Stellar TestAnchor 1',
-    home_domain: 'testanchor.stellar.org',
-    currency: 'SRT'
+    network: 'testnet',
+    anchors: [{
+      name: 'Stellar TestAnchor 1',
+      home_domain: 'testanchor.stellar.org',
+      currency: 'SRT'
+    },
+      {
+        name: 'MoneyGram',
+        home_domain: 'stellar.moneygram.com',
+        currency: 'USD'
+      },
+      {
+        name: 'MyKobo',
+        home_domain: 'mykobo.co',
+        currency: 'EUR'
+      },
+      {
+        name: 'Anclap',
+        home_domain: 'api-stage.anclap.ar',
+        currency: 'ARS/PEN'
+      },]
   },
   {
-    name: 'MoneyGram',
-    home_domain: 'stellar.moneygram.com',
-    currency: 'USD'
-  },
-  {
-    name: 'MyKobo',
-    home_domain: 'mykobo.co',
-    currency: 'EUR'
-  },
-  {
-    name: 'Anclap',
-    home_domain: 'api-stage.anclap.ar',
-    currency: 'ARS/PEN'
-  },
-];
+    network: 'mainnet',
+    anchors: [
+      {
+        name: 'Anclap',
+        home_domain: 'api-stage.anclap.ar',
+        currency: 'ARS/PEN'
+      }
+    ]
+  }
+]
 
 function BuyComponent() {
   const sorobanContext = useSorobanReact();
@@ -300,6 +313,10 @@ function BuyComponent() {
     }
   }
 
+  const getAnchors = () => {
+    return anchors.find((anchor) => anchor.network === activeChain?.id)?.anchors;
+  }
+
   useEffect(() => {
     checkTrustline();
   }, [selectedAsset, address, activeChain, selectedAnchor, activeConnector])
@@ -408,7 +425,7 @@ function BuyComponent() {
         depositError={statusModalState.status.depositError} />
       <BuyModal
         isOpen={modalState.anchorModal.visible}
-        anchors={anchors}
+        anchors={getAnchors()}
         onClose={() => { handleClose('anchor') }}
         handleSelect={(e) => handleSelect('anchor', e)} />
       <BuyModal
@@ -448,7 +465,7 @@ function BuyComponent() {
               <Aligner>
                 <RowFixed sx={{ my: 1 }}>
                   {modalState.assetModal.isLoading && (
-                    <Skeleton variant="rounded" animation="wave" sx={{ borderRadius: 16 }}>
+                    <Skeleton variant="rounded" animation="pulse" sx={{ borderRadius: 16 }}>
                       <StyledSelect visible='true' selected={!!selectedAsset} onClick={() => fetchCurrencies()} disabled={!!!selectedAnchor}>
                         <StyledTokenName
                           data-testid="Swap__Panel__Selector"
@@ -489,7 +506,9 @@ function BuyComponent() {
             {isLoading ?
               <CircularProgress /> :
               <BodyPrimary>
-                {buttonText}
+                <ButtonText fontSize={20} fontWeight={600}>
+                  {buttonText}
+                </ButtonText>
               </BodyPrimary>
             }
           </ButtonPrimary>) :

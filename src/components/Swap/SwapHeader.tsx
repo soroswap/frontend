@@ -3,7 +3,7 @@ import { Link, styled, useTheme } from 'soroswap-ui';
 import { RowBetween, RowFixed } from '../Row';
 import SettingsTab from '../Settings/index';
 import { useMediaQuery } from 'soroswap-ui';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 const StyledSwapHeader = styled(RowBetween)(({ theme }) => ({
   marginBottom: 10,
   color: theme.palette.secondary.main,
@@ -49,7 +49,13 @@ export default function SwapHeader({
   const [activeAction, setActiveAction] = useState<'swap' | 'buy'>('swap');
   const href = window.location.pathname;
 
-
+  useEffect(() => {
+    if (href == '/swap') {
+      setActiveAction('swap');
+    } else if (href == '/buy') {
+      setActiveAction('buy');
+    }
+  }, [href]);
 
   return (
     <StyledSwapHeader>

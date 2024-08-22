@@ -2,7 +2,7 @@ import { useEffect } from 'react'
 import ModalBox from 'components/Modals/ModalBox'
 import { styled } from 'soroswap-ui';
 import { Box, Container, Modal, useMediaQuery } from '@mui/material';
-import { BodyPrimary, BodySmall, Caption } from 'components/Text';
+import { BodyPrimary, BodySmall, Caption, SubHeaderLarge } from 'components/Text';
 import { anchor, currency } from './BuyComponent'
 
 const ContentWrapper = styled('div') <{ isMobile: boolean }>`
@@ -75,7 +75,7 @@ const BuyModal = ({
           <Container sx={{ width: 500 }}>
             <ContentWrapper isMobile={false}>
               <Box>
-                {anchors ? <h3>Pay</h3> : <h3>Receive</h3>}
+                {anchors ? <SubHeaderLarge>Pay</SubHeaderLarge> : <SubHeaderLarge>Receive</SubHeaderLarge>}
                 {anchors ? <BodySmall>Select a fiat currency to pay.</BodySmall> : <BodySmall>Select a crypto asset to receive</BodySmall>}
               </Box>
               <BoxGroup>
