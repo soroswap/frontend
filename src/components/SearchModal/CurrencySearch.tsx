@@ -86,7 +86,7 @@ export function CurrencySearch({
   const [searchQuery, setSearchQuery] = useState<string>('');
   const debouncedQuery = useDebounce(searchQuery, 200);
   const isAddressSearch = isAddress(debouncedQuery);
-  const { token: searchToken, needsWrapping } = useToken(debouncedQuery);
+  const { token: searchToken, needsWrapping, isLoading: isLoadingToken } = useToken(debouncedQuery);
   const { tokensAsMap: allTokens } = useAllTokens();
 
   const [showUserAddedTokenModal, setShowUserAddedTokenModal] = useState<boolean>(false);
@@ -237,7 +237,7 @@ export function CurrencySearch({
       )} */}
         </PaddedColumn>
         <Separator />
-        {searchToken && !isLoading ? (
+        {searchToken && !isLoading  && !isLoadingToken ? (
           <Column style={{ padding: '20px 0', height: '100%' }}>
             <CurrencyRow
               currency={searchToken}
