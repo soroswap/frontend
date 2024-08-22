@@ -9,7 +9,7 @@ Before you begin, ensure you have met the following requirements:
 
 ## 🛠 Setting Up Soroswap 🛠
 
-1. Clone the Repository
+### 1. Clone the Repository
 
     ```bash
 
@@ -17,40 +17,41 @@ Before you begin, ensure you have met the following requirements:
     cd frontend
     ```
 
-2. Set Up Environment Variables
+### 2.Set Up Environment Variables
 
-    Copy the .env.example file to create a new .env file:
+Copy the .env.example file to create a new .env file:
 
-    ```bash
-    cp .env.local.example .env
-    ```
+```bash
+cp .env.local.example .env
+```
+Edit the `.env` file and provide the following variables:
+```md
+NEXT_PUBLIC_BACKEND_URL=http://localhost:8010 // If you are following the instructions in `https://github.com/soroswap/core`
+NEXT_PUBLIC_SOROSWAP_BACKEND_URL=http://localhost:8000// Your local soroswap backend url
+NEXT_PUBLIC_SOROSWAP_BACKEND_ENABLED= false // Enables or disables the soroswap backend
+NEXT_PUBLIC_DEFAULT_NETWORK= standalone // The default network to connect
+NEXT_PUBLIC_AGGREGATOR_ENABLED= false // Enables or disables the aggregator
+NEXT_PUBLIC_SOROSWAP_BACKEND_API_KEY= BACKEND_API_KEY // The API key to autenthicate in the soroswap backend
+NEXT_PUBLIC_TRUSTLINE_WALLET_PUBLIC_KEY= STELLAR_PUBLIC_KEY// The public key of the trustline wallet
+NEXT_PUBLIC_TEST_TOKENS_ADMIN_SECRET_KEY= STELLAR_SECRET_KEY // The secret key of the test tokens admin
+```
+Hints:
+The `NEXT_PUBLIC_BACKEND_URL` should serve:
+- the list of known tokens
+- the SoroswapFactory address
+- the SoroswapRouter address
 
-    Now, edit the `.env` file and provide the `NEXT_PUBLIC_BACKEND_URL`, `NEXT_PUBLIC_SOROSWAP_BACKEND_API_KEY` and `NEXT_PUBLIC_TEST_TOKENS_ADMIN_SECRET_KEY` variables.
-    This will tell the frontend where to look for:
+The `NEXT_PUBLIC_TEST_TOKENS_ADMIN_SECRET_KEY` should be the same as the one that deployed the tokens in the `core` repository.
 
-    - the list of known tokens
-    - the SoroswapFactory address
-    - the SoroswapRouter address
-    - the admin key for token minting
+To enable or disable features like the `Soroswap backend` or the `aggregator`, switch the `NEXT_PUBLIC_SOROSWAP_BACKEND_ENABLED` and `NEXT_PUBLIC_AGGREGATOR_ENABLED` variables to `true` or `false`.
 
-    If you are following the instructions in `https://github.com/soroswap/core` in order to deploy the smart contacts in your local environment and serve the API. you should have:
-    ```bash
-    NEXT_PUBLIC_BACKEND_URL=http://localhost:8010
-    ```
-    If you don't want to use the backend, you should also set the following variable:
-    ```bash
-    NEXT_PUBLIC_SOROSWAP_BACKEND_ENABLED=false
-    ```
+Then, when you are ready for production, you can take Futurenet Contracts information from `https://api.soroswap.finance` and use the production env file:
 
-    Also, the variable `NEXT_PUBLIC_TEST_TOKENS_ADMIN_SECRET_KEY` should be the same as the one that deployed the tokens in the `core` repository.
+```bash
+cp .env.production.example .env
+```
 
-    If you are ready for production, you can take Futurenet Contracts information from `https://api.soroswap.finance` and just do
-
-    ```bash
-    cp .env.production.example .env
-    ```
-
-    ❗️❗️ Note that some Futurenet RPC's might not have the same version, so we recomend you to connect to a local quickstart node following the instructions in `https://github.com/soroswap/core`; and setting up your Freighter Wallet as in step 6.
+> [!IMPORTANT] Note that some Futurenet RPC's might not have the same version, so we strongly recomend you to connect to a local quickstart node following the instructions in `https://github.com/soroswap/core`; and setting up your Freighter Wallet as in step 6.
 
 1. Start Docker
 
