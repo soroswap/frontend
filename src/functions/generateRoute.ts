@@ -118,42 +118,42 @@ export const useRouterSDK = () => {
       amount,
       tradeType,
     };
-
-    const horizonPath = (await getHorizonBestPath(horizonProps, sorobanContext)) as BuildTradeRoute;
-
-    let sorobanPath: BuildTradeRoute;
-    if (isAggregator) {
-      sorobanPath = (await router
-        .routeSplit(currencyAmount, quoteCurrency, tradeType)
-        .then((response) => {
-          if (!response) return undefined;
-          const result = {
-            ...response,
-            platform: PlatformType.AGGREGATOR,
-          };
-          return result;
-        })) as BuildTradeRoute;
-    } else {
-      sorobanPath = (await router
-        .route(currencyAmount, quoteCurrency, tradeType, factory, sorobanContext as any)
-        .then((response) => {
-          if (!response) return undefined;
-          const result = {
-            ...response,
-            platform: PlatformType.ROUTER,
-          };
-          return result;
-        })) as BuildTradeRoute;
+    let horizonPath: BuildTradeRoute;
+    try {
+      horizonPath = (await getHorizonBestPath(horizonProps, sorobanContext)) as BuildTradeRoute;
+    } catch (error) {
+      console.error('Error getting horizon path');
     }
-    const bestPath = getBestPath(horizonPath, sorobanPath, tradeType);
-    // .then((res) => {
-    //   if (!res) return;
-    //   const response = {
-    //     ...res,
-    //     platform: PlatformType.ROUTER,
-    //   };
-    //   return response;
-    // });
+    let sorobanPath: BuildTradeRoute;
+    try{
+      if (isAggregator) {
+        sorobanPath = (await router
+          .routeSplit(currencyAmount, quoteCurrency, tradeType)
+          .then((response) => {
+            if (!response) return undefined;
+            const result = {
+              ...response,
+              platform: PlatformType.AGGREGATOR,
+            };
+            return result;
+          })) as BuildTradeRoute;
+      } else {
+        sorobanPath = (await router
+          .route(currencyAmount, quoteCurrency, tradeType, factory, sorobanContext as any)
+          .then((response) => {
+            if (!response) return undefined;
+            const result = {
+              ...response,
+              platform: PlatformType.ROUTER,
+            };
+            return result;
+          })) as BuildTradeRoute;
+      }
+    } catch (error) {
+      console.error('Error getting soroban path', error);
+    }
+
+    const bestPath = getBestPath(horizonPath!, sorobanPath!, tradeType);
 
     return bestPath;
   };
