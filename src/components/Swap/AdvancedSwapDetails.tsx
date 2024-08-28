@@ -1,11 +1,11 @@
-import { BodySmall } from 'components/Text';
+import { BodySmall, LabelSmall } from 'components/Text';
 import { Box, styled } from 'soroswap-ui';
 import { ChevronRight } from '@mui/icons-material';
 import { useSorobanReact } from '@soroban-react/core';
 import Column from 'components/Column';
 import { LoadingRows } from 'components/Loader/styled';
 import CurrencyLogo from 'components/Logo/CurrencyLogo';
-import { RowBetween, RowFixed } from 'components/Row';
+import Row, { RowBetween, RowFixed } from 'components/Row';
 import { Separator } from 'components/SearchModal/styleds';
 import { MouseoverTooltip } from 'components/Tooltip';
 import { formatTokenAmount } from 'helpers/format';
@@ -17,9 +17,9 @@ import { InterfaceTrade, PlatformType } from 'state/routing/types';
 
 export const PathBox = styled(Box)`
   display: flex;
-  align-items: center;
+  align-items: end;
   justify-content: center;
-  flex-direction: row;
+  flex-direction: column;
 `;
 
 interface AdvancedSwapDetailsProps {
@@ -27,6 +27,10 @@ interface AdvancedSwapDetailsProps {
   allowedSlippage: number;
   syncing?: boolean;
   networkFees: number | null;
+}
+interface distributionData {
+  path: string[];
+  parts: number;
 }
 
 export function TextWithLoadingPlaceholder({
@@ -76,8 +80,13 @@ export function AdvancedSwapDetails({
   const { tokensAsMap, isLoading } = useAllTokens();
 
   const [pathArray, setPathArray] = useState<string[]>([]);
-
+  const [distributionArray, setDistributionArray] = useState<distributionData[]>([]);
+  const [totalParts, setTotalParts] = useState<number>(0);
   const [pathTokensIsLoading, setPathTokensIsLoading] = useState(false);
+
+  const calculatePercentage = (parts: number) => {
+    return (parts / totalParts) * 100;
+  }
 
   useEffect(() => {
     (async () => {
@@ -104,6 +113,25 @@ export function AdvancedSwapDetails({
         });
         setPathArray(codes);
         setPathTokensIsLoading(false);
+      } else if (trade.platform == PlatformType.AGGREGATOR) {
+        if (!trade?.distribution) return;
+        let tempDistributionArray: distributionData[] = [];
+        setPathTokensIsLoading(true);
+        for (let distribution of trade?.distribution) {
+          const promises = distribution.path.map(async (contract) => {
+            const asset = await findToken(contract, tokensAsMap, sorobanContext);
+            const code = asset?.code == 'native' ? 'XLM' : asset?.code;
+            return code;
+          });
+          const results = await Promise.allSettled(promises);
+          const fulfilledValues = results
+            .filter((result) => result.status === 'fulfilled' && result.value)
+            .map((result) => (result.status === 'fulfilled' && result.value ? result.value : ''));
+          tempDistributionArray.push({ path: fulfilledValues, parts: distribution.parts });
+          setDistributionArray(tempDistributionArray);
+          setTotalParts(tempDistributionArray.reduce((acc, curr) => acc + curr.parts, 0));
+          setPathTokensIsLoading(false);
+        }
       }
     })();
   }, [trade?.path, isLoading, sorobanContext]);
@@ -161,23 +189,38 @@ export function AdvancedSwapDetails({
         </TextWithLoadingPlaceholder>
       </RowBetween>
       {
-        <RowBetween>
+        <RowBetween sx={{ alignItems: 'start' }}>
           <RowFixed>
             <MouseoverTooltip
               title={`
                   Routing through these assets resulted in the best price for your trade
                 `}
             >
-              <BodySmall color="textSecondary">Path</BodySmall>
+              <BodySmall color="textSecondary">{trade?.platform == PlatformType.AGGREGATOR && distributionArray.length > 1 ? 'Paths:' : 'Path'}</BodySmall>
             </MouseoverTooltip>
           </RowFixed>
           <TextWithLoadingPlaceholder syncing={pathTokensIsLoading} width={100}>
             <PathBox data-testid="swap__details__path">
-              {pathArray?.map((contract, index) => (
+              {(trade?.platform == PlatformType.ROUTER || trade?.platform == PlatformType.STELLAR_CLASSIC) && pathArray?.map((contract, index) => (
                 <React.Fragment key={index}>
                   {contract}
                   {index !== pathArray.length - 1 && <ChevronRight style={{ opacity: '50%' }} />}
                 </React.Fragment>
+              ))}
+              {trade?.platform == PlatformType.AGGREGATOR && distributionArray.map((distribution, index) => (
+                <Box key={index}>
+                  <Row>
+                    {distribution.path.map((symbol, index) => (
+                      <React.Fragment key={index}>
+                        <LabelSmall fontWeight={100}>{symbol}</LabelSmall>
+                        {index !== distribution.path.length - 1 && (
+                          <ChevronRight style={{ opacity: '50%' }} />
+                        )}
+                      </React.Fragment>
+                    ))}
+                    <LabelSmall fontWeight={100} sx={{ ml: 1 }}>({calculatePercentage(distribution.parts)}%)</LabelSmall>
+                  </Row>
+                </Box>
               ))}
             </PathBox>
           </TextWithLoadingPlaceholder>
