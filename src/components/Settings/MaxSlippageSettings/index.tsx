@@ -103,15 +103,16 @@ export default function MaxSlippageSettings({ autoSlippage }: { autoSlippage: nu
 
   function setCustomSlippage() {
     // When switching to custom slippage, use `auto` value as a default.
-    setUserSlippageTolerance(autoSlippage);
     selectSlippageInput();
   }
 
-  const removeTrailingZeroes = (num: number) => {
-    return num
+  const removeTrailingZeroes = (num: number | SlippageTolerance.Auto) => {
+    if (num === SlippageTolerance.Auto) return;
+    const parsedNum = num
       .toFixed(2)
       .toString()
       .replace(/0{1,}$/, '');
+    return parsedNum[parsedNum.length - 1] === '.' ? parsedNum.slice(0, -1) : parsedNum;
   };
 
   useEffect(function () {
@@ -139,8 +140,8 @@ export default function MaxSlippageSettings({ autoSlippage }: { autoSlippage: nu
         </Row>
       }
       button={
-        <Typography color={theme.palette.primary.main}>
-          {isAuto ? <>Auto</> : `${removeTrailingZeroes(userSlippageTolerance)}%`}
+        <Typography>
+          {isAuto ? 'Auto' : `${removeTrailingZeroes(userSlippageTolerance)}%`}
         </Typography>
       }
     >
@@ -154,7 +155,7 @@ export default function MaxSlippageSettings({ autoSlippage }: { autoSlippage: nu
             }}
             isActive={isAuto}
           >
-            <Typography color={theme.palette.primary.main} component="div">
+            <Typography color={theme.palette.primary.main} component="div" data-testid='slippage-auto-button'>
               Auto
             </Typography>
           </Option>
@@ -173,11 +174,11 @@ export default function MaxSlippageSettings({ autoSlippage }: { autoSlippage: nu
             onChange={(e) => parseSlippageInput(e.target.value)}
             onBlur={() => {
               // When the input field is blurred, reset the input field to the default value
-              setSlippageInput(DEFAULT_SLIPPAGE_INPUT_VALUE);
-              setSlippageError(false);
+              //setSlippageInput(DEFAULT_SLIPPAGE_INPUT_VALUE);
+              //setSlippageError(false);
             }}
             onFocus={setCustomSlippage}
-            type="number"
+            type="text"
             step="0.1"
           />
           <Typography color={theme.palette.primary.main}>%</Typography>
@@ -185,14 +186,14 @@ export default function MaxSlippageSettings({ autoSlippage }: { autoSlippage: nu
       </RowBetween>
       {tooLow || tooHigh ? (
         <RowBetween gap="md">
-          <Alert severity="warning">
+          <Alert severity="warning" data-testid='slippage-alert'>
             {tooLow ? (
-              <div>
+              <div data-testid='slippage-alert-too-low'>
                 Slippage below {MINIMUM_RECOMMENDED_SLIPPAGE.toFixed(2)}% may result in a failed
                 transaction
               </div>
             ) : (
-              <div>Your transaction may be frontrun and result in an unfavorable trade.</div>
+                <div data-testid='slippage-alert-too-high'>Your transaction may be frontrun and result in an unfavorable trade.</div>
             )}
           </Alert>
         </RowBetween>
