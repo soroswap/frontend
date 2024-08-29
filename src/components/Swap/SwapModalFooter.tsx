@@ -1,25 +1,20 @@
-import { CircularProgress, styled, useTheme } from 'soroswap-ui';
-import { useSorobanReact } from '@soroban-react/core';
-import BigNumber from 'bignumber.js';
+import { styled, useTheme } from 'soroswap-ui';
 import { ButtonError, SmallButtonPrimary } from 'components/Buttons/Button';
 import Column from 'components/Column';
 import CurrencyLogo from 'components/Logo/CurrencyLogo';
 import Row, { AutoRow, RowBetween, RowFixed } from 'components/Row';
 import { BodySmall, HeadlineSmall, SubHeaderSmall } from 'components/Text';
 import { MouseoverTooltip } from 'components/Tooltip';
-import { getPriceImpactNew2 } from 'functions/getPriceImpact';
-import { formatTokenAmount, twoDecimalsPercentage } from 'helpers/format';
-import { useAllTokens } from 'hooks/tokens/useAllTokens';
-import { findToken } from 'hooks/tokens/useToken';
-import useGetReservesByPair from 'hooks/useGetReservesByPair';
+import { formatTokenAmount } from 'helpers/format';
 import { getSwapAmounts } from 'hooks/useSwapCallback';
-import React, { ReactNode, useEffect, useState } from 'react';
-import { AlertTriangle, ChevronRight } from 'react-feather';
-import { InterfaceTrade, PlatformType, TradeType } from 'state/routing/types';
-import { PathBox, TextWithLoadingPlaceholder, formattedPriceImpact } from './AdvancedSwapDetails';
+import React, { ReactNode } from 'react';
+import { AlertTriangle } from 'react-feather';
+import { InterfaceTrade, TradeType } from 'state/routing/types';
+import { formattedPriceImpact } from './AdvancedSwapDetails';
 import { Label } from './SwapModalHeaderAmount';
 import { getExpectedAmountOfOne } from './TradePrice';
 import { SwapCallbackError, SwapShowAcceptChanges } from './styleds';
+import SwapPathComponent from './SwapPathComponent';
 
 const DetailsContainer = styled(Column)`
   padding: 0 8px;
@@ -77,12 +72,9 @@ export default function SwapModalFooter({
   // const routes = isClassicTrade(trade) ? getRoutingDiagramEntries(trade) : undefined
   // const { chainId } = useWeb3React()
   // const nativeCurrency = useNativeCurrency(chainId)
-  const { tokensAsMap, isLoading } = useAllTokens();
 
   const label = `${trade?.inputAmount?.currency.code}`;
   const labelInverted = `${trade?.outputAmount?.currency.code}`;
-
-  const sorobanContext = useSorobanReact();
 
   const getSwapValues = () => {
     if (!trade || !trade?.tradeType) return { formattedAmount0: '0', formattedAmount1: '0' };
@@ -99,39 +91,6 @@ export default function SwapModalFooter({
 
     return { formattedAmount0, formattedAmount1 };
   };
-
-  const [pathArray, setPathArray] = useState<string[]>([]);
-
-  const [pathTokensIsLoading, setPathTokensIsLoading] = useState(false);
-
-  useEffect(() => {
-    (async () => {
-      if (!trade?.path || isLoading) return;
-      if (trade.platform == PlatformType.ROUTER) {
-        setPathTokensIsLoading(true);
-        const promises = trade.path.map(async (contract) => {
-          const asset = await findToken(contract, tokensAsMap, sorobanContext);
-          const code = asset?.code == 'native' ? 'XLM' : asset?.code;
-          return code;
-        });
-        const results = await Promise.allSettled(promises);
-
-        const fulfilledValues = results
-          .filter((result) => result.status === 'fulfilled' && result.value)
-          .map((result) => (result.status === 'fulfilled' && result.value ? result.value : ''));
-        setPathArray(fulfilledValues);
-        setPathTokensIsLoading(false);
-      } else if (trade.platform == PlatformType.STELLAR_CLASSIC) {
-        setPathTokensIsLoading(true);
-        const codes = trade.path.map((address) => {
-          if (address == "native") return "XLM"
-          return address.split(":")[0]
-        })
-        setPathArray(codes);
-        setPathTokensIsLoading(false);
-      }
-    })();
-  }, [trade?.path, isLoading, sorobanContext]);
 
   return (
     <>
@@ -205,27 +164,7 @@ export default function SwapModalFooter({
             </DetailRowValue>
           </Row>
         </BodySmall>
-        <RowBetween>
-          <RowFixed>
-            <MouseoverTooltip
-              title={`
-                  Routing through these assets resulted in the best price for your trade
-                `}
-            >
-              <Label cursor="help">Path</Label>
-            </MouseoverTooltip>
-          </RowFixed>
-          <TextWithLoadingPlaceholder syncing={pathTokensIsLoading} width={100}>
-            <PathBox>
-              {pathArray?.map((contract, index) => (
-                <React.Fragment key={index}>
-                  {contract}
-                  {index !== pathArray.length - 1 && <ChevronRight style={{ opacity: '50%' }} />}
-                </React.Fragment>
-              ))}
-            </PathBox>
-          </TextWithLoadingPlaceholder>
-        </RowBetween>
+        <SwapPathComponent trade={trade} />
         {trade?.platform && (
           <RowBetween>
             <MouseoverTooltip title={'The platform where the swap will be made.'}>
