@@ -1,4 +1,4 @@
-import { SorobanContextType, useSorobanReact } from '@soroban-react/core';
+import { useSorobanReact } from '@soroban-react/core';
 import { AppContext } from 'contexts';
 import { useFactory } from 'hooks';
 import { useAggregator } from 'hooks/useAggregator';
@@ -20,7 +20,6 @@ import { getBestPath, getHorizonBestPath } from 'helpers/horizon/getHorizonPath'
 import { PlatformType } from 'state/routing/types';
 import { CurrencyAmount as AmountAsset } from 'interfaces';
 import { DexDistribution } from 'helpers/aggregator';
-import { fn } from 'cypress/types/jquery';
 
 export interface BuildTradeRoute {
   amountCurrency: AmountAsset | CurrencyAmount<Currency>;
@@ -63,7 +62,6 @@ export const useRouterSDK = () => {
   const network = sorobanContext.activeChain?.networkPassphrase as Networks;
 
   const getPairsFns = useMemo(() => {
-    console.log('Router protocols changed!')
     const routerProtocols = []
     if(!shouldUseBackend) return undefined
 //  here you should add your new supported aggregator protocols
@@ -75,7 +73,6 @@ export const useRouterSDK = () => {
         routerProtocols.push({protocol: Protocols.PHOENIX, fn: async () => fetchAllPhoenixPairs(network)});
       }
     }
-    console.log('New router protocols:', routerProtocols)
     return routerProtocols;
   }, [network, protocolsStatus]);
 
@@ -88,18 +85,20 @@ export const useRouterSDK = () => {
     }
     return newProtocols as Protocols[];
   },[protocolsStatus]);
+
   const router = useMemo(() => {
-
-    // if (isAggregator) protocols.push(Protocols.PHOENIX);
-
     return new Router({
       getPairsFns: getPairsFns,
-      pairsCacheInSeconds: 60,
+      pairsCacheInSeconds: 5,
       protocols: getProtocols,
       network,
       maxHops,
     });
-  }, [network, maxHops, isAggregator]);
+  }, [network, maxHops, isAggregator, protocolsStatus]);
+
+  const isProtocolEnabled = (protocol: any) => {
+    return protocolsStatus.find((p) => p.key === protocol)?.value;
+  }
 
   const fromAddressToToken = (address: string) => {
     return new Token(network, address, 18);
@@ -127,6 +126,9 @@ export const useRouterSDK = () => {
     );
     const quoteCurrency = fromAddressToToken(quoteAsset.contract);
 
+    const isHorizonEnabled = isProtocolEnabled(PlatformType.STELLAR_CLASSIC);
+    const isSoroswapEnabled = isProtocolEnabled(Protocols.SOROSWAP);
+
     const horizonProps = {
       assetFrom: amountAsset.currency,
       assetTo: quoteAsset,
@@ -134,12 +136,12 @@ export const useRouterSDK = () => {
       tradeType,
     };
 
-    let horizonPath;
-    if(protocolsStatus.find((protocol) => protocol.key === PlatformType.STELLAR_CLASSIC && protocol.value === true)){
+    let horizonPath: BuildTradeRoute | undefined;
+    if(isHorizonEnabled){
       horizonPath = (await getHorizonBestPath(horizonProps, sorobanContext)) as BuildTradeRoute;
     }
     
-    let sorobanPath: BuildTradeRoute;
+    let sorobanPath: BuildTradeRoute | undefined;
     if (isAggregator) {
       sorobanPath = (await router
         .routeSplit(currencyAmount, quoteCurrency, tradeType)
@@ -151,7 +153,7 @@ export const useRouterSDK = () => {
           };
           return result;
         })) as BuildTradeRoute;
-    } else {
+    } else if(isSoroswapEnabled){
       sorobanPath = (await router
         .route(currencyAmount, quoteCurrency, tradeType, factory, sorobanContext as any)
         .then((response) => {
@@ -163,6 +165,7 @@ export const useRouterSDK = () => {
           return result;
         })) as BuildTradeRoute;
     }
+
     const bestPath = getBestPath(horizonPath, sorobanPath, tradeType);
 
     return bestPath;

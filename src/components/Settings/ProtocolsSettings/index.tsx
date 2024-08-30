@@ -3,6 +3,7 @@ import QuestionHelper from 'components/QuestionHelper';
 import Row, { RowBetween } from 'components/Row';
 import { BodySmall } from 'components/Text';
 import { AppContext } from 'contexts';
+import { useRouterSDK } from 'functions/generateRoute';
 import React, { useContext, useEffect, useState } from 'react'
 import { Box, styled, Switch, SwitchProps, Typography, useTheme } from 'soroswap-ui';
 
@@ -54,28 +55,15 @@ export const CustomSwitch = styled((props: SwitchProps) => (
   },
 }));
 
-const Option = styled(Row, {
-  shouldForwardProp: (prop) => prop !== 'isActive',
-}) <{ isActive: boolean }>`
-  width: auto;
-  cursor: pointer;
-  padding: 6px 12px;
-  text-align: center;
-  gap: 4px;
-  border-radius: 12px;
-  background: ${({ isActive, theme }) =>
-    isActive ? theme.palette.customBackground.module : 'transparent'};
-  pointer-events: ${({ isActive }) => isActive && 'none'};
-`;
 
 const firstLetterUppercase = (string: string) => {
   return string.charAt(0).toUpperCase() + string.slice(1);
 }
 const ProtocolsSettings = () => {
+  const { resetRouterSdkCache } = useRouterSDK();
   const theme = useTheme();
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  const { Settings } = useContext(AppContext);
-  const { protocolsStatus, setProtocolsStatus } = Settings;
+  const { protocolsStatus, setProtocolsStatus } = useContext(AppContext).Settings;
 
   const switchProtocolValue = (key: string) => {
     const newProtocolsStatus = protocolsStatus.map((protocol) => {
@@ -87,7 +75,12 @@ const ProtocolsSettings = () => {
       }
       return protocol;
     });
-    setProtocolsStatus(newProtocolsStatus);
+    const hasTrueValue = newProtocolsStatus.some((protocol) => protocol.value);
+    if (hasTrueValue) {
+      setProtocolsStatus(newProtocolsStatus);
+      resetRouterSdkCache();
+    }
+    else return;
   }
 
   return (
@@ -120,7 +113,6 @@ const ProtocolsSettings = () => {
               </Row>
             )
           })}
-          { }
         </Box>
       </RowBetween>
 
