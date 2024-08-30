@@ -1,15 +1,16 @@
 import { Analytics } from '@vercel/analytics/react';
-import { AppContext, AppContextType, ColorModeContext, SnackbarIconType } from 'contexts';
-import { CssBaseline, ThemeProvider } from 'soroswap-ui';
+import { AppContext, AppContextType, ColorModeContext, SnackbarIconType, ProtocolsStatus } from 'contexts';
 import { Provider } from 'react-redux';
-import { theme } from 'soroswap-ui';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import InkathonProvider from 'inkathon/InkathonProvider';
 import MainLayout from './Layout/MainLayout';
 import MySorobanReactProvider from 'soroban/MySorobanReactProvider';
 import store from 'state';
 import { SorobanContextType } from '@soroban-react/core';
 import { SoroswapThemeProvider } from 'soroswap-ui';
+import { Protocols } from 'soroswap-router-sdk';
+import { PlatformType } from 'state/routing/types';
+
 export default function Providers({
   children,
   sorobanReactProviderProps,
@@ -21,6 +22,19 @@ export default function Providers({
 
   const [maxHops, setMaxHops] = useState<number>(2);
 
+  //Defines the default protocols to be used in the app
+  const defaultProtocols = [
+    Protocols.SOROSWAP
+  ]
+  const [protocols, setProtocols] = useState<Protocols[]>(defaultProtocols);
+
+  //Defines the default platforms to be used in the app
+  const defaultProtocolsStatus: ProtocolsStatus[] = [
+    { key: Protocols.SOROSWAP, value: true },
+    { key: Protocols.PHOENIX, value: false },
+    { key: PlatformType.STELLAR_CLASSIC, value: true },
+  ]
+  const [protocolsStatus, setProtocolsStatus] = useState<ProtocolsStatus[]>(defaultProtocolsStatus);
   const [openSnackbar, setOpenSnackbar] = useState<boolean>(false);
   const [snackbarMessage, setSnackbarMessage] = useState<string>('');
   const [snackbarTitle, setSnackbarTitle] = useState<string>('Swapped');
@@ -54,6 +68,10 @@ export default function Providers({
     Settings: {
       maxHops,
       setMaxHops,
+      protocols,
+      setProtocols,
+      protocolsStatus,
+      setProtocolsStatus,
     },
   };
 

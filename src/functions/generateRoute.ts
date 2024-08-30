@@ -20,6 +20,7 @@ import { getBestPath, getHorizonBestPath } from 'helpers/horizon/getHorizonPath'
 import { PlatformType } from 'state/routing/types';
 import { CurrencyAmount as AmountAsset } from 'interfaces';
 import { DexDistribution } from 'helpers/aggregator';
+import { fn } from 'cypress/types/jquery';
 
 export interface BuildTradeRoute {
   amountCurrency: AmountAsset | CurrencyAmount<Currency>;
@@ -57,30 +58,44 @@ export const useRouterSDK = () => {
   const { isEnabled: isAggregator } = useAggregator();
 
   const { Settings } = useContext(AppContext);
-  const { maxHops } = Settings;
+  const { maxHops, protocols, protocolsStatus } = Settings;
 
   const network = sorobanContext.activeChain?.networkPassphrase as Networks;
 
+  const getPairsFns = useMemo(() => {
+    console.log('Router protocols changed!')
+    const routerProtocols = []
+    if(!shouldUseBackend) return undefined
+//  here you should add your new supported aggregator protocols
+    for(let protocol of protocolsStatus){
+      if(protocol.key === Protocols.SOROSWAP && protocol.value === true){
+        routerProtocols.push({protocol: Protocols.SOROSWAP, fn: async () => fetchAllSoroswapPairs(network)});
+      }
+      if(protocol.key === Protocols.PHOENIX && protocol.value === true){
+        routerProtocols.push({protocol: Protocols.PHOENIX, fn: async () => fetchAllPhoenixPairs(network)});
+      }
+    }
+    console.log('New router protocols:', routerProtocols)
+    return routerProtocols;
+  }, [network, protocolsStatus]);
+
+  const getProtocols = useMemo(() => {
+    const newProtocols = [];
+    for(let protocol of protocolsStatus){
+      if(protocol.key != PlatformType.STELLAR_CLASSIC && protocol.value === true){
+        newProtocols.push(protocol.key);
+      }
+    }
+    return newProtocols as Protocols[];
+  },[protocolsStatus]);
   const router = useMemo(() => {
-    const protocols = [Protocols.SOROSWAP];
 
     // if (isAggregator) protocols.push(Protocols.PHOENIX);
 
     return new Router({
-      getPairsFns: shouldUseBackend
-        ? [
-            {
-              protocol: Protocols.SOROSWAP,
-              fn: async () => fetchAllSoroswapPairs(network),
-            },
-            {
-              protocol: Protocols.PHOENIX,
-              fn: async () => fetchAllPhoenixPairs(network),
-            },
-          ]
-        : undefined,
+      getPairsFns: getPairsFns,
       pairsCacheInSeconds: 60,
-      protocols: protocols,
+      protocols: getProtocols,
       network,
       maxHops,
     });
@@ -119,8 +134,11 @@ export const useRouterSDK = () => {
       tradeType,
     };
 
-    const horizonPath = (await getHorizonBestPath(horizonProps, sorobanContext)) as BuildTradeRoute;
-
+    let horizonPath;
+    if(protocolsStatus.find((protocol) => protocol.key === PlatformType.STELLAR_CLASSIC && protocol.value === true)){
+      horizonPath = (await getHorizonBestPath(horizonProps, sorobanContext)) as BuildTradeRoute;
+    }
+    
     let sorobanPath: BuildTradeRoute;
     if (isAggregator) {
       sorobanPath = (await router
@@ -146,17 +164,17 @@ export const useRouterSDK = () => {
         })) as BuildTradeRoute;
     }
     const bestPath = getBestPath(horizonPath, sorobanPath, tradeType);
-    // .then((res) => {
-    //   if (!res) return;
-    //   const response = {
-    //     ...res,
-    //     platform: PlatformType.ROUTER,
-    //   };
-    //   return response;
-    // });
 
     return bestPath;
   };
 
   return { generateRoute, resetRouterSdkCache, maxHops };
 };
+// .then((res) => {
+//   if (!res) return;
+//   const response = {
+//     ...res,
+//     platform: PlatformType.ROUTER,
+//   };
+//   return response;
+// });
