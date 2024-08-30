@@ -6,6 +6,7 @@ import { AppContext } from 'contexts';
 import { useRouterSDK } from 'functions/generateRoute';
 import React, { useContext, useEffect, useState } from 'react'
 import { Box, styled, Switch, SwitchProps, Typography, useTheme } from 'soroswap-ui';
+import { useSWRConfig } from 'swr';
 
 
 export const CustomSwitch = styled((props: SwitchProps) => (
@@ -64,6 +65,7 @@ const ProtocolsSettings = () => {
   const theme = useTheme();
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const { protocolsStatus, setProtocolsStatus } = useContext(AppContext).Settings;
+  const { mutate } = useSWRConfig();
 
   const switchProtocolValue = (key: string) => {
     const newProtocolsStatus = protocolsStatus.map((protocol) => {
@@ -77,8 +79,16 @@ const ProtocolsSettings = () => {
     });
     const hasTrueValue = newProtocolsStatus.some((protocol) => protocol.value);
     if (hasTrueValue) {
-      setProtocolsStatus(newProtocolsStatus);
       resetRouterSdkCache();
+      setProtocolsStatus(newProtocolsStatus);
+      mutate(
+        (key: any) => {
+          console.log(key)
+          return true;
+        },
+        undefined,
+        { revalidate: true },
+      );
     }
     else return;
   }
