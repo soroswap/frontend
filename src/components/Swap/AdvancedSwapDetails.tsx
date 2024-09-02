@@ -1,7 +1,6 @@
-import { BodySmall } from 'components/Text';
+import React from 'react';
+import { BodySmall, } from 'components/Text';
 import { Box, styled } from 'soroswap-ui';
-import { ChevronRight } from '@mui/icons-material';
-import { useSorobanReact } from '@soroban-react/core';
 import Column from 'components/Column';
 import { LoadingRows } from 'components/Loader/styled';
 import CurrencyLogo from 'components/Logo/CurrencyLogo';
@@ -10,19 +9,11 @@ import { Separator } from 'components/SearchModal/styleds';
 import { MouseoverTooltip } from 'components/Tooltip';
 import { formatTokenAmount } from 'helpers/format';
 import { useAllTokens } from 'hooks/tokens/useAllTokens';
-import { findToken } from 'hooks/tokens/useToken';
-import React, { useEffect, useState } from 'react';
 import { Percent } from 'soroswap-router-sdk';
-import { InterfaceTrade, PlatformType } from 'state/routing/types';
+import SwapPathComponent from './SwapPathComponent';
+import { InterfaceTrade } from 'state/routing/types';
 
-export const PathBox = styled(Box)`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: row;
-`;
-
-interface AdvancedSwapDetailsProps {
+export interface AdvancedSwapDetailsProps {
   trade: InterfaceTrade | undefined;
   allowedSlippage: number;
   syncing?: boolean;
@@ -63,6 +54,13 @@ export const formattedPriceImpact = (priceImpact: Percent | Number | undefined) 
   return `~${priceImpact?.toFixed(2)}%`;
 };
 
+export const FormattedProtocolName = (protocol: string) => {
+  return protocol.charAt(0).toUpperCase() + protocol.slice(1);
+}
+export const calculatePercentage = (parts: number, totalParts: number) => {
+  return (parts / totalParts) * 100;
+}
+
 export function AdvancedSwapDetails({
   trade,
   allowedSlippage,
@@ -72,41 +70,7 @@ export function AdvancedSwapDetails({
   // const { chainId } = useWeb3React()
   // const nativeCurrency = useNativeCurrency(chainId)
   // const txCount = getTransactionCount(trade)
-  const sorobanContext = useSorobanReact();
   const { tokensAsMap, isLoading } = useAllTokens();
-
-  const [pathArray, setPathArray] = useState<string[]>([]);
-
-  const [pathTokensIsLoading, setPathTokensIsLoading] = useState(false);
-
-  useEffect(() => {
-    (async () => {
-      if (!trade?.path || isLoading) return;
-      if (trade.platform == PlatformType.ROUTER) {
-        setPathTokensIsLoading(true);
-        const promises = trade.path.map(async (contract) => {
-          const asset = await findToken(contract, tokensAsMap, sorobanContext);
-          const code = asset?.code == 'native' ? 'XLM' : asset?.code;
-          return code;
-        });
-        const results = await Promise.allSettled(promises);
-
-        const fulfilledValues = results
-          .filter((result) => result.status === 'fulfilled' && result.value)
-          .map((result) => (result.status === 'fulfilled' && result.value ? result.value : ''));
-        setPathArray(fulfilledValues);
-        setPathTokensIsLoading(false);
-      } else if (trade.platform == PlatformType.STELLAR_CLASSIC) {
-        setPathTokensIsLoading(true);
-        const codes = trade.path.map((address) => {
-          if (address == 'native') return 'XLM';
-          return address.split(':')[0];
-        });
-        setPathArray(codes);
-        setPathTokensIsLoading(false);
-      }
-    })();
-  }, [trade?.path, isLoading, sorobanContext]);
 
   return (
     <Column gap="md">
@@ -160,29 +124,7 @@ export function AdvancedSwapDetails({
           </BodySmall>
         </TextWithLoadingPlaceholder>
       </RowBetween>
-      {
-        <RowBetween>
-          <RowFixed>
-            <MouseoverTooltip
-              title={`
-                  Routing through these assets resulted in the best price for your trade
-                `}
-            >
-              <BodySmall color="textSecondary">Path</BodySmall>
-            </MouseoverTooltip>
-          </RowFixed>
-          <TextWithLoadingPlaceholder syncing={pathTokensIsLoading} width={100}>
-            <PathBox data-testid="swap__details__path">
-              {pathArray?.map((contract, index) => (
-                <React.Fragment key={index}>
-                  {contract}
-                  {index !== pathArray.length - 1 && <ChevronRight style={{ opacity: '50%' }} />}
-                </React.Fragment>
-              ))}
-            </PathBox>
-          </TextWithLoadingPlaceholder>
-        </RowBetween>
-      }
+      <SwapPathComponent trade={trade} />
       {trade?.platform && (
         <RowBetween>
           <MouseoverTooltip title={'The platform where the swap will be made.'}>
