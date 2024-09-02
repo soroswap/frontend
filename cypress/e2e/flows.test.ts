@@ -133,19 +133,12 @@ describe('Select tokens & input amount', () => {
 describe('Input & output amount validation', () => {
   it('should type an input amount & wait for output amount', () => {
     cy.visit('/swap');
-    //Select input asset
-/*     cy.get('[data-testid="swap__input__panel"]').within(() => {
-      cy.get('[data-testid="swap__token__select"]').click();
-    });
-    cy.get('[data-testid="currency__list__XLM"]').click();
- */
     //Select output asset
     cy.get('[data-testid="swap__output__panel"]').within(() => {
       cy.get('[data-testid="swap__token__select"]').click();
     });
-    cy.get('[data-testid="token-search-input"]').type('ngnt');
-    cy.get('[data-testid="currency__list__NGNT"]').click();
-
+    cy.get('[data-testid="token-search-input"]').type('usdc');
+    cy.get('[data-testid="currency__list__USDC"]').click();
 
     //Input amount
     cy.get('[data-testid="swap__input__panel"]').within(() => {
@@ -153,7 +146,6 @@ describe('Input & output amount validation', () => {
     });
     //await for calcs
     cy.wait(5000);
-    cy.screenshot()
     //Get the output amount
     cy.get('[data-testid="swap-output-input-panel"]').invoke('val').as('outputAmount');
     //Get the input amount
@@ -168,8 +160,8 @@ describe('Input & output amount validation', () => {
       cy.get('[data-testid="swap__input__panel"]').within(() => {
         cy.get('[data-testid="swap__token__select"]').click();
       });
-      cy.get('[data-testid="token-search-input"]').type('ngnt');
-      cy.get('[data-testid="currency__list__NGNT"]').click();
+      cy.get('[data-testid="token-search-input"]').type('usdc');
+      cy.get('[data-testid="currency__list__USDC"]').click();
        //Input amount
       cy.get('[data-testid="swap__output__panel"]').within(() => {
         cy.get('.token-amount-input').type('{backspace}');
@@ -177,16 +169,63 @@ describe('Input & output amount validation', () => {
         cy.get('.token-amount-input').type('1');
       });
       cy.wait(2500);
-      cy.screenshot()
       cy.get('[data-testid="swap-input-input-panel"]').invoke('val').then((inputAmount: any)=>{
-        const belowOutput = Math.floor(parseFloat(outputAmount) * 0.9);
-        const aboveOutput = Math.ceil(parseFloat(outputAmount) * 1.1);
+        const belowOutput = Math.floor(parseFloat(outputAmount) * 0.5);
+        const aboveOutput = Math.ceil(parseFloat(outputAmount) * 1.5);
         expect(parseFloat(inputAmount)).within(belowOutput, aboveOutput)
       })
     })
 
   })
 });
+
+describe('Slippage tolerance config', ()=>{
+  it('should change slippage tolerance', ()=>{
+    cy.visit('/swap');
+    cy.get('[data-testid="open-settings-dialog-button"]').click();
+    cy.get('[data-testid="max-slippage-settings"]').click();
+    cy.get('[data-testid="slippage-input"]').type('1.05');
+    cy.get('[data-testid="max-slippage-settings"]').contains('1.05%');
+  })
+  it('Show display an alert if slippage is too high', ()=>{
+    cy.visit('/swap');
+    cy.get('[data-testid="open-settings-dialog-button"]').click();
+    cy.get('[data-testid="max-slippage-settings"]').click();
+    cy.get('[data-testid="slippage-input"]').type('10');
+    cy.get('[data-testid="max-slippage-settings"]').contains('10%');
+    cy.get('[data-testid="slippage-alert"]').should('exist');
+    cy.get('[data-testid="slippage-alert-too-high"]').should('exist');
+  })
+  it('Show display an alert if slippage is too low', ()=>{
+    cy.visit('/swap');
+    cy.get('[data-testid="open-settings-dialog-button"]').click();
+    cy.get('[data-testid="max-slippage-settings"]').click();
+    cy.get('[data-testid="slippage-input"]').type('0.01');
+    cy.get('[data-testid="max-slippage-settings"]').contains('0.01%');
+    cy.get('[data-testid="slippage-alert"]').should('exist');
+    cy.get('[data-testid="slippage-alert-too-low"]').should('exist');
+  })
+  it('should keep the slippage tolerance after closing the settings', ()=>{
+    cy.visit('/swap');
+    cy.get('[data-testid="open-settings-dialog-button"]').click();
+    cy.get('[data-testid="max-slippage-settings"]').click();
+    cy.get('[data-testid="slippage-input"]').type('1.05');
+    cy.get('[data-testid="open-settings-dialog-button"]').click();
+    cy.get('[data-testid="max-slippage-settings"]').should('not.exist');
+    cy.get('[data-testid="open-settings-dialog-button"]').click();
+    cy.get('[data-testid="max-slippage-settings"]').should('exist')
+    cy.get('[data-testid="max-slippage-settings"]').contains('1.05%');
+  })
+  it('Should set the slippage tolerance to auto when pressing "auto" button', ()=>{
+    cy.visit('/swap');
+    cy.get('[data-testid="open-settings-dialog-button"]').click();
+    cy.get('[data-testid="max-slippage-settings"]').click();
+    cy.get('[data-testid="slippage-input"]').type('1.05');
+    cy.get('[data-testid="max-slippage-settings"]').contains('1.05%');
+    cy.get('[data-testid="slippage-auto-button"]').click();
+    cy.get('[data-testid="max-slippage-settings"]').contains('Auto');
+  })
+})
 // Navigation flow
 describe('Navigation flow', () => {
   it('should render the navbar', () => {

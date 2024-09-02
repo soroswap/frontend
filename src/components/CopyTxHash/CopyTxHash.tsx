@@ -20,32 +20,62 @@ const getExplorerUrl = ({ chain, txHash }: { chain: WalletChain; txHash: string 
   }
 };
 
+enum ExplorerType {
+  STELLAR_EXPERT = 'STELLAR_EXPERT',
+  STELLAR_CHAIN = 'STELLAR_CHAIN',
+}
+
+interface ExplorerLinks {
+  stellarExpert: string;
+  stellarChain: string;
+}
+
 const CopyTxHash = ({ txHash }: { txHash: string }) => {
   const { notify } = useNotification();
 
   const sorobanContext = useSorobanReact();
 
-  const [explorerLink, setExplorerLink] = useState<string | undefined>(undefined);
+  const activeChain = sorobanContext?.activeChain;
+
+  const [explorersLinks, setExplorersLinks] = useState<ExplorerLinks | undefined>(undefined);
+
 
   useEffect(() => {
-    if (!sorobanContext) return;
+    if (!sorobanContext || !activeChain) return;
 
-    const activeChain = sorobanContext.activeChain;
+    if (activeChain.name === testnet.name) {
+      setExplorersLinks({
+        stellarExpert: `https://stellar.expert/explorer/testnet/tx/${txHash}`,
+        stellarChain: `https://testnet.stellarchain.io/transactions/${txHash}`,
+      });
+    }
 
-    if (!activeChain) return;
-
-    if (activeChain.name === testnet.name || activeChain.name === mainnet.name) {
-      setExplorerLink(getExplorerUrl({ chain: activeChain, txHash }));
+    if (activeChain.name === mainnet.name) {
+      setExplorersLinks({
+        stellarExpert: `https://stellar.expert/explorer/public/tx/${txHash}`,
+        stellarChain: `https://stellarchain.io/transactions/${txHash}`,
+      });
     }
   }, [sorobanContext, txHash]);
 
-  const handleClickViewOnExplorer = () => {
-    if (!explorerLink) return;
-
-    window.open(explorerLink, '_blank');
-  };
   return (
-    <Box display="flex" alignItems="center" flexDirection="column">
+    <Box display="flex" alignItems="center" flexDirection="column" sx={{ mt: 1 }}>
+      {(explorersLinks?.stellarChain && explorersLinks.stellarExpert) && (
+        <>
+          <LabelSmall style={{ cursor: 'pointer' }}>
+            <a href={explorersLinks?.stellarExpert}
+              target='_blank'>
+              View on Stellar.Expert
+            </a>
+          </LabelSmall>
+          <LabelSmall style={{ cursor: 'pointer' }}>
+            <a href={explorersLinks?.stellarChain}
+              target='_blank'>
+              View on StellarChain.io
+            </a>
+          </LabelSmall>
+        </>
+      )}
       <CopyToClipboard
         text={txHash}
         onCopy={() =>
@@ -61,11 +91,6 @@ const CopyTxHash = ({ txHash }: { txHash: string }) => {
           <Clipboard color="white" size="16px" />
         </Row>
       </CopyToClipboard>
-      {explorerLink && (
-        <LabelSmall style={{ cursor: 'pointer' }} onClick={handleClickViewOnExplorer}>
-          View on explorer
-        </LabelSmall>
-      )}
     </Box>
   );
 };
