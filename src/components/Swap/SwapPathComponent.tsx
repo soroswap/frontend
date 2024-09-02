@@ -126,7 +126,7 @@ function SwapPathComponent({ trade }: { trade: InterfaceTrade | undefined }) {
 
       {(trade?.platform == PlatformType.ROUTER || trade?.platform == PlatformType.STELLAR_CLASSIC) && (
         <PathLoadingPlaceholder syncing={pathTokensIsLoading} width={100}>
-          <PathBox>
+          <PathBox data-testid="swap__details__path">
             {pathArray?.map((contract, index) => (
               <React.Fragment key={index}>
                 {contract}
@@ -138,7 +138,7 @@ function SwapPathComponent({ trade }: { trade: InterfaceTrade | undefined }) {
       )}
       {(trade?.platform == PlatformType.AGGREGATOR) && (
         <PathLoadingPlaceholder syncing={pathTokensIsLoading} width={200} >
-          <AggregatorPathBox>
+          <AggregatorPathBox data-testid="swap__details__path">
             {distributionArray.map((distribution, index) => (
               <Box key={index}>
                 <Row>

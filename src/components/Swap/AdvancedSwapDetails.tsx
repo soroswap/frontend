@@ -124,7 +124,7 @@ export function AdvancedSwapDetails({
           </BodySmall>
         </TextWithLoadingPlaceholder>
       </RowBetween>
-      <SwapPathComponent trade={trade} data-testid="swap__details__path" />
+      <SwapPathComponent trade={trade} />
       {trade?.platform && (
         <RowBetween>
           <MouseoverTooltip title={'The platform where the swap will be made.'}>
