@@ -69,13 +69,36 @@ export const createStellarPathPayment = async (trade: InterfaceTrade, allowedSli
   try {
     const transactionResult = await serverHorizon?.submitTransaction(transactionToSubmit);
     return transactionResult;
-  } catch (e) {
-    console.log("Error", e);
-    // @ts-ignore
-    if (e.response.data.extras.result_codes.operations.includes("op_under_dest_min")) {
-      throw new Error("Try increasing slippage");
-      // @ts-ignore
+  } catch (e: any) {
+    const errorResponseArray = e.response.data.extras.result_codes?.operations;
+    if (errorResponseArray) {
+      console.log(errorResponseArray)
+      const operations = e.response.data.extras.result_codes?.operations
+      for (let operation of operations) {
+        switch (operation) {
+          case "op_under_dest_min":
+            throw new Error("Try increasing slippage");
+          case "op_underfunded":
+            throw new Error("Underfunded");
+          case "op_no_destination":
+            throw new Error("No destination account");
+          case "op_no_trust":
+            throw new Error("No trustline");
+          case "op_too_few_offers":
+            throw new Error("Too few offers");
+          case "op_not_Authorized":
+            throw new Error("Not authorized");
+          case "op_over_source_max":
+            throw new Error("Over source max");
+          case "AxiosError: Request failed with status code 504":
+            throw new Error("Connection timeout");
+          default:
+            throw new Error(operation)
+        }
+      }
     }
+
+    
     throw e
   }
 }
