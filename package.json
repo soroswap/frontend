@@ -28,7 +28,7 @@
     "@scio-labs/use-inkathon": "^0.8.1",
     "@soroban-react/chains": "9.1.13",
     "@soroban-react/connect-button": "9.1.13",
-    "@soroban-react/contracts": "9.1.13",
+    "@soroban-react/contracts": "9.2.2",
     "@soroban-react/core": "9.1.13",
     "@soroban-react/events": "9.1.13",
     "@soroban-react/freighter": "9.1.13",
