@@ -19,6 +19,7 @@ import { RouterMethod, useRouterCallback } from './useRouterCallback';
 import { createStellarPathPayment } from 'helpers/horizon/createHorizonTransaction';
 import { extractContractError } from 'functions/extractContractError';
 
+
 // Returns a function that will execute a swap, if the parameters are all valid
 // and the user has approved the slippage adjusted input amount for the trade
 
@@ -244,8 +245,7 @@ export function useSwapCallback(
           if (!result) throw new Error('Cannot create path payment')
           return result;
         } catch (error: any) {
-          console.error(error);
-          throw new Error('Cannot create path payment');
+          throw new Error(error);
         }
       default:
         throw new Error('Unsupported platform');
