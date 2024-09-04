@@ -63,11 +63,11 @@ export const useRouterSDK = () => {
 
   const getValuebyKey = (key: string) => {
     let value = protocolsStatus.find((p) => p.key === key)?.value;
+    if (value === undefined && key === Protocols.SOROSWAP) {
+      return true;
+    }
     if (typeof value === 'undefined') {
       return false;
-    }
-    if (typeof value === 'undefined' && key === Protocols.SOROSWAP) {
-      return true;
     }
     if (value === true || value === false) {
       return value;
