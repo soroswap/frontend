@@ -32,14 +32,11 @@ import { AddRemoveTabs } from '../AddRemoveHeader';
 
 export const PageWrapper = styled('main')`
   position: relative;
-  background: ${({ theme }) => `linear-gradient(${theme.palette.customBackground.bg2}, ${
-    theme.palette.customBackground.bg2
-  }) padding-box,
-              linear-gradient(150deg, rgba(136,102,221,1) 0%, rgba(${
-                theme.palette.mode == 'dark' ? '33,29,50,1' : '255,255,255,1'
-              }) 35%, rgba(${
-                theme.palette.mode == 'dark' ? '33,29,50,1' : '255,255,255,1'
-              }) 65%, rgba(136,102,221,1) 100%) border-box`};
+  background: ${({ theme }) => `linear-gradient(${theme.palette.customBackground.bg2}, ${theme.palette.customBackground.bg2
+    }) padding-box,
+              linear-gradient(150deg, rgba(136,102,221,1) 0%, rgba(${theme.palette.mode == 'dark' ? '33,29,50,1' : '255,255,255,1'
+    }) 35%, rgba(${theme.palette.mode == 'dark' ? '33,29,50,1' : '255,255,255,1'
+    }) 65%, rgba(136,102,221,1) 100%) border-box`};
   border: 1px solid transparent;
   border-radius: 16px;
   padding: 32px;
@@ -57,13 +54,13 @@ export const PageWrapper = styled('main')`
   }
 `;
 
-const StyledTokenName = styled('span')<{ active?: boolean }>`
+const StyledTokenName = styled('span') <{ active?: boolean }>`
   ${({ active }) => (active ? '  margin: 0 0.25rem 0 0.25rem;' : '  margin: 0 0.25rem 0 0.25rem;')}
   color: ${({ theme }) => theme.palette.custom.textPrimary};
   font-size: 20px;
 `;
 
-const Container = styled('div')<{ transparent?: boolean }>`
+const Container = styled('div') <{ transparent?: boolean }>`
   border-radius: 16px;
   padding: 1.25rem;
   border: 1px solid ${({ theme }) => theme.palette.custom.textSecondary};
@@ -390,8 +387,8 @@ export default function RemoveLiquidityComponent() {
               >
                 {currencyA && currencyA.code && currencyA.code.length > 20
                   ? currencyA.code.slice(0, 4) +
-                    '...' +
-                    currencyA.code.slice(currencyA.code.length - 5, currencyA.code.length)
+                  '...' +
+                  currencyA.code.slice(currencyA.code.length - 5, currencyA.code.length)
                   : currencyA?.code}
               </StyledTokenName>
               {isLoadingPairInfo ? (
@@ -412,8 +409,8 @@ export default function RemoveLiquidityComponent() {
               >
                 {currencyB && currencyB.code && currencyB.code.length > 20
                   ? currencyB.code.slice(0, 4) +
-                    '...' +
-                    currencyB.code.slice(currencyB.code.length - 5, currencyB.code.length)
+                  '...' +
+                  currencyB.code.slice(currencyB.code.length - 5, currencyB.code.length)
                   : currencyB?.code}
               </StyledTokenName>
               {isLoadingPairInfo ? (
@@ -438,7 +435,7 @@ export default function RemoveLiquidityComponent() {
               </div>
             </Column>
           </Container>
-          Slippage Tolerance 0.5%
+          Slippage Tolerance {allowedSlippage}%
           {!sorobanContext.address ? (
             <ButtonLight onClick={() => setConnectWalletModalOpen(true)}>{error}</ButtonLight>
           ) : (

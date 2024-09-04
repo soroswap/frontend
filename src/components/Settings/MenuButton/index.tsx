@@ -4,13 +4,14 @@ import { styled, useMediaQuery, useTheme } from 'soroswap-ui';
 import { Settings } from 'react-feather';
 import settingsIcon from '../../../assets/svg/settingsIcon.svg';
 import Image from 'next/image';
+import { DEFAULT_SLIPPAGE_INPUT_VALUE } from '../MaxSlippageSettings';
 
 const Icon = styled(Settings)`
   height: 24px;
   width: 24px;
 `;
 
-const Button = styled('button')<{ isActive: boolean }>`
+const Button = styled('button') <{ isActive: boolean }>`
   border: none;
   background-color: transparent;
   margin: 0;
@@ -43,7 +44,7 @@ const ButtonContent = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
-  if (userSlippageTolerance === 0.5) {
+  if (userSlippageTolerance === DEFAULT_SLIPPAGE_INPUT_VALUE) {
     return (
       <IconContainer>
         <Image

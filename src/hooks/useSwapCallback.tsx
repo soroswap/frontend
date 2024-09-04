@@ -66,8 +66,9 @@ export const getSwapAmounts = ({
   tradeType,
   inputAmount,
   outputAmount,
-  allowedSlippage = 0.5,
+  allowedSlippage = DEFAULT_SLIPPAGE_INPUT_VALUE,
 }: GetSwapAmountsProps) => {
+  console.log('🚀 ~ allowedSlippage:', allowedSlippage);
   const routerMethod =
     tradeType == TradeType.EXACT_INPUT ? RouterMethod.SWAP_EXACT_IN : RouterMethod.SWAP_EXACT_OUT;
 
@@ -221,7 +222,7 @@ export function useSwapCallback(
 
           const notificationMessage = `${formatTokenAmount(currencyA ?? '0')} ${trade?.inputAmount
             ?.currency.code} for ${formatTokenAmount(currencyB ?? '0')} ${trade?.outputAmount?.currency
-            .code}`;
+              .code}`;
 
           sendNotification(notificationMessage, 'Swapped', SnackbarIconType.SWAP, SnackbarContext);
 

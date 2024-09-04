@@ -38,14 +38,11 @@ import AddModalHeader from './AddModalHeader';
 
 export const PageWrapper = styled('main')`
   position: relative;
-  background: ${({ theme }) => `linear-gradient(${theme.palette.customBackground.bg2}, ${
-    theme.palette.customBackground.bg2
-  }) padding-box,
-              linear-gradient(150deg, rgba(136,102,221,1) 0%, rgba(${
-                theme.palette.mode == 'dark' ? '33,29,50,1' : '255,255,255,1'
-              }) 35%, rgba(${
-                theme.palette.mode == 'dark' ? '33,29,50,1' : '255,255,255,1'
-              }) 65%, rgba(136,102,221,1) 100%) border-box`};
+  background: ${({ theme }) => `linear-gradient(${theme.palette.customBackground.bg2}, ${theme.palette.customBackground.bg2
+    }) padding-box,
+              linear-gradient(150deg, rgba(136,102,221,1) 0%, rgba(${theme.palette.mode == 'dark' ? '33,29,50,1' : '255,255,255,1'
+    }) 35%, rgba(${theme.palette.mode == 'dark' ? '33,29,50,1' : '255,255,255,1'
+    }) 65%, rgba(136,102,221,1) 100%) border-box`};
   border: 1px solid transparent;
   border-radius: 16px;
   padding: 32px;
