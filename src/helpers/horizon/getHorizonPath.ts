@@ -212,7 +212,6 @@ export function getHorizonBestPath(
       const send = serverHorizon.strictSendPaths(args.assetFrom, args.amount, [args.assetTo])
         .call().then((res) => res.records);
       return send?.then((res) => {
-        console.log('🚀 ~ returnsend?.then ~ res:', res);
         const maxObj = res.reduce((maxObj, obj) => {
           if (maxObj.path.length <= 1) {
 

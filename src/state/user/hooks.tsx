@@ -57,6 +57,5 @@ export function useUserSlippageTolerance(): [
  */
 export function useUserSlippageToleranceWithDefault(defaultSlippageTolerance: number): number {
     const [allowedSlippage] = useUserSlippageTolerance()
-    console.log('🚀 ~ useUserSlippageToleranceWithDefault ~ allowedSlippage:', allowedSlippage);
     return allowedSlippage === SlippageTolerance.Auto ? defaultSlippageTolerance : allowedSlippage
 }
