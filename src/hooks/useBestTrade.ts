@@ -132,6 +132,7 @@ export function useBestTrade(
       tradeType,
       rawRoute: data,
       path: data?.trade.path,
+      distribution: data?.trade.distribution,
       priceImpact: data?.priceImpact,
       platform: data?.platform,
     };
