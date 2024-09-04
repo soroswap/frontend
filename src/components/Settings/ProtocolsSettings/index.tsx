@@ -83,7 +83,6 @@ const ProtocolsSettings = () => {
       setProtocolsStatus(newProtocolsStatus);
       mutate(
         (key: any) => {
-          console.log(key)
           return true;
         },
         undefined,

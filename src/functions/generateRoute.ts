@@ -2,7 +2,7 @@ import { useSorobanReact } from '@soroban-react/core';
 import { AppContext } from 'contexts';
 import { useFactory } from 'hooks';
 import { useAggregator } from 'hooks/useAggregator';
-import { useContext, useMemo } from 'react';
+import { useContext, useEffect, useMemo } from 'react';
 import { fetchAllPhoenixPairs, fetchAllSoroswapPairs } from 'services/pairs';
 import {
   Currency,
@@ -57,9 +57,53 @@ export const useRouterSDK = () => {
   const { isEnabled: isAggregator } = useAggregator();
 
   const { Settings } = useContext(AppContext);
-  const { maxHops, protocols, protocolsStatus } = Settings;
+  const { maxHops, protocolsStatus, setProtocolsStatus } = Settings;
 
   const network = sorobanContext.activeChain?.networkPassphrase as Networks;
+
+  const getValuebyKey = (key: string) => {
+    let value = protocolsStatus.find((p) => p.key === key)?.value;
+    if (typeof value === 'undefined') {
+      return false;
+    }
+    if (typeof value === 'undefined' && key === Protocols.SOROSWAP) {
+      return true;
+    }
+    if (value === true || value === false) {
+      return value;
+    }
+    return value;
+  }
+
+  const getDefaultProtocolsStatus = async (network: Networks) => {
+    switch (network) {
+      case Networks.PUBLIC:
+        // here you should add your new supported protocols
+        return [
+          { key: Protocols.SOROSWAP , value: getValuebyKey(Protocols.SOROSWAP) },
+          { key: PlatformType.STELLAR_CLASSIC, value: getValuebyKey(PlatformType.STELLAR_CLASSIC) },
+        ];
+      case Networks.TESTNET:
+        return [
+          { key: Protocols.SOROSWAP, value: getValuebyKey(Protocols.SOROSWAP) },
+          { key: Protocols.PHOENIX, value: getValuebyKey(Protocols.PHOENIX) },
+        ];
+      default:
+        return [
+          { key: Protocols.SOROSWAP, value: true },
+          { key: Protocols.PHOENIX, value: false },
+          { key: PlatformType.STELLAR_CLASSIC, value: false },
+        ];
+    }
+  }
+
+  useEffect(() => {
+    const fetchProtocolsStatus = async () => {
+      const defaultProtocols = await getDefaultProtocolsStatus(network);
+      setProtocolsStatus(defaultProtocols);
+    };
+    fetchProtocolsStatus();
+  }, [network]);
 
   const getPairsFns = useMemo(() => {
     const routerProtocols = []

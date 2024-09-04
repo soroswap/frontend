@@ -34,8 +34,6 @@ export type SnackbarContextType = {
 export type Settings = {
   maxHops: number;
   setMaxHops: React.Dispatch<React.SetStateAction<number>>;
-  protocols: Protocols[];
-  setProtocols: React.Dispatch<React.SetStateAction<Protocols[]>>;
   protocolsStatus: ProtocolsStatus[];
   setProtocolsStatus: React.Dispatch<React.SetStateAction<ProtocolsStatus[]>>;
 };
@@ -68,8 +66,6 @@ export const AppContext = React.createContext<AppContextType>({
   Settings: {
     maxHops: 2,
     setMaxHops: () => {},
-    protocols: [],
-    setProtocols: () => {},
     protocolsStatus: [],
     setProtocolsStatus: () => {},
   },
