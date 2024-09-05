@@ -8,6 +8,7 @@ import { useRef, useState } from 'react';
 import MaxSlippageSettings from './MaxSlippageSettings';
 import MenuButton from './MenuButton';
 import MaxHopsSettings from './MaxHopsSettings';
+import ProtocolsSettings from './ProtocolsSettings';
 
 const Menu = styled('div')`
   position: relative;
@@ -74,6 +75,7 @@ export default function SettingsTab({
             <ExpandColumn>
               <MaxSlippageSettings autoSlippage={autoSlippage} />
               <MaxHopsSettings />
+              <ProtocolsSettings />
             </ExpandColumn>
           </AnimatedDropdown>
         </MenuFlyout>

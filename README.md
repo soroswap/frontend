@@ -118,6 +118,11 @@ cp .env.production.example .env
 
 You have successfully set up Soroswap on your local machine! Start swapping, pooling, and exploring the possibilities of decentralized finance (DeFi) on the Soroban network.
 
+If you want to add or remove supported protocols, you can do so by editing the `functions/generateRoute.ts:79-97` file and adding or removing the protocols you want to support on swap.
+
+> [!HINT]
+> You can found the list of supported protocols in the `soroswap-router-sdk` repository.
+
 ## 🧪🔨 Testing 🧪🔨
 To execute the tests, you must first start the development container. To do this, run the following command from your host machine:
 

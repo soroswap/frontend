@@ -1,4 +1,6 @@
 import React from 'react';
+import { Protocols } from 'soroswap-router-sdk';
+import { PlatformType } from 'state/routing/types';
 
 type ConnectWalletModalType = {
   isConnectWalletModalOpen: boolean;
@@ -11,6 +13,11 @@ export enum SnackbarIconType {
   ADD_LIQUIDITY,
   REMOVE_LIQUIDITY,
   ERROR,
+}
+
+export interface ProtocolsStatus {
+  key: Protocols | PlatformType;
+  value: boolean;
 }
 
 export type SnackbarContextType = {
@@ -27,6 +34,8 @@ export type SnackbarContextType = {
 export type Settings = {
   maxHops: number;
   setMaxHops: React.Dispatch<React.SetStateAction<number>>;
+  protocolsStatus: ProtocolsStatus[];
+  setProtocolsStatus: React.Dispatch<React.SetStateAction<ProtocolsStatus[]>>;
 };
 
 export type AppContextType = {
@@ -57,5 +66,7 @@ export const AppContext = React.createContext<AppContextType>({
   Settings: {
     maxHops: 2,
     setMaxHops: () => {},
+    protocolsStatus: [],
+    setProtocolsStatus: () => {},
   },
 });

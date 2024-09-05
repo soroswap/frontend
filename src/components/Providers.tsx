@@ -1,8 +1,6 @@
 import { Analytics } from '@vercel/analytics/react';
-import { AppContext, AppContextType, ColorModeContext, SnackbarIconType } from 'contexts';
-import { CssBaseline, ThemeProvider } from 'soroswap-ui';
+import { AppContext, AppContextType, ColorModeContext, SnackbarIconType, ProtocolsStatus } from 'contexts';
 import { Provider } from 'react-redux';
-import { theme } from 'soroswap-ui';
 import { useMemo, useState } from 'react';
 import InkathonProvider from 'inkathon/InkathonProvider';
 import MainLayout from './Layout/MainLayout';
@@ -10,6 +8,7 @@ import MySorobanReactProvider from 'soroban/MySorobanReactProvider';
 import store from 'state';
 import { SorobanContextType } from '@soroban-react/core';
 import { SoroswapThemeProvider } from 'soroswap-ui';
+
 export default function Providers({
   children,
   sorobanReactProviderProps,
@@ -20,7 +19,7 @@ export default function Providers({
   const [isConnectWalletModal, setConnectWalletModal] = useState<boolean>(false);
 
   const [maxHops, setMaxHops] = useState<number>(2);
-
+  const [protocolsStatus, setProtocolsStatus] = useState<ProtocolsStatus[]>([]);
   const [openSnackbar, setOpenSnackbar] = useState<boolean>(false);
   const [snackbarMessage, setSnackbarMessage] = useState<string>('');
   const [snackbarTitle, setSnackbarTitle] = useState<string>('Swapped');
@@ -54,6 +53,8 @@ export default function Providers({
     Settings: {
       maxHops,
       setMaxHops,
+      protocolsStatus,
+      setProtocolsStatus,
     },
   };
 

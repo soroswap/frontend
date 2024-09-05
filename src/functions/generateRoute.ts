@@ -1,8 +1,8 @@
-import { SorobanContextType, useSorobanReact } from '@soroban-react/core';
+import { useSorobanReact } from '@soroban-react/core';
 import { AppContext } from 'contexts';
 import { useFactory } from 'hooks';
 import { useAggregator } from 'hooks/useAggregator';
-import { useContext, useMemo } from 'react';
+import { useContext, useEffect, useMemo } from 'react';
 import { fetchAllPhoenixPairs, fetchAllSoroswapPairs } from 'services/pairs';
 import {
   Currency,
@@ -57,34 +57,92 @@ export const useRouterSDK = () => {
   const { isEnabled: isAggregator } = useAggregator();
 
   const { Settings } = useContext(AppContext);
-  const { maxHops } = Settings;
+  const { maxHops, protocolsStatus, setProtocolsStatus } = Settings;
 
   const network = sorobanContext.activeChain?.networkPassphrase as Networks;
 
+  const getValuebyKey = (key: string) => {
+    let value = protocolsStatus.find((p) => p.key === key)?.value;
+    if (value === undefined && key === Protocols.SOROSWAP) {
+      return true;
+    }
+    if (typeof value === 'undefined') {
+      return false;
+    }
+    if (value === true || value === false) {
+      return value;
+    }
+    return value;
+  }
+
+  const getDefaultProtocolsStatus = async (network: Networks) => {
+    switch (network) {
+      case Networks.PUBLIC:
+        // here you should add your new supported protocols
+        return [
+          { key: Protocols.SOROSWAP , value: getValuebyKey(Protocols.SOROSWAP) },
+          { key: PlatformType.STELLAR_CLASSIC, value: getValuebyKey(PlatformType.STELLAR_CLASSIC) },
+        ];
+      case Networks.TESTNET:
+        return [
+          { key: Protocols.SOROSWAP, value: getValuebyKey(Protocols.SOROSWAP) },
+          { key: Protocols.PHOENIX, value: getValuebyKey(Protocols.PHOENIX) },
+        ];
+      default:
+        return [
+          { key: Protocols.SOROSWAP, value: true },
+          { key: Protocols.PHOENIX, value: false },
+          { key: PlatformType.STELLAR_CLASSIC, value: false },
+        ];
+    }
+  }
+
+  useEffect(() => {
+    const fetchProtocolsStatus = async () => {
+      const defaultProtocols = await getDefaultProtocolsStatus(network);
+      setProtocolsStatus(defaultProtocols);
+    };
+    fetchProtocolsStatus();
+  }, [network]);
+
+  const getPairsFns = useMemo(() => {
+    const routerProtocols = []
+    if(!shouldUseBackend) return undefined
+//  here you should add your new supported aggregator protocols
+    for(let protocol of protocolsStatus){
+      if(protocol.key === Protocols.SOROSWAP && protocol.value === true){
+        routerProtocols.push({protocol: Protocols.SOROSWAP, fn: async () => fetchAllSoroswapPairs(network)});
+      }
+      if(protocol.key === Protocols.PHOENIX && protocol.value === true){
+        routerProtocols.push({protocol: Protocols.PHOENIX, fn: async () => fetchAllPhoenixPairs(network)});
+      }
+    }
+    return routerProtocols;
+  }, [network, protocolsStatus]);
+
+  const getProtocols = useMemo(() => {
+    const newProtocols = [];
+    for(let protocol of protocolsStatus){
+      if(protocol.key != PlatformType.STELLAR_CLASSIC && protocol.value === true){
+        newProtocols.push(protocol.key);
+      }
+    }
+    return newProtocols as Protocols[];
+  },[protocolsStatus]);
+
   const router = useMemo(() => {
-    const protocols = [Protocols.SOROSWAP];
-
-    // if (isAggregator) protocols.push(Protocols.PHOENIX);
-
     return new Router({
-      getPairsFns: shouldUseBackend
-        ? [
-            {
-              protocol: Protocols.SOROSWAP,
-              fn: async () => fetchAllSoroswapPairs(network),
-            },
-            {
-              protocol: Protocols.PHOENIX,
-              fn: async () => fetchAllPhoenixPairs(network),
-            },
-          ]
-        : undefined,
-      pairsCacheInSeconds: 60,
-      protocols: protocols,
+      getPairsFns: getPairsFns,
+      pairsCacheInSeconds: 5,
+      protocols: getProtocols,
       network,
       maxHops,
     });
-  }, [network, maxHops, isAggregator]);
+  }, [network, maxHops, isAggregator, protocolsStatus]);
+
+  const isProtocolEnabled = (protocol: any) => {
+    return protocolsStatus.find((p) => p.key === protocol)?.value;
+  }
 
   const fromAddressToToken = (address: string) => {
     return new Token(network, address, 18);
@@ -112,51 +170,58 @@ export const useRouterSDK = () => {
     );
     const quoteCurrency = fromAddressToToken(quoteAsset.contract);
 
+    const isHorizonEnabled = isProtocolEnabled(PlatformType.STELLAR_CLASSIC);
+    const isSoroswapEnabled = isProtocolEnabled(Protocols.SOROSWAP);
+
     const horizonProps = {
       assetFrom: amountAsset.currency,
       assetTo: quoteAsset,
       amount,
       tradeType,
     };
-    let horizonPath: BuildTradeRoute;
-    try {
+
+    let horizonPath: BuildTradeRoute | undefined;
+    if(isHorizonEnabled){
       horizonPath = (await getHorizonBestPath(horizonProps, sorobanContext)) as BuildTradeRoute;
-    } catch (error) {
-      console.error('Error getting horizon path');
     }
-    let sorobanPath: BuildTradeRoute;
-    try{
-      if (isAggregator) {
-        sorobanPath = (await router
-          .routeSplit(currencyAmount, quoteCurrency, tradeType)
-          .then((response) => {
-            if (!response) return undefined;
-            const result = {
-              ...response,
-              platform: PlatformType.AGGREGATOR,
-            };
-            return result;
-          })) as BuildTradeRoute;
-      } else {
-        sorobanPath = (await router
-          .route(currencyAmount, quoteCurrency, tradeType, factory, sorobanContext as any)
-          .then((response) => {
-            if (!response) return undefined;
-            const result = {
-              ...response,
-              platform: PlatformType.ROUTER,
-            };
-            return result;
-          })) as BuildTradeRoute;
-      }
-    } catch (error) {
-      console.error('Error getting soroban path', error);
+    
+    let sorobanPath: BuildTradeRoute | undefined;
+    if (isAggregator) {
+      sorobanPath = (await router
+        .routeSplit(currencyAmount, quoteCurrency, tradeType)
+        .then((response) => {
+          if (!response) return undefined;
+          const result = {
+            ...response,
+            platform: PlatformType.AGGREGATOR,
+          };
+          return result;
+        })) as BuildTradeRoute;
+    } else if(isSoroswapEnabled){
+      sorobanPath = (await router
+        .route(currencyAmount, quoteCurrency, tradeType, factory, sorobanContext as any)
+        .then((response) => {
+          if (!response) return undefined;
+          const result = {
+            ...response,
+            platform: PlatformType.ROUTER,
+          };
+          return result;
+        })) as BuildTradeRoute;
     }
 
-    const bestPath = getBestPath(horizonPath!, sorobanPath!, tradeType);
+    const bestPath = getBestPath(horizonPath, sorobanPath, tradeType);
 
     return bestPath;
   };
 
   return { generateRoute, resetRouterSdkCache, maxHops };
 };
+// .then((res) => {
+//   if (!res) return;
+//   const response = {
+//     ...res,
+//     platform: PlatformType.ROUTER,
+//   };
+//   return response;
+// });
