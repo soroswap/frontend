@@ -103,25 +103,25 @@ export const parseHorizonResult = async (
   const currecnyIn: TokenType =
     payload.source_asset_type == 'native'
       ? {
-          code: 'XLM',
-          contract: '',
-        }
+        code: 'XLM',
+        contract: '',
+      }
       : {
-          code: payload.source_asset_code,
-          issuer: payload.source_asset_issuer,
-          contract: `${payload.source_asset_code}:${payload.source_asset_issuer}`,
-        };
+        code: payload.source_asset_code,
+        issuer: payload.source_asset_issuer,
+        contract: `${payload.source_asset_code}:${payload.source_asset_issuer}`,
+      };
   const currencyOut: TokenType =
     payload.destination_asset_type == 'native'
       ? {
-          code: 'XLM',
-          contract: '',
-        }
+        code: 'XLM',
+        contract: '',
+      }
       : {
-          code: payload.destination_asset_code,
-          issuer: payload.destination_asset_issuer,
-          contract: `${payload.destination_asset_code}:${payload.destination_asset_issuer}`,
-        };
+        code: payload.destination_asset_code,
+        issuer: payload.destination_asset_issuer,
+        contract: `${payload.destination_asset_code}:${payload.destination_asset_issuer}`,
+      };
   const inputAmount: CurrencyAmount = {
     currency: currecnyIn,
     value: new BigNumber(payload.source_amount).multipliedBy(10000000).toString(),
@@ -142,14 +142,14 @@ export const parseHorizonResult = async (
     !currecnyIn.issuer && currecnyIn.code === 'XLM'
       ? 'native'
       : currecnyIn.issuer
-      ? `${currecnyIn.code}:${currecnyIn.issuer}`
-      : `${currecnyIn.code}`;
+        ? `${currecnyIn.code}:${currecnyIn.issuer}`
+        : `${currecnyIn.code}`;
   const addressTo =
     !currencyOut.issuer && currencyOut.code === 'XLM'
       ? 'native'
       : currencyOut.issuer
-      ? `${currencyOut.code}:${currencyOut.issuer}`
-      : `${currencyOut.code}`;
+        ? `${currencyOut.code}:${currencyOut.issuer}`
+        : `${currencyOut.code}`;
 
   const formattedPath = [addressFrom, ...parsedPath, addressTo];
 
@@ -213,7 +213,10 @@ export function getHorizonBestPath(
         .call().then((res) => res.records);
       return send?.then((res) => {
         const maxObj = res.reduce((maxObj, obj) => {
-          if (obj.destination_amount > maxObj.destination_amount) {
+          if (maxObj.path.length <= 1) {
+
+          }
+          if (obj.destination_amount > maxObj.destination_amount && obj.path.length <= 1) {
             return obj;
           } else {
             return maxObj;

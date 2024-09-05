@@ -19,6 +19,7 @@ import Link from 'next/link';
 import { ReactNode } from 'react';
 import { ArrowLeft, Settings } from 'react-feather';
 import { flexRowNoWrap } from 'themes/styles';
+import { DEFAULT_SLIPPAGE_INPUT_VALUE } from 'components/Settings/MaxSlippageSettings';
 
 // import Row, { RowBetween } from '../Row'
 // import SettingsTab from '../Settings'
@@ -30,7 +31,7 @@ const Tabs = styled('div')`
   justify-content: space-evenly;
 `;
 
-const StyledHistoryLink = styled(Link)<{ flex?: string }>`
+const StyledHistoryLink = styled(Link) <{ flex?: string }>`
   flex: ${({ flex }) => flex ?? 'none'};
 `;
 
@@ -107,7 +108,7 @@ export function AddRemoveTabs({
         </SubHeader>
         <Box style={{ marginRight: '.5rem' }}>{children}</Box>
         <RowFixed style={{ padding: '6px 12px' }}>
-          <SettingsTab autoSlippage={0.5} />
+          <SettingsTab autoSlippage={DEFAULT_SLIPPAGE_INPUT_VALUE} />
         </RowFixed>
       </RowBetween>
     </Tabs>

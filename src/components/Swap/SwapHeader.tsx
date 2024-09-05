@@ -5,6 +5,7 @@ import { SubHeader } from '../Text';
 import TuneRoundedIcon from '@mui/icons-material/TuneRounded';
 import SettingsTab from '../Settings/index';
 import { useMediaQuery } from 'soroswap-ui';
+import { DEFAULT_SLIPPAGE_INPUT_VALUE } from 'components/Settings/MaxSlippageSettings';
 const StyledSwapHeader = styled(RowBetween)(({ theme }) => ({
   marginBottom: 10,
   color: theme.palette.secondary.main,
@@ -42,7 +43,7 @@ export default function SwapHeader({
         )}
       </HeaderButtonContainer>
       <RowFixed style={{ padding: '6px 12px' }}>
-        <SettingsTab autoSlippage={0.5} />
+        <SettingsTab autoSlippage={DEFAULT_SLIPPAGE_INPUT_VALUE} />
       </RowFixed>
     </StyledSwapHeader>
   );

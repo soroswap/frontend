@@ -14,6 +14,7 @@ import { TradeType } from 'state/routing/types';
 import { useUserSlippageToleranceWithDefault } from 'state/user/hooks';
 import { Field, selectCurrency, setRecipient, switchCurrencies, typeInput } from './actions';
 import { SwapState } from './reducer';
+import { DEFAULT_SLIPPAGE_INPUT_VALUE } from 'components/Settings/MaxSlippageSettings';
 
 export function useSwapActionHandlers(dispatch: React.Dispatch<AnyAction>): {
   onCurrencySelection: (field: Field, currency: TokenType) => void;
@@ -155,7 +156,7 @@ export function useDerivedSwapInfo(state: SwapState) {
   // // Uniswap interface recommended slippage amount
   // const autoSlippage = uniswapXAutoSlippage ?? classicAutoSlippage
   // const classicAllowedSlippage = useUserSlippageToleranceWithDefault(autoSlippage)
-  const classicAllowedSlippage = useUserSlippageToleranceWithDefault(0.5);
+  const classicAllowedSlippage = useUserSlippageToleranceWithDefault(DEFAULT_SLIPPAGE_INPUT_VALUE);
 
   // // slippage amount used to submit the trade
   // const allowedSlippage = uniswapXAutoSlippage ?? classicAllowedSlippage

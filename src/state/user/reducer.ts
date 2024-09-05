@@ -1,4 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
+import { DEFAULT_SLIPPAGE_INPUT_VALUE } from 'components/Settings/MaxSlippageSettings';
 
 const currentTimestamp = () => new Date().getTime();
 
@@ -97,14 +98,14 @@ const userSlice = createSlice({
         state.userSlippageTolerance > 5000
       ) {
         // state.userSlippageTolerance = SlippageTolerance.Auto
-        state.userSlippageTolerance = 0.5;
+        state.userSlippageTolerance = DEFAULT_SLIPPAGE_INPUT_VALUE;
       } else {
         if (
           !state.userSlippageToleranceHasBeenMigratedToAuto &&
           [10, 50, 100].indexOf(state.userSlippageTolerance) !== -1
         ) {
           // state.userSlippageTolerance = SlippageTolerance.Auto
-          state.userSlippageTolerance = 0.5;
+          state.userSlippageTolerance = DEFAULT_SLIPPAGE_INPUT_VALUE;
           state.userSlippageToleranceHasBeenMigratedToAuto = true;
         }
       }

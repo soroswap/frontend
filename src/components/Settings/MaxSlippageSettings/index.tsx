@@ -13,7 +13,7 @@ enum SlippageError {
 
 const Option = styled(Row, {
   shouldForwardProp: (prop) => prop !== 'isActive',
-})<{ isActive: boolean }>`
+}) <{ isActive: boolean }>`
   width: auto;
   cursor: pointer;
   padding: 6px 12px;
@@ -37,7 +37,7 @@ const NUMBER_WITH_MAX_TWO_DECIMAL_PLACES = /^(?:\d+(?:\.\d{0,2})?|\.\d{0,2})?$/;
 const MINIMUM_RECOMMENDED_SLIPPAGE = 0.05;
 const MAXIMUM_RECOMMENDED_SLIPPAGE = 1;
 
-export const DEFAULT_SLIPPAGE_INPUT_VALUE = 0.5;
+export const DEFAULT_SLIPPAGE_INPUT_VALUE = 1;
 
 export default function MaxSlippageSettings({ autoSlippage }: { autoSlippage: number }) {
   const theme = useTheme();
@@ -193,7 +193,7 @@ export default function MaxSlippageSettings({ autoSlippage }: { autoSlippage: nu
                 transaction
               </div>
             ) : (
-                <div data-testid='slippage-alert-too-high'>Your transaction may be frontrun and result in an unfavorable trade.</div>
+              <div data-testid='slippage-alert-too-high'>Your transaction may be frontrun and result in an unfavorable trade.</div>
             )}
           </Alert>
         </RowBetween>
