@@ -152,6 +152,14 @@ export function SwapComponent({
     inputError: swapInputError,
   } = useDerivedSwapInfo(state);
 
+  useEffect(() => {
+    if (typeof currencyBalances[Field.OUTPUT] != 'string' && currencyBalances[Field.OUTPUT].balance === undefined) {
+      setNeedTrustline(true);
+    } else {
+      setNeedTrustline(false);
+    }
+  }, [sorobanContext, currencies, currencyBalances, trade]);
+
   const parsedAmounts = useMemo(
     () => ({
       [Field.INPUT]: independentField === Field.INPUT ? parsedAmount : trade?.inputAmount,
@@ -340,14 +348,6 @@ export function SwapComponent({
   const showPriceImpactWarning = false;
 
   const nativeBalance = useGetNativeTokenBalance();
-
-  useEffect(() => {
-    if (typeof currencyBalances[Field.OUTPUT] != 'string' && currencyBalances[Field.OUTPUT].balance === undefined) {
-      setNeedTrustline(true);
-    } else {
-      setNeedTrustline(false);
-    }
-  }, [sorobanContext, currencies, currencyBalances, trade]);
 
   const { networkFees, isLoading: isLoadingNetworkFees } = useSwapNetworkFees(trade, currencies);
 
