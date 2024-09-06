@@ -220,7 +220,8 @@ export default function BalancesTable(props: any) {
                 <TableCell align="left">{row.type}</TableCell>
                 <TableCell align="right">
                   {' '}
-                  {Number(row.balance).toLocaleString('en', { maximumFractionDigits: 7 }) as string}
+                  {row.balance === undefined ? '0' :
+                    Number(row.balance).toLocaleString('en', { maximumFractionDigits: 7 }) as string}
                 </TableCell>
               </TableRow>
             );
