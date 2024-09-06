@@ -106,8 +106,8 @@ function SwapPathComponent({ trade }: { trade: InterfaceTrade | undefined }) {
           tempDistributionArray.push({ path: fulfilledValues, parts: distribution.parts, protocol: distribution.protocol_id });
           setDistributionArray(tempDistributionArray);
           setTotalParts(tempDistributionArray.reduce((acc, curr) => acc + curr.parts, 0));
-          setPathTokensIsLoading(false);
         }
+        setPathTokensIsLoading(false);
       }
     })();
   }, [trade?.path, isLoading, sorobanContext]);

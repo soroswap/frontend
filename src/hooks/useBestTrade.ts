@@ -1,7 +1,8 @@
+import { AppContext } from 'contexts';
 import { useRouterSDK } from 'functions/generateRoute';
 import { hasDistribution } from 'helpers/aggregator';
 import { CurrencyAmount, TokenType } from 'interfaces';
-import { useEffect, useMemo, useState } from 'react';
+import { useContext, useEffect, useMemo, useState } from 'react';
 import { TradeType as SdkTradeType } from 'soroswap-router-sdk';
 import { InterfaceTrade, QuoteState, TradeState, TradeType } from 'state/routing/types';
 import useSWR from 'swr';
@@ -29,6 +30,7 @@ export function useBestTrade(
   resetRouterSdkCache: () => void;
 } {
   const { generateRoute, resetRouterSdkCache, maxHops } = useRouterSDK();
+  const {protocolsStatus} = useContext(AppContext).Settings;
   /**
    * Custom hook that fetches the best trade based on the specified amount and trade type.
    *
@@ -143,7 +145,7 @@ export function useBestTrade(
     }
 
     return baseTrade;
-  }, [expectedAmount, inputAmount, outputAmount, tradeType, data]);
+  }, [expectedAmount, inputAmount, outputAmount, tradeType, data, protocolsStatus]);
 
   /*
   If the pairAddress or the trades chenges, we upgrade the tradeResult
@@ -155,7 +157,7 @@ export function useBestTrade(
 
     const myTradeResult = { state: state, trade: trade };
     return myTradeResult;
-  }, [data, trade]); //should get the pair address and quotes
+  }, [data, trade, protocolsStatus]); //should get the pair address and quotes
 
   const skipFetch: boolean = false;
 
@@ -196,6 +198,7 @@ export function useBestTrade(
     trade,
     isLoading,
     resetRouterSdkCache,
+    protocolsStatus
   ]);
 
   return bestTrade;

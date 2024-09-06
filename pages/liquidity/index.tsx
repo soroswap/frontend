@@ -16,17 +16,15 @@ import useGetLpTokens from 'hooks/useGetLpTokens';
 import { useRouter } from 'next/router';
 import { useContext, useState } from 'react';
 import SEO from '../../src/components/SEO';
+import { DEFAULT_SLIPPAGE_INPUT_VALUE } from 'components/Settings/MaxSlippageSettings';
 
 const PageWrapper = styled(AutoColumn)`
   position: relative;
-  background: ${({ theme }) => `linear-gradient(${theme.palette.customBackground.bg2}, ${
-    theme.palette.customBackground.bg2
-  }) padding-box,
-              linear-gradient(150deg, rgba(136,102,221,1) 0%, rgba(${
-                theme.palette.mode == 'dark' ? '33,29,50,1' : '255,255,255,1'
-              }) 35%, rgba(${
-                theme.palette.mode == 'dark' ? '33,29,50,1' : '255,255,255,1'
-              }) 65%, rgba(136,102,221,1) 100%) border-box`};
+  background: ${({ theme }) => `linear-gradient(${theme.palette.customBackground.bg2}, ${theme.palette.customBackground.bg2
+    }) padding-box,
+              linear-gradient(150deg, rgba(136,102,221,1) 0%, rgba(${theme.palette.mode == 'dark' ? '33,29,50,1' : '255,255,255,1'
+    }) 35%, rgba(${theme.palette.mode == 'dark' ? '33,29,50,1' : '255,255,255,1'
+    }) 65%, rgba(136,102,221,1) 100%) border-box`};
   border: 1px solid transparent;
   border-radius: 16px;
   padding: 32px;
@@ -108,7 +106,7 @@ export default function LiquidityPage() {
         <div style={{ width: '100%' }}>
           <AutoRow style={{ justifyContent: 'space-between' }}>
             <SubHeader>Your liquidity</SubHeader>
-            <SettingsTab autoSlippage={0.5} />
+            <SettingsTab autoSlippage={DEFAULT_SLIPPAGE_INPUT_VALUE} />
           </AutoRow>
           <div>
             <BodySmall>List of your liquidity positions</BodySmall>

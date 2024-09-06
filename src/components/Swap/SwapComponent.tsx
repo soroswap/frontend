@@ -14,7 +14,7 @@ import { requiresTrustline } from 'helpers/stellar';
 import { relevantTokensType } from 'hooks';
 import { useToken } from 'hooks/tokens/useToken';
 import useGetNativeTokenBalance from 'hooks/useGetNativeTokenBalance';
-import { SuccessfullSwapResponse, useSwapCallback } from 'hooks/useSwapCallback';
+import { useSwapCallback } from 'hooks/useSwapCallback';
 import useSwapMainButton from 'hooks/useSwapMainButton';
 import useSwapNetworkFees from 'hooks/useSwapNetworkFees';
 import { TokenType } from 'interfaces';
@@ -37,7 +37,7 @@ import { opacify } from 'themes/utils';
 import SwapCurrencyInputPanel from '../CurrencyInputPanel/SwapCurrencyInputPanel';
 import SwapHeader from './SwapHeader';
 import { ArrowWrapper, SwapWrapper } from './styleds';
-import * as StellarSdk from '@stellar/stellar-sdk';
+import useGetMyBalances from 'hooks/useGetMyBalances';
 
 export const SwapSection = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -116,6 +116,7 @@ export function SwapComponent({
   handleDoSwap?: (setSwapState: (value: SetStateAction<SwapStateProps>) => void) => void;
 }) {
   const sorobanContext = useSorobanReact();
+  const { refetch } = useGetMyBalances()
   const { SnackbarContext } = useContext(AppContext);
   const [showPriceImpactModal, setShowPriceImpactModal] = useState<boolean>(false);
   const [txError, setTxError] = useState<boolean>(false);
@@ -300,6 +301,9 @@ export function SwapComponent({
           ...currentState,
           showConfirm: false,
         }));
+      }).finally(() => {
+        refetch()
+        nativeBalance.mutate()
       });
   };
 
