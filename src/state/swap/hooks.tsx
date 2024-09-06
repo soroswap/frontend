@@ -194,8 +194,8 @@ export function useDerivedSwapInfo(state: SwapState) {
       trade.trade?.inputAmount?.value ?? 0,
     ];
     if (
-      typeof balanceIn !== 'string' &&
-      BigNumber(balanceIn.balance).isLessThanOrEqualTo(BigNumber(maxAmountIn))
+      (typeof balanceIn !== 'string' && typeof balanceIn !== undefined) &&
+      BigNumber(balanceIn.balance!).isLessThanOrEqualTo(BigNumber(maxAmountIn))
     ) {
       inputError = `Insufficient ${balanceIn.code} balance`;
     }

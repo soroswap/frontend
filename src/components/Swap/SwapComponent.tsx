@@ -338,29 +338,12 @@ export function SwapComponent({
   const nativeBalance = useGetNativeTokenBalance();
 
   useEffect(() => {
-    const checkTrustline = async () => {
-      if (!trade) return;
-      if (sorobanContext.address) {
-        // Check if we need trustline
-        const needTrustline = await requiresTrustline(
-          sorobanContext,
-          trade?.outputAmount?.currency,
-          trade?.outputAmount?.value,
-        );
-
-        if (needTrustline) {
-          setNeedTrustline(true);
-        } else {
-          setNeedTrustline(false);
-        }
-      } else {
-        // Until the user does not connects the wallet, we will think that we need trustline
-        setNeedTrustline(true);
-      }
-    };
-
-    checkTrustline();
-  }, [sorobanContext, swapCallback, trade, nativeBalance.data?.validAccount]);
+    if (typeof currencyBalances[Field.OUTPUT] != 'string' && currencyBalances[Field.OUTPUT].balance === undefined) {
+      setNeedTrustline(true);
+    } else {
+      setNeedTrustline(false);
+    }
+  }, [sorobanContext, currencies, currencyBalances, trade]);
 
   const { networkFees, isLoading: isLoadingNetworkFees } = useSwapNetworkFees(trade, currencies);
 
