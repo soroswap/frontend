@@ -27,7 +27,7 @@ jobs:
       - name: Build app
         run: yarn build
 
-  deploy_app:
+  deploy-app:
     env:
       NEXT_PUBLIC_BACKEND_URL: ${{vars.NEXT_PUBLIC_BACKEND_URL}}
       NEXT_PUBLIC_SOROSWAP_BACKEND_API_KEY: ${{secrets.NEXT_PUBLIC_SOROSWAP_BACKEND_API_KEY}}
@@ -37,6 +37,7 @@ jobs:
       NEXT_PUBLIC_TRUSTLINE_WALLET_PUBLIC_KEY: ${{vars.NEXT_PUBLIC_TRUSTLINE_WALLET_PUBLIC_KEY}}
       NEXT_PUBLIC_TEST_TOKENS_ADMIN_SECRET_KEY: ${{secrets.NEXT_PUBLIC_TEST_TOKENS_ADMIN_SECRET_KEY}}
     runs-on: ubuntu-latest
+    needs: build
     steps:
       - uses: actions/checkout@v4.1.1
 
@@ -49,6 +50,7 @@ jobs:
 
   run-tests: 
     runs-on: ubuntu-latest
+    needs: deploy-app
     steps:
       - uses: actions/checkout@v4.1.1
 
