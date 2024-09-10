@@ -12,6 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4.1.1
+      - uses: actions/cache@v3
         with:
           path: ~/.yarn/cache
           key: ${{ runner.os }}-node-${{ hashFiles('**/yarn.lock') }}
@@ -44,7 +45,6 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     steps:
-      - uses: actions/checkout@v4.1.1
       - uses: actions/checkout@v4.1.1
       - uses: actions/cache@v3
         with:
