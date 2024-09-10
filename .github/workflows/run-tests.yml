@@ -31,7 +31,7 @@ jobs:
         run: yarn install
 
       - name: Install cypress
-        run: yarn cypress install
+        run: yarn cypress install --force
 
       - name: Build app
         run: yarn build
