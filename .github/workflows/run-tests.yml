@@ -17,7 +17,6 @@ jobs:
           path: |
             '**/node_modules'
             '**/.cache/Cypress'
-            '**/public'
           key: ${{ runner.os }}-node-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-node-${{ hashFiles('**/yarn.lock') }}
@@ -54,7 +53,6 @@ jobs:
           path: |
             '**/node_modules'
             '**/.cache/Cypress'
-            '**/public'
           key: ${{ runner.os }}-node-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-node-${{ hashFiles('**/yarn.lock') }}
@@ -76,7 +74,6 @@ jobs:
           path: |
             '**/node_modules'
             '**/.cache/Cypress'
-            '**/public'
           key: ${{ runner.os }}-node-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-node-${{ hashFiles('**/yarn.lock') }}
