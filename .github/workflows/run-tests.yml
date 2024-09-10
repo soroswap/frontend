@@ -56,29 +56,12 @@ jobs:
         uses: actions/setup-node@v4.0.2
         with:
           node-version: '20.10.0'
-      - name: Run app
-        run: yarn pm2 start next
-
-  run-tests: 
-    runs-on: ubuntu-latest
-    needs: deploy-app
-    steps:
-      - uses: actions/checkout@v4.1.1
-      - uses: actions/cache@v3
-        with:
-          path: |
-            node_modules
-          key: ${{ runner.os }}-node-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-node-${{ hashFiles('**/yarn.lock') }}
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4.0.2
-        with:
-          node-version: '20.10.0'
       
       - name: Install cypress
         run: yarn cypress install --force
+
+      - name: Run app
+        run: yarn pm2 start next 
 
       - name: Run test
         run: yarn cy:run
