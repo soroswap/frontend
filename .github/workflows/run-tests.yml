@@ -16,7 +16,6 @@ jobs:
         with:
           path: |
             node_modules
-            .cache/Cypress
           key: ${{ runner.os }}-node-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-node-${{ hashFiles('**/yarn.lock') }}
@@ -28,9 +27,6 @@ jobs:
 
       - name: Install dependencies
         run: yarn install
-
-      - name: Install cypress
-        run: yarn cypress install --force
 
       - name: Build app
         run: yarn build
@@ -52,7 +48,6 @@ jobs:
         with:
           path: |
             node_modules
-            .cache/Cypress
           key: ${{ runner.os }}-node-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-node-${{ hashFiles('**/yarn.lock') }}
@@ -73,7 +68,6 @@ jobs:
         with:
           path: |
             node_modules
-            .cache/Cypress
           key: ${{ runner.os }}-node-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-node-${{ hashFiles('**/yarn.lock') }}
@@ -82,6 +76,9 @@ jobs:
         uses: actions/setup-node@v4.0.2
         with:
           node-version: '20.10.0'
+      
+      - name: Install cypress
+        run: yarn cypress install --force
 
       - name: Run test
         run: yarn cy:run
