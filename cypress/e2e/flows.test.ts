@@ -236,41 +236,41 @@ describe('Navigation flow', () => {
   it('should navigate to balances', () => {
     cy.visit('/');
     cy.get('[data-testid="navbar__container"]').click();
-    cy.wait(500);
-    cy.contains('Balance').click();
     cy.wait(1500);
+    cy.contains('Balance').click();
+    cy.wait(3000);
     cy.contains("Your token's balance:");
   });
   it('should navigate to swap', () => {
     cy.visit('/bridge');
     cy.get('[data-testid="navbar__container"]').click();
-    cy.wait(500);
-    cy.contains('Swap').click();
     cy.wait(1500);
+    cy.contains('Swap').click();
+    cy.wait(3000);
     cy.contains('You sell');
   });
   it('should navigate to liquidity', () => {
     cy.visit('/');
     cy.get('[data-testid="navbar__container"]').click();
-    cy.wait(500);
-    cy.contains('Liquidity').click();
     cy.wait(1500);
+    cy.contains('Liquidity').click();
+    cy.wait(3000);
     cy.contains('List of your liquidity positions');
   });
   it('should navigate to bridge', () => {
     cy.visit('/');
     cy.get('[data-testid="navbar__container"]').click();
-    cy.wait(500);
-    cy.contains('Bridge').click();
     cy.wait(1500);
+    cy.contains('Bridge').click();
+    cy.wait(3000);
     cy.contains('Disclaimer');
   });
   it('should navigate to info', () => {
     cy.visit('/');
     cy.get('[data-testid="navbar__container"]').click();
-    cy.wait(500);
-    cy.contains('Info').click();
     cy.wait(1500);
+    cy.contains('Info').click();
+    cy.wait(3000);
     cy.url().should('match', /https:\/\/info\.soroswap\.finance\//);
   });
 });
