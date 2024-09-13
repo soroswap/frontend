@@ -7,6 +7,7 @@ import useSWR, { useSWRConfig } from 'swr';
 import useSWRImmutable from 'swr/immutable';
 import { useAllTokens } from './useAllTokens';
 import { getToken, isClassicStellarAsset } from './utils';
+import { Asset } from '@stellar/stellar-sdk';
 
 export const findToken = async (
   tokenAddress: string | undefined,
@@ -65,6 +66,7 @@ const revalidateKeysCondition = (key: any) => {
 //Returns token from map (user added + api) or network
 export function useToken(tokenAddress: string | undefined) {
   const sorobanContext = useSorobanReact();
+  const { activeChain: network } = sorobanContext;
   const { tokensAsMap } = useAllTokens();
 
   const { data: name } = useSWR(
@@ -95,6 +97,18 @@ export function useToken(tokenAddress: string | undefined) {
 
   const needsWrapping = !data && isStellarClassicAsset;
   
+  const checkContractId = (contractId: string, code: string, issuer: string): boolean | undefined => {
+    if (!issuer) {
+      return undefined;
+    }
+    const asset = new Asset(code, issuer);
+    if (asset.contractId(network?.networkPassphrase!) === contractId) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+  const isSafe = data ? checkContractId(data.contract, data.code, data.issuer!) : false;
 
   const needsWrappingOnAddLiquidity = (!data && isStellarClassicAsset) || !name;
 
@@ -120,6 +134,7 @@ export function useToken(tokenAddress: string | undefined) {
   //if not data and AssetExists return isWrapped: false
   return {
     token: data ?? newTokenData,
+    tokenIsSafe: isSafe,
     needsWrapping,
     isLoading: bothLoading,
     isError: error,
