@@ -1,9 +1,11 @@
 name: Run tests
 
-on: push
+on:
+  push:
+  workflow_dispatch:
 permissions:
   contents: write
-  pull-requests: write 
+  pull-requests: write
   issues: read
   packages: none
 
@@ -56,12 +58,12 @@ jobs:
         uses: actions/setup-node@v4.0.2
         with:
           node-version: '20.10.0'
-      
+
       - name: Install cypress
         run: yarn cypress install --force
 
       - name: Run app
-        run: yarn pm2 start next 
+        run: yarn pm2 start next
 
       - name: Run test
         run: yarn cy:run
