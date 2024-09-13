@@ -29,6 +29,7 @@ import Column from '../Column';
 import Row, { RowBetween } from '../Row';
 import CurrencyList, { CurrencyRow, formatAnalyticsEventProperties } from './CurrencyList';
 import { PaddedColumn, SearchInput, Separator } from './styleds';
+import UnsafeTokenModalContent from 'components/UnsafeTokenModal/UnsafeTokenModal';
 
 const ContentWrapper = styled(Column)<{ modalheight?: number }>`
   overflow: hidden;
@@ -86,10 +87,11 @@ export function CurrencySearch({
   const [searchQuery, setSearchQuery] = useState<string>('');
   const debouncedQuery = useDebounce(searchQuery, 200);
   const isAddressSearch = isAddress(debouncedQuery);
-  const { token: searchToken, needsWrapping, isLoading: isLoadingToken } = useToken(debouncedQuery);
+  const { token: searchToken, needsWrapping, isLoading: isLoadingToken, tokenIsSafe } = useToken(debouncedQuery);
   const { tokensAsMap: allTokens } = useAllTokens();
 
   const [showUserAddedTokenModal, setShowUserAddedTokenModal] = useState<boolean>(false);
+  const [showUnsafeTokenModal, setShowUnsafeTokenModal] = useState<boolean>(false);
   const [showWrapStellarAssetModal, setShowWrapStellarAssetModal] = useState<boolean>(false);
 
   //This sends and event when a token is searched to google analytics
@@ -129,6 +131,11 @@ export function CurrencySearch({
 
   const searchCurrencies = useSortTokensByQuery(debouncedQuery, filteredTokens);
 
+  const handleConfirmUnsafeToken = () => {
+    setShowUnsafeTokenModal(false);
+    setShowUserAddedTokenModal(true);
+  }
+
   const handleConfirmAddUserToken = () => {
     if (!searchToken) return;
     addUserToken(searchToken, sorobanContext);
@@ -144,9 +151,12 @@ export function CurrencySearch({
     (currency: TokenType, hasWarning?: boolean) => {
       if (needsWrapping) {
         setShowWrapStellarAssetModal(true);
+      } else if (!allTokens[currency.contract] && !tokenIsSafe) {
+        setShowUnsafeTokenModal(true);
       } else if (!allTokens[currency.contract]) {
         setShowUserAddedTokenModal(true);
-      } else {
+      }
+      else {
         onCurrencySelect(currency, hasWarning);
         if (!hasWarning) onDismiss();
       }
@@ -193,6 +203,14 @@ export function CurrencySearch({
 
   return (
     <>
+      <Modal open={showUnsafeTokenModal} onClose={() => setShowUnsafeTokenModal(false)}>
+        <div>
+          <UnsafeTokenModalContent
+            onConfirm={handleConfirmUnsafeToken}
+            onDismiss={() => setShowUnsafeTokenModal(false)}
+            isSafe={tokenIsSafe} />
+        </div>
+      </Modal>
       <Modal open={showUserAddedTokenModal} onClose={() => setShowUserAddedTokenModal(false)}>
         <div>
           <UserAddedTokenModalContent
