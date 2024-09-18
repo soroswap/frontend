@@ -46,9 +46,9 @@ export function useBestTrade(
     isValidating,
   } = useSWR(
     amountSpecified && otherCurrency
-      ? [amountSpecified, otherCurrency, tradeType, amountSpecified.value, maxHops]
+      ? [amountSpecified, otherCurrency, tradeType, amountSpecified.value, maxHops, protocolsStatus]
       : null,
-    ([amountAsset, quoteAsset, tradeType, amount, maxHops]) =>
+    ([amountAsset, quoteAsset, tradeType, amount, maxHops, protocolsStatus]) =>
       generateRoute({
         amountAsset,
         quoteAsset,
@@ -57,6 +57,7 @@ export function useBestTrade(
           tradeType === TradeType.EXACT_INPUT
             ? SdkTradeType.EXACT_INPUT
             : SdkTradeType.EXACT_OUTPUT,
+        currentProtocolsStatus: protocolsStatus,
       }),
     {
       revalidateIfStale: true,
