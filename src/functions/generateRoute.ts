@@ -42,6 +42,7 @@ export interface GenerateRouteProps {
   quoteAsset: TokenType;
   amount: string;
   tradeType: TradeType;
+  currentProtocolsStatus: { key: string; value: boolean }[];
 }
 
 const queryNetworkDict: { [x: string]: 'MAINNET' | 'TESTNET' } = {
@@ -63,7 +64,12 @@ export const useRouterSDK = () => {
 
   const getValuebyKey = (key: string) => {
     let value = protocolsStatus.find((p) => p.key === key)?.value;
+    // Soroswap will be activatewd by defaul
     if (value === undefined && key === Protocols.SOROSWAP) {
+      return true;
+    }
+    // SDEX will be activated by defaul
+    if (value === undefined && key === PlatformType.STELLAR_CLASSIC) {
       return true;
     }
     if (typeof value === 'undefined') {
@@ -92,7 +98,7 @@ export const useRouterSDK = () => {
         return [
           { key: Protocols.SOROSWAP, value: true },
           { key: Protocols.PHOENIX, value: false },
-          { key: PlatformType.STELLAR_CLASSIC, value: false },
+          { key: PlatformType.STELLAR_CLASSIC, value: true },
         ];
     }
   }
@@ -162,6 +168,7 @@ export const useRouterSDK = () => {
     quoteAsset,
     amount,
     tradeType,
+    currentProtocolsStatus,
   }: GenerateRouteProps) => {
     if (!factory) throw new Error('Factory address not found');
     const currencyAmount = fromAddressAndAmountToCurrencyAmount(
@@ -170,8 +177,9 @@ export const useRouterSDK = () => {
     );
     const quoteCurrency = fromAddressToToken(quoteAsset.contract);
 
-    const isHorizonEnabled = isProtocolEnabled(PlatformType.STELLAR_CLASSIC);
-    const isSoroswapEnabled = isProtocolEnabled(Protocols.SOROSWAP);
+    const isHorizonEnabled = currentProtocolsStatus.find((p) => p.key === PlatformType.STELLAR_CLASSIC)?.value; 
+
+    const isSoroswapEnabled = currentProtocolsStatus.find((p) => p.key === Protocols.SOROSWAP)?.value; 
 
     const horizonProps = {
       assetFrom: amountAsset.currency,
