@@ -11,6 +11,7 @@ export const useAggregator = () => {
   const { activeChain } = sorobanContext;
 
   const [address, setAddress] = useState<string>();
+  const [isEnabled, setIsAggregatorEnabled] = useState<boolean>(false);
 
   const shouldUseAggregator = useMemo(() => {
     if (activeChain?.id === 'mainnet') {
@@ -20,20 +21,24 @@ export const useAggregator = () => {
     }
   }, [activeChain?.id])
 
-  const isEnabled = useMemo(async () => {
-    if (!sorobanContext) return;
-    const { data } = await axios.get(
-      `https://raw.githubusercontent.com/soroswap/aggregator/refs/heads/main/public/${activeChain?.id}.contracts.json`
-    ).catch((error) => {
-      console.error('Error fetching aggregator data', error);
-      console.warn('No address found Aggregator is disabled');
-      return { data: { ids: { aggregator: '' } } };
-    });
-    const aggregatorAddress = data.ids.aggregator;
-    setAddress(aggregatorAddress);
-    const isEnabled = !!shouldUseAggregator && !!aggregatorAddress;
-    return isEnabled;
-  }, [activeChain?.id, shouldUseAggregator])
+  useEffect(() => {
+    console.log('useAggregator', activeChain?.id, shouldUseAggregator);
+    const setAggregatorData = async () => {
+      if (!sorobanContext) return;
+      const { data } = await axios.get(
+        `https://raw.githubusercontent.com/soroswap/aggregator/refs/heads/main/public/${activeChain?.id}.contracts.json`
+      ).catch((error) => {
+        console.error('Error fetching aggregator data', error);
+        console.warn('No address found Aggregator is disabled');
+        setIsAggregatorEnabled(false);
+        return { data: { ids: { aggregator: '' } } };
+      });
+      const aggregatorAddress = data.ids.aggregator;
+      setAddress(aggregatorAddress);
+      setIsAggregatorEnabled(!!shouldUseAggregator && !!aggregatorAddress);
+    };
+    setAggregatorData();
+  }, [activeChain?.id, shouldUseAggregator]);
 
   return { address, isEnabled };
 };
