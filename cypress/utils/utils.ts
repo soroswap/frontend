@@ -8,7 +8,7 @@ export const walletAddress = 'GCHR5WWPDFF3U3HP2NA6TI6FCQPYEWS3UOPIPJKZLAAFM57CEG
 
 export const mockedFreighterConnector = {
   ...freighter(),
-  isConnected: () => true,
+  isConnected: () => Promise.resolve(true),
   getPublicKey: () => Promise.resolve(walletAddress),
 };
 
