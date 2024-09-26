@@ -1,0 +1,30 @@
+{
+  "mainnet": [
+    {
+      "key": "sdex",
+      "value": true
+    },
+    {
+      "key": "soroswap",
+      "value": true
+    },
+    {
+      "key": "phoenix",
+      "value": false
+    }
+  ],
+  "testnet": [
+    {
+      "key": "soroswap",
+      "value": true
+    },
+    {
+      "key": "phoenix",
+      "value": true
+    },
+    {
+      "key": "sdex",
+      "value": false
+    }
+  ]
+}
