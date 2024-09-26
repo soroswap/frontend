@@ -1,6 +1,6 @@
 import '../../styles/globals.css';
 import MockRouter from '../utils/router';
-import Providers from 'components/Providers';
+import Providers from 'components/Providers/Providers';
 import AddLiquidityComponent from 'components/Liquidity/Add/AddLiquidityComponent';
 import { mockedFreighterConnector, sleep, testnetXLM } from '../utils/utils';
 import { useApiTokens } from 'hooks/tokens/useApiTokens';

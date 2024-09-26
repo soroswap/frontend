@@ -4,7 +4,7 @@ import { Field } from 'state/swap/actions';
 import { SetStateAction } from 'react';
 import { SwapComponent, SwapStateProps } from 'components/Swap/SwapComponent';
 import MockRouter from '../utils/router';
-import Providers from 'components/Providers';
+import Providers from 'components/Providers/Providers';
 import { mockedFreighterConnector, sleep, testnetXLM } from '../utils/utils';
 
 interface MockedSwapPageProps {

@@ -62,55 +62,6 @@ export const useRouterSDK = () => {
 
   const network = sorobanContext.activeChain?.networkPassphrase as Networks;
 
-  const getValuebyKey = (key: string) => {
-    let value = protocolsStatus.find((p) => p.key === key)?.value;
-    // Soroswap will be activatewd by defaul
-    if (value === undefined && key === Protocols.SOROSWAP) {
-      return true;
-    }
-    // SDEX will be activated by defaul
-    if (value === undefined && key === PlatformType.STELLAR_CLASSIC) {
-      return true;
-    }
-    if (typeof value === 'undefined') {
-      return false;
-    }
-    if (value === true || value === false) {
-      return value;
-    }
-    return value;
-  }
-
-  const getDefaultProtocolsStatus = async (network: Networks) => {
-    switch (network) {
-      case Networks.PUBLIC:
-        // here you should add your new supported protocols
-        return [
-          { key: Protocols.SOROSWAP , value: getValuebyKey(Protocols.SOROSWAP) },
-          { key: PlatformType.STELLAR_CLASSIC, value: getValuebyKey(PlatformType.STELLAR_CLASSIC) },
-        ];
-      case Networks.TESTNET:
-        return [
-          { key: Protocols.SOROSWAP, value: getValuebyKey(Protocols.SOROSWAP) },
-          { key: Protocols.PHOENIX, value: getValuebyKey(Protocols.PHOENIX) },
-        ];
-      default:
-        return [
-          { key: Protocols.SOROSWAP, value: true },
-          { key: Protocols.PHOENIX, value: false },
-          { key: PlatformType.STELLAR_CLASSIC, value: true },
-        ];
-    }
-  }
-
-  useEffect(() => {
-    const fetchProtocolsStatus = async () => {
-      const defaultProtocols = await getDefaultProtocolsStatus(network);
-      setProtocolsStatus(defaultProtocols);
-    };
-    fetchProtocolsStatus();
-  }, [network]);
-
   const getPairsFns = useMemo(() => {
     const routerProtocols = []
     if(!shouldUseBackend) return undefined
@@ -145,10 +96,6 @@ export const useRouterSDK = () => {
       maxHops,
     });
   }, [network, maxHops, isAggregator, protocolsStatus]);
-
-  const isProtocolEnabled = (protocol: any) => {
-    return protocolsStatus.find((p) => p.key === protocol)?.value;
-  }
 
   const fromAddressToToken = (address: string) => {
     return new Token(network, address, 18);
