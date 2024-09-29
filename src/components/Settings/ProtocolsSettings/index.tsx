@@ -100,7 +100,7 @@ const ProtocolsSettings = () => {
       onToggle={() => setIsOpen(!isOpen)}
       header={
         <Row width="auto">
-          <Typography color={theme.palette.secondary.main}>Protocols</Typography>
+          <Typography color={theme.palette.secondary.main}>Protocol</Typography>
           <QuestionHelper
             text={
               <div>

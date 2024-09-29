@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import MainLayout from '../Layout/MainLayout';
 import { useSorobanReact } from '@soroban-react/core';
 import config from 'configs/protocols.config.json'
-import { Protocols } from 'soroswap-router-sdk';
+import { Protocol } from 'soroswap-router-sdk';
 import { PlatformType } from 'state/routing/types';
 import { useAggregator } from 'hooks/useAggregator';
 
@@ -68,10 +68,10 @@ export default function ContextProvider({
     if (isAggregator === false) {
       switch (activeChain?.id) {
         case 'testnet':
-          protocols = protocols.filter((protocol) => protocol.key == Protocols.SOROSWAP);
+          protocols = protocols.filter((protocol) => protocol.key == Protocol.SOROSWAP);
           break;
         case 'mainnet':
-          protocols = protocols.filter((protocol) => protocol.key == Protocols.SOROSWAP || protocol.key == PlatformType.STELLAR_CLASSIC);
+          protocols = protocols.filter((protocol) => protocol.key == Protocol.SOROSWAP || protocol.key == PlatformType.STELLAR_CLASSIC);
           break;
       }
     }
