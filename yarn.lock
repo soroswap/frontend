@@ -267,9 +267,10 @@
   resolved "https://registry.yarnpkg.com/@colors/colors/-/colors-1.5.0.tgz#bb504579c1cae923e6576a4f5da43d25f97bdbd9"
   integrity sha512-ooWCrlZP11i8GImSjTHYHLkvFDP48nS4+204nGb1RiX/WXYHmJA2III9/e2DWVabCESdW7hBAEzHRqUn9OUVvQ==
 
-"@creit-tech/xbull-wallet-connect@github:Creit-Tech/xBull-Wallet-Connect":
+"@creit.tech/xbull-wallet-connect@0.3.0":
   version "0.3.0"
-  resolved "https://codeload.github.com/Creit-Tech/xBull-Wallet-Connect/tar.gz/79c0d93d8e11faf246d0dc80dcbac6976d71e244"
+  resolved "https://registry.yarnpkg.com/@creit.tech/xbull-wallet-connect/-/xbull-wallet-connect-0.3.0.tgz#c0686fcacf6794381ce71396d0ad803e09f742ce"
+  integrity sha512-pByi0bTAWd2ZdolVtkXcAU1DYTtz/cJc/IkRUz9x9/1NsFVyrM4UxE8tHgVZ3mwrJ4josoDwYP957ynQw195YQ==
   dependencies:
     rxjs "^7.5.5"
     tweetnacl "^1.0.3"
@@ -2008,38 +2009,45 @@
     "@soroban-react/types" "^9.1.13"
     "@stellar/stellar-sdk" "12.2.0"
 
-"@soroban-react/connect-button@9.1.13", "@soroban-react/connect-button@^9.1.13":
+"@soroban-react/connect-button@9.1.13":
   version "9.1.13"
   resolved "https://registry.yarnpkg.com/@soroban-react/connect-button/-/connect-button-9.1.13.tgz#68eff5db3fee1d10ffd25daf109065ed70cde1fb"
   integrity sha512-TMMb5DpqRysBdHVcNXL3BS9Badeu6ogD2LfdOx54ghVVtKVAU9Pd+mGaJcfk3fAz6MkQdJvQu/gPJo4CUDqxAg==
   dependencies:
     "@soroban-react/core" "^9.1.13"
 
-"@soroban-react/contracts@9.2.2":
-  version "9.2.2"
-  resolved "https://registry.yarnpkg.com/@soroban-react/contracts/-/contracts-9.2.2.tgz#ff43dae1335227e7294aa9c32923e7a76a52f442"
-  integrity sha512-P8juk3/J9Nyw43Jb+4WuKmPtw3jbElD43H0YYpZe+mzTKfy5BT/WNA36D4xAVV7XQaqAmDj8ZIWd6wNlS6F0Xg==
+"@soroban-react/connect-button@^9.3.0":
+  version "9.3.0"
+  resolved "https://registry.yarnpkg.com/@soroban-react/connect-button/-/connect-button-9.3.0.tgz#6b23bd49ebae944d3696c437144a80cb931bd8cc"
+  integrity sha512-6XQzXlJTo6W3UbyLUyKnoDcSRg0OXbSiszM7x8nR41d8ZA5aYRF6jiHuojzXSy7wf1FqFi5Hvmni10gbu6TSmw==
   dependencies:
-    "@soroban-react/core" "^9.1.13"
+    "@soroban-react/core" "^9.3.0"
+
+"@soroban-react/contracts@9.3.0":
+  version "9.3.0"
+  resolved "https://registry.yarnpkg.com/@soroban-react/contracts/-/contracts-9.3.0.tgz#8200cb4b638cf4de3902c5366bcdbc22f866d739"
+  integrity sha512-3qaqNATj23aeEPdbZqjzZvdstyDOe11vnAMAwXNXcDd9C4iigi/lYoGi0YNorsdMS36MhxgBq41vSOdmnq3shQ==
+  dependencies:
+    "@soroban-react/core" "^9.3.0"
     "@stellar/stellar-sdk" "12.2.0"
 
-"@soroban-react/core@9.1.13", "@soroban-react/core@^9.1.13":
-  version "9.1.13"
-  resolved "https://registry.yarnpkg.com/@soroban-react/core/-/core-9.1.13.tgz#65122c3cd5793720d5e1341b19f96f5a541e4549"
-  integrity sha512-GGx0X6tXs+OF9oTuyfLLXuD71O6OphMW/8AtYiUpA+Ltxs6DBJmBvG1AdlQVFNh9IiJ2OxSrGRZFpKVOuF3q4g==
+"@soroban-react/core@9.3.0", "@soroban-react/core@^9.1.13", "@soroban-react/core@^9.3.0":
+  version "9.3.0"
+  resolved "https://registry.yarnpkg.com/@soroban-react/core/-/core-9.3.0.tgz#e420a6c0f9c686376b4f5e496073a026748261ac"
+  integrity sha512-CCXSjPKnhdQi80eL2Vt7vvdzXgJmOQJBpN70rll6I4PXGpwg77f2lxKQaQRmcAkH/OymuXi4AteyzhSbX7nLsg==
   dependencies:
     "@soroban-react/freighter" "^9.1.13"
     "@soroban-react/lobstr" "^9.1.13"
     "@soroban-react/types" "^9.1.13"
-    "@soroban-react/xbull" "^9.1.13"
+    "@soroban-react/xbull" "^9.3.0"
     "@stellar/stellar-sdk" "12.2.0"
 
-"@soroban-react/events@9.1.13":
-  version "9.1.13"
-  resolved "https://registry.yarnpkg.com/@soroban-react/events/-/events-9.1.13.tgz#29d783c4d8bc5b67331ac36ca3899256c9834aa1"
-  integrity sha512-uzf/J+BDDY1xn/XOTxUT0lJfWuyx6tbxJfHyoFgTyldVpXpK5sa0ThVbRdT48XBif9/eRxeJc1/+kf+xe75XIA==
+"@soroban-react/events@9.3.0":
+  version "9.3.0"
+  resolved "https://registry.yarnpkg.com/@soroban-react/events/-/events-9.3.0.tgz#391e13e93d3798e2db5af8455aa7952257d8f509"
+  integrity sha512-qFA/V+dJt1NAHM68zk9h+UkcWTBW50mkTZ52ucLcHYVOmv78EOFhgljsSOLfEd2G6yrDU56O6BRQ3PHGOd0JSA==
   dependencies:
-    "@soroban-react/core" "^9.1.13"
+    "@soroban-react/core" "^9.3.0"
     "@soroban-react/types" "^9.1.13"
     soroban-client "1.0.0-beta.4"
 
@@ -2082,22 +2090,22 @@
     "@stellar/stellar-sdk" "12.2.0"
     bignumber.js "^9.1.1"
 
-"@soroban-react/wallet-data@9.1.13":
-  version "9.1.13"
-  resolved "https://registry.yarnpkg.com/@soroban-react/wallet-data/-/wallet-data-9.1.13.tgz#954c20f3f73b62b6f565e922e4eb0ed1a1a03e8e"
-  integrity sha512-F5Mg9pGIdjZq6NH6Y+oZ1x+r4gW18ybziDZJEVm1la3tB3lXF2jm9LcJV346Lk97xFR/cHrNcrC7YFLkL1Jbnw==
+"@soroban-react/wallet-data@9.3.0":
+  version "9.3.0"
+  resolved "https://registry.yarnpkg.com/@soroban-react/wallet-data/-/wallet-data-9.3.0.tgz#d2f0c31c6f24975584991b1e4da103a7f60fe9bd"
+  integrity sha512-d8wZNe1o8gL0fH7bxA8oNg+pJBB/vTpOwwWY5j+ohC/n5l8fLZ22GCcMR6EFOxvUlMMFIHWzDu/SBymrRCLKpA==
   dependencies:
-    "@soroban-react/connect-button" "^9.1.13"
-    "@soroban-react/core" "^9.1.13"
+    "@soroban-react/connect-button" "^9.3.0"
+    "@soroban-react/core" "^9.3.0"
     "@soroban-react/types" "^9.1.13"
     "@stellar/stellar-sdk" "12.2.0"
 
-"@soroban-react/xbull@9.1.13", "@soroban-react/xbull@^9.1.13":
-  version "9.1.13"
-  resolved "https://registry.yarnpkg.com/@soroban-react/xbull/-/xbull-9.1.13.tgz#01d64e6fc7b94f07650fc75be6aeb8c3bcf5159b"
-  integrity sha512-tYsVg39LYytVBSXvXKECz+O3GjvZM/NTz3R52SwaohRjT6DAoEuGnbdHw01CyGn6FQIt2UkydGxrI5AQZ+lHwQ==
+"@soroban-react/xbull@9.3.0", "@soroban-react/xbull@^9.3.0":
+  version "9.3.0"
+  resolved "https://registry.yarnpkg.com/@soroban-react/xbull/-/xbull-9.3.0.tgz#89c81463f956129e1065e4b0e8457a05e9329c45"
+  integrity sha512-TDhpyeHlS0Zv7AgCO8t9ymH4QkREo3A9lpjVtFQmlO4VvnVm70oTT3U12uARwVpgJrVShaesKIsyhvO20v4K0A==
   dependencies:
-    "@creit-tech/xbull-wallet-connect" "github:Creit-Tech/xBull-Wallet-Connect"
+    "@creit.tech/xbull-wallet-connect" "0.3.0"
     "@soroban-react/types" "^9.1.13"
     "@stellar/stellar-sdk" "12.2.0"
 
