@@ -64,8 +64,8 @@ export const useRouterSDK = () => {
 
   const getPairsFns = useMemo(() => {
     const routerProtocols = []
-    if(!shouldUseBackend) return undefined
-//  here you should add your new supported aggregator protocols
+    if(shouldUseBackend) return undefined
+    //  here you should add your new supported aggregator protocols
     for(let protocol of protocolsStatus){
       if(protocol.key === Protocols.SOROSWAP && protocol.value === true){
         routerProtocols.push({protocol: Protocols.SOROSWAP, fn: async () => fetchAllSoroswapPairs(network)});
