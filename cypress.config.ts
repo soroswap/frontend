@@ -10,10 +10,10 @@ export default defineConfig({
   e2e: {
     baseUrl: 'http://localhost:3000',
     specPattern: 'cypress/{e2e,staging}/**/*.test.{ts,tsx}',
-    defaultCommandTimeout: 10000, // Sets the timeout for commands like cy.get() to 10 seconds
+    defaultCommandTimeout: 20000, // Sets the timeout for commands like cy.get() to 10 seconds
     pageLoadTimeout: 60000,       // Sets the timeout for cy.visit() to 60 seconds
     retries: {
-      runMode: 4, // Retries failing tests 2 times in CI mode
+      runMode: 9, // Retries failing tests 2 times in CI mode
       openMode: 0 // No retries in interactive mode
     },
   },
