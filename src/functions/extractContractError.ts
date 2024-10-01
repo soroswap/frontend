@@ -9,5 +9,5 @@ export function extractContractError(errorMessage: unknown): Error {
     return new Error(`Contract Error #${match[1]}`);
   }
 
-  return new Error('Unknown contract error');
+  return new Error('Unknown contract error with errorMessage: ' + errorMessage);
 }
