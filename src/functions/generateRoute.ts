@@ -9,7 +9,7 @@ import {
   CurrencyAmount,
   Networks,
   Percent,
-  Protocols,
+  Protocol,
   Route,
   Router,
   Token,
@@ -62,65 +62,16 @@ export const useRouterSDK = () => {
 
   const network = sorobanContext.activeChain?.networkPassphrase as Networks;
 
-  const getValuebyKey = (key: string) => {
-    let value = protocolsStatus.find((p) => p.key === key)?.value;
-    // Soroswap will be activatewd by defaul
-    if (value === undefined && key === Protocols.SOROSWAP) {
-      return true;
-    }
-    // SDEX will be activated by defaul
-    if (value === undefined && key === PlatformType.STELLAR_CLASSIC) {
-      return true;
-    }
-    if (typeof value === 'undefined') {
-      return false;
-    }
-    if (value === true || value === false) {
-      return value;
-    }
-    return value;
-  }
-
-  const getDefaultProtocolsStatus = async (network: Networks) => {
-    switch (network) {
-      case Networks.PUBLIC:
-        // here you should add your new supported protocols
-        return [
-          { key: Protocols.SOROSWAP , value: getValuebyKey(Protocols.SOROSWAP) },
-          { key: PlatformType.STELLAR_CLASSIC, value: getValuebyKey(PlatformType.STELLAR_CLASSIC) },
-        ];
-      case Networks.TESTNET:
-        return [
-          { key: Protocols.SOROSWAP, value: getValuebyKey(Protocols.SOROSWAP) },
-          { key: Protocols.PHOENIX, value: getValuebyKey(Protocols.PHOENIX) },
-        ];
-      default:
-        return [
-          { key: Protocols.SOROSWAP, value: true },
-          { key: Protocols.PHOENIX, value: false },
-          { key: PlatformType.STELLAR_CLASSIC, value: true },
-        ];
-    }
-  }
-
-  useEffect(() => {
-    const fetchProtocolsStatus = async () => {
-      const defaultProtocols = await getDefaultProtocolsStatus(network);
-      setProtocolsStatus(defaultProtocols);
-    };
-    fetchProtocolsStatus();
-  }, [network]);
-
   const getPairsFns = useMemo(() => {
     const routerProtocols = []
-    if(!shouldUseBackend) return undefined
-//  here you should add your new supported aggregator protocols
+    if(shouldUseBackend) return undefined
+    //  here you should add your new supported aggregator protocols
     for(let protocol of protocolsStatus){
-      if(protocol.key === Protocols.SOROSWAP && protocol.value === true){
-        routerProtocols.push({protocol: Protocols.SOROSWAP, fn: async () => fetchAllSoroswapPairs(network)});
+      if(protocol.key === Protocol.SOROSWAP && protocol.value === true){
+        routerProtocols.push({protocol: Protocol.SOROSWAP, fn: async () => fetchAllSoroswapPairs(network)});
       }
-      if(protocol.key === Protocols.PHOENIX && protocol.value === true){
-        routerProtocols.push({protocol: Protocols.PHOENIX, fn: async () => fetchAllPhoenixPairs(network)});
+      if(protocol.key === Protocol.PHOENIX && protocol.value === true){
+        routerProtocols.push({protocol: Protocol.PHOENIX, fn: async () => fetchAllPhoenixPairs(network)});
       }
     }
     return routerProtocols;
@@ -133,7 +84,7 @@ export const useRouterSDK = () => {
         newProtocols.push(protocol.key);
       }
     }
-    return newProtocols as Protocols[];
+    return newProtocols as Protocol[];
   },[protocolsStatus]);
 
   const router = useMemo(() => {
@@ -145,10 +96,6 @@ export const useRouterSDK = () => {
       maxHops,
     });
   }, [network, maxHops, isAggregator, protocolsStatus]);
-
-  const isProtocolEnabled = (protocol: any) => {
-    return protocolsStatus.find((p) => p.key === protocol)?.value;
-  }
 
   const fromAddressToToken = (address: string) => {
     return new Token(network, address, 18);
@@ -179,7 +126,7 @@ export const useRouterSDK = () => {
 
     const isHorizonEnabled = currentProtocolsStatus.find((p) => p.key === PlatformType.STELLAR_CLASSIC)?.value; 
 
-    const isSoroswapEnabled = currentProtocolsStatus.find((p) => p.key === Protocols.SOROSWAP)?.value; 
+    const isSoroswapEnabled = currentProtocolsStatus.find((p) => p.key === Protocol.SOROSWAP)?.value; 
 
     const horizonProps = {
       assetFrom: amountAsset.currency,
