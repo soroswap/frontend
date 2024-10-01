@@ -1,5 +1,5 @@
 import React from 'react';
-import { Protocols } from 'soroswap-router-sdk';
+import { Protocol } from 'soroswap-router-sdk';
 import { PlatformType } from 'state/routing/types';
 
 type ConnectWalletModalType = {
@@ -16,7 +16,7 @@ export enum SnackbarIconType {
 }
 
 export interface ProtocolsStatus {
-  key: Protocols | PlatformType;
+  key: Protocol | PlatformType;
   value: boolean;
 }
 

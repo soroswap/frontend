@@ -9,7 +9,7 @@ import {
   CurrencyAmount,
   Networks,
   Percent,
-  Protocols,
+  Protocol,
   Route,
   Router,
   Token,
@@ -64,14 +64,14 @@ export const useRouterSDK = () => {
 
   const getPairsFns = useMemo(() => {
     const routerProtocols = []
-    if(!shouldUseBackend) return undefined
-//  here you should add your new supported aggregator protocols
+    if(shouldUseBackend) return undefined
+    //  here you should add your new supported aggregator protocols
     for(let protocol of protocolsStatus){
-      if(protocol.key === Protocols.SOROSWAP && protocol.value === true){
-        routerProtocols.push({protocol: Protocols.SOROSWAP, fn: async () => fetchAllSoroswapPairs(network)});
+      if(protocol.key === Protocol.SOROSWAP && protocol.value === true){
+        routerProtocols.push({protocol: Protocol.SOROSWAP, fn: async () => fetchAllSoroswapPairs(network)});
       }
-      if(protocol.key === Protocols.PHOENIX && protocol.value === true){
-        routerProtocols.push({protocol: Protocols.PHOENIX, fn: async () => fetchAllPhoenixPairs(network)});
+      if(protocol.key === Protocol.PHOENIX && protocol.value === true){
+        routerProtocols.push({protocol: Protocol.PHOENIX, fn: async () => fetchAllPhoenixPairs(network)});
       }
     }
     return routerProtocols;
@@ -84,7 +84,7 @@ export const useRouterSDK = () => {
         newProtocols.push(protocol.key);
       }
     }
-    return newProtocols as Protocols[];
+    return newProtocols as Protocol[];
   },[protocolsStatus]);
 
   const router = useMemo(() => {
@@ -126,7 +126,7 @@ export const useRouterSDK = () => {
 
     const isHorizonEnabled = currentProtocolsStatus.find((p) => p.key === PlatformType.STELLAR_CLASSIC)?.value; 
 
-    const isSoroswapEnabled = currentProtocolsStatus.find((p) => p.key === Protocols.SOROSWAP)?.value; 
+    const isSoroswapEnabled = currentProtocolsStatus.find((p) => p.key === Protocol.SOROSWAP)?.value; 
 
     const horizonProps = {
       assetFrom: amountAsset.currency,
