@@ -236,7 +236,7 @@ export enum TradeType {
 
 export enum PlatformType {
   AGGREGATOR = 'Soroswap Aggregator',
-  ROUTER = 'Soroswap Router',
+  ROUTER = 'Soroswap AMM',
   STELLAR_CLASSIC = 'SDEX',
 }
 
