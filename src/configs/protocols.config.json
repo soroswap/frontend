@@ -10,7 +10,7 @@
     },
     {
       "key": "phoenix",
-      "value": true
+      "value": false
     }
   ],
   "testnet": [
