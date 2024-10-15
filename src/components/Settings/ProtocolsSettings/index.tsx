@@ -4,10 +4,9 @@ import Row, { RowBetween } from 'components/Row';
 import { BodySmall } from 'components/Text';
 import { AppContext } from 'contexts';
 import { useRouterSDK } from 'functions/generateRoute';
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react';
 import { Box, styled, Switch, SwitchProps, Typography, useTheme } from 'soroswap-ui';
 import { useSWRConfig } from 'swr';
-
 
 export const CustomSwitch = styled((props: SwitchProps) => (
   <Switch sx={{ my: 1 }} focusVisibleClassName=".Mui-focusVisible" disableRipple {...props} />
@@ -56,10 +55,9 @@ export const CustomSwitch = styled((props: SwitchProps) => (
   },
 }));
 
-
 const firstLetterUppercase = (string: string) => {
   return string.charAt(0).toUpperCase() + string.slice(1);
-}
+};
 const ProtocolsSettings = () => {
   const { resetRouterSdkCache } = useRouterSDK();
   const theme = useTheme();
@@ -88,12 +86,10 @@ const ProtocolsSettings = () => {
         undefined,
         { revalidate: true },
       );
-    }
-    else return;
-  }
+    } else return;
+  };
 
   return (
-
     <Expand
       testId="protocols-settings"
       isOpen={isOpen}
@@ -104,7 +100,8 @@ const ProtocolsSettings = () => {
           <QuestionHelper
             text={
               <div>
-                The protocols Soroswap.finance will use to calculate the most efficient path for your transaction.
+                The protocols Soroswap.finance will use to calculate the most efficient path for
+                your transaction.
               </div>
             }
           />
@@ -113,21 +110,30 @@ const ProtocolsSettings = () => {
       button={<></>}
     >
       <RowBetween gap="md" width={'100%'}>
-        <Box sx={{ ml: 2 }} width={'100%'} >
+        <Box sx={{ ml: 2 }} width={'100%'}>
           {protocolsStatus.map((option, index) => {
             return (
-              <Row key={index} gap="4px" justify='space-between' align='center'>
-                <BodySmall fontWeight={100} color={theme.palette.secondary.main} >{firstLetterUppercase(option.key)}</BodySmall>
-                <CustomSwitch checked={option.value} onClick={() => { switchProtocolValue(option.key) }} color="secondary" />
+              <Row key={index} gap="4px" justify="space-between" align="center">
+                <BodySmall fontWeight={100} color={theme.palette.secondary.main}>
+                  {firstLetterUppercase(option.key)}
+                </BodySmall>
+                <CustomSwitch
+                  checked={option.value}
+                  onClick={() => {
+                    switchProtocolValue(option.key);
+                  }}
+                  color="secondary"
+                />
               </Row>
-            )
+            );
           })}
+          <BodySmall fontWeight={100} color={theme.palette.secondary.main}>
+            Use Phoenix at your own risk
+          </BodySmall>
         </Box>
       </RowBetween>
-
     </Expand>
+  );
+};
 
-  )
-}
-
-export default ProtocolsSettings
+export default ProtocolsSettings;
