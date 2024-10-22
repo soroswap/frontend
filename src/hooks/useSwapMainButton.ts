@@ -7,6 +7,7 @@ import { Field } from 'state/swap/actions';
 import { relevantTokensType } from './useBalances';
 import useGetMyBalances from './useGetMyBalances';
 import useGetNativeTokenBalance from './useGetNativeTokenBalance';
+import { useAggregator } from './useAggregator';
 
 interface Props {
   currencies: any;
@@ -34,6 +35,7 @@ const useSwapMainButton = ({
   const { isConnectWalletModalOpen, setConnectWalletModalOpen } = ConnectWalletModal;
   const { data } = useGetNativeTokenBalance();
   const { availableNativeBalance } = useGetMyBalances();
+  const { isEnabled: aggregatorEnabled } = useAggregator();
 
   const { address } = sorobanContext;
   const userBalances = useGetMyBalances();
@@ -66,9 +68,14 @@ const useSwapMainButton = ({
       Number(inputA) > Number(balanceA) ? currencyA?.code : undefined;
 
     const invalidAmount = Number(inputA) < 0 || Number(inputB) < 0;
-
-    const insufficientLiquidity = !noAmountTyped && !trade;
-
+    let insufficientLiquidity = !noAmountTyped && !trade;
+    if(aggregatorEnabled){
+      const distribution = trade?.distribution;
+      if (distribution?.every((d) => d.path.length === 0)) {
+        insufficientLiquidity = true;
+      }
+    }
+    
     return {
       currencyA,
       currencyB,
