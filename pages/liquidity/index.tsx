@@ -101,21 +101,21 @@ export default function LiquidityPage() {
 
   return (
     <>
-      <SEO title="Liquidity - Soroswap" description="Soroswap Liquidity Pool" />
+      <SEO title="Pools - Soroswap" description="Soroswap Liquidity Pool" />
       <PageWrapper>
         <div style={{ width: '100%' }}>
           <AutoRow style={{ justifyContent: 'space-between' }}>
-            <SubHeader>Your liquidity</SubHeader>
+            <SubHeader>Your pools</SubHeader>
             <SettingsTab autoSlippage={DEFAULT_SLIPPAGE_INPUT_VALUE} />
           </AutoRow>
           <div>
-            <BodySmall>List of your liquidity positions</BodySmall>
+            <BodySmall>List of your pools positions</BodySmall>
           </div>
         </div>
         {!address ? (
           <LPTokensContainer>
             <BodySmall color={theme.palette.custom.accentTextLightSecondary} textAlign="center">
-              <>Connect to a wallet to view your liquidity.</>
+              <>Connect to a wallet to view your pools.</>
             </BodySmall>
           </LPTokensContainer>
         ) : v2IsLoading ? (
@@ -149,13 +149,13 @@ export default function LiquidityPage() {
         ) : (
           <LPTokensContainer>
             <BodySmall color={theme.palette.custom.accentTextLightSecondary} textAlign="center">
-              <>No liquidity found.</>
+              <>No pools found.</>
             </BodySmall>
           </LPTokensContainer>
         )}
         {address ? (
           <ButtonPrimary onClick={() => router.push('/liquidity/add')}>
-            + Add Liquidity
+            + Add pool
           </ButtonPrimary>
         ) : (
           <WalletButton />
