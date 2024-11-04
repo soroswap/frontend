@@ -21,21 +21,25 @@ export default function Home() {
   });
 
   useEffect(() => {
-    const newXlmToken =
-      xlmTokenList.find((tList) => tList.network === activeChain?.id)?.assets[0].contract ?? null;
-    setXlmToken(newXlmToken);
+    if (prefilledState.INPUT?.currencyId == null) {
+      const newXlmToken =
+        xlmTokenList.find((tList) => tList.network === activeChain?.id)?.assets[0].contract ?? null;
+      setXlmToken(newXlmToken);
 
-    const newPrefilledState = {
-      [Field.INPUT]: { currencyId: newXlmToken },
-      [Field.OUTPUT]: { currencyId: null },
-    };
-    setPrefilledState(newPrefilledState);
+      const newPrefilledState = {
+        [Field.INPUT]: { currencyId: newXlmToken },
+        [Field.OUTPUT]: { currencyId: null },
+      };
+      setPrefilledState(newPrefilledState);
+    }
   }, [activeChain, xlmToken]);
 
   return (
     <>
       <SEO title="Soroswap" data-testid="SEO" />
-      {xlmToken && <SwapComponent prefilledState={prefilledState} />}
+      {xlmToken && (
+        <SwapComponent prefilledState={prefilledState} setPrefilledState={setPrefilledState} />
+      )}
     </>
   );
 }

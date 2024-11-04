@@ -108,15 +108,17 @@ const INITIAL_SWAP_STATE = {
 
 export function SwapComponent({
   prefilledState = {},
+  setPrefilledState,
   disableTokenInputs = false,
   handleDoSwap,
 }: {
   prefilledState?: Partial<SwapState>;
+  setPrefilledState?: (value: Partial<SwapState>) => void;
   disableTokenInputs?: boolean;
   handleDoSwap?: (setSwapState: (value: SetStateAction<SwapStateProps>) => void) => void;
 }) {
   const sorobanContext = useSorobanReact();
-  const { refetch } = useGetMyBalances()
+  const { refetch } = useGetMyBalances();
   const { SnackbarContext } = useContext(AppContext);
   const [showPriceImpactModal, setShowPriceImpactModal] = useState<boolean>(false);
   const [txError, setTxError] = useState<boolean>(false);
@@ -153,7 +155,10 @@ export function SwapComponent({
   } = useDerivedSwapInfo(state);
 
   useEffect(() => {
-    if (typeof currencyBalances[Field.OUTPUT] != 'string' && currencyBalances[Field.OUTPUT].balance === undefined) {
+    if (
+      typeof currencyBalances[Field.OUTPUT] != 'string' &&
+      currencyBalances[Field.OUTPUT].balance === undefined
+    ) {
       setNeedTrustline(true);
     } else {
       setNeedTrustline(false);
@@ -202,6 +207,12 @@ export function SwapComponent({
   const handleInputSelect = useCallback(
     (inputCurrency: TokenType) => {
       onCurrencySelection(Field.INPUT, inputCurrency);
+      setPrefilledState
+        ? setPrefilledState({
+            [Field.INPUT]: { currencyId: inputCurrency.contract },
+            [Field.OUTPUT]: { currencyId: prefilledState.OUTPUT?.currencyId },
+          })
+        : null;
     },
     [onCurrencySelection],
   );
@@ -209,6 +220,12 @@ export function SwapComponent({
   const handleOutputSelect = useCallback(
     (outputCurrency: TokenType) => {
       onCurrencySelection(Field.OUTPUT, outputCurrency);
+      setPrefilledState
+        ? setPrefilledState({
+            [Field.INPUT]: { currencyId: prefilledState.OUTPUT?.currencyId },
+            [Field.OUTPUT]: { currencyId: outputCurrency.contract },
+          })
+        : null;
     },
     [onCurrencySelection],
   );
@@ -309,9 +326,10 @@ export function SwapComponent({
           ...currentState,
           showConfirm: false,
         }));
-      }).finally(() => {
-        refetch()
-        nativeBalance.mutate()
+      })
+      .finally(() => {
+        refetch();
+        nativeBalance.mutate();
       });
   };
 
