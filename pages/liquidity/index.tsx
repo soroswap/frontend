@@ -14,7 +14,7 @@ import { AppContext } from 'contexts';
 import { LpTokensObj } from 'functions/getLpTokens';
 import useGetLpTokens from 'hooks/useGetLpTokens';
 import { useRouter } from 'next/router';
-import { useContext, useState } from 'react';
+import { useContext, useState, useEffect } from 'react';
 import SEO from '../../src/components/SEO';
 import { DEFAULT_SLIPPAGE_INPUT_VALUE } from 'components/Settings/MaxSlippageSettings';
 
@@ -93,11 +93,19 @@ export default function LiquidityPage() {
 
   const [isModalOpen, setModalOpen] = useState<boolean>(false);
   const [selectedLP, setSelectedLP] = useState<LpTokensObj>();
+  const [sortedLpTokens, setSortedLpTokens] = useState<LpTokensObj[]>([]);
 
   const handleLPClick = (obj: LpTokensObj) => {
     setSelectedLP(obj);
     setModalOpen(true);
   };
+
+  useEffect(() => {
+    if (lpTokens) {
+      const sortedTokens = [...lpTokens].sort((a, b) => parseFloat(b.lpPercentage) - parseFloat(a.lpPercentage));
+      setSortedLpTokens(sortedTokens);
+    }
+  }, [lpTokens]);
 
   return (
     <>
@@ -105,28 +113,14 @@ export default function LiquidityPage() {
       <PageWrapper>
         <div style={{ width: '100%' }}>
           <AutoRow style={{ justifyContent: 'space-between' }}>
-            <SubHeader>Your pools</SubHeader>
+            <SubHeader>Your Liquidity</SubHeader>
             <SettingsTab autoSlippage={DEFAULT_SLIPPAGE_INPUT_VALUE} />
           </AutoRow>
           <div>
             <BodySmall>List of your pools positions</BodySmall>
           </div>
         </div>
-        {!address ? (
-          <LPTokensContainer>
-            <BodySmall color={theme.palette.custom.accentTextLightSecondary} textAlign="center">
-              <>Connect to a wallet to view your pools.</>
-            </BodySmall>
-          </LPTokensContainer>
-        ) : v2IsLoading ? (
-          <LPTokensContainer>
-            <BodySmall color={theme.palette.custom.accentTextLightSecondary} textAlign="center">
-              <Dots>
-                <>Loading</>
-              </Dots>
-            </BodySmall>
-          </LPTokensContainer>
-        ) : lpTokens && lpTokens?.length > 0 ? (
+        {!address && lpTokens && lpTokens?.length > 0 ? (
           <LPTokensContainer>
             {lpTokens.map((obj: any, index: number) => (
               <LPCard onClick={() => handleLPClick(obj)} key={index}>
@@ -137,14 +131,40 @@ export default function LiquidityPage() {
                     {obj.token_0.code} - {obj.token_1.code}
                   </SubHeader>
                   <LPPercentage>{obj.lpPercentage}%</LPPercentage>
+                  <WalletButton />
                 </AutoRow>
-                <StatusWrapper>{obj.status}</StatusWrapper>
               </LPCard>
             ))}
           </LPTokensContainer>
+        ) : !address ? (
+          <LPTokensContainer>
+            <BodySmall color={theme.palette.custom.accentTextLightSecondary} textAlign="center">
+              <>Connect to a wallet to view your pools.</>
+            </BodySmall>
+          </LPTokensContainer>
         ) : isLoading ? (
           <LPTokensContainer>
-            <CircularProgress size="16px" />
+            <Dots>Loading</Dots>
+          </LPTokensContainer>
+        ) : sortedLpTokens && sortedLpTokens.length > 0 ? (
+          <LPTokensContainer>
+            {sortedLpTokens.map((obj: any, index: number) => (
+              <LPCard onClick={() => handleLPClick(obj)} key={index}>
+                <AutoRow gap="2px">
+                  <CurrencyLogo currency={obj.token_0} size={isMobile ? '16px' : '24px'} />
+                  <CurrencyLogo currency={obj.token_1} size={isMobile ? '16px' : '24px'} />
+                  <SubHeader>
+                    {obj.token_0.code} - {obj.token_1.code}
+                  </SubHeader>
+                  <LPPercentage>{obj.lpPercentage}%</LPPercentage>
+                </AutoRow>
+                {parseFloat(obj.lpPercentage) > 0 ? (
+                  <ButtonPrimary onClick={() => { }}>Manage</ButtonPrimary>
+                ) : (
+                  <ButtonPrimary onClick={() => router.push('/liquidity/add')}>Add Liquidity</ButtonPrimary>
+                )}
+              </LPCard>
+            ))}
           </LPTokensContainer>
         ) : (
           <LPTokensContainer>
@@ -155,7 +175,7 @@ export default function LiquidityPage() {
         )}
         {address ? (
           <ButtonPrimary onClick={() => router.push('/liquidity/add')}>
-            + Add pool
+            Create Liquidity Pool
           </ButtonPrimary>
         ) : (
           <WalletButton />
