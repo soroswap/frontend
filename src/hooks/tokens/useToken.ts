@@ -9,6 +9,49 @@ import { useAllTokens } from './useAllTokens';
 import { getToken, isClassicStellarAsset } from './utils';
 import { Asset } from '@stellar/stellar-sdk';
 
+interface TokenVolumeData {
+  asset: {
+    name: string;
+    contract: string;
+    code: string;
+    icon: string;
+    decimals: number;
+  };
+  volume24h: number;
+}
+
+interface TokenWithVolume extends TokenType {
+  volume24h: number;
+}
+
+const fetchTokenVolumes = async (network: string): Promise<TokenVolumeData[]> => {
+  const response = await fetch(`https://info.soroswap.finance/api/tokens?network=${network}`);
+  if (!response.ok) {
+    throw new Error('Failed to fetch token volumes');
+  }
+  const data = await response.json();
+  return data.map((token: any) => ({
+    asset: token.asset,
+    volume24h: token.volume24h,
+  }));
+};
+
+export function useVolumeData(networkName: string) {
+  const { data, error } = useSWR(['tokenVolumes', networkName], ([_, network]) =>
+    fetchTokenVolumes(network),
+  );
+  return {
+    volumeData: data,
+    isLoading: !data && !error,
+    error,
+  };
+}
+
+const revalidateKeysCondition = (key: any) => {
+  const revalidateKeys = new Set(['token', 'isStellarClassicAsset', 'tokenName']);
+  return Array.isArray(key) && key.some((k) => revalidateKeys.has(k));
+};
+
 export const findToken = async (
   tokenAddress: string | undefined,
   tokensAsMap: TokenMapType,
@@ -17,31 +60,17 @@ export const findToken = async (
   if (!tokenAddress || tokenAddress === '') return undefined;
 
   const classicAssetSearch = getClassicAssetSorobanAddress(tokenAddress!, sorobanContext);
-  
   const formattedAddress = isAddress(classicAssetSearch ? classicAssetSearch : tokenAddress);
   if (!formattedAddress) return undefined;
-  
+
   const fromMap = tokensAsMap[formattedAddress];
-  
   if (fromMap) return fromMap;
-  
+
   const token = await getToken(sorobanContext, formattedAddress);
-  // const token: TokenType = {
-  //   contract: formattedAddress,
-  //   name: name as string,
-  //   code: symbol as string,
-  //   decimals,
-  //   icon: logo,
-  // };
-  
   if (!token?.name || !token?.code) return undefined;
-  // Here from token.name we will try to understand if this is a classic asset (even if we got a soroban contracta as address).
+
   const stellarAsset = getClassicStellarAsset(token.name);
 
-  /*
-    TODO: Here we might have a situation where a Soroban Contract has as name a CODE:ISSUER
-    We need to have a beter way to know if a soroban contract its for sure a stellar classic asset, and which.
-  */
   if (stellarAsset && typeof stellarAsset !== 'boolean') {
     return {
       issuer: stellarAsset.issuer,
@@ -51,19 +80,11 @@ export const findToken = async (
       decimals: 7,
       icon: '',
     };
+  } else {
+    return token;
   }
-  else {
-    return token
-  };
 };
 
-const revalidateKeysCondition = (key: any) => {
-  const revalidateKeys = new Set(['token', 'isStellarClassicAsset', 'tokenName']);
-
-  return Array.isArray(key) && key.some((k) => revalidateKeys.has(k));
-};
-
-//Returns token from map (user added + api) or network
 export function useToken(tokenAddress: string | undefined) {
   const sorobanContext = useSorobanReact();
   const { activeChain: network } = sorobanContext;
@@ -93,11 +114,15 @@ export function useToken(tokenAddress: string | undefined) {
     ['isStellarClassicAsset', tokenAddress, sorobanContext],
     ([key, tokenAddress, sorobanContext]) => isClassicStellarAsset(tokenAddress!, sorobanContext),
   );
-  const bothLoading = isLoading || isStellarClassicAssetLoading;
 
+  const bothLoading = isLoading || isStellarClassicAssetLoading;
   const needsWrapping = !data && isStellarClassicAsset;
-  
-  const checkContractId = (contractId: string, code: string, issuer: string): boolean | undefined => {
+
+  const checkContractId = (
+    contractId: string,
+    code: string,
+    issuer: string,
+  ): boolean | undefined => {
     if (!issuer) {
       return undefined;
     }
@@ -107,9 +132,9 @@ export function useToken(tokenAddress: string | undefined) {
     } else {
       return false;
     }
-  }
-  const isSafe = data ? checkContractId(data.contract, data.code, data.issuer!) : false;
+  };
 
+  const isSafe = data ? checkContractId(data.contract, data.code, data.issuer!) : false;
   const needsWrappingOnAddLiquidity = (!data && isStellarClassicAsset) || !name;
 
   let newTokenData: TokenType | undefined = undefined;
@@ -131,9 +156,28 @@ export function useToken(tokenAddress: string | undefined) {
     }
   }
 
-  //if not data and AssetExists return isWrapped: false
+  // Add volume data
+  const networkName = network?.name === 'TESTNET' ? 'TESTNET' : 'MAINNET';
+  const { volumeData } = useVolumeData(networkName);
+
+  const specificTokenVolume = tokenAddress
+    ? volumeData?.find((t) => t.asset.contract === tokenAddress)?.volume24h
+    : undefined;
+
+  const tokenWithVolume: TokenWithVolume | undefined = data
+    ? {
+        ...data,
+        volume24h: specificTokenVolume ?? 0,
+      }
+    : newTokenData
+    ? {
+        ...newTokenData,
+        volume24h: specificTokenVolume ?? 0,
+      }
+    : undefined;
+
   return {
-    token: data ?? newTokenData,
+    token: tokenWithVolume,
     tokenIsSafe: isSafe,
     needsWrapping,
     isLoading: bothLoading,
