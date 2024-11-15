@@ -20,6 +20,7 @@ import useHorizonLoadAccount from 'hooks/useHorizonLoadAccount';
 
 import { isAddress, shortenAddress } from 'helpers/address';
 import { formatTokenAmount } from 'helpers/format';
+import useSWRImmutable from 'swr/immutable';
 
 function currencyKey(currency: TokenType): string {
   return currency.contract ? currency.contract : 'ETHER';
@@ -248,42 +249,43 @@ export default function CurrencyList({
   const { tokenBalancesResponse } = useGetMyBalances();
   const { account } = useHorizonLoadAccount();
 
-  const [balances, setBalances] = useState<Record<string, number>>({});
-
   const itemData = useMemo(() => {
     return otherListTokens && otherListTokens.length > 0
       ? [...currencies, ...otherListTokens]
       : currencies;
   }, [currencies, otherListTokens]);
 
-  useEffect(() => {
-    const fetchBalances = async () => {
-      const newBalances: Record<string, number> = {};
-
-      if (account) {
-        for (const currency of itemData) {
-          const balance = await getCurrencyBalance(
-            tokenBalancesResponse,
-            currency,
-            sorobanContext,
-            account,
-          );
-          newBalances[currencyKey(currency)] = Number(balance ?? 0);
-        }
-        setBalances(newBalances);
-      }
-    };
-
-    if (sorobanContext.activeChain && sorobanContext.address && account && itemData.length > 0) {
-      fetchBalances();
+  const fetchBalances = async () => {
+    if (
+      !account ||
+      !sorobanContext.activeChain ||
+      !sorobanContext.address ||
+      itemData.length === 0
+    ) {
+      return {};
     }
-  }, [
-    sorobanContext.activeChain,
-    sorobanContext.address,
-    account,
-    itemData,
-    tokenBalancesResponse,
-  ]);
+
+    const newBalances: Record<string, number> = {};
+    for (const currency of itemData) {
+      const balance = await getCurrencyBalance(
+        tokenBalancesResponse,
+        currency,
+        sorobanContext,
+        account,
+      );
+      newBalances[currencyKey(currency)] = Number(balance ?? 0);
+    }
+    return newBalances;
+  };
+
+  const { data: balances = {}, error } = useSWRImmutable(
+    account ? ['balances', account, tokenBalancesResponse, itemData] : null,
+    fetchBalances,
+  );
+
+  if (error) {
+    console.error('Error loading balances:', error);
+  }
 
   const sortedItemData = useMemo(() => {
     if (!itemData || !Array.isArray(itemData)) {
