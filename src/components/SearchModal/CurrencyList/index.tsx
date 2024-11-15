@@ -173,7 +173,7 @@ export function CurrencyRow({
       </AutoColumn>
       {showCurrencyAmount ? (
         <RowFixed style={{ justifySelf: 'flex-end' }}>
-          {<Balance balance={balance.toString() || '0'} />} {/* Usando o saldo diretamente */}
+          {<Balance balance={balance.toString() || '0'} />}
           {isSelected && <CheckIcon />}
         </RowFixed>
       ) : (
