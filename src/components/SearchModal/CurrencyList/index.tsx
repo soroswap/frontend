@@ -107,30 +107,17 @@ export function CurrencyRow({
   otherSelected,
   style,
   showCurrencyAmount,
+  balance,
 }: {
   currency: TokenType;
   onSelect: (hasWarning: boolean) => void;
   isSelected: boolean;
   otherSelected: boolean;
   showCurrencyAmount?: boolean;
+  balance: number;
   eventProperties: Record<string, unknown>;
   style?: CSSProperties;
 }) {
-  const sorobanContext = useSorobanReact();
-
-  const { address } = sorobanContext;
-
-  const { tokenBalancesResponse } = useGetMyBalances();
-
-  const { account } = useHorizonLoadAccount();
-
-  const { data, isLoading } = useSWRImmutable(
-    sorobanContext.activeChain && sorobanContext.address && account
-      ? ['currencyBalance', tokenBalancesResponse, currency, sorobanContext, account]
-      : null,
-    ([_, tokenBalancesResponse, currency, sorobanContext, account]) =>
-      getCurrencyBalance(tokenBalancesResponse, currency, sorobanContext, account),
-  );
   const shortenSorobanClassicAsset = (currency: TokenType) => {
     if (!currency) return '';
     if (currency?.name && currency.name.toString().length > 56) {
@@ -186,7 +173,7 @@ export function CurrencyRow({
       </AutoColumn>
       {showCurrencyAmount ? (
         <RowFixed style={{ justifySelf: 'flex-end' }}>
-          {isLoading ? <Loader /> : address ? <Balance balance={data || '0'} /> : null}
+          {<Balance balance={balance.toString() || '0'} />} {/* Usando o saldo diretamente */}
           {isSelected && <CheckIcon />}
         </RowFixed>
       ) : (
@@ -258,12 +245,34 @@ export default function CurrencyList({
   isAddressSearch: string | false;
   isLoading?: boolean;
 }) {
+  const sorobanContext = useSorobanReact();
+
+  const { tokenBalancesResponse } = useGetMyBalances();
+
+  const { account } = useHorizonLoadAccount();
+
   const itemData: TokenType[] = useMemo(() => {
     if (otherListTokens && otherListTokens?.length > 0) {
       return [...currencies, ...otherListTokens];
     }
     return currencies;
   }, [currencies, otherListTokens]);
+
+  const enhancedItemData = itemData.map((currency) => {
+    const { data: balance, error } = useSWRImmutable(
+      sorobanContext.activeChain && sorobanContext.address && account
+        ? ['currencyBalance', tokenBalancesResponse, currency, sorobanContext, account]
+        : null,
+      ([_, tokenBalancesResponse, currency, sorobanContext, account]) =>
+        getCurrencyBalance(tokenBalancesResponse, currency, sorobanContext, account),
+    );
+    return {
+      ...currency,
+      balance: Number(balance ?? 0),
+    };
+  });
+
+  const sortedItemData = enhancedItemData.sort((a, b) => b.balance - a.balance);
 
   const Row = useCallback(
     function TokenRow({ data, index, style }: TokenRowProps) {
@@ -286,6 +295,7 @@ export default function CurrencyList({
         return (
           <CurrencyRow
             style={style}
+            balance={row.balance}
             currency={currency}
             isSelected={isSelected}
             onSelect={handleSelect}
@@ -314,7 +324,7 @@ export default function CurrencyList({
     ],
   );
 
-  const itemKey = useCallback((index: number, data: typeof itemData) => {
+  const itemKey = useCallback((index: number, data: typeof sortedItemData) => {
     const currency = data[index];
     return currencyKey(currency);
   }, []);
@@ -330,8 +340,8 @@ export default function CurrencyList({
           height={height}
           ref={fixedListRef as any}
           width="100%"
-          itemData={itemData}
-          itemCount={itemData.length}
+          itemData={sortedItemData}
+          itemCount={sortedItemData.length}
           itemSize={56}
           itemKey={itemKey}
         >

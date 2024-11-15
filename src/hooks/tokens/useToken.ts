@@ -17,14 +17,14 @@ export const findToken = async (
   if (!tokenAddress || tokenAddress === '') return undefined;
 
   const classicAssetSearch = getClassicAssetSorobanAddress(tokenAddress!, sorobanContext);
-  
+
   const formattedAddress = isAddress(classicAssetSearch ? classicAssetSearch : tokenAddress);
   if (!formattedAddress) return undefined;
-  
+
   const fromMap = tokensAsMap[formattedAddress];
-  
+
   if (fromMap) return fromMap;
-  
+
   const token = await getToken(sorobanContext, formattedAddress);
   // const token: TokenType = {
   //   contract: formattedAddress,
@@ -33,7 +33,7 @@ export const findToken = async (
   //   decimals,
   //   icon: logo,
   // };
-  
+
   if (!token?.name || !token?.code) return undefined;
   // Here from token.name we will try to understand if this is a classic asset (even if we got a soroban contracta as address).
   const stellarAsset = getClassicStellarAsset(token.name);
@@ -44,6 +44,7 @@ export const findToken = async (
   */
   if (stellarAsset && typeof stellarAsset !== 'boolean') {
     return {
+      balance: 0,
       issuer: stellarAsset.issuer,
       contract: token.contract,
       name: stellarAsset.asset,
@@ -51,10 +52,9 @@ export const findToken = async (
       decimals: 7,
       icon: '',
     };
+  } else {
+    return token;
   }
-  else {
-    return token
-  };
 };
 
 const revalidateKeysCondition = (key: any) => {
@@ -96,8 +96,12 @@ export function useToken(tokenAddress: string | undefined) {
   const bothLoading = isLoading || isStellarClassicAssetLoading;
 
   const needsWrapping = !data && isStellarClassicAsset;
-  
-  const checkContractId = (contractId: string, code: string, issuer: string): boolean | undefined => {
+
+  const checkContractId = (
+    contractId: string,
+    code: string,
+    issuer: string,
+  ): boolean | undefined => {
     if (!issuer) {
       return undefined;
     }
@@ -107,7 +111,7 @@ export function useToken(tokenAddress: string | undefined) {
     } else {
       return false;
     }
-  }
+  };
   const isSafe = data ? checkContractId(data.contract, data.code, data.issuer!) : false;
 
   const needsWrappingOnAddLiquidity = (!data && isStellarClassicAsset) || !name;
@@ -120,6 +124,7 @@ export function useToken(tokenAddress: string | undefined) {
     if (sorobanAddress || (stellarAsset && typeof sorobanAddress === 'string')) {
       if (stellarAsset && typeof stellarAsset !== 'boolean') {
         newTokenData = {
+          balance: 0,
           issuer: stellarAsset.issuer,
           contract: sorobanAddress,
           name: stellarAsset.asset,
