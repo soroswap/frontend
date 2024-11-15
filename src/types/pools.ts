@@ -48,4 +48,6 @@ export interface Pool {
   tvlChartData?: TvlChartData[];
   volumeChartData?: VolumeChartData[];
   feesChartData?: FeesChartData[];
+  shareOfPool?: number;
+  apy?: number;
 }

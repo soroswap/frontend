@@ -11504,10 +11504,10 @@ soroswap-router-sdk@1.4.6:
     tiny-invariant "^1.3.1"
     toformat "^2.0.0"
 
-soroswap-ui@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.npmjs.org/soroswap-ui/-/soroswap-ui-1.0.0.tgz"
-  integrity sha512-50YxrEv+JDL4V+zgLgYrulk05zeWa0r6jtuMMxCDJHYbzxI8Klsd1Sa4eUa6FHeQ66HlwpVEwXrUReYeAK1C8A==
+soroswap-ui@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.npmjs.org/soroswap-ui/-/soroswap-ui-1.1.0.tgz"
+  integrity sha512-igV11/zIt+0joH8q9SCVi4oZWDTTUkHfft+3uae63HwbtV+oLz+vTn0CBy0PHhvOv5Hy0pBWkpnTsjwkil0VXA==
   dependencies:
     "@emotion/react" "^11.11.4"
     "@emotion/styled" "^11.11.5"

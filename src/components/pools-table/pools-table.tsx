@@ -17,74 +17,77 @@ import useTable from "../../hooks/use-table";
 import { Pool } from "../../types/pools";
 import {
   formatNumberToMoney,
-  roundNumber,
   shouldShortenCode,
 } from "../../utils/utils";
 import Token from "../token";
 import { StyledTableCell } from "../styled/table-cell";
 import { StyledCard } from "../styled/card";
 import { useTheme } from "soroswap-ui";
+import { useSorobanReact } from '@soroban-react/core';
+import { ButtonPrimary } from 'components/Buttons/Button';
+import { WalletButton } from 'components/Buttons/WalletButton';
 
 interface HeadCell {
-  id: keyof Pool;
+  id: keyof Pool | 'shareOfPool' | 'actions';
   label: string;
   numeric: boolean;
 }
 
-const headCells: readonly HeadCell[] = [
-  {
-    id: "address",
-    numeric: false,
-    label: "Pool",
-  },
-  {
-    id: "tvl",
-    numeric: true,
-    label: "TVL",
-  },
-  {
-    id: "volume24h",
-    numeric: true,
-    label: "Volume 24H",
-  },
-  {
-    id: "volume7d",
-    numeric: true,
-    label: "Volume 7D",
-  },
-  {
-    id: "fees24h",
-    numeric: true,
-    label: "Fees 24H",
-  },
-  {
-    id: "feesYearly",
-    numeric: true,
-    label: "Fees Yearly",
-  },
-];
+const getHeadCells = (isWalletConnected: boolean): readonly HeadCell[] => {
+  const cells: HeadCell[] = [
+    {
+      id: "address",
+      numeric: false,
+      label: "Pool",
+    },
+    {
+      id: "tvl",
+      numeric: true,
+      label: "TVL",
+    },
+    {
+      id: "apy",
+      numeric: true,
+      label: "APY",
+    }
+  ];
 
-interface PoolsTableProps {
-  onRequestSort: (
-    event: React.MouseEvent<unknown>,
-    property: keyof Pool
-  ) => void;
+  if (isWalletConnected) {
+    cells.push({
+      id: "shareOfPool",
+      numeric: true,
+      label: "Share of Pool",
+    });
+    cells.push({
+      id: "actions",
+      numeric: true,
+      label: "",
+    });
+  }
+
+  return cells;
+};
+
+function PoolsTableHead({
+  order,
+  orderBy,
+  onRequestSort,
+  isWalletConnected,
+}: {
   order: "asc" | "desc";
   orderBy: string;
-}
-
-function PoolsTableHead(props: PoolsTableProps) {
-  const { order, orderBy, onRequestSort } = props;
-  const createSortHandler =
-    (property: keyof Pool) => (event: React.MouseEvent<unknown>) => {
-      onRequestSort(event, property);
-    };
+  onRequestSort: (event: React.MouseEvent<unknown>, property: keyof Pool) => void;
+  isWalletConnected: boolean;
+}) {
+  const createSortHandler = (property: keyof Pool) => (event: React.MouseEvent<unknown>) => {
+    onRequestSort(event, property);
+  };
 
   return (
     <TableHead>
       <TableRow sx={{ bgcolor: "#1b1b1b" }}>
         <StyledTableCell>#</StyledTableCell>
-        {headCells.map((headCell) => (
+        {getHeadCells(isWalletConnected).map((headCell) => (
           <StyledTableCell
             key={headCell.id}
             align={headCell.numeric ? "right" : "left"}
@@ -93,7 +96,7 @@ function PoolsTableHead(props: PoolsTableProps) {
             <TableSortLabel
               active={orderBy === headCell.id}
               direction={orderBy === headCell.id ? order : "asc"}
-              onClick={createSortHandler(headCell.id)}
+              onClick={createSortHandler(headCell.id as keyof Pool)}
             >
               {headCell.label}
               {orderBy === headCell.id ? (
@@ -104,6 +107,7 @@ function PoolsTableHead(props: PoolsTableProps) {
             </TableSortLabel>
           </StyledTableCell>
         ))}
+        {!isWalletConnected && <StyledTableCell />}
       </TableRow>
     </TableHead>
   );
@@ -118,6 +122,10 @@ export default function PoolsTable({
   emptyMessage?: string;
   isLoading?: boolean;
 }) {
+  const sorobanContext = useSorobanReact();
+  const { address } = sorobanContext;
+  const isWalletConnected = !!address;
+
   const {
     order,
     orderBy,
@@ -135,16 +143,22 @@ export default function PoolsTable({
   });
 
   const router = useRouter();
-
   const theme = useTheme();
 
-  const onClickRow = (pool: string) => {
-    router.push({
-      pathname: `/pools/${pool}`,
-      query: {
-        network: router.query.network,
-      },
-    });
+  const handleAction = (pool: Pool) => {
+    if (!isWalletConnected) return;
+    
+    if (pool.shareOfPool && pool.shareOfPool > 0) {
+      router.push({
+        pathname: `/pools/${pool.address}`,
+        query: { network: router.query.network },
+      });
+    } else {
+      router.push({
+        pathname: '/liquidity/add',
+        query: { pool: pool.address, network: router.query.network },
+      });
+    }
   };
 
   if (isLoading) {
@@ -160,83 +174,86 @@ export default function PoolsTable({
               order={order}
               orderBy={orderBy}
               onRequestSort={handleRequestSort}
+              isWalletConnected={isWalletConnected}
             />
             <TableBody>
-              {visibleRows?.map((row, index) => {
-                return (
-                  <TableRow
-                    component="a"
-                    href={`/pools/${row.address}?network=${router.query.network}`}
-                    key={index}
-                    sx={{
-                      "&:nth-of-type(2n)": {
-                        bgcolor: "#1b1b1b",
-                      },
-                      "&:hover": {
-                        cursor: "pointer",
-                        bgcolor: theme.palette.background.paper,
-                        borderTop: `1px solid ${theme.palette.customBackground.accentAction}`,
-                        borderBottom: `1px solid ${theme.palette.customBackground.accentAction}`,
-                      },
-                      bgcolor: "transparent",
-                    }}
-                  >
-                    <StyledTableCell>{index + 1}</StyledTableCell>
-                    <StyledTableCell
-                      align="left"
-                      sx={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "4px",
-                        height: 70,
-                      }}
-                    >
-                      <Box display="flex" alignItems="center">
-                        <Token
-                          imageUrl={row.tokenA?.icon}
-                          width={20}
-                          height={20}
-                        />
-                        <Token
-                          imageUrl={row.tokenB?.icon}
-                          width={20}
-                          height={20}
-                        />
-                      </Box>
-                      {shouldShortenCode(row.tokenA?.code)} /{" "}
-                      {shouldShortenCode(row.tokenB?.code)}
-                    </StyledTableCell>
-                    <StyledTableCell align="right">
-                      {formatNumberToMoney(row.tvl, 2)}
-                    </StyledTableCell>
-                    <StyledTableCell align="right">
-                      {formatNumberToMoney(row.volume24h)}
-                    </StyledTableCell>
-                    <StyledTableCell align="right">
-                      {formatNumberToMoney(row.volume7d)}
-                    </StyledTableCell>
-                    <StyledTableCell align="right">
-                      {formatNumberToMoney(row.fees24h)}
-                    </StyledTableCell>
-                    <StyledTableCell align="right">
-                      {formatNumberToMoney(row.feesYearly)}
-                    </StyledTableCell>
-                  </TableRow>
-                );
-              })}
-              {emptyRows > 0 && (
+              {visibleRows?.map((row, index) => (
                 <TableRow
-                  style={{
-                    height: 53 * emptyRows,
+                  key={index}
+                  sx={{
+                    "&:nth-of-type(2n)": {
+                      bgcolor: "#1b1b1b",
+                    },
+                    "&:hover": {
+                      cursor: "pointer",
+                      bgcolor: theme.palette.background.paper,
+                      borderTop: `1px solid ${theme.palette.customBackground.accentAction}`,
+                      borderBottom: `1px solid ${theme.palette.customBackground.accentAction}`,
+                    },
+                    bgcolor: "transparent",
                   }}
                 >
-                  <StyledTableCell colSpan={6} />
+                  <StyledTableCell>{index + 1}</StyledTableCell>
+                  <StyledTableCell
+                    align="left"
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "4px",
+                      height: 70,
+                    }}
+                  >
+                    <Box display="flex" alignItems="center">
+                      <Token
+                        imageUrl={row.tokenA?.icon}
+                        width={20}
+                        height={20}
+                      />
+                      <Token
+                        imageUrl={row.tokenB?.icon}
+                        width={20}
+                        height={20}
+                      />
+                    </Box>
+                    {shouldShortenCode(row.tokenA?.code)} /{" "}
+                    {shouldShortenCode(row.tokenB?.code)}
+                  </StyledTableCell>
+                  <StyledTableCell align="right">
+                    {formatNumberToMoney(row.tvl || 0, 2)}
+                  </StyledTableCell>
+                  <StyledTableCell align="right">
+                    {row.apy ? `${row.apy}%` : '-'}
+                  </StyledTableCell>
+                  {isWalletConnected ? (
+                    <>
+                      <StyledTableCell align="right">
+                        {row.shareOfPool ? `${row.shareOfPool}%` : '0%'}
+                      </StyledTableCell>
+                      <StyledTableCell align="right">
+                        <ButtonPrimary
+                          onClick={() => handleAction(row)}
+                          style={{ height: '36px', padding: '0 16px' }}
+                        >
+                          {row.shareOfPool && row.shareOfPool > 0 ? 'Manage' : 'Add Liquidity'}
+                        </ButtonPrimary>
+                      </StyledTableCell>
+                    </>
+                  ) : (
+                    <StyledTableCell align="right">
+                      <WalletButton style={{ height: '36px', padding: '0 16px' }} />
+                    </StyledTableCell>
+                  )}
+                </TableRow>
+              ))}
+              {emptyRows > 0 && (
+                <TableRow style={{ height: 53 * emptyRows }}>
+                  <StyledTableCell colSpan={isWalletConnected ? 6 : 5} />
                 </TableRow>
               )}
               {visibleRows.length === 0 && (
                 <TableRow>
-                  <StyledTableCell colSpan={6} align="center">
-                    No pools found
+                  <StyledTableCell colSpan={isWalletConnected ? 6 : 5} align="center">
+                    {emptyMessage}
                   </StyledTableCell>
                 </TableRow>
               )}
