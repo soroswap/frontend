@@ -24,26 +24,27 @@ Copy the .env.example file to create a new .env file:
 ```bash
 cp .env.local.example .env
 ```
+
 Edit the `.env` file and provide the following variables:
+
 ```md
 NEXT_PUBLIC_BACKEND_URL=http://localhost:8010 // If you are following the instructions in `https://github.com/soroswap/core`
 NEXT_PUBLIC_SOROSWAP_BACKEND_URL=http://localhost:8000// Your local soroswap backend url
-NEXT_PUBLIC_SOROSWAP_BACKEND_ENABLED= false // Enables or disables the soroswap backend
 NEXT_PUBLIC_DEFAULT_NETWORK= standalone // The default network to connect
 NEXT_PUBLIC_AGGREGATOR_ENABLED= false // Enables or disables the aggregator
 NEXT_PUBLIC_SOROSWAP_BACKEND_API_KEY= BACKEND_API_KEY // The API key to autenthicate in the soroswap backend
 NEXT_PUBLIC_TRUSTLINE_WALLET_PUBLIC_KEY= STELLAR_PUBLIC_KEY// The public key of the trustline wallet
 NEXT_PUBLIC_TEST_TOKENS_ADMIN_SECRET_KEY= STELLAR_SECRET_KEY // The secret key of the test tokens admin
 ```
+
 Hints:
 The `NEXT_PUBLIC_BACKEND_URL` should serve:
+
 - the list of known tokens
 - the SoroswapFactory address
 - the SoroswapRouter address
 
 The `NEXT_PUBLIC_TEST_TOKENS_ADMIN_SECRET_KEY` should be the same as the one that deployed the tokens in the `core` repository.
-
-To enable or disable features like the `Soroswap backend` or the `aggregator`, switch the `NEXT_PUBLIC_SOROSWAP_BACKEND_ENABLED` and `NEXT_PUBLIC_AGGREGATOR_ENABLED` variables to `true` or `false`.
 
 Then, when you are ready for production, you can take Futurenet Contracts information from `https://api.soroswap.finance` and use the production env file:
 
@@ -55,59 +56,59 @@ cp .env.production.example .env
 
 1. Start Docker
 
-    Navigate to the the `run.sh` script inside the `docker` folder
+   Navigate to the the `run.sh` script inside the `docker` folder
 
-    ```bash
-    bash docker/run.sh
-    ```
+   ```bash
+   bash docker/run.sh
+   ```
 
-    This script will set up and start the Docker containers required for Soroswap.
+   This script will set up and start the Docker containers required for Soroswap.
 
-4. Install the Dependencies
+2. Install the Dependencies
 
-    After the Docker container is up, you will be inside the root folder on the container. Then, install the dependencies using Yarn:
+   After the Docker container is up, you will be inside the root folder on the container. Then, install the dependencies using Yarn:
 
-    ```bash
-    yarn install
-    ```
+   ```bash
+   yarn install
+   ```
 
-5. Run the Development Instance
+3. Run the Development Instance
 
-    Now you are ready to start the development instance. Run the following command:
+   Now you are ready to start the development instance. Run the following command:
 
-    ```bash
-    yarn dev
-    ```
+   ```bash
+   yarn dev
+   ```
 
-    This will start the Soroswap development instance.
+   This will start the Soroswap development instance.
 
-6. Configure your Freigher Wallet
+4. Configure your Freigher Wallet
 
-    For Standalone network
-    | | |
-    |---|---|
-    | Name | Local Standalone |
-    | HORIZON RPC URL | http://localhost:8000 |
-    | SOROBAN RPC URL | http://localhost:8000/soroban/rpc |
-    | Passphrase | Standalone Network ; February 2017 |
-    | Friendbot | http://localhost:8000/friendbot |
-    | Allow HTTP connection | Enabled |
-    | Switch to this network | Enabled |
+   For Standalone network
+   | | |
+   |---|---|
+   | Name | Local Standalone |
+   | HORIZON RPC URL | http://localhost:8000 |
+   | SOROBAN RPC URL | http://localhost:8000/soroban/rpc |
+   | Passphrase | Standalone Network ; February 2017 |
+   | Friendbot | http://localhost:8000/friendbot |
+   | Allow HTTP connection | Enabled |
+   | Switch to this network | Enabled |
 
-    For Futurenet network
-    | | |
-    |---|---|
-    | Name | Local Futurenet|
-    | HORIZON RPC URL | http://localhost:8000 |
-    | SOROBAN RPC URL | http://localhost:8000/soroban/rpc |
-    | Passphrase | Test SDF Future Network ; October 2022 |
-    | Friendbot | http://localhost:8000/friendbot |
-    | Allow HTTP connection | Enabled |
-    | Switch to this network | Enabled |
+   For Futurenet network
+   | | |
+   |---|---|
+   | Name | Local Futurenet|
+   | HORIZON RPC URL | http://localhost:8000 |
+   | SOROBAN RPC URL | http://localhost:8000/soroban/rpc |
+   | Passphrase | Test SDF Future Network ; October 2022 |
+   | Friendbot | http://localhost:8000/friendbot |
+   | Allow HTTP connection | Enabled |
+   | Switch to this network | Enabled |
 
-    ** Important:** You should also do: Preferences> Allow experimental mode
+   ** Important:** You should also do: Preferences> Allow experimental mode
 
-7. Last, but not least, add some lumens to your Freighter wallet!
+5. Last, but not least, add some lumens to your Freighter wallet!
 
    Do it directly on the wallet or use:
 
@@ -124,20 +125,23 @@ If you want to add or remove supported protocols, you can do so by editing the `
 > You can found the list of supported protocols in the `soroswap-router-sdk` repository.
 
 ## 🧪🔨 Testing 🧪🔨
+
 To execute the tests, you must first start the development container. To do this, run the following command from your host machine:
 
 ```bash
 bash docker/run.sh
 ```
+
 Once the development container is running, you can install the dependencies for the tests by running the following command:
 
-```bash
+````bash
 ## 🧪🔨 Testing 🧪🔨
 To execute the tests, you must first start the development container. To do this, run the following command from your host machine:
 
 ```bash
 bash docker/run.sh
-```
+````
+
 Once the development container is running, you can install the dependencies for the tests by running the following command:
 
 ```bash
@@ -149,11 +153,12 @@ Finally, to run the tests, run the following command from within the development
 ```bash
 yarn test
 ```
+
 This will run all of the unit and integration tests for the project.
 
 The tests are written using Vitest & testing-library.
 
-For more information on Vitest, please see the Vitest documentation: https://vitest.dev/. 
+For more information on Vitest, please see the Vitest documentation: https://vitest.dev/.
 
 For more information on Testing Library, please see the Testing Library documentation: https://testing-library.com/docs/react-testing-library/intro/
 
