@@ -76,10 +76,10 @@ function PoolsTableHead({
 }: {
   order: "asc" | "desc";
   orderBy: string;
-  onRequestSort: (event: React.MouseEvent<unknown>, property: keyof Pool) => void;
+  onRequestSort: (event: React.MouseEvent<unknown>, property: keyof Pool | 'shareOfPool' | 'actions') => void;
   isWalletConnected: boolean;
 }) {
-  const createSortHandler = (property: keyof Pool) => (event: React.MouseEvent<unknown>) => {
+  const createSortHandler = (property: keyof Pool | 'shareOfPool' | 'actions') => (event: React.MouseEvent<unknown>) => {
     onRequestSort(event, property);
   };
 
@@ -96,7 +96,7 @@ function PoolsTableHead({
             <TableSortLabel
               active={orderBy === headCell.id}
               direction={orderBy === headCell.id ? order : "asc"}
-              onClick={createSortHandler(headCell.id as keyof Pool)}
+              onClick={createSortHandler(headCell.id)}
             >
               {headCell.label}
               {orderBy === headCell.id ? (
@@ -137,9 +137,12 @@ export default function PoolsTable({
     handleChangePage,
     handleChangeRowsPerPage,
   } = useTable<Pool>({
-    rows,
+    rows: rows.map(row => ({
+      ...row,
+      shareOfPool: row.shareOfPool || 0
+    })),
     defaultOrder: "desc",
-    defaultOrderBy: "tvl",
+    defaultOrderBy: "shareOfPool" as keyof Pool,
   });
 
   const router = useRouter();
