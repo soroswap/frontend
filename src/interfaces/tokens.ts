@@ -1,5 +1,5 @@
 export interface TokenType {
-  balance: number;
+  balance?: number;
   code: string;
   issuer?: string;
   contract: string;

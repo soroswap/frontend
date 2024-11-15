@@ -1,10 +1,9 @@
 import { SorobanContextType, useSorobanReact } from '@soroban-react/core';
 import BigNumber from 'bignumber.js';
-import { CSSProperties, MutableRefObject, useCallback, useMemo } from 'react';
+import { CSSProperties, MutableRefObject, useCallback, useEffect, useMemo, useState } from 'react';
 import { Check } from 'react-feather';
 import { FixedSizeList } from 'react-window';
 import { AccountResponse } from '@stellar/stellar-sdk/lib/horizon';
-import useSWRImmutable from 'swr/immutable';
 
 import { CircularProgress, Typography, styled } from 'soroswap-ui';
 import Column, { AutoColumn } from 'components/Column';
@@ -114,7 +113,7 @@ export function CurrencyRow({
   isSelected: boolean;
   otherSelected: boolean;
   showCurrencyAmount?: boolean;
-  balance: number;
+  balance?: number;
   eventProperties: Record<string, unknown>;
   style?: CSSProperties;
 }) {
@@ -171,7 +170,7 @@ export function CurrencyRow({
           {currency.domain ? currency.domain : formattedCurrencyName(currency as TokenType)}
         </Typography>
       </AutoColumn>
-      {showCurrencyAmount ? (
+      {showCurrencyAmount && balance ? (
         <RowFixed style={{ justifySelf: 'flex-end' }}>
           {<Balance balance={balance.toString() || '0'} />}
           {isSelected && <CheckIcon />}
@@ -246,50 +245,71 @@ export default function CurrencyList({
   isLoading?: boolean;
 }) {
   const sorobanContext = useSorobanReact();
-
   const { tokenBalancesResponse } = useGetMyBalances();
-
   const { account } = useHorizonLoadAccount();
 
-  const itemData: TokenType[] = useMemo(() => {
-    if (otherListTokens && otherListTokens?.length > 0) {
-      return [...currencies, ...otherListTokens];
-    }
-    return currencies;
+  const [balances, setBalances] = useState<Record<string, number>>({});
+
+  const itemData = useMemo(() => {
+    return otherListTokens && otherListTokens.length > 0
+      ? [...currencies, ...otherListTokens]
+      : currencies;
   }, [currencies, otherListTokens]);
 
-  const enhancedItemData = itemData.map((currency) => {
-    const { data: balance, error } = useSWRImmutable(
-      sorobanContext.activeChain && sorobanContext.address && account
-        ? ['currencyBalance', tokenBalancesResponse, currency, sorobanContext, account]
-        : null,
-      ([_, tokenBalancesResponse, currency, sorobanContext, account]) =>
-        getCurrencyBalance(tokenBalancesResponse, currency, sorobanContext, account),
-    );
-    return {
-      ...currency,
-      balance: Number(balance ?? 0),
-    };
-  });
+  useEffect(() => {
+    const fetchBalances = async () => {
+      const newBalances: Record<string, number> = {};
 
-  const sortedItemData = enhancedItemData.sort((a, b) => b.balance - a.balance);
+      if (account) {
+        for (const currency of itemData) {
+          const balance = await getCurrencyBalance(
+            tokenBalancesResponse,
+            currency,
+            sorobanContext,
+            account,
+          );
+          newBalances[currencyKey(currency)] = Number(balance ?? 0);
+        }
+        setBalances(newBalances);
+      }
+    };
+
+    if (sorobanContext.activeChain && sorobanContext.address && account && itemData.length > 0) {
+      fetchBalances();
+    }
+  }, [
+    sorobanContext.activeChain,
+    sorobanContext.address,
+    account,
+    itemData,
+    tokenBalancesResponse,
+  ]);
+
+  const sortedItemData = useMemo(() => {
+    if (!itemData || !Array.isArray(itemData)) {
+      return [];
+    }
+    return [...itemData]
+      .map((currency) => ({
+        ...currency,
+        balance: balances[currencyKey(currency)] || 0,
+      }))
+      .sort((a, b) => b.balance - a.balance);
+  }, [itemData, balances]);
 
   const Row = useCallback(
     function TokenRow({ data, index, style }: TokenRowProps) {
-      const row: TokenType = data[index];
-
+      const row = data[index];
       const currency = row;
 
       const isSelected = Boolean(
-        currency && selectedCurrency && selectedCurrency.contract == currency.contract,
+        currency && selectedCurrency && selectedCurrency.contract === currency.contract,
       );
       const otherSelected = Boolean(
-        currency && otherCurrency && otherCurrency.contract == currency.contract,
+        currency && otherCurrency && otherCurrency.contract === currency.contract,
       );
       const handleSelect = (hasWarning: boolean) =>
         currency && onCurrencySelect(currency, hasWarning);
-
-      const token = currency;
 
       if (currency) {
         return (
@@ -302,7 +322,7 @@ export default function CurrencyList({
             otherSelected={otherSelected}
             showCurrencyAmount={showCurrencyAmount}
             eventProperties={formatAnalyticsEventProperties(
-              token,
+              currency,
               index,
               data,
               searchQuery,
