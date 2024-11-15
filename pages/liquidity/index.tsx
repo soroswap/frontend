@@ -18,13 +18,19 @@ import { useContext, useState } from 'react';
 import SEO from '../../src/components/SEO';
 import { DEFAULT_SLIPPAGE_INPUT_VALUE } from 'components/Settings/MaxSlippageSettings';
 
+import { useQueryPools } from '../../src/hooks/pools';
+import PoolsTable from '../../src/components/pools-table/pools-table'; //---------------------
+
 const PageWrapper = styled(AutoColumn)`
   position: relative;
-  background: ${({ theme }) => `linear-gradient(${theme.palette.customBackground.bg2}, ${theme.palette.customBackground.bg2
-    }) padding-box,
-              linear-gradient(150deg, rgba(136,102,221,1) 0%, rgba(${theme.palette.mode == 'dark' ? '33,29,50,1' : '255,255,255,1'
-    }) 35%, rgba(${theme.palette.mode == 'dark' ? '33,29,50,1' : '255,255,255,1'
-    }) 65%, rgba(136,102,221,1) 100%) border-box`};
+  background: ${({ theme }) => `linear-gradient(${theme.palette.customBackground.bg2}, ${
+    theme.palette.customBackground.bg2
+  }) padding-box,
+              linear-gradient(150deg, rgba(136,102,221,1) 0%, rgba(${
+                theme.palette.mode == 'dark' ? '33,29,50,1' : '255,255,255,1'
+              }) 35%, rgba(${
+                theme.palette.mode == 'dark' ? '33,29,50,1' : '255,255,255,1'
+              }) 65%, rgba(136,102,221,1) 100%) border-box`};
   border: 1px solid transparent;
   border-radius: 16px;
   padding: 32px;
@@ -76,6 +82,16 @@ const StatusWrapper = styled('div')`
   border-radius: 16px;
 `;
 
+const Container = styled('div')`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  width: 100%;
+  max-width: 875px;
+  margin: 0 auto;
+`;
+
 export default function LiquidityPage() {
   const sorobanContext = useSorobanReact();
   const { address } = sorobanContext;
@@ -90,6 +106,7 @@ export default function LiquidityPage() {
   const isCreate = false;
 
   const { lpTokens, isLoading, mutate } = useGetLpTokens();
+  const { data: pools, isLoading: isLoadingPools } = useQueryPools();  ////---------------
 
   const [isModalOpen, setModalOpen] = useState<boolean>(false);
   const [selectedLP, setSelectedLP] = useState<LpTokensObj>();
@@ -101,7 +118,8 @@ export default function LiquidityPage() {
 
   return (
     <>
-      <SEO title="Liquidity - Soroswap" description="Soroswap Liquidity Pool" />
+    <Container>
+      <SEO title="Pools - Soroswap" description="Soroswap Liquidity Pool" />
       <PageWrapper>
         <div style={{ width: '100%' }}>
           <AutoRow style={{ justifyContent: 'space-between' }}>
@@ -161,11 +179,20 @@ export default function LiquidityPage() {
           <WalletButton />
         )}
       </PageWrapper>
+
+      <div style={{ width: '100%' }}>
+        <AutoRow style={{ marginBottom: '16px' }}>
+          <SubHeader>All Pools</SubHeader>
+        </AutoRow>
+        <PoolsTable rows={pools || []} isLoading={isLoadingPools} />
+      </div>
+
       <LiquidityPoolInfoModal
         selectedLP={selectedLP}
         isOpen={isModalOpen}
         onDismiss={() => setModalOpen(false)}
       />
+      </Container>
     </>
   );
 }

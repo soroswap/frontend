@@ -40,6 +40,7 @@
     "@soroban-react/xbull": "9.3.0",
     "@stellar/freighter-api": "1.7.1",
     "@stellar/stellar-sdk": "12.2.0",
+    "@tanstack/react-query": "^5.60.2",
     "@types/qs": "^6.9.7",
     "@types/react": "18.2.33",
     "@types/react-dom": "18.2.14",
