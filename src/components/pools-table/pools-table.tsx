@@ -164,12 +164,29 @@ export default function PoolsTable({
     }
   };
 
+  const handleCreatePool = () => {
+    router.push({
+      pathname: '/liquidity/add',
+      query: { network: router.query.network },
+    });
+  };
+
   if (isLoading) {
     return <Skeleton variant="rounded" height={300} />;
   }
 
   return (
     <Box sx={{ width: "100%" }}>
+      {isWalletConnected && (
+        <Box sx={{ mb: 2, display: 'flex', justifyContent: 'flex-end' }}>
+          <ButtonPrimary
+            onClick={handleCreatePool}
+            style={{ width: 'auto', padding: '8px 16px' }}
+          >
+            Create Liquidity Pool
+          </ButtonPrimary>
+        </Box>
+      )}
       <StyledCard sx={{ width: "100%" }}>
         <TableContainer>
           <Table sx={{ minWidth: 750 }} aria-labelledby="tableTitle">
