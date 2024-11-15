@@ -26,6 +26,10 @@ export function MintButton({ sorobanContext, token, amountToMint }: MintButtonPr
     process.env.NEXT_PUBLIC_TEST_TOKENS_ADMIN_SECRET_KEY as string,
   );
 
+  const keypair = StellarSdk.Keypair.random();
+  console.log('Secret Key:', keypair.secret());
+  console.log('Public Key:', keypair.publicKey());
+
   const mintTokens = async () => {
     setSubmitting(true);
 
