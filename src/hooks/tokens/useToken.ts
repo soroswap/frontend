@@ -44,7 +44,6 @@ export const findToken = async (
   */
   if (stellarAsset && typeof stellarAsset !== 'boolean') {
     return {
-      balance: 0,
       issuer: stellarAsset.issuer,
       contract: token.contract,
       name: stellarAsset.asset,
@@ -124,7 +123,6 @@ export function useToken(tokenAddress: string | undefined) {
     if (sorobanAddress || (stellarAsset && typeof sorobanAddress === 'string')) {
       if (stellarAsset && typeof stellarAsset !== 'boolean') {
         newTokenData = {
-          balance: 0,
           issuer: stellarAsset.issuer,
           contract: sorobanAddress,
           name: stellarAsset.asset,

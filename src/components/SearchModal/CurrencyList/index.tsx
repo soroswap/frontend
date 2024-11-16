@@ -4,13 +4,14 @@ import { CSSProperties, MutableRefObject, useCallback, useEffect, useMemo, useSt
 import { Check } from 'react-feather';
 import { FixedSizeList } from 'react-window';
 import { AccountResponse } from '@stellar/stellar-sdk/lib/horizon';
+import useSWRImmutable from 'swr/immutable';
 
 import { CircularProgress, Typography, styled } from 'soroswap-ui';
 import Column, { AutoColumn } from 'components/Column';
 import Loader from 'components/Icons/LoadingSpinner';
 import CurrencyLogo from 'components/Logo/CurrencyLogo';
 import Row, { RowFixed } from 'components/Row';
-import { TokenType } from '../../../interfaces';
+import { TokenType, TokenVolumeData } from '../../../interfaces';
 import StyledRow from '../../Row';
 import { LoadingRows, MenuItem } from '../styleds';
 
@@ -20,7 +21,6 @@ import useHorizonLoadAccount from 'hooks/useHorizonLoadAccount';
 
 import { isAddress, shortenAddress } from 'helpers/address';
 import { formatTokenAmount } from 'helpers/format';
-import useSWRImmutable from 'swr/immutable';
 
 function currencyKey(currency: TokenType): string {
   return currency.contract ? currency.contract : 'ETHER';
@@ -107,17 +107,30 @@ export function CurrencyRow({
   otherSelected,
   style,
   showCurrencyAmount,
-  balance,
 }: {
   currency: TokenType;
   onSelect: (hasWarning: boolean) => void;
   isSelected: boolean;
   otherSelected: boolean;
   showCurrencyAmount?: boolean;
-  balance?: number;
   eventProperties: Record<string, unknown>;
   style?: CSSProperties;
 }) {
+  const sorobanContext = useSorobanReact();
+
+  const { address } = sorobanContext;
+
+  const { tokenBalancesResponse } = useGetMyBalances();
+
+  const { account } = useHorizonLoadAccount();
+
+  const { data, isLoading } = useSWRImmutable(
+    sorobanContext.activeChain && sorobanContext.address && account
+      ? ['currencyBalance', tokenBalancesResponse, currency, sorobanContext, account]
+      : null,
+    ([_, tokenBalancesResponse, currency, sorobanContext, account]) =>
+      getCurrencyBalance(tokenBalancesResponse, currency, sorobanContext, account),
+  );
   const shortenSorobanClassicAsset = (currency: TokenType) => {
     if (!currency) return '';
     if (currency?.name && currency.name.toString().length > 56) {
@@ -171,9 +184,9 @@ export function CurrencyRow({
           {currency.domain ? currency.domain : formattedCurrencyName(currency as TokenType)}
         </Typography>
       </AutoColumn>
-      {showCurrencyAmount && balance ? (
+      {showCurrencyAmount ? (
         <RowFixed style={{ justifySelf: 'flex-end' }}>
-          {<Balance balance={balance.toString() || '0'} />}
+          {isLoading ? <Loader /> : address ? <Balance balance={data || '0'} /> : null}
           {isSelected && <CheckIcon />}
         </RowFixed>
       ) : (
@@ -245,86 +258,83 @@ export default function CurrencyList({
   isAddressSearch: string | false;
   isLoading?: boolean;
 }) {
-  const sorobanContext = useSorobanReact();
-  const { tokenBalancesResponse } = useGetMyBalances();
-  const { account } = useHorizonLoadAccount();
+  const [tokenVolumes, setTokenVolumes] = useState<TokenVolumeData[] | null>(null);
 
-  const itemData = useMemo(() => {
-    return otherListTokens && otherListTokens.length > 0
-      ? [...currencies, ...otherListTokens]
-      : currencies;
-  }, [currencies, otherListTokens]);
+  const [sortedItemData, setSortedItemData] = useState<TokenType[]>([]);
 
-  const fetchBalances = async () => {
-    if (
-      !account ||
-      !sorobanContext.activeChain ||
-      !sorobanContext.address ||
-      itemData.length === 0
-    ) {
-      return {};
+  const fetchTokenVolumes = async (network: string): Promise<TokenVolumeData[]> => {
+    const response = await fetch(`https://info.soroswap.finance/api/tokens?network=${network}`);
+    if (!response.ok) {
+      throw new Error('Failed to fetch token volumes');
     }
-
-    const newBalances: Record<string, number> = {};
-    for (const currency of itemData) {
-      const balance = await getCurrencyBalance(
-        tokenBalancesResponse,
-        currency,
-        sorobanContext,
-        account,
-      );
-      newBalances[currencyKey(currency)] = Number(balance ?? 0);
-    }
-    return newBalances;
+    const data = await response.json();
+    return data.map((token: any) => ({
+      asset: token.asset,
+      volume24h: token.volume24h,
+    }));
   };
 
-  const { data: balances = {}, error } = useSWRImmutable(
-    account ? ['balances', account, tokenBalancesResponse, itemData] : null,
-    fetchBalances,
-  );
+  useEffect(() => {
+    const getVolumes = async () => {
+      try {
+        const volumes = await fetchTokenVolumes('MAINNET');
+        setTokenVolumes(volumes);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    getVolumes();
+  }, []);
 
-  if (error) {
-    console.error('Error loading balances:', error);
-  }
-
-  const sortedItemData = useMemo(() => {
-    if (!itemData || !Array.isArray(itemData)) {
-      return [];
+  const itemData: TokenType[] = useMemo(() => {
+    if (otherListTokens && otherListTokens?.length > 0) {
+      return [...currencies, ...otherListTokens];
     }
-    return [...itemData]
-      .map((currency) => ({
-        ...currency,
-        balance: balances[currencyKey(currency)] || 0,
-      }))
-      .sort((a, b) => b.balance - a.balance);
-  }, [itemData, balances]);
+    return currencies;
+  }, [currencies, otherListTokens]);
+
+  useEffect(() => {
+    if (tokenVolumes) {
+      const sorted = [...itemData];
+      sorted.sort((a, b) => {
+        const volumeA =
+          tokenVolumes.find((item) => item.asset.contract === a.contract)?.volume24h || 0;
+        const volumeB =
+          tokenVolumes.find((item) => item.asset.contract === b.contract)?.volume24h || 0;
+        return volumeB - volumeA;
+      });
+      setSortedItemData(sorted);
+    }
+  }, [itemData, tokenVolumes]);
 
   const Row = useCallback(
     function TokenRow({ data, index, style }: TokenRowProps) {
-      const row = data[index];
+      const row: TokenType = data[index];
+
       const currency = row;
 
       const isSelected = Boolean(
-        currency && selectedCurrency && selectedCurrency.contract === currency.contract,
+        currency && selectedCurrency && selectedCurrency.contract == currency.contract,
       );
       const otherSelected = Boolean(
-        currency && otherCurrency && otherCurrency.contract === currency.contract,
+        currency && otherCurrency && otherCurrency.contract == currency.contract,
       );
       const handleSelect = (hasWarning: boolean) =>
         currency && onCurrencySelect(currency, hasWarning);
+
+      const token = currency;
 
       if (currency) {
         return (
           <CurrencyRow
             style={style}
-            balance={row.balance}
             currency={currency}
             isSelected={isSelected}
             onSelect={handleSelect}
             otherSelected={otherSelected}
             showCurrencyAmount={showCurrencyAmount}
             eventProperties={formatAnalyticsEventProperties(
-              currency,
+              token,
               index,
               data,
               searchQuery,

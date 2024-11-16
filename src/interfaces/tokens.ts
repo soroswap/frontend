@@ -1,5 +1,4 @@
 export interface TokenType {
-  balance?: number;
   code: string;
   issuer?: string;
   contract: string;
@@ -22,3 +21,14 @@ export type TokenMapType = {
 export type TokenBalancesMap = {
   [tokenAddress: string]: { usdValue: number; balance: string };
 };
+
+export interface TokenVolumeData {
+  asset: {
+    name: string;
+    contract: string;
+    code: string;
+    icon: string;
+    decimals: number;
+  };
+  volume24h: number;
+}
