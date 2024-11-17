@@ -20,6 +20,12 @@ import { getBestPath, getHorizonBestPath } from 'helpers/horizon/getHorizonPath'
 import { PlatformType } from 'state/routing/types';
 import { CurrencyAmount as AmountAsset } from 'interfaces';
 import { DexDistribution } from 'helpers/aggregator';
+import { fetchFactory } from 'services/factory';
+import { contractInvoke } from '@soroban-react/contracts';
+import { reservesBNWithTokens } from 'hooks/useReserves';
+import { getPairAddress } from './getPairAddress';
+import BigNumber from 'bignumber.js';
+import { getExpectedAmount } from './getExpectedAmount';
 
 export interface BuildTradeRoute {
   amountCurrency: AmountAsset | CurrencyAmount<Currency>;
@@ -51,6 +57,7 @@ const queryNetworkDict: { [x: string]: 'MAINNET' | 'TESTNET' } = {
 };
 
 const shouldUseBackend = process.env.NEXT_PUBLIC_SOROSWAP_BACKEND_ENABLED === 'true';
+const shouldUseDirectPath = process.env.NEXT_PUBLIC_DIRECT_PATH_ENABLED === 'true';
 
 export const useRouterSDK = () => {
   const sorobanContext = useSorobanReact();
@@ -74,7 +81,6 @@ export const useRouterSDK = () => {
         routerProtocols.push({ protocol: Protocol.PHOENIX, fn: async () => fetchAllPhoenixPairs(network) });
       }
     }
-    console.log('routerProtocols:', routerProtocols);
     return routerProtocols;
   }, [network, protocolsStatus]);
 
@@ -118,6 +124,51 @@ export const useRouterSDK = () => {
     tradeType,
     currentProtocolsStatus,
   }: GenerateRouteProps) => {
+    if (shouldUseDirectPath) {
+      try {
+        // get pair address from factory
+        const pairAddress = await getPairAddress(amountAsset.currency.contract, quoteAsset.contract, sorobanContext);
+
+        // Get reserves from pair
+        const reserves = await reservesBNWithTokens(pairAddress, sorobanContext);
+        if (!reserves?.reserve0 || !reserves?.reserve1) {
+          throw new Error('Reserves not found');
+        }
+
+        // Get amountOut or amountIn from reserves and tradeType
+        let outputAmount = await getExpectedAmount(
+          amountAsset.currency,
+          quoteAsset,
+          new BigNumber(amount),
+          sorobanContext,
+          tradeType
+        );
+
+        // Convert from lumens to stroops (multiply by 10^7)
+        outputAmount = outputAmount.integerValue();
+
+        const quoteCurrencyAmount = CurrencyAmount.fromRawAmount(fromAddressToToken(quoteAsset.contract), outputAmount.toString());
+
+        return {
+          amountCurrency: amountAsset,
+          quoteCurrency: CurrencyAmount.fromRawAmount(fromAddressToToken(quoteAsset.contract), outputAmount.toString()),
+          tradeType,
+          trade: {
+            amountIn: tradeType === TradeType.EXACT_INPUT ? amount : outputAmount.toString(),
+            amountInMax: tradeType === TradeType.EXACT_OUTPUT ? outputAmount.toString() : undefined,
+            amountOut: tradeType === TradeType.EXACT_INPUT ? outputAmount.toString() : amount,
+            amountOutMin: tradeType === TradeType.EXACT_INPUT ? outputAmount.toString() : undefined,
+            path: [amountAsset.currency.contract, quoteAsset.contract],
+          },
+          priceImpact: new Percent('0'),
+          platform: PlatformType.ROUTER,
+        } as BuildTradeRoute;
+      } catch (error) {
+        console.error('Error generating direct path:', error);
+        throw error;
+      }
+    }
+
     if (!factory) throw new Error('Factory address not found');
     const currencyAmount = fromAddressAndAmountToCurrencyAmount(
       amountAsset.currency.contract,
