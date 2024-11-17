@@ -64,28 +64,29 @@ export const useRouterSDK = () => {
 
   const getPairsFns = useMemo(() => {
     const routerProtocols = []
-    if(shouldUseBackend) return undefined
+    if (shouldUseBackend) return undefined
     //  here you should add your new supported aggregator protocols
-    for(let protocol of protocolsStatus){
-      if(protocol.key === Protocol.SOROSWAP && protocol.value === true){
-        routerProtocols.push({protocol: Protocol.SOROSWAP, fn: async () => fetchAllSoroswapPairs(network)});
+    for (let protocol of protocolsStatus) {
+      if (protocol.key === Protocol.SOROSWAP && protocol.value === true) {
+        routerProtocols.push({ protocol: Protocol.SOROSWAP, fn: async () => fetchAllSoroswapPairs(network) });
       }
-      if(protocol.key === Protocol.PHOENIX && protocol.value === true){
-        routerProtocols.push({protocol: Protocol.PHOENIX, fn: async () => fetchAllPhoenixPairs(network)});
+      if (protocol.key === Protocol.PHOENIX && protocol.value === true) {
+        routerProtocols.push({ protocol: Protocol.PHOENIX, fn: async () => fetchAllPhoenixPairs(network) });
       }
     }
+    console.log('routerProtocols:', routerProtocols);
     return routerProtocols;
   }, [network, protocolsStatus]);
 
   const getProtocols = useMemo(() => {
     const newProtocols = [];
-    for(let protocol of protocolsStatus){
-      if(protocol.key != PlatformType.STELLAR_CLASSIC && protocol.value === true){
+    for (let protocol of protocolsStatus) {
+      if (protocol.key != PlatformType.STELLAR_CLASSIC && protocol.value === true) {
         newProtocols.push(protocol.key);
       }
     }
     return newProtocols as Protocol[];
-  },[protocolsStatus]);
+  }, [protocolsStatus]);
 
   const router = useMemo(() => {
     return new Router({
@@ -124,9 +125,9 @@ export const useRouterSDK = () => {
     );
     const quoteCurrency = fromAddressToToken(quoteAsset.contract);
 
-    const isHorizonEnabled = currentProtocolsStatus.find((p) => p.key === PlatformType.STELLAR_CLASSIC)?.value; 
+    const isHorizonEnabled = currentProtocolsStatus.find((p) => p.key === PlatformType.STELLAR_CLASSIC)?.value;
 
-    const isSoroswapEnabled = currentProtocolsStatus.find((p) => p.key === Protocol.SOROSWAP)?.value; 
+    const isSoroswapEnabled = currentProtocolsStatus.find((p) => p.key === Protocol.SOROSWAP)?.value;
 
     const horizonProps = {
       assetFrom: amountAsset.currency,
@@ -136,10 +137,10 @@ export const useRouterSDK = () => {
     };
 
     let horizonPath: BuildTradeRoute | undefined;
-    if(isHorizonEnabled){
+    if (isHorizonEnabled) {
       horizonPath = (await getHorizonBestPath(horizonProps, sorobanContext)) as BuildTradeRoute;
     }
-    
+
     let sorobanPath: BuildTradeRoute | undefined;
     if (isAggregator) {
       sorobanPath = (await router
@@ -149,10 +150,14 @@ export const useRouterSDK = () => {
           const result = {
             ...response,
             platform: PlatformType.AGGREGATOR,
-          };
+            quoteCurrency: CurrencyAmount.fromRawAmount(quoteCurrency, '0')
+          } as BuildTradeRoute;
           return result;
-        })) as BuildTradeRoute;
-    } else if(isSoroswapEnabled){
+        }).catch((e) => {
+          console.error('error while generating soroban path:', e);
+          return undefined;
+        })) as BuildTradeRoute | undefined;
+    } else if (isSoroswapEnabled) {
       sorobanPath = (await router
         .route(currencyAmount, quoteCurrency, tradeType, factory, sorobanContext as any)
         .then((response) => {
@@ -164,9 +169,7 @@ export const useRouterSDK = () => {
           return result;
         })) as BuildTradeRoute;
     }
-
     const bestPath = getBestPath(horizonPath, sorobanPath, tradeType);
-
     return bestPath;
   };
 
