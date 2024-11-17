@@ -30,7 +30,7 @@ export function useBestTrade(
   resetRouterSdkCache: () => void;
 } {
   const { generateRoute, resetRouterSdkCache, maxHops } = useRouterSDK();
-  const {protocolsStatus} = useContext(AppContext).Settings;
+  const { protocolsStatus } = useContext(AppContext).Settings;
   /**
    * Custom hook that fetches the best trade based on the specified amount and trade type.
    *
@@ -82,7 +82,6 @@ export function useBestTrade(
 
   useEffect(() => {
     if (!data || !currencyIn || !currencyOut) return;
-
     if (tradeType === TradeType.EXACT_INPUT) {
       const result = data.trade as {
         amountIn: string;
@@ -126,6 +125,7 @@ export function useBestTrade(
 
   // Create the trade object
   const trade: InterfaceTrade = useMemo(() => {
+
     const baseTrade = {
       inputAmount,
       outputAmount,
@@ -146,7 +146,7 @@ export function useBestTrade(
     }
 
     return baseTrade;
-  }, [expectedAmount, inputAmount, outputAmount, tradeType, data, protocolsStatus]);
+  }, [expectedAmount, inputAmount, outputAmount, tradeType, data]);
 
   /*
   If the pairAddress or the trades chenges, we upgrade the tradeResult
@@ -158,7 +158,7 @@ export function useBestTrade(
 
     const myTradeResult = { state: state, trade: trade };
     return myTradeResult;
-  }, [data, trade, protocolsStatus]); //should get the pair address and quotes
+  }, [data, trade]); //should get the pair address and quotes
 
   const skipFetch: boolean = false;
 
@@ -191,16 +191,7 @@ export function useBestTrade(
         resetRouterSdkCache,
       };
     }
-  }, [
-    skipFetch,
-    amountSpecified,
-    otherCurrency,
-    tradeResult,
-    trade,
-    isLoading,
-    resetRouterSdkCache,
-    protocolsStatus
-  ]);
+  }, [skipFetch, amountSpecified, otherCurrency, tradeResult, trade, isLoading, resetRouterSdkCache]);
 
   return bestTrade;
 }
