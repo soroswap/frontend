@@ -118,7 +118,6 @@ export const useRouterSDK = () => {
     tradeType,
     currentProtocolsStatus,
   }: GenerateRouteProps) => {
-    console.log('generateRoute:', amountAsset, quoteAsset, amount, tradeType, currentProtocolsStatus);
     if (!factory) throw new Error('Factory address not found');
     const currencyAmount = fromAddressAndAmountToCurrencyAmount(
       amountAsset.currency.contract,
@@ -141,7 +140,6 @@ export const useRouterSDK = () => {
     if (isHorizonEnabled) {
       horizonPath = (await getHorizonBestPath(horizonProps, sorobanContext)) as BuildTradeRoute;
     }
-    console.log('horizonPath:', horizonPath);
 
     let sorobanPath: BuildTradeRoute | undefined;
     if (isAggregator) {
@@ -171,9 +169,7 @@ export const useRouterSDK = () => {
           return result;
         })) as BuildTradeRoute;
     }
-    console.log('sorobanPath:', sorobanPath);
     const bestPath = getBestPath(horizonPath, sorobanPath, tradeType);
-    console.log('bestPath:', bestPath);
     return bestPath;
   };
 
