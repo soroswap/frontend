@@ -130,6 +130,7 @@ export function useDerivedSwapInfo(state: SwapState) {
     (isExactIn ? outputCurrency : inputCurrency) ?? undefined,
     account,
   );
+  console.log('trade:', trade);
 
   const currencyBalances = useMemo(
     () => ({
