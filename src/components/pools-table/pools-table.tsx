@@ -158,7 +158,7 @@ export default function PoolsTable({
       });
     } else {
       router.push({
-        pathname: '/liquidity/add',
+        pathname: '/pools/add',
         query: { pool: pool.address, network: router.query.network },
       });
     }
@@ -166,7 +166,7 @@ export default function PoolsTable({
 
   const handleCreatePool = () => {
     router.push({
-      pathname: '/liquidity/add',
+      pathname: '/pools/add',
       query: { network: router.query.network },
     });
   };

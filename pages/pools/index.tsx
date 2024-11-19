@@ -19,7 +19,7 @@ import SEO from '../../src/components/SEO';
 import { DEFAULT_SLIPPAGE_INPUT_VALUE } from 'components/Settings/MaxSlippageSettings';
 
 import { useQueryPools } from '../../src/hooks/pools';
-import PoolsTable from '../../src/components/pools-table/pools-table'; //---------------------
+import PoolsTable from '../../src/components/pools-table/pools-table'; 
 
 const PageWrapper = styled(AutoColumn)`
   position: relative;
@@ -106,7 +106,7 @@ export default function LiquidityPage() {
   const isCreate = false;
 
   const { lpTokens, isLoading, mutate } = useGetLpTokens();
-  const { data: pools, isLoading: isLoadingPools } = useQueryPools();  ////---------------
+  const { data: pools, isLoading: isLoadingPools } = useQueryPools(); 
 
   const [isModalOpen, setModalOpen] = useState<boolean>(false);
   const [selectedLP, setSelectedLP] = useState<LpTokensObj>();
@@ -172,7 +172,7 @@ export default function LiquidityPage() {
           </LPTokensContainer>
         )}
         {address ? (
-          <ButtonPrimary onClick={() => router.push('/liquidity/add')}>
+          <ButtonPrimary onClick={() => router.push('/pools/add')}>
             + Add Liquidity
           </ButtonPrimary>
         ) : (
