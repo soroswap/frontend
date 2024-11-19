@@ -187,7 +187,13 @@ export default function PoolsTable({
           </ButtonPrimary>
         </Box>
       )}
-      <StyledCard sx={{ width: "100%" }}>
+      <StyledCard 
+        sx={{ 
+          width: "100%",
+          bgcolor: "rgba(22, 21, 34, 1)", 
+          borderRadius: "16px",
+        }}
+      >
         <TableContainer>
           <Table sx={{ minWidth: 750 }} aria-labelledby="tableTitle">
             <PoolsTableHead
