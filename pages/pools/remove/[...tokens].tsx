@@ -1,4 +1,4 @@
-import RemoveLiquidityComponent from "components/Liquidity/Remove/RemoveLiquidityComponent";
+import RemoveLiquidityComponent from "components/Pools/Remove/RemoveLiquidityComponent";
 import SEO from "components/SEO";
 
 export default function MintPage() {

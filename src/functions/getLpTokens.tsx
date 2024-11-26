@@ -44,7 +44,7 @@ const getLpResultsFromBackendPairs = async (
     if (pairLpTokens != 0) {
       const token_0 = await findToken(element.tokenA, tokensAsMap, sorobanContext);
       const token_1 = await findToken(element.tokenB, tokensAsMap, sorobanContext);
-
+      const address = element.address;
       const totalShares = await getTotalShares(element.address, sorobanContext);
 
       const lpPercentage = BigNumber(pairLpTokens as BigNumber)
@@ -62,6 +62,7 @@ const getLpResultsFromBackendPairs = async (
         .dividedBy(Number(totalShares));
 
       const toReturn = {
+        address,
         token_0,
         token_1,
         balance: pairLpTokens,

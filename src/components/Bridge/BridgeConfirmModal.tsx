@@ -14,8 +14,8 @@ import { ButtonPrimary } from 'components/Buttons/Button';
 import { CloseButton } from 'components/Buttons/CloseButton';
 import { AutoColumn } from 'components/Column';
 import CopyTxHash from 'components/CopyTxHash/CopyTxHash';
-import { DetailRowValue } from 'components/Liquidity/Add/AddModalFooter';
-import { Label } from 'components/Liquidity/Add/AddModalHeader';
+import { DetailRowValue } from 'components/Pools/Add/AddModalFooter';
+import { Label } from 'components/Pools/Add/AddModalHeader';
 import {
   AnimatedEntranceConfirmationIcon,
   LoadingIndicatorOverlay,

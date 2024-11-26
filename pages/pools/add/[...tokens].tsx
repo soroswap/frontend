@@ -1,5 +1,5 @@
 import { useSorobanReact } from '@soroban-react/core';
-import AddLiquidityComponent from 'components/Liquidity/Add/AddLiquidityComponent';
+import AddLiquidityComponent from 'components/Pools/Add/AddLiquidityComponent';
 import SEO from 'components/SEO';
 import { xlmTokenList } from 'constants/xlmToken';
 import { useRouter } from 'next/router';
