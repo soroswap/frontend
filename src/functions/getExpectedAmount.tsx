@@ -32,23 +32,36 @@ export async function getExpectedAmount(
     );
     const reserves = customReserves ?? (await reservesBNWithTokens(pairAddress, sorobanContext));
 
+    if (!reserves || !reserves.reserve0 || !reserves.reserve1) {
+      throw new Error('Reserves not found or invalid');
+    }
+
+    let reserveIn: BigNumber, reserveOut: BigNumber;
+    if (currencyIn.contract === reserves.token0) {
+      reserveIn = reserves.reserve0;
+      reserveOut = reserves.reserve1;
+    } else if (currencyIn.contract === reserves.token1) {
+      reserveIn = reserves.reserve1;
+      reserveOut = reserves.reserve0;
+    } else {
+      throw new Error('CurrencyIn does not match any token in reserves');
+    }
+
     let expectedOutput;
     if (tradeType === TradeType.EXACT_INPUT) {
       expectedOutput = fromExactInputGetExpectedOutput(
         amountIn,
-        reserves.reserve0,
-        reserves.reserve1,
+        reserveIn,
+        reserveOut,
+        currencyIn.decimals ?? 7,
       );
     } else {
-      expectedOutput = fromExactOutputGetExpectedInput(
-        amountIn,
-        reserves.reserve0,
-        reserves.reserve1,
-      );
+      expectedOutput = fromExactOutputGetExpectedInput(amountIn, reserveOut, reserveIn);
     }
 
     return expectedOutput;
   } catch (error) {
+    console.error('Error in getExpectedAmount:', error);
     return BigNumber(0);
   }
 }
