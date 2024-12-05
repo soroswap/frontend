@@ -136,7 +136,7 @@ export const useRouterSDK = () => {
         }
 
         // Get amountOut or amountIn from reserves and tradeType
-        let outputAmount = await getExpectedAmount(
+        let quoteAmount = await getExpectedAmount(
           amountAsset.currency,
           quoteAsset,
           new BigNumber(amount),
@@ -145,20 +145,18 @@ export const useRouterSDK = () => {
         );
 
         // Convert from lumens to stroops (multiply by 10^7)
-        outputAmount = outputAmount.integerValue();
-
-        const quoteCurrencyAmount = CurrencyAmount.fromRawAmount(fromAddressToToken(quoteAsset.contract), outputAmount.toString());
+        quoteAmount = quoteAmount.integerValue();
 
         return {
           amountCurrency: amountAsset,
-          quoteCurrency: CurrencyAmount.fromRawAmount(fromAddressToToken(quoteAsset.contract), outputAmount.toString()),
+          quoteCurrency: CurrencyAmount.fromRawAmount(fromAddressToToken(quoteAsset.contract), quoteAmount.toString()),
           tradeType,
           trade: {
-            amountIn: tradeType === TradeType.EXACT_INPUT ? amount : outputAmount.toString(),
-            amountInMax: tradeType === TradeType.EXACT_OUTPUT ? outputAmount.toString() : undefined,
-            amountOut: tradeType === TradeType.EXACT_INPUT ? outputAmount.toString() : amount,
-            amountOutMin: tradeType === TradeType.EXACT_INPUT ? outputAmount.toString() : undefined,
-            path: [amountAsset.currency.contract, quoteAsset.contract],
+            amountIn: tradeType === TradeType.EXACT_INPUT ? amount : quoteAmount.toString(),
+            amountInMax: tradeType === TradeType.EXACT_OUTPUT ? quoteAmount.toString() : undefined,
+            amountOut: tradeType === TradeType.EXACT_INPUT ? quoteAmount.toString() : amount,
+            amountOutMin: tradeType === TradeType.EXACT_INPUT ? quoteAmount.toString() : undefined,
+            path: tradeType === TradeType.EXACT_INPUT ? [amountAsset.currency.contract, quoteAsset.contract] : [quoteAsset.contract, amountAsset.currency.contract],
           },
           priceImpact: new Percent('0'),
           platform: PlatformType.ROUTER,
@@ -168,7 +166,6 @@ export const useRouterSDK = () => {
         throw error;
       }
     }
-
     if (!factory) throw new Error('Factory address not found');
     const currencyAmount = fromAddressAndAmountToCurrencyAmount(
       amountAsset.currency.contract,
