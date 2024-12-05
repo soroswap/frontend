@@ -1,6 +1,6 @@
 import { SorobanContextType, useSorobanReact } from '@soroban-react/core';
 import BigNumber from 'bignumber.js';
-import { CSSProperties, MutableRefObject, useCallback, useMemo } from 'react';
+import { CSSProperties, MutableRefObject, useCallback, useEffect, useMemo, useState } from 'react';
 import { Check } from 'react-feather';
 import { FixedSizeList } from 'react-window';
 import { AccountResponse } from '@stellar/stellar-sdk/lib/horizon';
@@ -11,7 +11,7 @@ import Column, { AutoColumn } from 'components/Column';
 import Loader from 'components/Icons/LoadingSpinner';
 import CurrencyLogo from 'components/Logo/CurrencyLogo';
 import Row, { RowFixed } from 'components/Row';
-import { TokenType } from '../../../interfaces';
+import { TokenType, TokenVolumeData } from '../../../interfaces';
 import StyledRow from '../../Row';
 import { LoadingRows, MenuItem } from '../styleds';
 
@@ -258,12 +258,54 @@ export default function CurrencyList({
   isAddressSearch: string | false;
   isLoading?: boolean;
 }) {
+  const [tokenVolumes, setTokenVolumes] = useState<TokenVolumeData[] | null>(null);
+
+  const [sortedItemData, setSortedItemData] = useState<TokenType[]>([]);
+
+  const fetchTokenVolumes = async (network: string): Promise<TokenVolumeData[]> => {
+    const response = await fetch(`https://info.soroswap.finance/api/tokens?network=${network}`);
+    if (!response.ok) {
+      throw new Error('Failed to fetch token volumes');
+    }
+    const data = await response.json();
+    return data.map((token: any) => ({
+      asset: token.asset,
+      volume24h: token.volume24h,
+    }));
+  };
+
+  useEffect(() => {
+    const getVolumes = async () => {
+      try {
+        const volumes = await fetchTokenVolumes('MAINNET');
+        setTokenVolumes(volumes);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    getVolumes();
+  }, []);
+
   const itemData: TokenType[] = useMemo(() => {
     if (otherListTokens && otherListTokens?.length > 0) {
       return [...currencies, ...otherListTokens];
     }
     return currencies;
   }, [currencies, otherListTokens]);
+
+  useEffect(() => {
+    if (tokenVolumes) {
+      const sorted = [...itemData];
+      sorted.sort((a, b) => {
+        const volumeA =
+          tokenVolumes.find((item) => item.asset.contract === a.contract)?.volume24h || 0;
+        const volumeB =
+          tokenVolumes.find((item) => item.asset.contract === b.contract)?.volume24h || 0;
+        return volumeB - volumeA;
+      });
+      setSortedItemData(sorted);
+    }
+  }, [itemData, tokenVolumes]);
 
   const Row = useCallback(
     function TokenRow({ data, index, style }: TokenRowProps) {
@@ -314,7 +356,7 @@ export default function CurrencyList({
     ],
   );
 
-  const itemKey = useCallback((index: number, data: typeof itemData) => {
+  const itemKey = useCallback((index: number, data: typeof sortedItemData) => {
     const currency = data[index];
     return currencyKey(currency);
   }, []);
@@ -330,8 +372,8 @@ export default function CurrencyList({
           height={height}
           ref={fixedListRef as any}
           width="100%"
-          itemData={itemData}
-          itemCount={itemData.length}
+          itemData={sortedItemData}
+          itemCount={sortedItemData.length}
           itemSize={56}
           itemKey={itemKey}
         >
