@@ -1,6 +1,7 @@
 import BigNumber from 'bignumber.js';
 import * as StellarSdk from '@stellar/stellar-sdk';
 import { I128 } from './xdr';
+import { shortenAddress } from './address';
 
 let xdr = StellarSdk.xdr;
 
@@ -203,3 +204,33 @@ export function bigNumberToU32(value: BigNumber): StellarSdk.xdr.ScVal {
 
   return xdr.ScVal.scvU32(num);
 }
+
+export const formatNumberToMoney = (
+  number: number | undefined,
+  decimals: number = 7
+) => {
+  if (!number) return "-";
+
+  if (typeof number === "string") {
+    number = parseFloat(number);
+  }
+
+  if (typeof number !== "number") return "$0.00";
+
+  if (number > 1000000000) {
+    return `$${(number / 1000000000).toFixed(2)}b`;
+  }
+  if (number > 1000000) {
+    return `$${(number / 1000000).toFixed(2)}m`;
+  }
+  if (number > 1000) {
+    return `$${(number / 1000).toFixed(2)}k`;
+  }
+  return `$${number.toFixed(decimals)}`;
+};
+
+export const shouldShortenCode = (contract: string) => {
+  if (!contract) return;
+  if (contract.length > 10) return shortenAddress(contract);
+  return contract;
+};

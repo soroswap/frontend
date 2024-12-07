@@ -1,4 +1,4 @@
-import AddLiquidityComponent from 'components/Liquidity/Add/AddLiquidityComponent';
+import AddLiquidityComponent from 'components/Pools/Add/AddLiquidityComponent';
 import SEO from 'components/SEO';
 import { useApiTokens } from 'hooks/tokens/useApiTokens';
 import { useRouter } from 'next/router';
@@ -12,7 +12,7 @@ export default function AddLiquidityPage() {
     if (!tokens) return;
 
     const xlm = tokens.find((token) => token.code === 'XLM');
-    if (xlm) router.push(`/liquidity/add/${xlm.contract}`);
+    if (xlm) router.push(`/pools/add/${xlm.contract}`);
   }, [tokens, router]);
 
   return (
