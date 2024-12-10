@@ -208,8 +208,6 @@ export function PoolsTable(props: any) {
           return data;
       }
     });
-    console.log(rows)
-    console.log(allowedTokens)
     const filteredRows = rows.filter((row: any) =>
       allowedTokens.some((token: any) => token.contract === row.tokenA.contract) &&
       allowedTokens.some((token: any) => token.contract === row.tokenB.contract) ||
