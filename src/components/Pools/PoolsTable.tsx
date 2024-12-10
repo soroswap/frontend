@@ -29,6 +29,7 @@ import {
   styled
 } from 'soroswap-ui';
 import { visuallyHidden } from '@mui/utils';
+import { fetchTokens } from 'services/tokens';
 
 
 interface PoolData {
@@ -173,6 +174,7 @@ export function PoolsTable(props: any) {
   const { address } = useSorobanReact();
   const { activeChain } = useSorobanReact()
   const [rows, setRows] = useState<PoolData[]>([]);
+  const [loadingRows, setLoadingRows] = useState<boolean>(true);
   const [loadingShares, setLoadingShares] = useState<boolean>(true);
   const [isModalOpen, setModalOpen] = useState<boolean>(false);
   const [selectedLP, setSelectedLP] = useState<LpTokensObj>();
@@ -190,15 +192,38 @@ export function PoolsTable(props: any) {
   } = useTable<PoolData>({
     rows,
     defaultOrder: 'desc',
-    defaultOrderBy: 'totalShares',
+    defaultOrderBy: 'tvl',
     defaultRowsPerPage: 5,
   });
+
+  const filterTokens = async (rows: any) => {
+    if (!activeChain) return;
+    let allowedTokens = await fetchTokens(activeChain?.id).then((data) => {
+      switch (activeChain?.id) {
+        case 'testnet':
+          return data[1].assets;
+        case 'mainnet':
+          return data.assets;
+        default:
+          return data;
+      }
+    });
+    console.log(rows)
+    console.log(allowedTokens)
+    const filteredRows = rows.filter((row: any) =>
+      allowedTokens.some((token: any) => token.contract === row.tokenA.contract) &&
+      allowedTokens.some((token: any) => token.contract === row.tokenB.contract) ||
+      allowedTokens.some((token: any) => token.contract === row.tokenB.contract) &&
+      allowedTokens.some((token: any) => token.contract === row.tokenA.contract)
+    );
+    return filteredRows;
+  }
 
   useEffect(() => {
     const fetchPools = async () => {
       const response = await fetch(`https://info.soroswap.finance/api/pairs?network=${activeChain?.id.toUpperCase()}`);
       if (address && lpTokens) {
-        response.json().then((data) => {
+        response.json().then(async (data) => {
           const pools = data.map((pool: any) => {
             const tempShare = lpTokens?.find((lpToken: any) => lpToken.address === pool.address)?.balance;
             return {
@@ -206,14 +231,17 @@ export function PoolsTable(props: any) {
               totalShares: tempShare ?? 0,
             };
           });
-          setRows(pools);
+          const filteredTokens = await filterTokens(pools);
+          setRows(filteredTokens);
           setLoadingShares(false);
         })
       } else {
-        response.json().then((data) => {
-          setRows(data);
+        response.json().then(async (data) => {
+          const filteredTokens = await filterTokens(data);
+          setRows(filteredTokens);
         })
       }
+      setLoadingRows(false);
     }
     fetchPools();
   }, [activeChain, address, lpTokens]);
@@ -236,9 +264,64 @@ export function PoolsTable(props: any) {
     setModalOpen(true);
   };
 
-  if (rows.length === 0) {
+  if (rows.length === 0 && !loadingRows) {
     return <Card sx={{ p: 2, my: 4 }}>No pools found.</Card>;
   }
+  if (rows.length === 0 && loadingRows) {
+    const skeletonRow = () => {
+      return (
+        <TableRow>
+          <TableCell >
+            <Skeleton height={34} />
+          </TableCell>
+          <TableCell >
+            <Skeleton height={34} />
+          </TableCell>
+          <TableCell >
+            <Skeleton height={34} />
+          </TableCell>
+          <TableCell >
+            <Skeleton height={34} />
+          </TableCell>
+          <TableCell >
+            <Skeleton height={34} />
+          </TableCell>
+          <TableCell>
+            <Skeleton height={34} />
+          </TableCell>
+          {address && (
+            <>
+              <TableCell>
+                <Skeleton height={34} />
+              </TableCell>
+              <TableCell>
+                <Skeleton height={34} />
+              </TableCell>
+            </>
+
+          )}
+        </TableRow>
+      )
+    }
+    return (
+      <TableContainer>
+        <Table sx={{ minWidth: 700 }}>
+          <PoolsTableHead
+            order={order}
+            orderBy={orderBy}
+            onRequestSort={handleRequestSort}
+          />
+          <TableBody>
+            {skeletonRow()}
+            {skeletonRow()}
+            {skeletonRow()}
+            {skeletonRow()}
+            {skeletonRow()}
+          </TableBody>
+        </Table>
+      </TableContainer>)
+  }
+
   const tableButtonStyle = { height: 10, fontSize: 12, width: 120, justifySelf: 'center', borderRadius: 16 }
   return (
     <TableContainer>
