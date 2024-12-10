@@ -9,8 +9,7 @@ export default function fromExactOutputGetExpectedInput(
   reserve0: BigNumber | undefined,
   reserve1: BigNumber | undefined,
 ): BigNumber {
-  if (!amountIn || !reserve0 || !reserve1) return BigNumber(0)
-
+  if (!amountIn || !reserve0 || !reserve1) return BigNumber(0);
   return getExpectedAmountFromReserves(amountIn, reserve0, reserve1);
 }
 
