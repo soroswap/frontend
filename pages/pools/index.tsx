@@ -3,8 +3,8 @@ import { useSorobanReact } from '@soroban-react/core';
 import { ButtonPrimary } from 'components/Buttons/Button';
 import { WalletButton } from 'components/Buttons/WalletButton';
 import { AutoColumn } from 'components/Column';
-import LiquidityPoolInfoModal from 'components/Liquidity/LiquidityPoolInfoModal';
-import { LPPercentage } from 'components/Liquidity/styleds';
+import LiquidityPoolInfoModal from 'components/Pools/LiquidityPoolInfoModal';
+import { LPPercentage } from 'components/Pools/styleds';
 import CurrencyLogo from 'components/Logo/CurrencyLogo';
 import { Dots } from 'components/Pool/styleds';
 import { AutoRow } from 'components/Row';
@@ -18,6 +18,9 @@ import { useContext, useState } from 'react';
 import SEO from '../../src/components/SEO';
 import { DEFAULT_SLIPPAGE_INPUT_VALUE } from 'components/Settings/MaxSlippageSettings';
 
+import { PoolsTable } from 'components/Pools/PoolsTable';
+
+
 const PageWrapper = styled(AutoColumn)`
   position: relative;
   background: ${({ theme }) => `linear-gradient(${theme.palette.customBackground.bg2}, ${theme.palette.customBackground.bg2
@@ -29,8 +32,8 @@ const PageWrapper = styled(AutoColumn)`
   border-radius: 16px;
   padding: 32px;
   transition: transform 250ms ease;
-  max-width: 875px;
-  width: 100%;
+  max-width: 99vw;
+  width: 95vw;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -76,6 +79,7 @@ const StatusWrapper = styled('div')`
   border-radius: 16px;
 `;
 
+
 export default function LiquidityPage() {
   const sorobanContext = useSorobanReact();
   const { address } = sorobanContext;
@@ -102,15 +106,19 @@ export default function LiquidityPage() {
   return (
     <>
       <SEO title="Liquidity - Soroswap" description="Soroswap Liquidity Pool" />
-      <PageWrapper>
+      <PageWrapper style={{ width: '99vw' }}>
         <div style={{ width: '100%' }}>
           <AutoRow style={{ justifyContent: 'space-between' }}>
-            <SubHeader>Your liquidity</SubHeader>
-            <SettingsTab autoSlippage={DEFAULT_SLIPPAGE_INPUT_VALUE} />
+            <SubHeader>Liquidity Pools</SubHeader>
+            {address ? (
+              <ButtonPrimary style={{ width: 200 }} onClick={() => router.push('/pools/add')}>
+                + Add Liquidity
+              </ButtonPrimary>
+            ) : (
+              <WalletButton style={{ width: 200 }} />
+            )}
           </AutoRow>
-          <div>
-            <BodySmall>List of your liquidity positions</BodySmall>
-          </div>
+          <PoolsTable />
         </div>
         {!address ? (
           <LPTokensContainer>
@@ -128,6 +136,13 @@ export default function LiquidityPage() {
           </LPTokensContainer>
         ) : lpTokens && lpTokens?.length > 0 ? (
           <LPTokensContainer>
+                <AutoRow style={{ justifyContent: 'space-between' }} mt={4}>
+                  <SubHeader>Your liquidity</SubHeader>
+                  <SettingsTab autoSlippage={DEFAULT_SLIPPAGE_INPUT_VALUE} />
+                </AutoRow>
+                <div>
+                  <BodySmall>List of your liquidity positions</BodySmall>
+                </div>
             {lpTokens.map((obj: any, index: number) => (
               <LPCard onClick={() => handleLPClick(obj)} key={index}>
                 <AutoRow gap={'2px'}>
@@ -154,7 +169,7 @@ export default function LiquidityPage() {
           </LPTokensContainer>
         )}
         {address ? (
-          <ButtonPrimary onClick={() => router.push('/liquidity/add')}>
+          <ButtonPrimary onClick={() => router.push('/pools/add')}>
             + Add Liquidity
           </ButtonPrimary>
         ) : (

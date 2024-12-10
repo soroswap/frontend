@@ -144,7 +144,7 @@ export default function RemoveLiquidityComponent() {
     // if there was a tx hash, we want to clear the input
     if (txHash) {
       onUserInput(Field.LIQUIDITY_PERCENT, '');
-      router.push('/liquidity');
+      router.push('/pools');
     }
     setTxHash(undefined);
   }, [onUserInput, router, txHash]);
