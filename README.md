@@ -50,6 +50,19 @@ Then, when you are ready for production, you can take Futurenet Contracts inform
 ```bash
 cp .env.production.example .env
 ```
+.env should be like:
+```
+NEXT_PUBLIC_AGGREGATOR_ENABLED_MAINNET=false
+NEXT_PUBLIC_AGGREGATOR_ENABLED_TESTNET=false
+NEXT_PUBLIC_BACKEND_URL=https://api.soroswap.finance
+NEXT_PUBLIC_DEFAULT_NETWORK=mainnet
+NEXT_PUBLIC_SOROSWAP_BACKEND_ENABLED=false
+NEXT_PUBLIC_SOROSWAP_BACKEND_API_KEY=88409eab-9864-4af8-ba3e-3c65d8ea8047
+NEXT_PUBLIC_SOROSWAP_BACKEND_URL=https://backend.soroswap.finance
+NEXT_PUBLIC_TRUSTLINE_WALLET_PUBLIC_KEY=<any-key>
+NEXT_PUBLIC_TEST_TOKENS_ADMIN_SECRET_KEY=<any-key>
+NEXT_PUBLIC_DIRECT_PATH_ENABLED=true
+```
 
 > [!IMPORTANT] Note that some Futurenet RPC's might not have the same version, so we strongly recomend you to connect to a local quickstart node following the instructions in `https://github.com/soroswap/core`; and setting up your Freighter Wallet as in step 6.
 
@@ -132,15 +145,6 @@ bash docker/run.sh
 Once the development container is running, you can install the dependencies for the tests by running the following command:
 
 ```bash
-## 🧪🔨 Testing 🧪🔨
-To execute the tests, you must first start the development container. To do this, run the following command from your host machine:
-
-```bash
-bash docker/run.sh
-```
-Once the development container is running, you can install the dependencies for the tests by running the following command:
-
-```bash
 yarn install
 ```
 
@@ -165,8 +169,8 @@ License: MIT
 
 ## Acknowledgments
 
-    Special thanks to the Uniswap team for providing the base protocol on which Soroswap is built.
-    Thank you to the Stellar Community for the continuous support.
+Special thanks to the Uniswap team for providing the base protocol on which Soroswap is built.
+Thank you to the Stellar Community for the continuous support.
 
 ---
 
