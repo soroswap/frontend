@@ -1,4 +1,4 @@
-import { SorobanContextType } from '@soroban-react/core';
+import { SorobanContextType } from 'soroban-react-stellar-wallets-kit';
 import { getClassicStellarAsset, isAddress } from 'helpers/address';
 import * as StellarSdk from '@stellar/stellar-sdk';
 

@@ -1,8 +1,8 @@
 import { Button } from 'soroswap-ui';
-import { SorobanContextType } from '@soroban-react/core';
+import { SorobanContextType } from 'soroban-react-stellar-wallets-kit';
 import { useContext, useState } from 'react';
 
-import { contractInvoke } from '@soroban-react/contracts';
+import { contractInvoke } from 'soroban-react-stellar-wallets-kit';
 import BigNumber from 'bignumber.js';
 import { AppContext, SnackbarIconType } from 'contexts';
 import { sendNotification } from 'functions/sendNotification';

@@ -4,7 +4,7 @@ import { BodySmall } from 'components/Text';
 import { MouseoverTooltip } from 'components/Tooltip';
 import useGetMyBalances from 'hooks/useGetMyBalances';
 
-import { useSorobanReact } from '@soroban-react/core';
+import { useSorobanReact } from 'soroban-react-stellar-wallets-kit';
 import BigNumber from 'bignumber.js';
 import { TextWithLoadingPlaceholder } from 'components/Swap/AdvancedSwapDetails';
 import { xlmTokenList } from 'constants/xlmToken';

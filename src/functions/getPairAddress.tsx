@@ -1,5 +1,5 @@
-import { contractInvoke } from '@soroban-react/contracts';
-import { SorobanContextType } from '@soroban-react/core';
+import { contractInvoke } from 'soroban-react-stellar-wallets-kit';
+import { SorobanContextType } from 'soroban-react-stellar-wallets-kit';
 import { addressToScVal, scValToJs } from 'helpers/convert';
 import { fetchFactory } from 'services/factory';
 import { xdr } from '@stellar/stellar-sdk';

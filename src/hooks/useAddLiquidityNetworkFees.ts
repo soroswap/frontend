@@ -1,6 +1,6 @@
 import { calculateLiquidityFees, calculateSwapFees } from 'functions/getNetworkFees';
 import { InterfaceTrade } from 'state/routing/types';
-import { SorobanContextType, useSorobanReact } from '@soroban-react/core';
+import { SorobanContextType, useSorobanReact } from 'soroban-react-stellar-wallets-kit';
 import useSWRImmutable from 'swr/immutable';
 import BigNumber from 'bignumber.js';
 import { RouterMethod } from './useRouterCallback';

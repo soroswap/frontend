@@ -6,7 +6,7 @@ import { Button, Grid, Typography, useMediaQuery, Tooltip } from 'soroswap-ui';
 import { HeaderChip } from 'components/Layout/ProfileSection';
 import { RowBetween, RowFixed } from '../Row';
 import { SubHeader } from '../Text';
-import { useSorobanReact } from '@soroban-react/core';
+import { useSorobanReact } from 'soroban-react-stellar-wallets-kit';
 import { ArrowDropDownSharp } from '@mui/icons-material';
 import useGetNativeTokenBalance from 'hooks/useGetNativeTokenBalance';
 import BigNumber from 'bignumber.js';

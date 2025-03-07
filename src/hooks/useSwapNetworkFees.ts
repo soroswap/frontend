@@ -1,6 +1,6 @@
 import { calculateSwapFees } from 'functions/getNetworkFees';
 import { InterfaceTrade } from 'state/routing/types';
-import { SorobanContextType, useSorobanReact } from '@soroban-react/core';
+import { SorobanContextType, useSorobanReact } from 'soroban-react-stellar-wallets-kit';
 import { xlmTokenList } from 'constants/xlmToken';
 import { useRouterSDK } from 'functions/generateRoute';
 import { TokenType } from 'interfaces';

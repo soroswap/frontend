@@ -1,6 +1,6 @@
 import { Box, Button } from 'soroswap-ui';
 import { useInkathon } from '@scio-labs/use-inkathon';
-import { useSorobanReact } from '@soroban-react/core';
+import { useSorobanReact } from 'soroban-react-stellar-wallets-kit';
 import BigNumber from 'bignumber.js';
 import CurrencyBalance from 'components/CurrencyInputPanel/CurrencyBalance';
 import {

@@ -1,4 +1,4 @@
-import { SorobanContextType, useSorobanReact } from '@soroban-react/core';
+import { SorobanContextType, useSorobanReact } from 'soroban-react-stellar-wallets-kit';
 import { useEffect, useMemo, useState } from 'react';
 import axios from 'axios';
 

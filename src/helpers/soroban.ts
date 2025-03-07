@@ -4,8 +4,8 @@
 // import { stroopToXlm } from './format';
 // import { I128 } from './xdr';
 
-import { contractInvoke } from '@soroban-react/contracts';
-import { SorobanContextType } from '@soroban-react/core';
+import { contractInvoke } from 'soroban-react-stellar-wallets-kit';
+import { SorobanContextType } from 'soroban-react-stellar-wallets-kit';
 import { xdr } from '@stellar/stellar-sdk';
 import { scValToJs } from './convert';
 

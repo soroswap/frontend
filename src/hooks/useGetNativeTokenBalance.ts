@@ -1,4 +1,4 @@
-import { SorobanContextType, useSorobanReact } from '@soroban-react/core';
+import { SorobanContextType, useSorobanReact } from 'soroban-react-stellar-wallets-kit';
 import { tokenBalance } from './useBalances';
 import useSWRImmutable from 'swr/immutable';
 import nativeTokens from '../../public/native_tokens.json';

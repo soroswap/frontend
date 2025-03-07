@@ -1,5 +1,5 @@
-import { TxResponse } from '@soroban-react/contracts';
-import { useSorobanReact } from '@soroban-react/core';
+import { TxResponse } from 'soroban-react-stellar-wallets-kit';
+import { useSorobanReact } from 'soroban-react-stellar-wallets-kit';
 import * as StellarSdk from '@stellar/stellar-sdk';
 import BigNumber from 'bignumber.js';
 import { DEFAULT_SLIPPAGE_INPUT_VALUE } from 'components/Settings/MaxSlippageSettings';

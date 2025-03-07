@@ -1,6 +1,6 @@
 import { ServerApi } from '@stellar/stellar-sdk/lib/horizon';
 import { Asset } from '@stellar/stellar-sdk';
-import { SorobanContextType } from '@soroban-react/core';
+import { SorobanContextType } from 'soroban-react-stellar-wallets-kit';
 import BigNumber from 'bignumber.js';
 import { CurrencyAmount, TokenType } from 'interfaces';
 import { PlatformType, TradeType } from 'state/routing/types';

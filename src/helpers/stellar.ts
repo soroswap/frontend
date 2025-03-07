@@ -1,4 +1,4 @@
-import { SorobanContextType } from '@soroban-react/core';
+import { SorobanContextType } from 'soroban-react-stellar-wallets-kit';
 import BigNumber from 'bignumber.js';
 import { TokenType } from 'interfaces';
 import { isClassicStellarAssetFormat } from './address';

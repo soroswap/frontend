@@ -1,4 +1,4 @@
-import { SorobanContextType, useSorobanReact } from '@soroban-react/core';
+import { SorobanContextType, useSorobanReact } from 'soroban-react-stellar-wallets-kit';
 import { getClassicAssetSorobanAddress } from 'functions/getClassicAssetSorobanAddress';
 import { getClassicStellarAsset, isAddress } from 'helpers/address';
 import { getTokenName } from 'helpers/soroban';

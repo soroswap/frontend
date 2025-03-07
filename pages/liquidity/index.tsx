@@ -1,5 +1,5 @@
 import { CircularProgress, styled, useMediaQuery, useTheme } from 'soroswap-ui';
-import { useSorobanReact } from '@soroban-react/core';
+import { useSorobanReact } from 'soroban-react-stellar-wallets-kit';
 import { ButtonPrimary } from 'components/Buttons/Button';
 import { WalletButton } from 'components/Buttons/WalletButton';
 import { AutoColumn } from 'components/Column';

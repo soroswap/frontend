@@ -4,7 +4,7 @@ import { useMemo, useState } from 'react';
 import InkathonProvider from 'inkathon/InkathonProvider';
 import MySorobanReactProvider from 'soroban/MySorobanReactProvider';
 import store from 'state';
-import { SorobanContextType } from '@soroban-react/core';
+import { SorobanContextType } from 'soroban-react-stellar-wallets-kit';
 import { SoroswapThemeProvider } from 'soroswap-ui';
 import ContextProvider from './ContextProvider';
 

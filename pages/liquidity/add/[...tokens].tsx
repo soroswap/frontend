@@ -1,4 +1,4 @@
-import { useSorobanReact } from '@soroban-react/core';
+import { useSorobanReact } from 'soroban-react-stellar-wallets-kit';
 import AddLiquidityComponent from 'components/Liquidity/Add/AddLiquidityComponent';
 import SEO from 'components/SEO';
 import { xlmTokenList } from 'constants/xlmToken';

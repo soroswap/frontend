@@ -1,5 +1,5 @@
-// import { useSorobanReact } from "@soroban-react/core";
-// import { useContractValue } from "@soroban-react/contracts";
+// import { useSorobanReact } from "soroban-react-stellar-wallets-kit";
+// import { useContractValue } from "soroban-react-stellar-wallets-kit";
 // import { accountToScVal } from "../utils";
 
 import BigNumber from "bignumber.js";

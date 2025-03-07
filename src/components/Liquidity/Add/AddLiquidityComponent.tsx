@@ -1,6 +1,6 @@
 import { styled, useTheme } from 'soroswap-ui';
-import { TxResponse } from '@soroban-react/contracts';
-import { useSorobanReact } from '@soroban-react/core';
+import { TxResponse } from 'soroban-react-stellar-wallets-kit';
+import { useSorobanReact } from 'soroban-react-stellar-wallets-kit';
 import BigNumber from 'bignumber.js';
 import { ButtonError } from 'components/Buttons/Button';
 import { WalletButton } from 'components/Buttons/WalletButton';
