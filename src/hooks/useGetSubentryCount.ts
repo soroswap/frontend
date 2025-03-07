@@ -1,4 +1,4 @@
-import { useSorobanReact } from '@soroban-react/core';
+import { useSorobanReact } from 'soroban-react-stellar-wallets-kit';
 import { useEffect, useState } from 'react';
 import useGetNativeTokenBalance from './useGetNativeTokenBalance';
 

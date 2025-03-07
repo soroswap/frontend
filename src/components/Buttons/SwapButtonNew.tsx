@@ -1,6 +1,6 @@
 import { ButtonProps as ButtonPropsOriginal, Button as MuiButton, styled } from 'soroswap-ui';
-import { contractTransaction, useSendTransaction } from '@soroban-react/contracts';
-import { SorobanContextType } from '@soroban-react/core';
+import { contractTransaction, useSendTransaction } from 'soroban-react-stellar-wallets-kit';
+import { SorobanContextType } from 'soroban-react-stellar-wallets-kit';
 import BigNumber from 'bignumber.js';
 import { BodyPrimary } from 'components/Text';
 import { useTokensFromPair } from 'hooks/useTokensFromPair';

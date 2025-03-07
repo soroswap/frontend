@@ -1,4 +1,4 @@
-import { useSorobanReact } from '@soroban-react/core';
+import { useSorobanReact } from 'soroban-react-stellar-wallets-kit';
 import { getPairAddress } from 'functions/getPairAddress';
 import React from 'react';
 import useSWRImmutable from 'swr/immutable';

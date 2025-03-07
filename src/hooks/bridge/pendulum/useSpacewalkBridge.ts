@@ -1,4 +1,4 @@
-import { useSorobanReact } from '@soroban-react/core';
+import { useSorobanReact } from 'soroban-react-stellar-wallets-kit';
 import { Asset } from '@stellar/stellar-sdk';
 import { TenantName } from 'BridgeStateProvider/models';
 import { convertCurrencyToStellarAsset, shouldFilterOut } from 'helpers/bridge/pendulum/spacewalk';

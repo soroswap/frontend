@@ -1,6 +1,6 @@
 import { Box, MenuItem, Select, TextField } from 'soroswap-ui';
 import { useInkathon } from '@scio-labs/use-inkathon';
-import { useSorobanReact } from '@soroban-react/core';
+import { useSorobanReact } from 'soroban-react-stellar-wallets-kit';
 import BigNumber from 'bignumber.js';
 import { decimalToStellarNative, isPublicKey } from 'helpers/bridge/pendulum/stellar';
 import { getEventBySectionAndMethod, getSubstrateErrors } from 'helpers/bridge/pendulum/substrate';

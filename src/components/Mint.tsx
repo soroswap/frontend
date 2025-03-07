@@ -11,7 +11,7 @@ import {
   TextField,
 } from 'soroswap-ui';
 
-import { SorobanContextType, useSorobanReact } from '@soroban-react/core';
+import { SorobanContextType, useSorobanReact } from 'soroban-react-stellar-wallets-kit';
 import React, { useEffect, useState } from 'react';
 
 import BigNumber from 'bignumber.js';

@@ -4,7 +4,7 @@ import { ButtonPrimary } from 'components/Buttons/Button';
 import { ButtonText } from 'components/Text';
 import { ConnectPendulumWalletButton } from './ConnectPendulumWalletButton';
 import { useInkathon } from '@scio-labs/use-inkathon';
-import { useSorobanReact } from '@soroban-react/core';
+import { useSorobanReact } from 'soroban-react-stellar-wallets-kit';
 
 interface PendulumBridgeButtonProps {
   isLoading?: boolean;

@@ -4,7 +4,7 @@ import {
 } from 'helpers/bridge/pendulum/stellar';
 
 import { useInkathon } from '@scio-labs/use-inkathon';
-import { useSorobanReact } from '@soroban-react/core';
+import { useSorobanReact } from 'soroban-react-stellar-wallets-kit';
 import { Asset, BASE_FEE, Memo, Operation, TransactionBuilder } from '@stellar/stellar-sdk';
 import BigNumber from 'bignumber.js';
 import { IssueStepsByKeys, StepKeys } from 'components/Bridge/BridgeSteps';
