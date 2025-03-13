@@ -1,3 +1,4 @@
+// MainLayout.tsx
 import { AppBar, Toolbar, useMediaQuery } from 'soroswap-ui';
 import { styled, useTheme } from 'soroswap-ui';
 import ConnectWalletModal from 'components/Modals/ConnectWalletModal';
@@ -5,37 +6,26 @@ import SnackbarNotification from 'components/Notifications/SnackbarNotification'
 import React, { useState } from 'react';
 import background1 from '../../assets/images/bg1.png';
 import Header from './Header';
+import Footer from './Footer'; // Import the new Footer component
 
-// Styled Footer component
-const Footer = styled('footer')<{ isMobile: boolean }>`
-  padding: ${({ isMobile }) => (isMobile ? '20px' : '30px')};
-  text-align: center;
-  width: 100%; // Ensure full width
-  background: ${({ theme }) => theme.palette.background.paper};
-  color: ${({ theme }) => theme.palette.text.secondary};
-`;
-
+// Styled MainBackground
 const MainBackground = styled('main')<{ isMobile: boolean; showBanner: boolean }>`
   background-image: url(${background1.src});
   background-size: cover;
   min-height: ${({ isMobile }) => (isMobile ? 'calc(100vh - 78px)' : 'calc(100vh - 120px)')};
   height: 100%;
   display: flex;
-  flex-direction: column; // Stack vertically
-  justify-content: space-between; // Push footer to bottom if content is short
-  align-items: stretch; // Stretch children (content and footer) to full width
-  width: 100vw;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: stretch; // Stretch children to full width
+  width: 100vw; // Use viewport width directly
   padding: ${({ isMobile }) => (isMobile ? '50px 20px 0 20px' : '65px 20px 0 20px')};
   margin-top: ${({ isMobile, showBanner }) =>
     isMobile ? (showBanner ? '120px' : '78px') : showBanner ? '162px' : '120px'};
-`;
-
-// Optional: Wrap content to control its alignment separately
-const ContentWrapper = styled('div')`
-  width: 100%;
-  display: flex;
-  justify-content: center; // Center content horizontally
-  align-items: flex-start;
+  margin-left: 0; // Ensure no offset
+  margin-right: 0; // Ensure no offset
+  box-sizing: border-box;
+  overflow-x: hidden; // Match globals.css
 `;
 
 export default function MainLayout({ children }: { children: React.ReactNode }) {
@@ -62,11 +52,11 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
       <SnackbarNotification />
 
       <MainBackground isMobile={isMobile} theme={theme} showBanner={showBanner}>
-        <ContentWrapper>{children}</ContentWrapper> {/* Wrap children */}
-        <Footer isMobile={isMobile}>
-          <p>© {new Date().getFullYear()} Soroswap. All rights reserved.</p>
-        </Footer>
+        <div style={{ width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'flex-start' }}>
+          {children}
+        </div>
       </MainBackground>
+        <Footer isMobile={isMobile} />
     </>
   );
 }
