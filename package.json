@@ -72,6 +72,8 @@
     "react-virtualized-auto-sizer": "^1.0.20",
     "react-window": "^1.8.9",
     "redux": "^4.2.1",
+    "soroban-react-stellar-wallets-kit": "^0.0.3",
+    "@creit.tech/stellar-wallets-kit": "npm:@creit.tech/stellar-wallets-kit@^1.0.0",
     "soroswap-router-sdk": "1.4.6",
     "soroswap-ui": "^1.0.0",
     "swr": "^2.2.0",

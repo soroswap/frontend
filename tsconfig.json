@@ -16,16 +16,17 @@
     "jsx": "preserve",
     "incremental": true,
     "downlevelIteration": true,
-    "types": ["node", "cypress"]
+    "types": ["node", "cypress"],
+    "allowSyntheticDefaultImports": true
   },
   "include": [
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
-    "next.config.cjs",
-    "next.config.mjs",
     "next.config.js",
-    "next.config.cjs"
+    "next.config.js",
+    "next.config.mjss",
+    "next.config.js"
   ],
   "exclude": ["node_modules"]
 }
