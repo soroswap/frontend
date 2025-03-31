@@ -10,7 +10,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   ];
   const origin = req.headers.origin || req.headers.referer || '';
 
-  if (!allowedOrigin.some((allowed) => origin.endsWith(allowed))) {
+  if (!allowedOrigin.some((allowed) => origin.includes(allowed))) {
     return res.status(403).json({ message: 'Forbidden' });
   }
 
