@@ -1,0 +1,40 @@
+diff --git a/node_modules/@creit.tech/stellar-wallets-kit/components/modal/stellar-wallets-modal.cjs b/node_modules/@creit.tech/stellar-wallets-kit/components/modal/stellar-wallets-modal.cjs
+index 6dd0cb6..7eabad7 100644
+--- a/node_modules/@creit.tech/stellar-wallets-kit/components/modal/stellar-wallets-modal.cjs
++++ b/node_modules/@creit.tech/stellar-wallets-kit/components/modal/stellar-wallets-modal.cjs
+@@ -1,13 +1,31 @@
+ 'use strict';
+ 
+ var tslib = require('tslib');
+-var lit = require('lit');
+-var styleMap_js = require('lit/directives/style-map.js');
+-var decorators_js = require('lit/decorators.js');
++let lit, styleMap_js, decorators_js;
++
++const initializeDependencies = async () => {
++  try {
++    [lit, styleMap_js, decorators_js] = await Promise.all([
++      import('lit'),
++      import('lit/directives/style-map.js'),
++      import('lit/decorators.js')
++    ]);
++    console.log('Lit dependencies loaded dynamically.'); // For debugging
++    // PROBLEM: The class definition below might have already executed
++    // before 'lit' and 'decorators_js' are assigned here.
++  } catch (e) {
++    console.error('Failed to load Lit dependencies dynamically:', e);
++  }
++};
++
++// Initialize immediately
++initializeDependencies();
++// --- END REPLACEMENT ---
++
++
+ var reactiveState = require('../../state/reactive-state.cjs');
+ var store = require('../../state/store.cjs');
+ var styles = require('./styles.cjs');
+-
+ exports.ModalThemeType = void 0;
+ (function (ModalThemeType) {
+     ModalThemeType["DARK"] = "DARK";

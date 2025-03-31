@@ -12,7 +12,8 @@
     "lint": "next lint",
     "format": "prettier --write \"src/**/*.ts\" \"pages/**/*.ts\"",
     "cy:run": "cypress run --browser chrome",
-    "cy:run:w": "cypress run --spec cypress/e2e/connectWallet.test.ts"
+    "cy:run:w": "cypress run --spec cypress/e2e/connectWallet.test.ts",
+    "postinstall": "patch-package"
   },
   "dependencies": {
     "@cypress/react": "^8.0.1",
@@ -72,6 +73,7 @@
     "react-virtualized-auto-sizer": "^1.0.20",
     "react-window": "^1.8.9",
     "redux": "^4.2.1",
+    "soroban-react-stellar-wallets-kit": "^0.0.3",
     "soroswap-router-sdk": "1.4.6",
     "soroswap-ui": "^1.0.0",
     "swr": "^2.2.0",
@@ -96,6 +98,8 @@
     "jsdom": "^23.0.0",
     "msw": "^2.0.9",
     "next-router-mock": "^0.9.11",
+    "patch-package": "^8.0.0",
+    "postinstall-postinstall": "^2.1.0",
     "prettier": "3.0.0",
     "ts-node": "^10.9.2",
     "vite-tsconfig-paths": "^4.2.1"
