@@ -1,10 +1,7 @@
 import axios from 'axios';
 import { MercuryPair } from './pairs';
 
-export const fetchPairs = async (
-  network: string,
-  protocol: string,
-): Promise<MercuryPair[] | null> => {
+export const fetchPairs = async (network: string, protocol: string): Promise<MercuryPair[]> => {
   try {
     const response = await axios.get(
       `api/pairs?network=${network.toLowerCase()}&protocol=${protocol}`,
@@ -14,6 +11,6 @@ export const fetchPairs = async (
     return response.data;
   } catch (error: any) {
     console.error(`Unexpected error: ${error}`);
-    return null;
+    return [];
   }
 };
