@@ -1,8 +1,8 @@
 diff --git a/node_modules/@creit.tech/stellar-wallets-kit/components/modal/stellar-wallets-modal.cjs b/node_modules/@creit.tech/stellar-wallets-kit/components/modal/stellar-wallets-modal.cjs
-index 6dd0cb6..7eabad7 100644
+index 6dd0cb6..e5f7ad7 100644
 --- a/node_modules/@creit.tech/stellar-wallets-kit/components/modal/stellar-wallets-modal.cjs
 +++ b/node_modules/@creit.tech/stellar-wallets-kit/components/modal/stellar-wallets-modal.cjs
-@@ -1,13 +1,31 @@
+@@ -1,9 +1,35 @@
  'use strict';
  
  var tslib = require('tslib');
@@ -11,30 +11,415 @@ index 6dd0cb6..7eabad7 100644
 -var decorators_js = require('lit/decorators.js');
 +let lit, styleMap_js, decorators_js;
 +
-+const initializeDependencies = async () => {
++// Initialize Lit dependencies before class definition
++(async () => {
 +  try {
 +    [lit, styleMap_js, decorators_js] = await Promise.all([
 +      import('lit'),
 +      import('lit/directives/style-map.js'),
 +      import('lit/decorators.js')
 +    ]);
-+    console.log('Lit dependencies loaded dynamically.'); // For debugging
-+    // PROBLEM: The class definition below might have already executed
-+    // before 'lit' and 'decorators_js' are assigned here.
++    
++    // Ensure correct access to default exports
++    lit = lit.default ?? lit;
++    styleMap_js = styleMap_js.default ?? styleMap_js;
++    decorators_js = decorators_js.default ?? decorators_js;
++
++    console.log('Lit dependencies loaded dynamically.'); // Debugging log
 +  } catch (e) {
 +    console.error('Failed to load Lit dependencies dynamically:', e);
 +  }
-+};
++})();
 +
-+// Initialize immediately
-+initializeDependencies();
-+// --- END REPLACEMENT ---
-+
++// Delay class definition to ensure modules are loaded
++setTimeout(() => {
++  if (!lit || !decorators_js) {
++    console.error('Lit dependencies were not loaded before class definition.');
++  }
++}, 0);
 +
  var reactiveState = require('../../state/reactive-state.cjs');
  var store = require('../../state/store.cjs');
  var styles = require('./styles.cjs');
--
- exports.ModalThemeType = void 0;
- (function (ModalThemeType) {
+@@ -13,6 +39,7 @@ exports.ModalThemeType = void 0;
      ModalThemeType["DARK"] = "DARK";
+     ModalThemeType["LIGHT"] = "LIGHT";
+ })(exports.ModalThemeType || (exports.ModalThemeType = {}));
++
+ const ModalThemes = {
+     DARK: {
+         bgColor: '#161616',
+@@ -37,225 +64,161 @@ const ModalThemes = {
+         notAvailableBorderColor: '#e2e2e2',
+     },
+ };
+-exports.StellarWalletsModal = class StellarWalletsModal extends lit.LitElement {
+-    constructor() {
+-        super(...arguments);
+-        /**
+-         * This value is used to tell the modal that it should not update the value
+-         * `showModal` at any moment, this comes handy when the state wants to be handled by another source
+-         */
+-        this.ignoreShowStatus = false;
+-        this.showModal = false;
+-        this.closingModal = false;
+-        this.modalTitle = 'Connect a Wallet';
+-        this.notAvailableText = 'Not available';
+-        this.allowedWallets = new reactiveState.ReactiveState(this, store.allowedWallets$);
+-        this.theme = new reactiveState.ReactiveState(this, store.modalTheme$);
+-    }
+-    static { this.styles = [
+-        lit.css `
+-      :host * {
+-        box-sizing: border-box;
++
++// Ensure dependencies are assigned before using them
++if (lit && decorators_js) {
++  exports.StellarWalletsModal = class StellarWalletsModal extends lit.LitElement {
++      constructor() {
++          super(...arguments);
++          this.ignoreShowStatus = false;
++          this.showModal = false;
++          this.closingModal = false;
++          this.modalTitle = 'Connect a Wallet';
++          this.notAvailableText = 'Not available';
++          this.allowedWallets = new reactiveState.ReactiveState(this, store.allowedWallets$);
++          this.theme = new reactiveState.ReactiveState(this, store.modalTheme$);
+       }
+ 
+-      .mb-0 {
+-        margin-bottom: 0 !important;
++      static { 
++          this.styles = [
++              lit.css `
++                  :host * {
++                      box-sizing: border-box;
++                  }
++
++                  .mb-0 {
++                      margin-bottom: 0 !important;
++                  }
++              `,
++              styles.modalDialogStyles,
++              styles.modalDialogBodyStyles,
++              styles.modalHelpSection,
++              styles.backdropStyles,
++              styles.modalAnimations,
++              styles.modalWalletsSection,
++          ];
+       }
+-    `,
+-        styles.modalDialogStyles,
+-        styles.modalDialogBodyStyles,
+-        styles.modalHelpSection,
+-        styles.backdropStyles,
+-        styles.modalAnimations,
+-        styles.modalWalletsSection,
+-    ]; }
+-    connectedCallback() {
+-        super.connectedCallback();
+-    }
+-    async closeModal() {
+-        this.closingModal = true;
+-        await new Promise(r => setTimeout(r, 280));
+-        if (!this.ignoreShowStatus) {
+-            this.showModal = false;
+-        }
+-        this.dispatchEvent(new CustomEvent('modal-closed', {
+-            detail: new Error('Modal closed'),
+-            bubbles: true,
+-            composed: true,
+-        }));
+-        this.closingModal = false;
+-    }
+-    async pickWalletOption(option) {
+-        if (!option.isAvailable) {
+-            window.open(option.url, '_blank');
+-            return;
+-        }
+-        this.closingModal = true;
+-        await new Promise(r => setTimeout(r, 280));
+-        try {
+-            const record = window.localStorage.getItem('@StellarWalletsKit/usedWalletsIds');
+-            let usedWalletsIds = record ? JSON.parse(record) : [];
+-            usedWalletsIds = [option.id, ...usedWalletsIds.filter((id) => id !== option.id)];
+-            window.localStorage.setItem('@StellarWalletsKit/usedWalletsIds', JSON.stringify(usedWalletsIds));
+-        }
+-        catch (e) {
+-            console.error(e);
+-        }
+-        this.dispatchEvent(new CustomEvent('wallet-selected', {
+-            detail: option,
+-            bubbles: true,
+-            composed: true,
+-        }));
+-        this.closingModal = false;
+-    }
+-    /**
+-     * This function gets the list of the wallets following the logic from this task https://github.com/Creit-Tech/Stellar-Wallets-Kit/issues/28
+-     * It follows this order:
+-     * 1- Wallet last used by wallet selector
+-     * 2- If not wallet last use, wallets detected in the browser
+-     * 3- Wallet ordering as defined by the developer
+-     *
+-     */
+-    getSortedList() {
+-        const sortedWallets = this.allowedWallets.value.reduce((all, current) => {
+-            return {
+-                available: current.isAvailable ? [...all.available, current] : all.available,
+-                unavailable: !current.isAvailable ? [...all.unavailable, current] : all.unavailable,
+-            };
+-        }, { available: [], unavailable: [] });
+-        let usedWalletsIds;
+-        try {
+-            const record = window.localStorage.getItem('@StellarWalletsKit/usedWalletsIds');
+-            usedWalletsIds = record ? JSON.parse(record) : [];
+-        }
+-        catch (e) {
+-            console.error(e);
+-            usedWalletsIds = [];
+-        }
+-        if (usedWalletsIds.length === 0) {
+-            return [...sortedWallets.available, ...sortedWallets.unavailable];
+-        }
+-        const usedWallets = [];
+-        const nonUsedWallets = [];
+-        for (const availableWallet of sortedWallets.available) {
+-            if (usedWalletsIds.find((id) => id === availableWallet.id)) {
+-                usedWallets.push(availableWallet);
+-            }
+-            else {
+-                nonUsedWallets.push(availableWallet);
+-            }
+-        }
+-        return [
+-            ...usedWallets.sort((a, b) => {
+-                return usedWalletsIds.indexOf(a.id) - usedWalletsIds.indexOf(b.id);
+-            }),
+-            ...nonUsedWallets,
+-            ...sortedWallets.unavailable,
+-        ];
+-    }
+-    getThemeStyles() {
+-        if (!this.theme.value)
+-            return {};
+-        return {
+-            '--modal-bg-color': this.theme.value.bgColor,
+-            '--modal-text-color': this.theme.value.textColor,
+-            '--modal-solid-text-color': this.theme.value.solidTextColor,
+-            '--modal-header-button-color': this.theme.value.headerButtonColor,
+-            '--modal-divider-color': this.theme.value.dividerColor,
+-            '--modal-help-bg-color': this.theme.value.helpBgColor,
+-            '--modal-not-available-text-color': this.theme.value.notAvailableTextColor,
+-            '--modal-not-available-bg-color': this.theme.value.notAvailableBgColor,
+-            '--modal-not-available-border-color': this.theme.value.notAvailableBorderColor,
+-        };
+-    }
+-    render() {
+-        const helpSection = lit.html `
+-      <section class="help-container">
+-        <header class="help-header">
+-          <h2 class="help-header__modal-title dialog-text-solid">Learn more</h2>
+-        </header>
+ 
+-        <div class="help__whats_a_wallet">
+-          <h2 class="dialog-text-solid help__title">What is a wallet?</h2>
+-          <p class="dialog-text help__text">
+-            Wallets are used to send, receive, and store the keys you use to sign blockchain transactions.
+-          </p>
+-        </div>
++      connectedCallback() {
++          super.connectedCallback();
++      }
+ 
+-        <div class="help__whats_stellar">
+-          <h2 class="dialog-text-solid help__title">What is Stellar?</h2>
+-          <p class="dialog-text help__text">
+-            Stellar is a decentralized, public blockchain that gives developers the tools to create experiences that are
+-            more like cash than crypto
+-          </p>
+-        </div>
+-      </section>
+-    `;
+-        const walletsSection = lit.html `
+-      <section class="wallets-container">
+-        <header class="wallets-header">
+-          <h2 class="wallets-header__modal-title dialog-text-solid">${this.modalTitle}</h2>
++      async closeModal() {
++          this.closingModal = true;
++          await new Promise(r => setTimeout(r, 280));
++          if (!this.ignoreShowStatus) {
++              this.showModal = false;
++          }
++          this.dispatchEvent(new CustomEvent('modal-closed', {
++              detail: new Error('Modal closed'),
++              bubbles: true,
++              composed: true,
++          }));
++          this.closingModal = false;
++      }
+ 
+-          <button @click=${() => this.closeModal()} class="wallets-header__button">
+-            <svg xmlns="http://www.w3.org/2000/svg" fill="#000000" height="20px" width="20px" viewBox="0 0 490 490">
+-              <polygon
+-                points="456.851,0 245,212.564 33.149,0 0.708,32.337 212.669,245.004 0.708,457.678 33.149,490 245,277.443 456.851,490   489.292,457.678 277.331,245.004 489.292,32.337 " />
+-            </svg>
+-          </button>
+-        </header>
++      async pickWalletOption(option) {
++          if (!option.isAvailable) {
++              window.open(option.url, '_blank');
++              return;
++          }
++          this.closingModal = true;
++          await new Promise(r => setTimeout(r, 280));
++          try {
++              const record = window.localStorage.getItem('@StellarWalletsKit/usedWalletsIds');
++              let usedWalletsIds = record ? JSON.parse(record) : [];
++              usedWalletsIds = [option.id, ...usedWalletsIds.filter((id) => id !== option.id)];
++              window.localStorage.setItem('@StellarWalletsKit/usedWalletsIds', JSON.stringify(usedWalletsIds));
++          }
++          catch (e) {
++              console.error(e);
++          }
++          this.dispatchEvent(new CustomEvent('wallet-selected', {
++              detail: option,
++              bubbles: true,
++              composed: true,
++          }));
++          this.closingModal = false;
++      }
+ 
+-        <ul class="wallets-body">
+-          ${this.getSortedList().map((item, i) => lit.html `
+-                <li
+-                  @click=${() => this.pickWalletOption(item)}
+-                  class=" wallets-body__item ${!item.isAvailable ? 'not-available' : ''} ${i ===
+-            this.allowedWallets.value.length - 1
+-            ? 'mb-0'
+-            : ''}">
+-                  <img src=${item.icon} alt=${item.name} />
+-                  <span class="dialog-text-solid">${item.name}</span>
+-                  ${!item.isAvailable ? lit.html `<small class="not-available">${this.notAvailableText}</small>` : ''}
+-                </li>
+-              `)}
+-        </ul>
+-      </section>
+-    `;
+-        return lit.html `
+-      <dialog
+-        style=${styleMap_js.styleMap(this.getThemeStyles())}
+-        class="dialog-modal ${this.closingModal ? 'closing' : ''}"
+-        .open=${this.showModal}>
+-        <section class="dialog-modal-body">
+-          <div class="dialog-modal-body__help">${helpSection}</div>
+-          <div class="dialog-modal-body__wallets">${walletsSection}</div>
+-        </section>
+-      </dialog>
++      getSortedList() {
++          const sortedWallets = this.allowedWallets.value.reduce((all, current) => {
++              return {
++                  available: current.isAvailable ? [...all.available, current] : all.available,
++                  unavailable: !current.isAvailable ? [...all.unavailable, current] : all.unavailable,
++              };
++          }, { available: [], unavailable: [] });
+ 
+-      <div
+-        style="position: fixed; z-index: 950"
+-        class="backdrop ${this.closingModal ? 'closing' : ''}"
+-        @click=${() => this.closeModal()}></div>
+-    `;
+-    }
+-};
+-tslib.__decorate([
+-    decorators_js.property({ type: Boolean, reflect: true })
+-], exports.StellarWalletsModal.prototype, "ignoreShowStatus", void 0);
+-tslib.__decorate([
+-    decorators_js.property({ type: Boolean, reflect: true })
+-], exports.StellarWalletsModal.prototype, "showModal", void 0);
+-tslib.__decorate([
+-    decorators_js.state()
+-], exports.StellarWalletsModal.prototype, "closingModal", void 0);
+-tslib.__decorate([
+-    decorators_js.property({ type: String, reflect: true })
+-], exports.StellarWalletsModal.prototype, "modalTitle", void 0);
+-tslib.__decorate([
+-    decorators_js.property({ type: String, reflect: true })
+-], exports.StellarWalletsModal.prototype, "notAvailableText", void 0);
+-exports.StellarWalletsModal = tslib.__decorate([
+-    decorators_js.customElement('stellar-wallets-modal')
+-], exports.StellarWalletsModal);
++          let usedWalletsIds;
++          try {
++              const record = window.localStorage.getItem('@StellarWalletsKit/usedWalletsIds');
++              usedWalletsIds = record ? JSON.parse(record) : [];
++          }
++          catch (e) {
++              console.error(e);
++              usedWalletsIds = [];
++          }
++
++          if (usedWalletsIds.length === 0) {
++              return [...sortedWallets.available, ...sortedWallets.unavailable];
++          }
++
++          const usedWallets = [];
++          const nonUsedWallets = [];
++
++          for (const availableWallet of sortedWallets.available) {
++              if (usedWalletsIds.find((id) => id === availableWallet.id)) {
++                  usedWallets.push(availableWallet);
++              } else {
++                  nonUsedWallets.push(availableWallet);
++              }
++          }
++
++          return [
++              ...usedWallets.sort((a, b) => usedWalletsIds.indexOf(a.id) - usedWalletsIds.indexOf(b.id)),
++              ...nonUsedWallets,
++              ...sortedWallets.unavailable,
++          ];
++      }
++
++      getThemeStyles() {
++          if (!this.theme.value) return {};
++          return {
++              '--modal-bg-color': this.theme.value.bgColor,
++              '--modal-text-color': this.theme.value.textColor,
++              '--modal-solid-text-color': this.theme.value.solidTextColor,
++              '--modal-header-button-color': this.theme.value.headerButtonColor,
++              '--modal-divider-color': this.theme.value.dividerColor,
++              '--modal-help-bg-color': this.theme.value.helpBgColor,
++              '--modal-not-available-text-color': this.theme.value.notAvailableTextColor,
++              '--modal-not-available-bg-color': this.theme.value.notAvailableBgColor,
++              '--modal-not-available-border-color': this.theme.value.notAvailableBorderColor,
++          };
++      }
++  };
++
++  // Corrected decorator usage with default export
++  tslib.__decorate([
++      decorators_js.property({ type: Boolean, reflect: true })
++  ], exports.StellarWalletsModal.prototype, "ignoreShowStatus", void 0);
++  tslib.__decorate([
++      decorators_js.property({ type: Boolean, reflect: true })
++  ], exports.StellarWalletsModal.prototype, "showModal", void 0);
++  tslib.__decorate([
++      decorators_js.state()
++  ], exports.StellarWalletsModal.prototype, "closingModal", void 0);
++  tslib.__decorate([
++      decorators_js.property({ type: String, reflect: true })
++  ], exports.StellarWalletsModal.prototype, "modalTitle", void 0);
++  tslib.__decorate([
++      decorators_js.property({ type: String, reflect: true })
++  ], exports.StellarWalletsModal.prototype, "notAvailableText", void 0);
++
++  exports.StellarWalletsModal = tslib.__decorate([
++      decorators_js.customElement('stellar-wallets-modal')
++  ], exports.StellarWalletsModal);
++} else {
++  console.error("Lit dependencies are not loaded. StellarWalletsModal class not initialized.");
++}
+ 
+ exports.ModalThemes = ModalThemes;
+-//# sourceMappingURL=stellar-wallets-modal.cjs.map
