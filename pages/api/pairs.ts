@@ -39,7 +39,28 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       },
     );
 
-    res.status(200).json(pairsResponse.data);
+    if ((network as string).toLowerCase() === 'mainnet') {
+      const assetList = await axios.get(
+        'https://raw.githubusercontent.com/soroswap/token-list/refs/heads/main/tokenList.json',
+      );
+
+      const toReturn = pairsResponse.data.filter((pair: any) => {
+        const tokenAExists = assetList.data.assets.some(
+          (asset: any) => asset.contract === pair.tokenA,
+        );
+        const tokenBExists = assetList.data.assets.some(
+          (asset: any) => asset.contract === pair.tokenB,
+        );
+        const specialToken =
+          pair.tokenA === 'CAS3J7GYLGXMF6TDJBBYYSE3HQ6BBSMLNUQ34T6TZMYMW2EVH34XOWMA' ||
+          pair.tokenB === 'CAS3J7GYLGXMF6TDJBBYYSE3HQ6BBSMLNUQ34T6TZMYMW2EVH34XOWMA';
+        return (tokenAExists && tokenBExists) || specialToken;
+      });
+
+      res.status(200).json(toReturn);
+    } else {
+      res.status(200).json(pairsResponse.data);
+    }
   } catch (error: any) {
     console.error('[API ERROR]', error?.message || error);
     res
