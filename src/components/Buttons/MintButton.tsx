@@ -19,8 +19,8 @@ interface MintButtonProps {
 export function MintButton({ sorobanContext, token, amountToMint }: MintButtonProps) {
   const { SnackbarContext } = useContext(AppContext);
   const [isSubmitting, setSubmitting] = useState(false);
-  const networkPassphrase = sorobanContext.activeChain?.networkPassphrase ?? '';
-  const server = sorobanContext.server;
+  const networkPassphrase = sorobanContext.activeNetwork ?? '';
+  const server = sorobanContext.horizonServer;
   const account = sorobanContext.address;
   const admin_account = StellarSdk.Keypair.fromSecret(
     process.env.NEXT_PUBLIC_TEST_TOKENS_ADMIN_SECRET_KEY as string,
