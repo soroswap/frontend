@@ -384,7 +384,7 @@
     debug "^3.1.0"
     lodash.once "^4.1.1"
 
-"@emnapi/core@^1.3.1":
+"@emnapi/core@^1.4.0":
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/@emnapi/core/-/core-1.4.0.tgz#8844b02d799198158ac1fea21ae2bc81b881da9a"
   integrity sha512-H+N/FqT07NmLmt6OFFtDfwe8PNygprzBikrEMyQfgqSmT0vzE515Pz7R8izwB9q/zsH/MA64AKoul3sA6/CzVg==
@@ -392,7 +392,7 @@
     "@emnapi/wasi-threads" "1.0.1"
     tslib "^2.4.0"
 
-"@emnapi/runtime@^1.3.1":
+"@emnapi/runtime@^1.4.0":
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/@emnapi/runtime/-/runtime-1.4.0.tgz#8f509bf1059a5551c8fe829a1c4e91db35fdfbee"
   integrity sha512-64WYIf4UYcdLnbKn/umDlNjQDSS8AgZrI/R9+x5ilkUVFxXcA1Ebl+gQLc/6mERA4407Xof0R7wEyEuj091CVw==
@@ -1061,12 +1061,12 @@
     react-is "^19.0.0"
 
 "@napi-rs/wasm-runtime@^0.2.7":
-  version "0.2.7"
-  resolved "https://registry.yarnpkg.com/@napi-rs/wasm-runtime/-/wasm-runtime-0.2.7.tgz#288f03812a408bc53c2c3686c65f38fe90f295eb"
-  integrity sha512-5yximcFK5FNompXfJFoWanu5l8v1hNGqNHh9du1xETp9HWk/B/PzvchX55WYOPaIeNglG8++68AAiauBAtbnzw==
+  version "0.2.8"
+  resolved "https://registry.yarnpkg.com/@napi-rs/wasm-runtime/-/wasm-runtime-0.2.8.tgz#642e8390ee78ed21d6b79c467aa610e249224ed6"
+  integrity sha512-OBlgKdX7gin7OIq4fadsjpg+cp2ZphvAIKucHsNfTdJiqdOmOEwQd/bHi0VwNrcw5xpBJyUw6cK/QilCqy1BSg==
   dependencies:
-    "@emnapi/core" "^1.3.1"
-    "@emnapi/runtime" "^1.3.1"
+    "@emnapi/core" "^1.4.0"
+    "@emnapi/runtime" "^1.4.0"
     "@tybys/wasm-util" "^0.9.0"
 
 "@near-js/crypto@^1.4.0":
@@ -2888,114 +2888,6 @@
     rpc-websockets "^9.0.2"
     superstruct "^2.0.2"
 
-"@soroban-react/chains@9.1.13":
-  version "9.1.13"
-  resolved "https://registry.yarnpkg.com/@soroban-react/chains/-/chains-9.1.13.tgz#a8eff25c0784636cf225ef1a99d3d6f22a7176f1"
-  integrity sha512-59TdwMjwk9h8o5WskfJzBvDLgeWcz1TJS22u8bsRANTsRPwt/+tdlBZsMEBzaZKXwmH5f5oPF0lxh0dvn0UyHw==
-  dependencies:
-    "@soroban-react/types" "^9.1.13"
-    "@stellar/stellar-sdk" "12.2.0"
-
-"@soroban-react/connect-button@9.1.13":
-  version "9.1.13"
-  resolved "https://registry.yarnpkg.com/@soroban-react/connect-button/-/connect-button-9.1.13.tgz#68eff5db3fee1d10ffd25daf109065ed70cde1fb"
-  integrity sha512-TMMb5DpqRysBdHVcNXL3BS9Badeu6ogD2LfdOx54ghVVtKVAU9Pd+mGaJcfk3fAz6MkQdJvQu/gPJo4CUDqxAg==
-  dependencies:
-    "@soroban-react/core" "^9.1.13"
-
-"@soroban-react/connect-button@^9.3.0":
-  version "9.3.0"
-  resolved "https://registry.yarnpkg.com/@soroban-react/connect-button/-/connect-button-9.3.0.tgz#6b23bd49ebae944d3696c437144a80cb931bd8cc"
-  integrity sha512-6XQzXlJTo6W3UbyLUyKnoDcSRg0OXbSiszM7x8nR41d8ZA5aYRF6jiHuojzXSy7wf1FqFi5Hvmni10gbu6TSmw==
-  dependencies:
-    "@soroban-react/core" "^9.3.0"
-
-"@soroban-react/contracts@9.3.0":
-  version "9.3.0"
-  resolved "https://registry.yarnpkg.com/@soroban-react/contracts/-/contracts-9.3.0.tgz#8200cb4b638cf4de3902c5366bcdbc22f866d739"
-  integrity sha512-3qaqNATj23aeEPdbZqjzZvdstyDOe11vnAMAwXNXcDd9C4iigi/lYoGi0YNorsdMS36MhxgBq41vSOdmnq3shQ==
-  dependencies:
-    "@soroban-react/core" "^9.3.0"
-    "@stellar/stellar-sdk" "12.2.0"
-
-"@soroban-react/core@9.3.0", "@soroban-react/core@^9.1.13", "@soroban-react/core@^9.3.0":
-  version "9.3.0"
-  resolved "https://registry.yarnpkg.com/@soroban-react/core/-/core-9.3.0.tgz#e420a6c0f9c686376b4f5e496073a026748261ac"
-  integrity sha512-CCXSjPKnhdQi80eL2Vt7vvdzXgJmOQJBpN70rll6I4PXGpwg77f2lxKQaQRmcAkH/OymuXi4AteyzhSbX7nLsg==
-  dependencies:
-    "@soroban-react/freighter" "^9.1.13"
-    "@soroban-react/lobstr" "^9.1.13"
-    "@soroban-react/types" "^9.1.13"
-    "@soroban-react/xbull" "^9.3.0"
-    "@stellar/stellar-sdk" "12.2.0"
-
-"@soroban-react/events@9.3.0":
-  version "9.3.0"
-  resolved "https://registry.yarnpkg.com/@soroban-react/events/-/events-9.3.0.tgz#391e13e93d3798e2db5af8455aa7952257d8f509"
-  integrity sha512-qFA/V+dJt1NAHM68zk9h+UkcWTBW50mkTZ52ucLcHYVOmv78EOFhgljsSOLfEd2G6yrDU56O6BRQ3PHGOd0JSA==
-  dependencies:
-    "@soroban-react/core" "^9.3.0"
-    "@soroban-react/types" "^9.1.13"
-    soroban-client "1.0.0-beta.4"
-
-"@soroban-react/freighter@9.1.13", "@soroban-react/freighter@^9.1.13":
-  version "9.1.13"
-  resolved "https://registry.yarnpkg.com/@soroban-react/freighter/-/freighter-9.1.13.tgz#dabebd2e3cb7c62effc282c4354d3e1568bff295"
-  integrity sha512-a2ZOwYCARRYW/oO5YXGgLXyDhLkkY+fKxlqZ3MxvDIK8XRKVyacd7Rx1r02ZR5CsFe8BMlycZTfenDGPuo3nsQ==
-  dependencies:
-    "@soroban-react/types" "^9.1.13"
-    "@stellar/freighter-api" "1.7.1"
-
-"@soroban-react/hana@9.1.13":
-  version "9.1.13"
-  resolved "https://registry.yarnpkg.com/@soroban-react/hana/-/hana-9.1.13.tgz#87944d17f5f54c330c41a20322a9f2345eec22c8"
-  integrity sha512-zEOdr01LbbTgGbsi5+G0QnonG9SScMYCjbrCkIgdHK19YB6NklvDuAaiPWesp/CaTy+6ESYYgR0vALVShfwTeg==
-  dependencies:
-    "@soroban-react/types" "^9.1.13"
-
-"@soroban-react/lobstr@9.1.13", "@soroban-react/lobstr@^9.1.13":
-  version "9.1.13"
-  resolved "https://registry.yarnpkg.com/@soroban-react/lobstr/-/lobstr-9.1.13.tgz#6616b8ab5acf879269e78b4cfe82cf5bdcc4b5c8"
-  integrity sha512-jItEGMWmhPgGOzUr3zZ2vJHTkGr4wsyptjWJakE6mJj3Z5J+CEqq/+681Td4eQTmPM2p57wqm5YUDibx04Q43A==
-  dependencies:
-    "@lobstrco/signer-extension-api" "^1.0.0-beta.0"
-    "@soroban-react/types" "^9.1.13"
-    "@stellar/stellar-sdk" "12.2.0"
-
-"@soroban-react/types@9.1.13", "@soroban-react/types@^9.1.13":
-  version "9.1.13"
-  resolved "https://registry.yarnpkg.com/@soroban-react/types/-/types-9.1.13.tgz#4ad673ecaf977df3e74d38a87ab061069db275fd"
-  integrity sha512-iba0pzMwGRh216uLGjIsTAwEolJi5qoFXdnZo/0EWY4TvVATMSSs+WrAKccHMgGXntYJJXpUa0xtIbchQ6yiHA==
-  dependencies:
-    "@stellar/stellar-sdk" "12.2.0"
-
-"@soroban-react/utils@9.1.13":
-  version "9.1.13"
-  resolved "https://registry.yarnpkg.com/@soroban-react/utils/-/utils-9.1.13.tgz#f8ff9ad9cc76778edb5bfad28fa0b5730a50581a"
-  integrity sha512-3HHCN/CXnnSTWBb2XOJaM2rDMiVogLWNt27X2GvPPJSv+VvC/00FJfveG/C0HtmvhlrqfMMY+DJZdqQSKjECwQ==
-  dependencies:
-    "@stellar/stellar-sdk" "12.2.0"
-    bignumber.js "^9.1.1"
-
-"@soroban-react/wallet-data@9.3.0":
-  version "9.3.0"
-  resolved "https://registry.yarnpkg.com/@soroban-react/wallet-data/-/wallet-data-9.3.0.tgz#d2f0c31c6f24975584991b1e4da103a7f60fe9bd"
-  integrity sha512-d8wZNe1o8gL0fH7bxA8oNg+pJBB/vTpOwwWY5j+ohC/n5l8fLZ22GCcMR6EFOxvUlMMFIHWzDu/SBymrRCLKpA==
-  dependencies:
-    "@soroban-react/connect-button" "^9.3.0"
-    "@soroban-react/core" "^9.3.0"
-    "@soroban-react/types" "^9.1.13"
-    "@stellar/stellar-sdk" "12.2.0"
-
-"@soroban-react/xbull@9.3.0", "@soroban-react/xbull@^9.3.0":
-  version "9.3.0"
-  resolved "https://registry.yarnpkg.com/@soroban-react/xbull/-/xbull-9.3.0.tgz#89c81463f956129e1065e4b0e8457a05e9329c45"
-  integrity sha512-TDhpyeHlS0Zv7AgCO8t9ymH4QkREo3A9lpjVtFQmlO4VvnVm70oTT3U12uARwVpgJrVShaesKIsyhvO20v4K0A==
-  dependencies:
-    "@creit.tech/xbull-wallet-connect" "0.3.0"
-    "@soroban-react/types" "^9.1.13"
-    "@stellar/stellar-sdk" "12.2.0"
-
 "@stablelib/aead@^1.0.1":
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/@stablelib/aead/-/aead-1.0.1.tgz#c4b1106df9c23d1b867eb9b276d8f42d5fc4c0c3"
@@ -3658,9 +3550,9 @@
   integrity sha512-RtEj20xRyG7cRp142MkQpV3GRF8Wo2MtDkKLz65MQs7rM1Lh8bz+HtfPXCCJEYpnDFu6VwAq/Iv2Ikyp9Jw/hw==
 
 "@types/node@*", "@types/node@>=13.7.0":
-  version "22.13.16"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-22.13.16.tgz#802cff8e4c3b3fc7461c2adcc92d73d89779edad"
-  integrity sha512-15tM+qA4Ypml/N7kyRdvfRjBQT2RL461uF1Bldn06K0Nzn1lY3nAPgHlsVrJxdZ9WhZiW0Fmc1lOYMtDsAuB3w==
+  version "22.13.17"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-22.13.17.tgz#9ca6a81a0180cdcfd3719b9cf6c09186756e1754"
+  integrity sha512-nAJuQXoyPj04uLgu+obZcSmsfOenUg6DxPKogeUy6yNCFwWaj5sBF8/G/pNo8EtBJjAfSVgfIlugR/BCOleO+g==
   dependencies:
     undici-types "~6.20.0"
 
@@ -3675,9 +3567,9 @@
   integrity sha512-fAtCfv4jJg+ExtXhvCkCqUKZ+4ok/JQk01qDKhL5BDDoS3AxKXhV5/MAVUZyQnSEd2GT92fkgZl0pz0Q0AzcIQ==
 
 "@types/node@^18.11.15":
-  version "18.19.85"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-18.19.85.tgz#c5778d9c8c00ec81d4fa10845f328b94e0e6c220"
-  integrity sha512-61sLB7tXUMpkHJagZQAzPV4xGyqzulLvphe0lquRX80rZG24VupRv9p6Qo06V9VBNeGBM8Sv8rRVVLji6pi7QQ==
+  version "18.19.86"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-18.19.86.tgz#a7e1785289c343155578b9d84a0e3e924deb948b"
+  integrity sha512-fifKayi175wLyKyc5qUfyENhQ1dCNI1UNjp653d8kuYcPQN5JhX3dGuP/XmvPTg/xRBn1VTLpbmi+H/Mr7tLfQ==
   dependencies:
     undici-types "~5.26.4"
 
@@ -4648,7 +4540,7 @@ axe-core@^4.10.0:
   resolved "https://registry.yarnpkg.com/axe-core/-/axe-core-4.10.3.tgz#04145965ac7894faddbac30861e5d8f11bfd14fc"
   integrity sha512-Xm7bpRXnDSX2YE2YFfBk2FnF0ep6tmG7xPh8iHee8MIcrgq762Nkce856dYtJYLkuIoYZvGfTs/PbZhideTcEg==
 
-axios@^1.6.0, axios@^1.6.2, axios@^1.6.5, axios@^1.7.2:
+axios@^1.6.2, axios@^1.6.5, axios@^1.7.2:
   version "1.8.4"
   resolved "https://registry.yarnpkg.com/axios/-/axios-1.8.4.tgz#78990bb4bc63d2cae072952d374835950a82f447"
   integrity sha512-eBSYY4Y68NNlHbHBMdeDmKNtDgXWhQsJcGqzO3iLUM0GraQFSS9cVgPX5I9b3lbdFKyYoAEGAZF1DwhTaljNAw==
@@ -4805,7 +4697,7 @@ bigint-conversion@^2.4.3:
   dependencies:
     "@juanelas/base64" "^1.1.2"
 
-bignumber.js@^9.0.0, bignumber.js@^9.1.0, bignumber.js@^9.1.1, bignumber.js@^9.1.2:
+bignumber.js@^9.0.0, bignumber.js@^9.1.0, bignumber.js@^9.1.2:
   version "9.1.2"
   resolved "https://registry.yarnpkg.com/bignumber.js/-/bignumber.js-9.1.2.tgz#b7c4242259c008903b13707983b5f4bbd31eda0c"
   integrity sha512-2/mKyZH9K85bzOEfhXDBFZTGd1CTs+5IHpeFQo9luiBG7hghdC851Pj2WAhb6E3R6b9tZj/XKhbg4fum+Kepug==
@@ -7702,11 +7594,6 @@ js-sha256@^0.11.0:
   resolved "https://registry.yarnpkg.com/js-tokens/-/js-tokens-4.0.0.tgz#19203fb59991df98e3a287050d4647cdeaf32499"
   integrity sha512-RdJUflcE3cUzKiMqQgsCu06FPu9UdIJO0beYbPhHN4k6apgJtifcoCtT9bcxOpYBtpD2kCM6Sbzg4CausW/PKQ==
 
-js-xdr@^3.0.0:
-  version "3.1.2"
-  resolved "https://registry.yarnpkg.com/js-xdr/-/js-xdr-3.1.2.tgz#445b3166ea99baa7898a0c87c1f9512a579b4555"
-  integrity sha512-jyAZSw6mD5AKKGNEv+HW2ce+MJNTgzkpvYCydt2wPIhWYfFKx2jcn2cwOmBG1APXNDlPL6tYCVxO/v+FOnXYzA==
-
 js-yaml@^4.1.0, js-yaml@~4.1.0:
   version "4.1.0"
   resolved "https://registry.yarnpkg.com/js-yaml/-/js-yaml-4.1.0.tgz#c1fb65f8f5017901cdd2c951864ba18458a10602"
@@ -10493,7 +10380,7 @@ socks@^2.8.3:
     ip-address "^9.0.5"
     smart-buffer "^4.2.0"
 
-sodium-native@^4.0.1, sodium-native@^4.1.1:
+sodium-native@^4.1.1:
   version "4.3.3"
   resolved "https://registry.yarnpkg.com/sodium-native/-/sodium-native-4.3.3.tgz#fae4866b52366f5e6cc1b7ae8c8a71673d50c7df"
   integrity sha512-OnxSlN3uyY8D0EsLHpmm2HOFmKddQVvEMmsakCrXUzSd8kjjbzL413t4ZNF3n0UxSwNgwTyUvkmZHTfuCeiYSw==
@@ -10506,17 +10393,6 @@ sonic-boom@^2.2.1:
   integrity sha512-kuonw1YOYYNOve5iHdSahXPOK49GqwA+LZhI6Wz/l0rP57iKyXXIHaRagOBHAPmGwJC6od2Z9zgvZ5loSgMlVg==
   dependencies:
     atomic-sleep "^1.0.0"
-
-soroban-client@1.0.0-beta.4:
-  version "1.0.0-beta.4"
-  resolved "https://registry.yarnpkg.com/soroban-client/-/soroban-client-1.0.0-beta.4.tgz#f2e0b0b1c4511bd04381a3cff3a45cfba7d0dc31"
-  integrity sha512-M1jLCwQtWZkQIJ6U72nYpvj+giYnB2/Vw4E1DBaiCgg5iWIWatDto+QTI/aUR9m7fNGTt/AhFtQzhjksK1rFkQ==
-  dependencies:
-    axios "^1.6.0"
-    bignumber.js "^9.1.1"
-    buffer "^6.0.3"
-    stellar-base v10.0.0-beta.4
-    urijs "^1.19.1"
 
 soroswap-router-sdk@1.4.6:
   version "1.4.6"
@@ -10537,7 +10413,7 @@ soroswap-router-sdk@1.4.6:
     tiny-invariant "^1.3.1"
     toformat "^2.0.0"
 
-soroswap-ui@^1.0.0:
+soroswap-ui@^1.1.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/soroswap-ui/-/soroswap-ui-1.1.0.tgz#b8a78311cf9f7f64f5f6b42dcdb25f1093c43cb3"
   integrity sha512-igV11/zIt+0joH8q9SCVi4oZWDTTUkHfft+3uae63HwbtV+oLz+vTn0CBy0PHhvOv5Hy0pBWkpnTsjwkil0VXA==
@@ -10661,20 +10537,6 @@ statuses@^2.0.1:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/statuses/-/statuses-2.0.1.tgz#55cb000ccf1d48728bd23c685a063998cf1a1b63"
   integrity sha512-RwNA9Z/7PrK06rYLIzFMlaF+l73iwpzsqRIFgbMLbTcLD6cOao82TaWefPXQvB2fOC4AjuYSEndS7N/mTCbkdQ==
-
-stellar-base@v10.0.0-beta.4:
-  version "10.0.0-beta.4"
-  resolved "https://registry.yarnpkg.com/stellar-base/-/stellar-base-10.0.0-beta.4.tgz#818d3b5dd702a7d18f1db47a72837cec80616716"
-  integrity sha512-3EXDFHSahVDMTHrHiFOO8kFf5KN+AL4x5kd5rxjElElPG+385cyWDbO83GrNmDGU/u9/XiVL+riJjz5gQTv6RQ==
-  dependencies:
-    base32.js "^0.1.0"
-    bignumber.js "^9.1.2"
-    buffer "^6.0.3"
-    js-xdr "^3.0.0"
-    sha.js "^2.3.6"
-    tweetnacl "^1.0.3"
-  optionalDependencies:
-    sodium-native "^4.0.1"
 
 stellar-react@^0.0.3:
   version "0.0.3"
