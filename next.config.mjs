@@ -4,44 +4,43 @@ const nextConfig = {
   
   transpilePackages: [
     '@creit.tech/stellar-wallets-kit',
-    'soroban-react-stellar-wallets-kit',
+    'stellar-react',
     'lit',
     '@lit-labs/react',
     '@lit/reactive-element'
   ],
   
-  webpack: (config, { isServer }) => {
-
-    config.resolve.extensionAlias = {
-      '.js': ['.js', '.ts', '.tsx'],
-      '.jsx': ['.jsx', '.tsx'],
-      '.mjs': ['.mjs', '.mts']
+  webpack: (config) => {
+    // Enable top-level await
+    config.experiments = {
+      ...config.experiments,
+      topLevelAwait: true,
     };
-    
-    config.module.rules.push({
-      test: /\.m?js$/,
-      type: 'javascript/auto',
-      resolve: {
-        fullySpecified: false,
-      },
-    });
 
+    // Fix for ES Module/CommonJS interop issues
+    config.resolve.extensionAlias = {
+      ...config.resolve.extensionAlias,
+      '.js': ['.js', '.ts', '.tsx']
+    };
 
-    config.module.rules.push({
-      test: /\/node_modules\/@creit\.tech\/stellar-wallets-kit\/.*\.js$/,
-      resolve: {
-        fullySpecified: false
-      }
-    });
-
-    if (!isServer) {
-      config.resolve.fallback = {
-        ...config.resolve.fallback,
-        fs: false,
-        net: false,
-        tls: false,
-      };
-    }
+    // Add specific handling for the problematic package
+    config.module = {
+      ...config.module,
+      rules: [
+        ...config.module.rules,
+        {
+          test: /\.m?js$/,
+          include: [
+            /node_modules\/@creit\.tech\/stellar-wallets-kit/,
+            /node_modules\/lit/,
+          ],
+          type: 'javascript/auto',
+          resolve: {
+            fullySpecified: false,
+          },
+        },
+      ],
+    };
 
     return config;
   },
