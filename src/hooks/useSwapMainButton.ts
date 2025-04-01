@@ -1,4 +1,4 @@
-import { useSorobanReact } from '@soroban-react/core';
+import { useSorobanReact } from 'stellar-react';
 import { AppContext } from 'contexts';
 import { TokenType } from 'interfaces';
 import { useContext } from 'react';

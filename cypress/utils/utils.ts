@@ -1,4 +1,4 @@
-import { freighter } from '@soroban-react/freighter';
+import { freighter } from 'stellar-react';
 import { xlmTokenList } from 'constants/xlmToken';
 
 export const testnetXLM =

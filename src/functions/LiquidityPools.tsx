@@ -1,5 +1,5 @@
-import { contractInvoke } from '@soroban-react/contracts';
-import { SorobanContextType } from '@soroban-react/core/dist/SorobanContext';
+import { contractInvoke } from 'stellar-react';
+import { SorobanContextType } from 'stellar-react/dist/SorobanContext';
 import BigNumber from 'bignumber.js';
 import { scValToJs } from 'helpers/convert';
 import { xdr } from '@stellar/stellar-sdk';

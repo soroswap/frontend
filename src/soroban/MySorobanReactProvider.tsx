@@ -1,10 +1,10 @@
-import { standalone, testnet, mainnet } from '@soroban-react/chains';
-import { SorobanReactProvider } from '@soroban-react/core';
+import { standalone, testnet, mainnet } from 'stellar-react';
+import { SorobanReactProvider } from 'stellar-react';
 import { freighter } from '@soroban-react/freighter';
 import { lobstr } from '@soroban-react/lobstr';
 import { xbull } from '@soroban-react/xbull';
 import { hana } from '@soroban-react/hana';
-import { ChainMetadata, Connector, WalletChain } from '@soroban-react/types';
+import { ChainMetadata, Connector, WalletChain } from 'stellar-react';
 import useMounted from 'hooks/useMounted';
 
 // Set allowed chains:

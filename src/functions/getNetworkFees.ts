@@ -1,6 +1,6 @@
 import * as StellarSdk from '@stellar/stellar-sdk';
-import { useSorobanReact, SorobanContextType } from '@soroban-react/core';
-import { contractTransaction } from '@soroban-react/contracts';
+import { useSorobanReact, SorobanContextType } from 'stellar-react';
+import { contractTransaction } from 'stellar-react';
 import axios from 'axios';
 import { fetchRouter } from 'services/router';
 import { useSwapCallback } from 'hooks/useSwapCallback';

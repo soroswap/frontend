@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from 'react';
 
-import { useSorobanReact } from '@soroban-react/core';
-import { Connector } from '@soroban-react/types';
+import { useSorobanReact } from 'stellar-react';
+import { Connector } from 'stellar-react';
 import { ButtonPrimary } from 'components/Buttons/Button';
 import { AppContext } from 'contexts';
 import Image from 'next/image';
