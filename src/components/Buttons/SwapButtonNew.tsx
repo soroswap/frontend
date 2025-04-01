@@ -122,8 +122,8 @@ export function SwapButtonNew({
   }, [setToken0, setToken1, tokensFromPair, tokens]);
 
   const [isSubmitting, setSubmitting] = useState(false);
-  const networkPassphrase = sorobanContext.activeChain?.networkPassphrase ?? '';
-  const server = sorobanContext.server;
+  const networkPassphrase = sorobanContext.activeNetwork ?? '';
+  const server = sorobanContext.horizonServer;
   const account = sorobanContext.address;
   let xdr = StellarSdk.xdr;
   const { sendTransaction } = useSendTransaction();

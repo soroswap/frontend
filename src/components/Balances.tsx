@@ -3,7 +3,7 @@ import { AppContext } from 'contexts';
 import useGetMyBalances from 'hooks/useGetMyBalances';
 import { useMintTestToken } from 'hooks/useMintTestToken';
 import { TokenType } from 'interfaces';
-import { useContext, useState } from 'react';
+import { useContext, useState } from 'react'; 
 import { Networks } from '@stellar/stellar-sdk';
 import BalancesTable from './BalancesTable/BalancesTable';
 import { ButtonPrimary } from './Buttons/Button';
@@ -30,7 +30,7 @@ const PageWrapper = styled(Paper)`
 export function Balances() {
   const { sorobanContext, refetch } = useGetMyBalances();
 
-  const isMainnet = sorobanContext.activeChain?.networkPassphrase === Networks.PUBLIC;
+  const isMainnet = sorobanContext.activeNetwork === Networks.PUBLIC;
 
   const mintTestTokens = useMintTestToken();
   const { ConnectWalletModal } = useContext(AppContext);
@@ -39,7 +39,7 @@ export function Balances() {
   const [currentMintingToken, setCurrentMintingToken] = useState<TokenType | null>(null);
   const [isMinting, setIsMinting] = useState(false);
   const getNetwork = () => {
-    switch (sorobanContext.activeChain?.networkPassphrase) {
+    switch (sorobanContext.activeNetwork) {
       case Networks.TESTNET:
         return 'testnet';
       case Networks.PUBLIC:
