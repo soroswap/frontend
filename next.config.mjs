@@ -4,7 +4,7 @@ const nextConfig = {
   
   transpilePackages: [
     '@creit.tech/stellar-wallets-kit',
-    'soroban-react-stellar-wallets-kit',
+    'stellar-react',
     'lit',
     '@lit-labs/react',
     '@lit/reactive-element'
@@ -25,7 +25,6 @@ const nextConfig = {
         fullySpecified: false,
       },
     });
-
 
     config.module.rules.push({
       test: /\/node_modules\/@creit\.tech\/stellar-wallets-kit\/.*\.js$/,
