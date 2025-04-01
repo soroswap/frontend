@@ -26,7 +26,7 @@ export default function SwapHeader({
   trade?: boolean;
 }) {
   const theme = useTheme();
-  const fiatOnRampButtonEnabled = true;
+  const fiatOnRampButtonEnabled = false;
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
   return (

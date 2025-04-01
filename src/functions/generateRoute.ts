@@ -70,15 +70,21 @@ export const useRouterSDK = () => {
   const network = sorobanContext.activeChain?.networkPassphrase as Networks;
 
   const getPairsFns = useMemo(() => {
-    const routerProtocols = []
-    if (shouldUseBackend) return undefined
+    const routerProtocols = [];
+    if (shouldUseBackend) return undefined;
     //  here you should add your new supported aggregator protocols
     for (let protocol of protocolsStatus) {
       if (protocol.key === Protocol.SOROSWAP && protocol.value === true) {
-        routerProtocols.push({ protocol: Protocol.SOROSWAP, fn: async () => fetchAllSoroswapPairs(network) });
+        routerProtocols.push({
+          protocol: Protocol.SOROSWAP,
+          fn: async () => fetchAllSoroswapPairs(network),
+        });
       }
       if (protocol.key === Protocol.PHOENIX && protocol.value === true) {
-        routerProtocols.push({ protocol: Protocol.PHOENIX, fn: async () => fetchAllPhoenixPairs(network) });
+        routerProtocols.push({
+          protocol: Protocol.PHOENIX,
+          fn: async () => fetchAllPhoenixPairs(network),
+        });
       }
     }
     return routerProtocols;
@@ -127,7 +133,11 @@ export const useRouterSDK = () => {
     if (shouldUseDirectPath) {
       try {
         // get pair address from factory
-        const pairAddress = await getPairAddress(amountAsset.currency.contract, quoteAsset.contract, sorobanContext);
+        const pairAddress = await getPairAddress(
+          amountAsset.currency.contract,
+          quoteAsset.contract,
+          sorobanContext,
+        );
 
         // Get reserves from pair
         const reserves = await reservesBNWithTokens(pairAddress, sorobanContext);
@@ -141,7 +151,7 @@ export const useRouterSDK = () => {
           quoteAsset,
           new BigNumber(amount),
           sorobanContext,
-          tradeType
+          tradeType,
         );
 
         // Convert from lumens to stroops (multiply by 10^7)
@@ -149,14 +159,20 @@ export const useRouterSDK = () => {
 
         return {
           amountCurrency: amountAsset,
-          quoteCurrency: CurrencyAmount.fromRawAmount(fromAddressToToken(quoteAsset.contract), quoteAmount.toString()),
+          quoteCurrency: CurrencyAmount.fromRawAmount(
+            fromAddressToToken(quoteAsset.contract),
+            quoteAmount.toString(),
+          ),
           tradeType,
           trade: {
             amountIn: tradeType === TradeType.EXACT_INPUT ? amount : quoteAmount.toString(),
             amountInMax: tradeType === TradeType.EXACT_OUTPUT ? quoteAmount.toString() : undefined,
             amountOut: tradeType === TradeType.EXACT_INPUT ? quoteAmount.toString() : amount,
             amountOutMin: tradeType === TradeType.EXACT_INPUT ? quoteAmount.toString() : undefined,
-            path: tradeType === TradeType.EXACT_INPUT ? [amountAsset.currency.contract, quoteAsset.contract] : [quoteAsset.contract, amountAsset.currency.contract],
+            path:
+              tradeType === TradeType.EXACT_INPUT
+                ? [amountAsset.currency.contract, quoteAsset.contract]
+                : [quoteAsset.contract, amountAsset.currency.contract],
           },
           priceImpact: new Percent('0'),
           platform: PlatformType.ROUTER,
@@ -173,9 +189,12 @@ export const useRouterSDK = () => {
     );
     const quoteCurrency = fromAddressToToken(quoteAsset.contract);
 
-    const isHorizonEnabled = currentProtocolsStatus.find((p) => p.key === PlatformType.STELLAR_CLASSIC)?.value;
+    const isHorizonEnabled = currentProtocolsStatus.find(
+      (p) => p.key === PlatformType.STELLAR_CLASSIC,
+    )?.value;
 
-    const isSoroswapEnabled = currentProtocolsStatus.find((p) => p.key === Protocol.SOROSWAP)?.value;
+    const isSoroswapEnabled = currentProtocolsStatus.find((p) => p.key === Protocol.SOROSWAP)
+      ?.value;
 
     const horizonProps = {
       assetFrom: amountAsset.currency,
@@ -198,10 +217,11 @@ export const useRouterSDK = () => {
           const result = {
             ...response,
             platform: PlatformType.AGGREGATOR,
-            quoteCurrency: CurrencyAmount.fromRawAmount(quoteCurrency, '0')
+            quoteCurrency: CurrencyAmount.fromRawAmount(quoteCurrency, '0'),
           } as BuildTradeRoute;
           return result;
-        }).catch((e) => {
+        })
+        .catch((e) => {
           console.error('error while generating soroban path:', e);
           return undefined;
         })) as BuildTradeRoute | undefined;
