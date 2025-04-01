@@ -9,7 +9,7 @@ interface MercuryPair {
   reserveB: string;
 }
 
-const passphraseToBackendNetworkName: { [x: string]: string } = {
+export const passphraseToBackendNetworkName: { [x: string]: string } = {
   [Networks.PUBLIC]: 'MAINNET',
   [Networks.TESTNET]: 'TESTNET',
 };
