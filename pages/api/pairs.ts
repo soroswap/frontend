@@ -3,11 +3,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import axios from 'axios';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  const allowedOrigin = [
-    'https://app.soroswap.finance',
-    'http://localhost:3000',
-    'paltalabs.vercel.app',
-  ];
+  const allowedOrigin = ['.soroswap.finance', 'http://localhost:3000', 'paltalabs.vercel.app'];
   const origin = req.headers.origin || req.headers.referer || '';
 
   if (!allowedOrigin.some((allowed) => origin.includes(allowed))) {
