@@ -1,4 +1,4 @@
-import { useSorobanReact } from '@soroban-react/core';
+import { useSorobanReact } from 'stellar-react';
 import { SwapComponent } from 'components/Swap/SwapComponent';
 import { xlmTokenList } from 'constants/xlmToken';
 import { useEffect, useState } from 'react';

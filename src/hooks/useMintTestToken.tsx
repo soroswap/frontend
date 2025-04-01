@@ -1,5 +1,5 @@
-import { contractInvoke } from '@soroban-react/contracts';
-import { useSorobanReact } from '@soroban-react/core';
+import { contractInvoke } from 'stellar-react';
+import { useSorobanReact } from 'stellar-react';
 import BigNumber from 'bignumber.js';
 import { SnackbarIconType } from 'contexts';
 import { bigNumberToI128 } from 'helpers/utils';

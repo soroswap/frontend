@@ -1,4 +1,4 @@
-import { useSorobanReact } from '@soroban-react/core';
+import { useSorobanReact } from 'stellar-react';
 import { AppContext, ProtocolsStatus } from 'contexts';
 import { useFactory } from 'hooks';
 import { useAggregator } from 'hooks/useAggregator';
@@ -21,7 +21,7 @@ import { PlatformType } from 'state/routing/types';
 import { CurrencyAmount as AmountAsset } from 'interfaces';
 import { DexDistribution } from 'helpers/aggregator';
 import { fetchFactory } from 'services/factory';
-import { contractInvoke } from '@soroban-react/contracts';
+import { contractInvoke } from 'stellar-react';
 import { reservesBNWithTokens } from 'hooks/useReserves';
 import { getPairAddress } from './getPairAddress';
 import BigNumber from 'bignumber.js';

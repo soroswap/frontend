@@ -2,7 +2,7 @@ import { Analytics } from '@vercel/analytics/react';
 import { AppContext, AppContextType, SnackbarIconType, ProtocolsStatus } from 'contexts';
 import { useEffect, useMemo, useState } from 'react';
 import MainLayout from '../Layout/MainLayout';
-import { useSorobanReact } from '@soroban-react/core';
+import { useSorobanReact } from 'stellar-react';
 import config from 'configs/protocols.config.json'
 import { Protocol } from 'soroswap-router-sdk';
 import { PlatformType } from 'state/routing/types';

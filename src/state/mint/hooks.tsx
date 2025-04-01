@@ -2,7 +2,7 @@
 import { TokenType } from 'interfaces';
 // import { Pair } from '@uniswap/v2-sdk'
 // import { useWeb3React } from '@web3-react/core'
-import { useSorobanReact } from '@soroban-react/core';
+import { useSorobanReact } from 'stellar-react';
 // import JSBI from 'jsbi'
 import { CurrencyAmount } from 'interfaces';
 import tryParseCurrencyAmount from 'lib/utils/tryParseCurrencyAmount';

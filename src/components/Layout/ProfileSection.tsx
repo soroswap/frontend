@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useRef } from 'react';
 import { Box, Chip, useMediaQuery, Menu, MenuItem, MenuProps } from 'soroswap-ui';
 import { ArrowDropDownSharp, LinkOff } from '@mui/icons-material';
 import { useTheme, styled, alpha } from 'soroswap-ui';
-import { SorobanContextType, useSorobanReact } from '@soroban-react/core';
+import { SorobanContextType, useSorobanReact } from 'stellar-react';
 import { useInkathon } from '@scio-labs/use-inkathon';
 import { AppContext } from 'contexts';
 import { shortenAddress } from '../../helpers/address';

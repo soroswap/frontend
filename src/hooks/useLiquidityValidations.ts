@@ -1,4 +1,4 @@
-import { useSorobanReact } from '@soroban-react/core';
+import { useSorobanReact } from 'stellar-react';
 import { TokenType } from 'interfaces';
 import { Field } from 'state/mint/actions';
 import useGetLpTokens from './useGetLpTokens';

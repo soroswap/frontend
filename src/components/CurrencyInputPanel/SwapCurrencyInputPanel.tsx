@@ -1,6 +1,6 @@
 // import { Trans } from '@lingui/macro'
 import { ButtonBase, styled, useMediaQuery, useTheme } from 'soroswap-ui';
-import { useSorobanReact } from '@soroban-react/core';
+import { useSorobanReact } from 'stellar-react';
 import { darken } from 'polished';
 import { ReactNode, useCallback, useState } from 'react';
 import { ChevronDown } from 'react-feather';

@@ -1,4 +1,4 @@
-import { contractInvoke, setTrustline } from '@soroban-react/contracts';
+import { contractInvoke, setTrustline } from 'stellar-react';
 import { useContext, useEffect, useState } from 'react';
 import * as StellarSdk from '@stellar/stellar-sdk';
 

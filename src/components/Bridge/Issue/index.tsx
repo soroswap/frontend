@@ -1,5 +1,5 @@
 import { useInkathon } from '@scio-labs/use-inkathon';
-import { useSorobanReact } from '@soroban-react/core';
+import { useSorobanReact } from 'stellar-react';
 import { BASE_FEE, Memo, Operation, TransactionBuilder } from '@stellar/stellar-sdk';
 import { deriveShortenedRequestId } from 'helpers/bridge/pendulum/spacewalk';
 import {
