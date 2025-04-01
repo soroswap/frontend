@@ -1,6 +1,4 @@
 import { NetworkDetails, SorobanReactProvider, WalletNetwork } from 'stellar-react';
-import { ChainMetadata, WalletChain } from '@soroban-react/types';
-import { standalone, testnet, mainnet } from '@soroban-react/chains';
 import useMounted from 'hooks/useMounted';
 
 const mainnetNetworkDetails: NetworkDetails = {
