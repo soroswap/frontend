@@ -40,19 +40,19 @@ docker run --volume ${currentDir}:/workspace \
 # Set the git config
 # docker exec $containerName git config --global --add safe.directory /workspace
 
-# Instalar Chrome, Firefox y Edge (si son necesarios)
-docker exec ${containerName} sh -c '
-apt-get update && \
-apt-get install -y wget gnupg && \
-# Instalar Chrome
-wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - && \
-echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list && \
-apt-get update && \
-apt-get install -y google-chrome-stable && \
-# Instalar Firefox
-apt-get install -y firefox-esr && \
-echo "Browsers installed successfully"
-'
+# # Instalar Chrome, Firefox y Edge (si son necesarios)
+# docker exec ${containerName} sh -c '
+# apt-get update && \
+# apt-get install -y wget gnupg && \
+# # Instalar Chrome
+# wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - && \
+# echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list && \
+# apt-get update && \
+# apt-get install -y google-chrome-stable && \
+# # Instalar Firefox
+# apt-get install -y firefox-esr && \
+# echo "Browsers installed successfully"
+# '
 
 # Connect to bash on Docker container
 docker exec --tty --interactive $containerName bash
