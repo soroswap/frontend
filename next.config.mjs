@@ -9,7 +9,7 @@ const nextConfig = {
     '@lit-labs/react',
     '@lit/reactive-element'
   ],
-  
+  //Gregemax:main
   webpack: (config) => {
     // Enable top-level await
     config.experiments = {
