@@ -1,10 +1,6 @@
-import { standalone, testnet, mainnet } from 'stellar-react';
-import { SorobanReactProvider } from 'stellar-react';
-import { freighter } from '@soroban-react/freighter';
-import { lobstr } from '@soroban-react/lobstr';
-import { xbull } from '@soroban-react/xbull';
-import { hana } from '@soroban-react/hana';
-import { ChainMetadata, Connector, WalletChain } from 'stellar-react';
+import { NetworkDetails, SorobanReactProvider, WalletNetwork } from 'stellar-react';
+import { ChainMetadata, WalletChain } from '@soroban-react/types';
+import { standalone, testnet, mainnet } from '@soroban-react/chains';
 import useMounted from 'hooks/useMounted';
 
 // Set allowed chains:
@@ -21,9 +17,17 @@ const findWalletChainByName = (name: string): WalletChain | undefined => {
 const activeChainName = process.env.NEXT_PUBLIC_DEFAULT_NETWORK || 'testnet';
 const activeChain: WalletChain = findWalletChainByName(activeChainName) || testnet;
 
-// Set allowed connectors
-export const walletConnectors: Connector[] = [freighter(), xbull(), lobstr(), hana()];
+const mainnetNetworkDetails: NetworkDetails = {
+  network: WalletNetwork.PUBLIC,
+  sorobanRpcUrl: 'https://soroban-rpc.creit.tech/',
+  horizonRpcUrl: 'https://horizon.stellar.org'
+}
 
+const testnetNetworkDetails: NetworkDetails = {
+  network: WalletNetwork.TESTNET,
+  sorobanRpcUrl: 'https://soroban-testnet.stellar.org/',
+  horizonRpcUrl: 'https://horizon-testnet.stellar.org'
+}
 export default function MySorobanReactProvider({
   children,
   ...rest
@@ -37,10 +41,9 @@ export default function MySorobanReactProvider({
 
   return (
     <SorobanReactProvider
-      chains={chains}
       appName={'Soroswap'}
-      connectors={walletConnectors}
-      activeChain={activeChain}
+      allowedNetworkDetails={[mainnetNetworkDetails, testnetNetworkDetails]}
+      activeNetwork={WalletNetwork.TESTNET}
       {...rest}
     >
       {children}
