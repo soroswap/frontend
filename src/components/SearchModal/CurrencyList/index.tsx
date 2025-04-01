@@ -1,4 +1,4 @@
-import { SorobanContextType, useSorobanReact } from '@soroban-react/core';
+import { SorobanContextType, useSorobanReact } from 'stellar-react';
 import BigNumber from 'bignumber.js';
 import { CSSProperties, MutableRefObject, useCallback, useMemo } from 'react';
 import { Check } from 'react-feather';

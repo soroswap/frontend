@@ -14,7 +14,7 @@
 // import { formatCurrencyAmount } from 'utils/formatCurrencyAmount'
 
 import { ButtonBase, styled, useTheme } from 'soroswap-ui';
-import { useSorobanReact } from '@soroban-react/core';
+import { useSorobanReact } from 'stellar-react';
 import { LoadingOpacityContainer } from 'components/Loader/styled';
 import CurrencyLogo from 'components/Logo/CurrencyLogo';
 import NumericalInput from 'components/NumericalInput';

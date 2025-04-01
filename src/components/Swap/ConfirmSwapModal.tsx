@@ -1,7 +1,7 @@
 // import { Trans } from '@lingui/macro' //This is for localization and translation on all languages
 import { Modal } from 'soroswap-ui';
 import { styled } from 'soroswap-ui';
-import { useSorobanReact } from '@soroban-react/core';
+import { useSorobanReact } from 'stellar-react';
 import { ConfirmationModalContent } from 'components/TransactionConfirmationModal';
 import { TokenType } from 'interfaces';
 import { useCallback, useEffect, useState } from 'react';

@@ -1,4 +1,4 @@
-import { SorobanContextType, useSorobanReact } from '@soroban-react/core';
+import { SorobanContextType, useSorobanReact } from 'stellar-react';
 import { BASE_FEE } from '@stellar/stellar-sdk';
 import { AccountResponse } from '@stellar/stellar-sdk/lib/horizon';
 import BigNumber from 'bignumber.js';

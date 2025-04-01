@@ -1,4 +1,4 @@
-import { SorobanContextType, useSorobanReact } from "@soroban-react/core";
+import { SorobanContextType, useSorobanReact } from "stellar-react";
 import { InterfaceTrade, TradeType } from "state/routing/types";
 import { Asset, TransactionBuilder, Operation, BASE_FEE } from "@stellar/stellar-sdk";
 import { getAmount } from "./getHorizonPath";

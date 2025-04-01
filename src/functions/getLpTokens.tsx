@@ -4,7 +4,7 @@ import { getPairsFromFactory } from './getPairs';
 import { getTotalLpShares } from './getTotalLpShares';
 import { Networks } from '@stellar/stellar-sdk';
 import { reservesBigNumber } from 'hooks/useReserves';
-import { SorobanContextType } from '@soroban-react/core';
+import { SorobanContextType } from 'stellar-react';
 import { tokenBalance } from 'hooks';
 import { TokenMapType, TokenType } from 'interfaces';
 import BigNumber from 'bignumber.js';

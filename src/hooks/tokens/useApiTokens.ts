@@ -1,4 +1,4 @@
-import { useSorobanReact } from '@soroban-react/core';
+import { useSorobanReact } from 'stellar-react';
 import { TokenMapType, TokenType, tokensResponse } from 'interfaces';
 import { useEffect, useState } from 'react';
 import { fetchTokens } from 'services/tokens';

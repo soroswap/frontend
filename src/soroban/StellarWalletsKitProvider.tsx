@@ -1,5 +1,5 @@
-import { standalone, testnet, mainnet } from '@soroban-react/chains';
-import { WalletChain } from '@soroban-react/types';
+import { standalone, testnet, mainnet } from 'stellar-react';
+import { WalletChain } from 'stellar-react';
 import useMounted from 'hooks/useMounted';
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 import * as StellarWalletsKitSDK from '@creit.tech/stellar-wallets-kit';

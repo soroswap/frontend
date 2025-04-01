@@ -1,6 +1,6 @@
-import { TxResponse, contractInvoke } from '@soroban-react/contracts';
+import { TxResponse, contractInvoke } from 'stellar-react';
 
-import { useSorobanReact } from '@soroban-react/core';
+import { useSorobanReact } from 'stellar-react';
 import { useCallback } from 'react';
 import * as StellarSdk from '@stellar/stellar-sdk';
 import { useSWRConfig } from 'swr';

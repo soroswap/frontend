@@ -1,4 +1,4 @@
-import { useSorobanReact } from '@soroban-react/core';
+import { useSorobanReact } from 'stellar-react';
 import useSWRImmutable from 'swr/immutable';
 import useGetNativeTokenBalance from './useGetNativeTokenBalance';
 

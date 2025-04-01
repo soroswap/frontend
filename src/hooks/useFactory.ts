@@ -1,4 +1,4 @@
-import { SorobanContext, SorobanContextType } from '@soroban-react/core';
+import { SorobanContext, SorobanContextType } from 'stellar-react';
 import { useEffect, useState } from 'react';
 import { fetchFactory } from 'services/factory';
 import useSWRImmutable from 'swr/immutable';

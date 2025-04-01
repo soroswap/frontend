@@ -1,6 +1,6 @@
 import { Button, CircularProgress, Slider, styled, useTheme } from 'soroswap-ui';
-import { TxResponse } from '@soroban-react/contracts';
-import { useSorobanReact } from '@soroban-react/core';
+import { TxResponse } from 'stellar-react';
+import { useSorobanReact } from 'stellar-react';
 import BigNumber from 'bignumber.js';
 import { ButtonError, ButtonLight, ButtonPrimary } from 'components/Buttons/Button';
 import Column, { AutoColumn } from 'components/Column';
