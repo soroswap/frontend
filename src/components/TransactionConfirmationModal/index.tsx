@@ -116,7 +116,7 @@ function TransactionSubmittedContent({
 }) {
   const theme = useTheme();
 
-  const { activeChain } = useSorobanReact();
+  const { activeNetwork } = useSorobanReact();
 
   // const token = currencyToAdd?.wrapped
   // const logoURL = useCurrencyLogoURIs(token)[0]
@@ -150,7 +150,7 @@ function TransactionSubmittedContent({
         </ConfirmedIcon>
         <ConfirmationModalContentWrapper gap="12px" justify="center">
           <HeadlineMedium textAlign="center">Transaction submitted</HeadlineMedium>
-          {currencyToAdd && activeChain && (
+          {currencyToAdd && activeNetwork && (
             <ButtonLight
               margin-top="12px"
               padding="6px 12px"
@@ -242,8 +242,8 @@ export default function TransactionConfirmationModal({
   txError,
 }: ConfirmationModalProps) {
   const sorobanContext = useSorobanReact();
-  const { activeChain } = sorobanContext;
-  if (!activeChain) return null;
+  const { activeNetwork } = sorobanContext;
+  if (!activeNetwork) return null;
 
   return (
     <Modal

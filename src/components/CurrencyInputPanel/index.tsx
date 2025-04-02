@@ -216,7 +216,7 @@ export default function CurrencyInputPanel({
   ...rest
 }: CurrencyInputPanelProps) {
   const [modalOpen, setModalOpen] = useState(false);
-  const { address, activeChain } = useSorobanReact();
+  const { address, activeNetwork } = useSorobanReact();
   const selectedCurrencyBalance = 0; //useCurrencyBalance(address ?? undefined, currency ?? undefined)
   const theme = useTheme();
 
@@ -226,13 +226,13 @@ export default function CurrencyInputPanel({
 
   return (
     <InputPanel id={id} hideInput={hideInput} {...rest}>
-      <Container hideInput={hideInput} disabled={!activeChain} transparent={transparent}>
+      <Container hideInput={hideInput} disabled={!activeNetwork} transparent={transparent}>
         <InputRow
           style={hideInput ? { padding: '0', borderRadius: '8px' } : {}}
           selected={!onCurrencySelect}
         >
           <CurrencySelect
-            disabled={!activeChain}
+            disabled={!activeNetwork}
             visible={currency !== undefined}
             selected={!!currency}
             hideInput={hideInput}
@@ -265,7 +265,7 @@ export default function CurrencyInputPanel({
               className="token-amount-input"
               value={value}
               onUserInput={onUserInput}
-              disabled={Boolean(!activeChain && currency)}
+              disabled={Boolean(!activeNetwork && currency)}
               $loading={loading}
             />
           )}

@@ -111,7 +111,7 @@ export function MintTokens({
   const [balance, setBalance] = useState<string>();
 
   useEffect(() => {
-    if (sorobanContext.activeChain && sorobanContext.address) {
+    if (sorobanContext.activeNetwork && sorobanContext.address) {
       tokenBalance(inputToken.contract, sorobanContext.address, sorobanContext).then((resp) => {
         setBalance(formatTokenAmount(resp as BigNumber));
       });

@@ -1,5 +1,5 @@
 import { useInkathon } from '@scio-labs/use-inkathon';
-import { useSorobanReact } from 'stellar-react';
+import { useSorobanReact, WalletNetwork } from 'stellar-react';
 import { BASE_FEE, Memo, Operation, TransactionBuilder } from '@stellar/stellar-sdk';
 import { deriveShortenedRequestId } from 'helpers/bridge/pendulum/spacewalk';
 import {
@@ -20,7 +20,7 @@ export type IssueFormValues = {
 };
 
 export function IssueComponent() {
-  const { address, serverHorizon, activeChain, activeConnector } = useSorobanReact();
+  const { address, horizonServer: serverHorizon, activeNetwork, kit } = useSorobanReact();
   const { activeAccount, activeSigner, api } = useInkathon();
   const { selectedVault, setSelectedAsset, wrappedAssets, selectedAsset, vaults } =
     useSpacewalkBridge();
@@ -40,7 +40,7 @@ export function IssueComponent() {
 
   const createStellarPayment = useCallback(
     async (recipient: string, memo: string) => {
-      if (!address || !selectedAsset) {
+      if (!address || !selectedAsset || !kit) {
         console.log('Stellar Wallet not connected');
         return;
       }
@@ -51,7 +51,7 @@ export function IssueComponent() {
       const fee = await serverHorizon?.fetchBaseFee();
       const transaction = new TransactionBuilder(sourceAccount, {
         fee: fee ? String(fee) : BASE_FEE,
-        networkPassphrase: activeChain?.networkPassphrase,
+        networkPassphrase: activeNetwork,
       })
         .addOperation(
           Operation.payment({
@@ -64,16 +64,16 @@ export function IssueComponent() {
         .setTimeout(180)
         .build();
 
-      const signedXDR = await activeConnector?.signTransaction(transaction.toXDR(), {
-        networkPassphrase: activeChain?.networkPassphrase,
+      const signedXDR = await kit.signTransaction(transaction.toXDR(), {
+        networkPassphrase: activeNetwork,
       });
 
       if (!signedXDR) throw new Error("Couldn't sign transaction");
       console.log('🚀 « signedXDR:', signedXDR);
 
       const transactionToSubmit = TransactionBuilder.fromXDR(
-        signedXDR,
-        activeChain?.networkPassphrase ?? '',
+        signedXDR.signedTxXdr,
+        activeNetwork ?? WalletNetwork.TESTNET,
       );
       console.log('🚀 « transactionToSubmit:', transactionToSubmit);
 
@@ -88,8 +88,8 @@ export function IssueComponent() {
       }
     },
     [
-      activeChain?.networkPassphrase,
-      activeConnector,
+      activeNetwork,
+      kit,
       address,
       amount,
       selectedAsset,
