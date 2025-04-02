@@ -31,19 +31,16 @@ export async function calculateSwapFees(
     return;
   }
   if (trade.platform === PlatformType.STELLAR_CLASSIC) {
-    return await sorobanContext.serverHorizon?.fetchBaseFee()
+    return await sorobanContext.serverHorizon?.fetchBaseFee();
   }
 
   let op = RouterMethod.SWAP_EXACT_OUT;
-  if (trade.tradeType === 'EXACT_INPUT') {
+  if (trade.tradeType === 'EXACT_IN') {
     op = RouterMethod.SWAP_EXACT_IN;
   }
-  const {activeChain} = sorobanContext;
-  const { networkPassphrase:passphrase,
-          id: network, 
-          sorobanRpcUrl,
-        } = activeChain;
-  if(!passphrase || !network || !sorobanRpcUrl) throw new Error('Missing soroban context')
+  const { activeChain } = sorobanContext;
+  const { networkPassphrase: passphrase, id: network, sorobanRpcUrl } = activeChain;
+  if (!passphrase || !network || !sorobanRpcUrl) throw new Error('Missing soroban context');
   const adminPublicKey = process.env.NEXT_PUBLIC_TRUSTLINE_WALLET_PUBLIC_KEY;
   if (!adminPublicKey) {
     console.error('No secret key found.');

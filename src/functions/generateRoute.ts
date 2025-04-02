@@ -66,58 +66,72 @@ export const useSoroswapApi = () => {
     tradeType,
     currentProtocolsStatus,
   }: GenerateRouteProps): Promise<BuildTradeReturn | BuildSplitTradeReturn | undefined> => {
-    // if (shouldUseDirectPath) {
-    //   try {
-    //     // get pair address from factory
-    //     const pairAddress = await getPairAddress(
-    //       amountAsset.currency.contract,
-    //       quoteAsset.contract,
-    //       sorobanContext,
-    //     );
+    if (shouldUseDirectPath) {
+      try {
+        // get pair address from factory
+        const pairAddress = await getPairAddress(
+          amountAsset.currency.contract,
+          quoteAsset.contract,
+          sorobanContext,
+        );
 
-    //     // Get reserves from pair
-    //     const reserves = await reservesBNWithTokens(pairAddress, sorobanContext);
-    //     if (!reserves?.reserve0 || !reserves?.reserve1) {
-    //       throw new Error('Reserves not found');
-    //     }
+        // Get reserves from pair
+        const reserves = await reservesBNWithTokens(pairAddress, sorobanContext);
+        if (!reserves?.reserve0 || !reserves?.reserve1) {
+          throw new Error('Reserves not found');
+        }
 
-    //     // Get amountOut or amountIn from reserves and tradeType
-    //     let quoteAmount = await getExpectedAmount(
-    //       amountAsset.currency,
-    //       quoteAsset,
-    //       new BigNumber(amount),
-    //       sorobanContext,
-    //       tradeType,
-    //     );
+        // Get amountOut or amountIn from reserves and tradeType
+        let quoteAmount = await getExpectedAmount(
+          amountAsset.currency,
+          quoteAsset,
+          new BigNumber(amount),
+          sorobanContext,
+          tradeType,
+        );
 
-    //     // Convert from lumens to stroops (multiply by 10^7)
-    //     quoteAmount = quoteAmount.integerValue();
+        // Convert from lumens to stroops (multiply by 10^7)
+        quoteAmount = quoteAmount.integerValue();
 
-    //     return {
-    //       amountCurrency: amountAsset,
-    //       quoteCurrency: CurrencyAmount.fromRawAmount(
-    //         fromAddressToToken(quoteAsset.contract),
-    //         quoteAmount.toString(),
-    //       ),
-    //       tradeType,
-    //       trade: {
-    //         amountIn: tradeType === TradeType.EXACT_INPUT ? amount : quoteAmount.toString(),
-    //         amountInMax: tradeType === TradeType.EXACT_OUTPUT ? quoteAmount.toString() : undefined,
-    //         amountOut: tradeType === TradeType.EXACT_INPUT ? quoteAmount.toString() : amount,
-    //         amountOutMin: tradeType === TradeType.EXACT_INPUT ? quoteAmount.toString() : undefined,
-    //         path:
-    //           tradeType === TradeType.EXACT_INPUT
-    //             ? [amountAsset.currency.contract, quoteAsset.contract]
-    //             : [quoteAsset.contract, amountAsset.currency.contract],
-    //       },
-    //       priceImpact: new Percent('0'),
-    //       platform: PlatformType.ROUTER,
-    //     } as BuildTradeRoute;
-    //   } catch (error) {
-    //     console.error('Error generating direct path:', error);
-    //     throw error;
-    //   }
-    // }
+        const toReturn: BuildTradeReturn =
+          tradeType === TradeType.EXACT_INPUT
+            ? {
+                assetIn: amountAsset.currency.contract,
+                assetOut: quoteAsset.contract,
+                priceImpact: {
+                  numerator: 0,
+                  denominator: 1,
+                },
+                platform: PlatformType.ROUTER,
+                tradeType: TradeType.EXACT_INPUT,
+                trade: {
+                  amountIn: BigInt(amountAsset.value),
+                  amountOutMin: BigInt(quoteAmount.toString()),
+                  path: [amountAsset.currency.contract, quoteAsset.contract],
+                },
+              }
+            : {
+                assetIn: amountAsset.currency.contract,
+                assetOut: quoteAsset.contract,
+                priceImpact: {
+                  numerator: 0,
+                  denominator: 1,
+                },
+                platform: PlatformType.ROUTER,
+                tradeType: TradeType.EXACT_OUTPUT,
+                trade: {
+                  amountOut: BigInt(amount),
+                  amountInMax: BigInt(quoteAmount.toString()),
+                  path: [quoteAsset.contract, amountAsset.currency.contract],
+                },
+              };
+
+        return toReturn;
+      } catch (error) {
+        console.error('Error generating direct path:', error);
+        throw error;
+      }
+    }
     if (!factory) throw new Error('Factory address not found');
 
     const isHorizonEnabled = currentProtocolsStatus.find(
@@ -135,9 +149,9 @@ export const useSoroswapApi = () => {
     };
 
     let horizonPath: BuildTradeReturn | undefined;
-    // if (isHorizonEnabled) {
-    //   horizonPath = (await getHorizonBestPath(horizonProps, sorobanContext)) as BuildTradeReturn;
-    // }
+    if (isHorizonEnabled) {
+      horizonPath = (await getHorizonBestPath(horizonProps, sorobanContext)) as BuildTradeReturn;
+    }
 
     let sorobanPath: BuildTradeReturn | BuildSplitTradeReturn | undefined;
     if (isAggregator) {

@@ -162,31 +162,43 @@ export const parseHorizonResult = async (
 
   const pools = await getPools([addressFrom, ...poolsPath, addressTo], sorobanContext);
 
-  let trade;
-  if (tradeType === TradeType.EXACT_INPUT) {
-    trade = {
-      amountIn: inputAmount.value,
-      amountOutMin: outputAmount.value,
-      path: formattedPath,
-    };
-  } else {
-    trade = {
-      amountOut: outputAmount.value,
-      amountInMax: inputAmount.value,
-      path: formattedPath,
-    };
-  }
   const ammountToCalculate =
     tradeType === TradeType.EXACT_INPUT ? payload.source_amount : payload.destination_amount;
   const priceImpact = calculateAveragePriceImpact(pools, ammountToCalculate, tradeType);
-  const result = {
-    amountCurrency: inputAmount,
-    quoteCurrency: outputAmount,
-    tradeType: tradeType,
-    trade: trade,
-    priceImpact: priceImpact,
-    platform: PlatformType.STELLAR_CLASSIC,
-  };
+
+  const result: BuildTradeReturn =
+    tradeType === TradeType.EXACT_INPUT
+      ? {
+          assetIn: inputAmount.currency.contract,
+          assetOut: outputAmount.currency.contract,
+          priceImpact: {
+            numerator: priceImpact,
+            denominator: 100,
+          },
+          platform: PlatformType.STELLAR_CLASSIC,
+          tradeType: TradeType.EXACT_INPUT,
+          trade: {
+            amountIn: BigInt(inputAmount.value),
+            amountOutMin: BigInt(outputAmount.value),
+            path: formattedPath,
+          },
+        }
+      : {
+          assetIn: inputAmount.currency.contract,
+          assetOut: outputAmount.currency.contract,
+          priceImpact: {
+            numerator: priceImpact,
+            denominator: 100,
+          },
+          platform: PlatformType.STELLAR_CLASSIC,
+          tradeType: TradeType.EXACT_OUTPUT,
+          trade: {
+            amountOut: BigInt(outputAmount.value),
+            amountInMax: BigInt(inputAmount.value),
+            path: formattedPath,
+          },
+        };
+
   return result;
 };
 

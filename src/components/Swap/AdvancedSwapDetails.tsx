@@ -38,11 +38,11 @@ export function TextWithLoadingPlaceholder({
 }
 
 export const formattedPriceImpact = (
-  priceImpact: { numerator: bigint; denominator: bigint } | undefined,
+  priceImpact: { numerator: number; denominator: number } | undefined,
 ) => {
   if (!priceImpact || !priceImpact.numerator || !priceImpact.denominator) return '0%';
 
-  const value = (Number(priceImpact.numerator) / Number(priceImpact.denominator)) * 100;
+  const value = (priceImpact.numerator / priceImpact.denominator) * 100;
 
   if (value < 0.01) {
     return '<0.01%';

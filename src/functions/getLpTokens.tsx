@@ -1,4 +1,3 @@
-import { fetchAllSoroswapPairs } from 'services/pairs';
 import { findToken } from 'hooks/tokens/useToken';
 import { getPairsFromFactory } from './getPairs';
 import { getTotalLpShares } from './getTotalLpShares';
@@ -9,6 +8,7 @@ import { tokenBalance } from 'hooks';
 import { TokenMapType, TokenType } from 'interfaces';
 import BigNumber from 'bignumber.js';
 import { getTotalShares } from './LiquidityPools';
+import { fetchPairsFromApi } from 'services/soroswapApi';
 
 export type LpTokensObj = {
   token_0: TokenType | undefined;
@@ -30,7 +30,10 @@ const getLpResultsFromBackendPairs = async (
 ) => {
   if (!sorobanContext.address) return;
 
-  const pairsBackend = await fetchAllSoroswapPairs(passphrase); // This one uses pairs from the backend
+  const pairsBackend = await fetchPairsFromApi(
+    sorobanContext.activeChain?.id ?? 'mainnet',
+    'soroswap',
+  ); // This one uses pairs from the backend
 
   const results: LpTokensObj[] = [];
 

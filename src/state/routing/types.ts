@@ -278,8 +278,8 @@ interface CommonBuildTradeReturnFields {
   assetIn: string;
   assetOut: string;
   priceImpact: {
-    numerator: bigint;
-    denominator: bigint;
+    numerator: number;
+    denominator: number;
   };
   platform?: PlatformType;
 }
@@ -331,8 +331,8 @@ export type InterfaceTrade = {
   path: string[] | undefined;
   distribution?: DexDistribution[] | undefined;
   priceImpact?: {
-    numerator: bigint;
-    denominator: bigint;
+    numerator: number;
+    denominator: number;
   };
   [x: string]: any;
   platform?: PlatformType;

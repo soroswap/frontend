@@ -1,5 +1,5 @@
 import { calculateSwapFees } from 'functions/getNetworkFees';
-import { InterfaceTrade, TradeType } from 'state/routing/types';
+import { ExactInBuildTradeReturn, InterfaceTrade, TradeType } from 'state/routing/types';
 import { SorobanContextType, useSorobanReact } from '@soroban-react/core';
 import { xlmTokenList } from 'constants/xlmToken';
 import { useSoroswapApi } from 'functions/generateRoute';
@@ -63,7 +63,7 @@ const useSwapNetworkFees = (trade: InterfaceTrade | undefined, currencies: Curre
     });
     if (!result) return undefined;
 
-    const outputAmount = result?.trade.amountOutMin || '0';
+    const outputAmount = (result as ExactInBuildTradeReturn)?.trade.amountOutMin || '0';
 
     const trade: InterfaceTrade = {
       inputAmount: {
@@ -71,10 +71,10 @@ const useSwapNetworkFees = (trade: InterfaceTrade | undefined, currencies: Curre
         currency: currencyA.currency!,
       },
       outputAmount: {
-        value: outputAmount,
+        value: outputAmount.toString(),
         currency: currencyB,
       },
-      path: result?.trade.path,
+      path: (result as ExactInBuildTradeReturn)?.trade.path,
       tradeType: TradeType.EXACT_INPUT,
       platform: result.platform,
     };
