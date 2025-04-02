@@ -56,7 +56,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
           {children}
         </div>
       </MainBackground>
-        <Footer isMobile={isMobile} />
+      <Footer isMobile={isMobile} />
     </>
   );
 }

@@ -2,7 +2,7 @@ import React from 'react';
 import { styled, useTheme } from 'soroswap-ui';
 
 // Styled Footer
-const FooterContainer = styled('footer')<{ isMobile: boolean }>`
+const FooterContainer = styled('footer') <{ isMobile: boolean }>`
   padding: ${({ isMobile }) => (isMobile ? '20px' : '30px')};
   text-align: center;
   width: 100vw; // Full viewport width
@@ -97,15 +97,19 @@ const Footer: React.FC<FooterProps> = ({ isMobile }) => {
         {/* Social Media Buttons */}
 
         <SocialButton onClick={() => window.open('https://docs.soroswap.finance/', '_blank')}>
-            <svg width="25" height="25" viewBox="0 0 16 17" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ marginRight: '5px' }}>
-                <path d="M14.001 5.5h-4v-4m4 4v10h-12v-14h8m4 4l-4-4M5.001 8.5h6M5.001 11.5h4" stroke="#ffffff" />
-            </svg>
-            Docs
+          <svg width="25" height="25" viewBox="0 0 16 17" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ marginRight: '5px' }}>
+            <path d="M14.001 5.5h-4v-4m4 4v10h-12v-14h8m4 4l-4-4M5.001 8.5h6M5.001 11.5h4" stroke="#ffffff" />
+          </svg>
+          Docs
         </SocialButton>
-        
+
         <SocialButton onClick={() => window.open('https://dune.com/paltalabs/soroswap', '_blank')}>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="sc-bAEjGW fDEMCB"><path d="M11.993 23.981c6.623 0 11.993-5.368 11.993-11.99C23.986 5.368 18.616 0 11.993 0S.001 5.368.001 11.99c0 6.623 5.37 11.991 11.992 11.991z" fill="#F4603E"></path><path d="M2.088 18.754s7.924-2.596 21.891-7.15c0 0 .765 7.458-6.966 11.348 0 0-3.813 1.828-7.996.655 0 0-4.165-.786-6.93-4.853z" fill="#1E1870"></path></svg>
-            Dune
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="sc-bAEjGW fDEMCB">
+            <path d="M11.993 23.981c6.623 0 11.993-5.368 11.993-11.99C23.986 5.368 18.616 0 11.993 0S.001 5.368.001 11.99c0 6.623 5.37 11.991 11.992 11.991z" fill="#F4603E"></path>
+            <path d="M2.088 18.754s7.924-2.596 21.891-7.15c0 0 .765 7.458-6.966 11.348 0 0-3.813 1.828-7.996.655 0 0-4.165-.786-6.93-4.853z" fill="#1E1870"></path>
+          </svg>
+
+          Dune
         </SocialButton>
 
         <SocialButton onClick={() => window.open("https://github.com/soroswap/", '_blank')}>

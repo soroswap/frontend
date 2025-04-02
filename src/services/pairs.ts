@@ -1,7 +1,8 @@
 import axios from 'axios';
 import { Networks } from '@stellar/stellar-sdk';
+import { fetchPairs } from './soroswapApi';
 
-interface MercuryPair {
+export interface MercuryPair {
   tokenA: string;
   tokenB: string;
   address: string;
@@ -18,21 +19,13 @@ const baseURL = 'https://info.soroswap.finance/api/pairs';
 export const fetchAllSoroswapPairs = async (networkPassphrase: string) => {
   const networkName = passphraseToBackendNetworkName[networkPassphrase];
 
-  const { data } = await axios.get<MercuryPair[]>(`${baseURL}/plain`, {
-    params: {
-      network: networkName,
-    },
-  });
+  const data = fetchPairs(networkName, 'soroswap');
   return data;
 };
 
 export const fetchAllPhoenixPairs = async (networkPassphrase: string) => {
   const networkName = passphraseToBackendNetworkName[networkPassphrase];
 
-  const { data } = await axios.get<MercuryPair[]>(`${baseURL}/phoenix`, {
-    params: {
-      network: networkName,
-    },
-  });
+  const data = fetchPairs(networkName, 'phoenix');
   return data;
 };
