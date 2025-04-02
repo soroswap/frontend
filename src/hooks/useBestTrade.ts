@@ -1,10 +1,20 @@
 import { AppContext } from 'contexts';
-import { useRouterSDK } from 'functions/generateRoute';
+import { useSoroswapApi } from 'functions/generateRoute';
 import { hasDistribution } from 'helpers/aggregator';
 import { CurrencyAmount, TokenType } from 'interfaces';
 import { useContext, useEffect, useMemo, useState } from 'react';
-import { TradeType as SdkTradeType } from 'soroswap-router-sdk';
-import { InterfaceTrade, QuoteState, TradeState, TradeType } from 'state/routing/types';
+import {
+  BuildSplitTradeReturn,
+  BuildTradeReturn,
+  ExactInBuildTradeReturn,
+  ExactInSplitBuildTradeReturn,
+  ExactOutBuildTradeReturn,
+  ExactOutSplitBuildTradeReturn,
+  InterfaceTrade,
+  QuoteState,
+  TradeState,
+  TradeType,
+} from 'state/routing/types';
 import useSWR from 'swr';
 
 const TRADE_NOT_FOUND = {
@@ -29,7 +39,7 @@ export function useBestTrade(
   trade?: InterfaceTrade;
   resetRouterSdkCache: () => void;
 } {
-  const { generateRoute, resetRouterSdkCache, maxHops } = useRouterSDK();
+  const { generateRoute, resetRouterSdkCache, maxHops } = useSoroswapApi();
   const { protocolsStatus } = useContext(AppContext).Settings;
   /**
    * Custom hook that fetches the best trade based on the specified amount and trade type.
@@ -53,10 +63,7 @@ export function useBestTrade(
         amountAsset,
         quoteAsset,
         amount,
-        tradeType:
-          tradeType === TradeType.EXACT_INPUT
-            ? SdkTradeType.EXACT_INPUT
-            : SdkTradeType.EXACT_OUTPUT,
+        tradeType: TradeType.EXACT_INPUT,
         currentProtocolsStatus: protocolsStatus,
       }),
     {
@@ -83,57 +90,48 @@ export function useBestTrade(
   useEffect(() => {
     if (!data || !currencyIn || !currencyOut) return;
     if (tradeType === TradeType.EXACT_INPUT) {
-      const result = data.trade as {
-        amountIn: string;
-        amountOutMin: string;
-        path: string[];
-      };
+      const result = (data as ExactInBuildTradeReturn | ExactInSplitBuildTradeReturn).trade;
 
       setInputAmount({
-        value: result?.amountIn,
+        value: result?.amountIn.toString(),
         currency: currencyIn,
       });
 
       setOutputAmount({
-        value: result?.amountOutMin,
+        value: result?.amountOutMin.toString(),
         currency: currencyOut,
       });
 
-      setExpectedAmount(result?.amountOutMin);
+      setExpectedAmount(result?.amountOutMin.toString());
     }
 
     if (tradeType === TradeType.EXACT_OUTPUT) {
-      const result = data.trade as {
-        amountInMax: string;
-        amountOut: string;
-        path: string[];
-      };
+      const result = (data as ExactOutBuildTradeReturn | ExactOutSplitBuildTradeReturn).trade;
 
       setInputAmount({
-        value: result?.amountInMax,
+        value: result?.amountInMax.toString(),
         currency: currencyIn,
       });
 
       setOutputAmount({
-        value: result?.amountOut,
+        value: result?.amountOut.toString(),
         currency: currencyOut,
       });
 
-      setExpectedAmount(result?.amountInMax);
+      setExpectedAmount(result?.amountInMax.toString());
     }
   }, [data, currencyIn, currencyOut, tradeType]);
 
   // Create the trade object
   const trade: InterfaceTrade = useMemo(() => {
-
     const baseTrade = {
       inputAmount,
       outputAmount,
       expectedAmount,
       tradeType,
       rawRoute: data,
-      path: data?.trade.path,
-      distribution: data?.trade.distribution,
+      path: (data as BuildTradeReturn)?.trade?.path ?? undefined,
+      distribution: (data as BuildSplitTradeReturn)?.trade.distribution ?? undefined,
       priceImpact: data?.priceImpact,
       platform: data?.platform,
     };
@@ -191,7 +189,15 @@ export function useBestTrade(
         resetRouterSdkCache,
       };
     }
-  }, [skipFetch, amountSpecified, otherCurrency, tradeResult, trade, isLoading, resetRouterSdkCache]);
+  }, [
+    skipFetch,
+    amountSpecified,
+    otherCurrency,
+    tradeResult,
+    trade,
+    isLoading,
+    resetRouterSdkCache,
+  ]);
 
   return bestTrade;
 }

@@ -1,14 +1,12 @@
 import { calculateSwapFees } from 'functions/getNetworkFees';
-import { InterfaceTrade } from 'state/routing/types';
+import { InterfaceTrade, TradeType } from 'state/routing/types';
 import { SorobanContextType, useSorobanReact } from '@soroban-react/core';
 import { xlmTokenList } from 'constants/xlmToken';
-import { useRouterSDK } from 'functions/generateRoute';
+import { useSoroswapApi } from 'functions/generateRoute';
 import { TokenType } from 'interfaces';
-import { TradeType } from 'soroswap-router-sdk';
 import useSWRImmutable from 'swr/immutable';
 import { useContext } from 'react';
 import { AppContext } from 'contexts';
-
 
 type Currencies = {
   INPUT?: TokenType | null | undefined;
@@ -26,10 +24,9 @@ const fetchNetworkFees = async (
 
 const useSwapNetworkFees = (trade: InterfaceTrade | undefined, currencies: Currencies) => {
   const sorobanContext = useSorobanReact();
-  const {protocolsStatus} = useContext(AppContext).Settings;
+  const { protocolsStatus } = useContext(AppContext).Settings;
 
-
-  const { generateRoute } = useRouterSDK();
+  const { generateRoute } = useSoroswapApi();
 
   const isFirstTokenXLMAndHasSecondTokenSelected = () => {
     const currencyA = currencies.INPUT;
@@ -63,7 +60,6 @@ const useSwapNetworkFees = (trade: InterfaceTrade | undefined, currencies: Curre
       amount: valueOfOne,
       tradeType: TradeType.EXACT_INPUT,
       currentProtocolsStatus: protocolsStatus,
-
     });
     if (!result) return undefined;
 

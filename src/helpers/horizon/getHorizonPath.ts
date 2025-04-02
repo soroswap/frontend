@@ -3,9 +3,16 @@ import { Asset } from '@stellar/stellar-sdk';
 import { SorobanContextType } from '@soroban-react/core';
 import BigNumber from 'bignumber.js';
 import { CurrencyAmount, TokenType } from 'interfaces';
-import { PlatformType, TradeType } from 'state/routing/types';
-import { Percent } from 'soroswap-router-sdk';
-import { BuildTradeRoute } from 'functions/generateRoute';
+import {
+  BuildSplitTradeReturn,
+  BuildTradeReturn,
+  ExactInBuildTradeReturn,
+  ExactInSplitBuildTradeReturn,
+  ExactOutBuildTradeReturn,
+  ExactOutSplitBuildTradeReturn,
+  PlatformType,
+  TradeType,
+} from 'state/routing/types';
 
 const getClassicAsset = (currency: TokenType) => {
   if (!currency) return;
@@ -103,25 +110,25 @@ export const parseHorizonResult = async (
   const currecnyIn: TokenType =
     payload.source_asset_type == 'native'
       ? {
-        code: 'XLM',
-        contract: '',
-      }
+          code: 'XLM',
+          contract: '',
+        }
       : {
-        code: payload.source_asset_code,
-        issuer: payload.source_asset_issuer,
-        contract: `${payload.source_asset_code}:${payload.source_asset_issuer}`,
-      };
+          code: payload.source_asset_code,
+          issuer: payload.source_asset_issuer,
+          contract: `${payload.source_asset_code}:${payload.source_asset_issuer}`,
+        };
   const currencyOut: TokenType =
     payload.destination_asset_type == 'native'
       ? {
-        code: 'XLM',
-        contract: '',
-      }
+          code: 'XLM',
+          contract: '',
+        }
       : {
-        code: payload.destination_asset_code,
-        issuer: payload.destination_asset_issuer,
-        contract: `${payload.destination_asset_code}:${payload.destination_asset_issuer}`,
-      };
+          code: payload.destination_asset_code,
+          issuer: payload.destination_asset_issuer,
+          contract: `${payload.destination_asset_code}:${payload.destination_asset_issuer}`,
+        };
   const inputAmount: CurrencyAmount = {
     currency: currecnyIn,
     value: new BigNumber(payload.source_amount).multipliedBy(10000000).toString(),
@@ -142,14 +149,14 @@ export const parseHorizonResult = async (
     !currecnyIn.issuer && currecnyIn.code === 'XLM'
       ? 'native'
       : currecnyIn.issuer
-        ? `${currecnyIn.code}:${currecnyIn.issuer}`
-        : `${currecnyIn.code}`;
+      ? `${currecnyIn.code}:${currecnyIn.issuer}`
+      : `${currecnyIn.code}`;
   const addressTo =
     !currencyOut.issuer && currencyOut.code === 'XLM'
       ? 'native'
       : currencyOut.issuer
-        ? `${currencyOut.code}:${currencyOut.issuer}`
-        : `${currencyOut.code}`;
+      ? `${currencyOut.code}:${currencyOut.issuer}`
+      : `${currencyOut.code}`;
 
   const formattedPath = [addressFrom, ...parsedPath, addressTo];
 
@@ -209,30 +216,35 @@ export function getHorizonBestPath(
   if (!args.amount || !args.assetFrom || !args.assetTo || !serverHorizon) return;
   if (payload.tradeType === TradeType.EXACT_INPUT) {
     try {
-      const send = serverHorizon.strictSendPaths(args.assetFrom, args.amount, [args.assetTo])
-        .call().then((res) => res.records);
-      return send?.then((res) => {
-        const maxObj = res.reduce((maxObj, obj) => {
-          if (maxObj.path.length <= 1) {
-
-          }
-          if (obj.destination_amount > maxObj.destination_amount && obj.path.length <= 1) {
-            return obj;
-          } else {
-            return maxObj;
-          }
+      const send = serverHorizon
+        .strictSendPaths(args.assetFrom, args.amount, [args.assetTo])
+        .call()
+        .then((res) => res.records);
+      return send
+        ?.then((res) => {
+          const maxObj = res.reduce((maxObj, obj) => {
+            if (maxObj.path.length <= 1) {
+            }
+            if (obj.destination_amount > maxObj.destination_amount && obj.path.length <= 1) {
+              return obj;
+            } else {
+              return maxObj;
+            }
+          });
+          return parseHorizonResult(maxObj, payload.tradeType, sorobanContext);
+        })
+        .catch((error) => {
+          console.error(error);
         });
-        return parseHorizonResult(maxObj, payload.tradeType, sorobanContext);
-      }).catch((error) => {
-        console.error(error);
-      });
     } catch (error) {
       console.error(error);
     }
   } else if (payload.tradeType === TradeType.EXACT_OUTPUT) {
     try {
-      const receive = serverHorizon.strictReceivePaths([args.assetTo], args.assetFrom, args.amount)
-        .call().then((res) => res.records);
+      const receive = serverHorizon
+        .strictReceivePaths([args.assetTo], args.assetFrom, args.amount)
+        .call()
+        .then((res) => res.records);
       return receive?.then((res) => {
         const minObj = res.reduce((minObj, obj) => {
           if (obj.destination_amount < minObj.destination_amount) {
@@ -250,23 +262,35 @@ export function getHorizonBestPath(
 }
 
 export const getBestPath = (
-  horizonPath: BuildTradeRoute | undefined,
-  routerPath: BuildTradeRoute | undefined,
+  horizonPath: BuildTradeReturn | undefined,
+  routerPath: BuildTradeReturn | BuildSplitTradeReturn | undefined,
   tradeType: TradeType,
-) => {
+): BuildTradeReturn | BuildSplitTradeReturn | undefined => {
   if (!tradeType) throw new Error('Trade type not found');
   if (!horizonPath) return routerPath;
   if (!routerPath) return horizonPath;
   if (tradeType === TradeType.EXACT_INPUT) {
-    const horizonAmountOutMin = parseInt(horizonPath?.trade.amountOutMin || '0');
-    const routerAmountOutMin = parseInt(routerPath?.trade.amountOutMin || '0');
+    const horizonAmountOutMin = parseInt(
+      (horizonPath as ExactInBuildTradeReturn)?.trade.amountOutMin.toString() || '0',
+    );
+    const routerAmountOutMin = parseInt(
+      (
+        routerPath as ExactInBuildTradeReturn | ExactInSplitBuildTradeReturn
+      )?.trade.amountOutMin?.toString() || '0',
+    );
     if (horizonAmountOutMin !== 0 && routerAmountOutMin !== 0) {
       if (routerAmountOutMin > horizonAmountOutMin) return routerPath;
       else return horizonPath;
     }
   } else if (tradeType === TradeType.EXACT_OUTPUT) {
-    const horizonAmountInMax = parseInt(horizonPath?.trade.amountInMax || '0');
-    const routerAmountInMax = parseInt(routerPath?.trade.amountInMax || '0');
+    const horizonAmountInMax = parseInt(
+      (horizonPath as ExactOutBuildTradeReturn)?.trade.amountInMax.toString() || '0',
+    );
+    const routerAmountInMax = parseInt(
+      (
+        routerPath as ExactOutBuildTradeReturn | ExactOutSplitBuildTradeReturn
+      )?.trade.amountInMax.toString() || '0',
+    );
     if (horizonAmountInMax !== 0 && routerAmountInMax !== 0) {
       if (routerAmountInMax < horizonAmountInMax) return routerPath;
       else return horizonPath;
