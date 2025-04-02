@@ -101,13 +101,6 @@ const ConnectWalletContent = ({
     { name: string; isInstalled: boolean; isLoading: boolean }[]
   >(buildWalletsStatus());
 
-  const installWallet = (wallet: Connector) => {
-    window.open(wallet.downloadUrls?.browserExtension, '_blank');
-  };
-
-  const connectWallet = async (wallet: Connector) => {
-    await connect();
-  };
   const handleClick = async () => {
     if (address) disconnect();
     else connect();
