@@ -60,11 +60,8 @@ export function MintCustomToken() {
       adminSource = await server?.getAccount(admin_account.publicKey());
     } catch (error) {
       console.log(error);
-      const adminPublicKey = admin_account.publicKey();
-      console.log(adminPublicKey, 'admin account not found');
-      alert(`Your wallet or the token admin wallet might not be funded. ${adminPublicKey}`);
+      alert(`Your wallet or the token admin wallet might not be funded.`);
       setIsMinting(false);
-      throw new Error(error as string);
       return;
     }
 
