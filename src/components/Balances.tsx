@@ -10,6 +10,7 @@ import { ButtonPrimary } from './Buttons/Button';
 import { WalletButton } from './Buttons/WalletButton';
 import { MintCustomToken } from './MintCustomToken';
 import { xlmTokenList } from 'constants/xlmToken';
+import { WalletNetwork } from 'stellar-react';
 
 const PageWrapper = styled(Paper)`
   background: ${({ theme }) => `linear-gradient(${theme.palette.customBackground.bg2}, ${
@@ -30,23 +31,22 @@ const PageWrapper = styled(Paper)`
 export function Balances() {
   const { sorobanContext, refetch } = useGetMyBalances();
 
-  const isMainnet = sorobanContext.activeChain?.networkPassphrase === Networks.PUBLIC;
+  const isMainnet = sorobanContext.activeNetwork === WalletNetwork.PUBLIC;
 
   const mintTestTokens = useMintTestToken();
   const { ConnectWalletModal } = useContext(AppContext);
-  const { isConnectWalletModalOpen, setConnectWalletModalOpen } = ConnectWalletModal;
 
   const [currentMintingToken, setCurrentMintingToken] = useState<TokenType | null>(null);
   const [isMinting, setIsMinting] = useState(false);
   const getNetwork = () => {
-    switch (sorobanContext.activeChain?.networkPassphrase) {
-      case Networks.TESTNET:
+    switch (sorobanContext.activeNetwork) {
+      case WalletNetwork.TESTNET:
         return 'testnet';
-      case Networks.PUBLIC:
+      case WalletNetwork.PUBLIC:
         return 'mainnet';
-      case Networks.STANDALONE:
+      case WalletNetwork.STANDALONE:
         return 'standalone';
-      case Networks.FUTURENET:
+      case WalletNetwork.FUTURENET:
         return 'futurenet';
       default:
         return 'Unknown';
