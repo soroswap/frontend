@@ -1,4 +1,4 @@
-import { SorobanContextType } from 'stellar-react/dist/SorobanContext';
+import { SorobanContextType } from 'stellar-react';
 import BigNumber from 'bignumber.js';
 
 import { getTotalShares } from './LiquidityPools';

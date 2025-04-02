@@ -13,7 +13,7 @@ export function getClassicAssetSorobanAddress(
   }
 
   const { assetCode, issuer } = assetParts;
-  const networkPassphrase = sorobanContext.activeChain?.networkPassphrase ?? '';
+  const networkPassphrase = sorobanContext.activeNetwork ?? '';
 
   try {
     const asset = new StellarSdk.Asset(assetCode, issuer);

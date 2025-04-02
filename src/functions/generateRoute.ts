@@ -1,4 +1,4 @@
-import { useSorobanReact } from 'stellar-react';
+import { useSorobanReact, WalletNetwork } from 'stellar-react';
 import { AppContext, ProtocolsStatus } from 'contexts';
 import { useFactory } from 'hooks';
 import { useAggregator } from 'hooks/useAggregator';
@@ -20,12 +20,11 @@ import { getBestPath, getHorizonBestPath } from 'helpers/horizon/getHorizonPath'
 import { PlatformType } from 'state/routing/types';
 import { CurrencyAmount as AmountAsset } from 'interfaces';
 import { DexDistribution } from 'helpers/aggregator';
-import { fetchFactory } from 'services/factory';
-import { contractInvoke } from 'stellar-react';
 import { reservesBNWithTokens } from 'hooks/useReserves';
 import { getPairAddress } from './getPairAddress';
 import BigNumber from 'bignumber.js';
 import { getExpectedAmount } from './getExpectedAmount';
+import { ValueOf } from 'next/dist/shared/lib/constants';
 
 export interface BuildTradeRoute {
   amountCurrency: AmountAsset | CurrencyAmount<Currency>;
@@ -67,7 +66,24 @@ export const useRouterSDK = () => {
   const { Settings } = useContext(AppContext);
   const { maxHops, protocolsStatus, setProtocolsStatus } = Settings;
 
-  const network = sorobanContext.activeChain?.networkPassphrase as Networks;
+  const getNetwork = useMemo(() => {
+    switch (sorobanContext.activeNetwork) {
+      case WalletNetwork.PUBLIC:
+        return Networks.PUBLIC;
+      case WalletNetwork.TESTNET:
+        return Networks.TESTNET;
+      case WalletNetwork.STANDALONE:
+        return Networks.STANDALONE;
+      case WalletNetwork.FUTURENET:
+        return Networks.FUTURENET;
+      case WalletNetwork.SANDBOX:
+        return Networks.SANDBOX;
+      default:
+        return Networks.TESTNET;
+    }
+  }, [sorobanContext]);
+  const network = getNetwork;
+
 
   const getPairsFns = useMemo(() => {
     const routerProtocols = []
@@ -99,13 +115,13 @@ export const useRouterSDK = () => {
       getPairsFns: getPairsFns,
       pairsCacheInSeconds: 5,
       protocols: getProtocols,
-      network,
+      network: network as Networks,
       maxHops,
     });
   }, [network, maxHops, isAggregator, protocolsStatus]);
 
   const fromAddressToToken = (address: string) => {
-    return new Token(network, address, 18);
+    return new Token(network as Networks, address, 18);
   };
 
   const fromAddressAndAmountToCurrencyAmount = (address: string, amount: string) => {

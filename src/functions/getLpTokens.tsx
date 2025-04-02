@@ -139,10 +139,11 @@ const getLpResultsFromBlockchainPairs = async (
 };
 
 export async function getLpTokens(sorobanContext: SorobanContextType, tokensAsMap: TokenMapType) {
-  if (!sorobanContext.activeChain || !sorobanContext.address) return;
-  const currentPassphrase = sorobanContext.activeChain.networkPassphrase;
-  const isMainnet = currentPassphrase === Networks.PUBLIC;
-  const isTestnet = currentPassphrase === Networks.TESTNET;
+  if (!sorobanContext.activeNetwork || !sorobanContext.address) return;
+  const currentPassphrase = sorobanContext.activeNetwork;
+
+  const isMainnet = currentPassphrase.valueOf() === Networks.PUBLIC;
+  const isTestnet = currentPassphrase.valueOf() === Networks.TESTNET;
 
   if (isMainnet || isTestnet) {
     try {
