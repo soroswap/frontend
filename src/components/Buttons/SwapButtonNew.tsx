@@ -1,5 +1,5 @@
 import { ButtonProps as ButtonPropsOriginal, Button as MuiButton, styled } from 'soroswap-ui';
-import { contractTransaction, useSendTransaction } from 'stellar-react';
+import { contractTransaction, useSendTransaction, WalletNetwork } from 'stellar-react';
 import { SorobanContextType } from 'stellar-react';
 import BigNumber from 'bignumber.js';
 import { BodyPrimary } from 'components/Text';
@@ -122,8 +122,8 @@ export function SwapButtonNew({
   }, [setToken0, setToken1, tokensFromPair, tokens]);
 
   const [isSubmitting, setSubmitting] = useState(false);
-  const networkPassphrase = sorobanContext.activeChain?.networkPassphrase ?? '';
-  const server = sorobanContext.server;
+  const networkPassphrase = sorobanContext.activeNetwork ?? WalletNetwork.TESTNET;
+  const server = sorobanContext.sorobanServer;
   const account = sorobanContext.address;
   let xdr = StellarSdk.xdr;
   const { sendTransaction } = useSendTransaction();
