@@ -194,34 +194,30 @@ export const ActiveChainHeaderChip = ({ isMobile }: { isMobile?: boolean }) => {
   const sorobanContext: SorobanContextType = useSorobanReact();
   const { activeNetwork: activeChain, address } = sorobanContext;
   const activeChainName = passphraseToBackendNetworkName[activeChain!].toLowerCase();
-  const formattedActiveChainName = activeChainName.charAt(0).toUpperCase() + activeChainName.slice(1);
+  const [chainName, setChainName] = React.useState(activeChainName);
+  useEffect(() => {
+    const formattedActiveChainName = activeChainName.charAt(0).toUpperCase() + activeChainName.slice(1);
+    setChainName(formattedActiveChainName);
+  }, [activeChain]);
+
   return (
     <>
       {activeChain && address ? (
         <HeaderChip
-          label={[
-            activeChainName,
-            <ArrowDropDownSharp key={'action-icon'} className="MuiChip-action-icon" />,
-          ]}
+          label={chainName}
           isSmall={isMobile}
         />
       ) : (
-          <HeaderChip label={activeChainName} isSmall={isMobile} />
+          <HeaderChip label={chainName} isSmall={isMobile} />
       )}
     </>
   );
 };
 
 export default function ProfileSection() {
-  const { ConnectWalletModal } = useContext(AppContext);
   const sorobanContext: SorobanContextType = useSorobanReact();
   const theme = useTheme();
-  const { setConnectWalletModalOpen } = ConnectWalletModal;
   const isMobile = useMediaQuery(theme.breakpoints.down(1220));
-
-  const handleClick = () => {
-    setConnectWalletModalOpen(true);
-  };
 
   return (
     <Box display="flex" gap="8px">
