@@ -13,11 +13,12 @@ export const passphraseToBackendNetworkName: { [x: string]: string } = {
   [Networks.PUBLIC]: 'MAINNET',
   [Networks.TESTNET]: 'TESTNET',
 };
+const baseURL = 'https://info.soroswap.finance/api/pairs';
 
 export const fetchAllSoroswapPairs = async (networkPassphrase: string) => {
   const networkName = passphraseToBackendNetworkName[networkPassphrase];
 
-  const { data } = await axios.get<MercuryPair[]>(`https://info.soroswap.finance/api/pairs/plain`, {
+  const { data } = await axios.get<MercuryPair[]>(`${baseURL}/plain`, {
     params: {
       network: networkName,
     },
@@ -28,13 +29,10 @@ export const fetchAllSoroswapPairs = async (networkPassphrase: string) => {
 export const fetchAllPhoenixPairs = async (networkPassphrase: string) => {
   const networkName = passphraseToBackendNetworkName[networkPassphrase];
 
-  const { data } = await axios.get<MercuryPair[]>(
-    `https://info.soroswap.finance/api/pairs/phoenix`,
-    {
-      params: {
-        network: networkName,
-      },
+  const { data } = await axios.get<MercuryPair[]>(`${baseURL}/phoenix`, {
+    params: {
+      network: networkName,
     },
-  );
+  });
   return data;
 };

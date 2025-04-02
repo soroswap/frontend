@@ -102,7 +102,7 @@ export function useDerivedMintInfo(
     { reserve0: BigNumber; reserve1: BigNumber } | undefined
   >();
   useEffect(() => {
-    if (sorobanContext.activeChain && sorobanContext.address) {
+    if (sorobanContext.activeNetwork && sorobanContext.address) {
       reservesBigNumber(pairAddress ?? '', sorobanContext)
         .then((resp) => {
           setReservesBN(resp);

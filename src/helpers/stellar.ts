@@ -23,7 +23,7 @@ export const requiresTrustline = async (
   amount?: string,
 ): Promise<boolean> => {
   if (!sorobanContext.address || !asset) return false
-  const {serverHorizon} = sorobanContext
+  const {horizonServer: serverHorizon} = sorobanContext
   const account = await serverHorizon?.loadAccount(sorobanContext.address)
   const tokenName = await getTokenName(asset.contract, sorobanContext);
   if (!account) return true;
