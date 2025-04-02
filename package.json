@@ -84,6 +84,7 @@
   },
   "resolutions": {
     "cypress": "12.12.0",
+    "@stellar/stellar-sdk": "12.2.0",
     "lit": "^3.1.2",
     "@lit/reactive-element": "^2.0.0",
     "@lit-labs/react": "^2.1.3",
