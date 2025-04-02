@@ -13,7 +13,7 @@ const useHorizonLoadAccount = () => {
     sorobanContext.address && isFunded
       ? ['horizon-account', sorobanContext.address, sorobanContext]
       : null,
-    ([_, address]) => sorobanContext.serverHorizon?.loadAccount(address),
+    ([_, address]) => sorobanContext.horizonServer?.loadAccount(address),
   );
 
   return { account: data, isLoading, error, mutate };

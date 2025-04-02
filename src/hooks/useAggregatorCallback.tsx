@@ -1,9 +1,8 @@
-import { TxResponse, contractInvoke } from 'stellar-react';
-
-import { useSorobanReact } from 'stellar-react';
+import { contractInvoke, useSorobanReact } from 'stellar-react';
 import * as StellarSdk from '@stellar/stellar-sdk';
 import { useCallback } from 'react';
 import { useAggregator } from './useAggregator';
+import { TxResponse } from 'stellar-react/dist/contracts/types';
 
 export enum AggregatorMethod {
   GET_PROTOCOLS = 'get_protocols',

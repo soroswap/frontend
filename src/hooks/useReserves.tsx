@@ -35,7 +35,7 @@ export function useReservesBigNumber(pairAddress: string, sorobanContext: Soroba
 }
 
 export async function reservesBigNumber(pairAddress: string, sorobanContext: SorobanContextType) {
-  if (!sorobanContext.activeChain || !pairAddress) return;
+  if (!sorobanContext.activeNetwork || !pairAddress) return;
 
   const reserves_scval = await contractInvoke({
     contractAddress: pairAddress,

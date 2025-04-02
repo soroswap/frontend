@@ -23,7 +23,7 @@ export interface SpacewalkBridge {
 }
 
 function useSpacewalkBridge(): SpacewalkBridge {
-  const { serverHorizon } = useSorobanReact();
+  const { horizonServer:serverHorizon } = useSorobanReact();
   const [vaults, setExtendedVaults] = useState<ExtendedSpacewalkVault[]>([]);
   const { getVaults, getVaultStellarPublicKey } = useSpacewalkVaults();
   const [selectedVault, setSelectedVault] = useState<VaultId | undefined>(undefined);
@@ -83,7 +83,7 @@ function useSpacewalkBridge(): SpacewalkBridge {
       .filter(
         (asset): asset is Asset => asset != null && !shouldFilterOut(TenantName.Pendulum, asset),
       );
-    return _.uniqBy(assets, (asset) => stringifyStellarAsset(asset));
+    return _.uniqBy(assets, (asset: Asset) => stringifyStellarAsset(asset));
   }, [vaults]);
 
   useEffect(() => {

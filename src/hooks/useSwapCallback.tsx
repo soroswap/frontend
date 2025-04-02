@@ -1,4 +1,3 @@
-import { TxResponse } from 'stellar-react';
 import { useSorobanReact } from 'stellar-react';
 import * as StellarSdk from '@stellar/stellar-sdk';
 import BigNumber from 'bignumber.js';
@@ -18,6 +17,7 @@ import { AggregatorMethod, useAggregatorCallback } from './useAggregatorCallback
 import { RouterMethod, useRouterCallback } from './useRouterCallback';
 import { createStellarPathPayment } from 'helpers/horizon/createHorizonTransaction';
 import { extractContractError } from 'functions/extractContractError';
+import { TxResponse } from 'stellar-react/dist/contracts/types';
 
 
 // Returns a function that will execute a swap, if the parameters are all valid
@@ -106,7 +106,7 @@ export function useSwapCallback(
 ) {
   const { SnackbarContext } = useContext(AppContext);
   const sorobanContext = useSorobanReact();
-  const { activeChain, address, activeConnector } = sorobanContext;
+  const { activeNetwork, address, kit } = sorobanContext;
   const routerCallback = useRouterCallback();
   const aggregatorCallback = useAggregatorCallback();
   const allowedSlippage = useUserSlippageToleranceWithDefault(DEFAULT_SLIPPAGE_INPUT_VALUE);
@@ -122,7 +122,7 @@ export function useSwapCallback(
     | StellarSdk.Horizon.HorizonApi.SubmitTransactionResponse
   > => {
     if (!trade) throw new Error('missing trade');
-    if (!address || !activeChain) throw new Error('wallet must be connected to swap');
+    if (!address || !activeNetwork) throw new Error('wallet must be connected to swap');
     if (!trade.tradeType) throw new Error('tradeType must be defined');
 
     const { amount0, amount1, routerMethod, aggregatorMethod } = getSwapAmounts({

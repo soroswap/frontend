@@ -13,7 +13,7 @@ export const useGetBridgeAssetInfo = ({ asset, chain }: UseGetAssetInfoProps) =>
   const { tokensAsMap } = useAllTokens();
   const sorobanContext = useSorobanReact();
 
-  const passphrase = sorobanContext.activeChain?.networkPassphrase;
+  const passphrase = sorobanContext.activeNetwork;
 
   const getAssetCode = () => {
     if (!asset) return undefined;

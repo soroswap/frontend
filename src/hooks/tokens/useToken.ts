@@ -1,4 +1,4 @@
-import { SorobanContextType, useSorobanReact } from 'stellar-react';
+import { SorobanContextType, useSorobanReact, WalletNetwork } from 'stellar-react';
 import { getClassicAssetSorobanAddress } from 'functions/getClassicAssetSorobanAddress';
 import { getClassicStellarAsset, isAddress } from 'helpers/address';
 import { getTokenName } from 'helpers/soroban';
@@ -66,7 +66,7 @@ const revalidateKeysCondition = (key: any) => {
 //Returns token from map (user added + api) or network
 export function useToken(tokenAddress: string | undefined) {
   const sorobanContext = useSorobanReact();
-  const { activeChain: network } = sorobanContext;
+  const { activeNetwork: network } = sorobanContext;
   const { tokensAsMap } = useAllTokens();
 
   const { data: name } = useSWR(
@@ -102,7 +102,7 @@ export function useToken(tokenAddress: string | undefined) {
       return undefined;
     }
     const asset = new Asset(code, issuer);
-    if (asset.contractId(network?.networkPassphrase!) === contractId) {
+    if (asset.contractId(network ?? WalletNetwork.TESTNET) === contractId) {
       return true;
     } else {
       return false;

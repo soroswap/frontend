@@ -1,10 +1,11 @@
-import { TxResponse, contractInvoke } from 'stellar-react';
+import { contractInvoke } from 'stellar-react';
 
 import { useSorobanReact } from 'stellar-react';
 import { useCallback } from 'react';
 import * as StellarSdk from '@stellar/stellar-sdk';
 import { useSWRConfig } from 'swr';
 import { useRouterAddress } from './useRouterAddress';
+import { TxResponse } from 'stellar-react/dist/contracts/types';
 
 export enum RouterMethod {
   ADD_LIQUIDITY = 'add_liquidity',

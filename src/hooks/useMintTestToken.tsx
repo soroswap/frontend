@@ -29,7 +29,7 @@ export function useMintTestToken() {
       onTokenMintedSuccess,
       onTokenMintedError,
     }: MintTestTokenProps) => {
-      const server = sorobanContext.server;
+      const server = sorobanContext.sorobanServer;
       const account = sorobanContext.address;
 
       const amountScVal = bigNumberToI128(BigNumber(2500000).shiftedBy(7));

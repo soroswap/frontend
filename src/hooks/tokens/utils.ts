@@ -2,6 +2,7 @@ import { SorobanContextType } from 'stellar-react';
 import { getClassicStellarAsset, isAddress } from 'helpers/address';
 import { getTokenDecimals, getTokenName, getTokenSymbol } from 'helpers/soroban';
 import { TokenMapType, TokenType, tokensResponse } from 'interfaces';
+import { passphraseToBackendNetworkName } from 'services/pairs';
 
 export const tokensToMap = (tokens: TokenType[]) => {
   if (!tokens) return {};
@@ -15,8 +16,9 @@ export const tokensToMap = (tokens: TokenType[]) => {
 //Adds a token to the userAddedTokens localStorage
 export const addUserToken = (token: TokenType, sorobanContext: SorobanContextType) => {
   if (!token) return;
-
-  const activeChain = sorobanContext.activeChain?.name?.toLowerCase();
+  const {activeNetwork} = sorobanContext;
+  if (!activeNetwork) return;
+  const activeChain = passphraseToBackendNetworkName[activeNetwork].toLowerCase();
 
   const userAddedTokensStr = localStorage.getItem(`userAddedTokens`) || '[]';
   const userAddedTokens = JSON.parse(userAddedTokensStr) ?? [];
@@ -54,7 +56,7 @@ export async function getToken(
   sorobanContext: SorobanContextType,
   tokenAddress?: string | undefined,
 ): Promise<TokenType | undefined> {
-  if (!tokenAddress || tokenAddress === '' || !sorobanContext.activeChain) return undefined;
+  if (!tokenAddress || tokenAddress === '' || !sorobanContext.activeNetwork) return undefined;
 
   let name, symbol, decimals, logo;
 
@@ -91,11 +93,14 @@ export const getTokenLogo = async (address: string, sorobanContext: SorobanConte
     }
 
     const tokenData = await response.json();
+    const {activeNetwork} = sorobanContext;
+    if (!activeNetwork) return undefined;
+    const activeChain = passphraseToBackendNetworkName[activeNetwork].toLowerCase();
 
     // Find the object that matches the activeChain
     const activeChainTokens = tokenData.find(
       (chain: { network: string }) =>
-        chain.network.toLowerCase() === sorobanContext.activeChain?.name?.toLowerCase(),
+        chain.network.toLowerCase() === activeChain,
     );
     if (!activeChainTokens) return undefined;
 
@@ -115,7 +120,7 @@ export const getTokenLogo = async (address: string, sorobanContext: SorobanConte
 //Checks if the stellar asset is wrapped
 export async function isClassicStellarAsset(value: string, sorobanContext: SorobanContextType) {
   if (!value) return false;
-  const { serverHorizon } = sorobanContext;
+  const { horizonServer:serverHorizon } = sorobanContext;
   const classicAsset = getClassicStellarAsset(value);
   try {
     if (!classicAsset) return false;
