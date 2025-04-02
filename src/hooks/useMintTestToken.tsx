@@ -71,6 +71,7 @@ export function useMintTestToken() {
           totalMinted++;
           onTokenMintedSuccess?.(token);
         } catch (error) {
+          console.warn('Error minting token', error);
           onTokenMintedError?.(token);
         }
       }

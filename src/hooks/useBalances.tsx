@@ -116,7 +116,7 @@ export async function tokenBalances(
         }
 
         return {
-          balance: balance,
+          balance: balance ?? 0,
           usdValue: 0, //TODO: should get usd value
           issuer: token.issuer,
           code: token.code,
