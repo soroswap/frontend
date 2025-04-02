@@ -25,7 +25,7 @@ import useGetMyBalances from 'hooks/useGetMyBalances';
 
 export function MintCustomToken() {
   const { sorobanContext, refetch } = useGetMyBalances();
-  const { server, address } = sorobanContext;
+  const { sorobanServer: server, address } = sorobanContext;
   const admin_account = StellarSdk.Keypair.fromSecret(
     process.env.NEXT_PUBLIC_TEST_TOKENS_ADMIN_SECRET_KEY as string,
   );
@@ -56,10 +56,15 @@ export function MintCustomToken() {
 
     let adminSource, walletSource;
     try {
+      console.log('fetching admin account');
       adminSource = await server?.getAccount(admin_account.publicKey());
     } catch (error) {
-      alert('Your wallet or the token admin wallet might not be funded');
+      console.log(error);
+      const adminPublicKey = admin_account.publicKey();
+      console.log(adminPublicKey, 'admin account not found');
+      alert(`Your wallet or the token admin wallet might not be funded. ${adminPublicKey}`);
       setIsMinting(false);
+      throw new Error(error as string);
       return;
     }
 

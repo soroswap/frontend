@@ -1,5 +1,5 @@
 import { Button } from 'soroswap-ui';
-import { SorobanContextType } from 'stellar-react';
+import { SorobanContextType, WalletNetwork } from 'stellar-react';
 import { useContext, useState } from 'react';
 
 import { contractInvoke } from 'stellar-react';
@@ -19,8 +19,7 @@ interface MintButtonProps {
 export function MintButton({ sorobanContext, token, amountToMint }: MintButtonProps) {
   const { SnackbarContext } = useContext(AppContext);
   const [isSubmitting, setSubmitting] = useState(false);
-  const networkPassphrase = sorobanContext.activeChain?.networkPassphrase ?? '';
-  const server = sorobanContext.server;
+  const server = sorobanContext.sorobanServer;
   const account = sorobanContext.address;
   const admin_account = StellarSdk.Keypair.fromSecret(
     process.env.NEXT_PUBLIC_TEST_TOKENS_ADMIN_SECRET_KEY as string,
@@ -40,6 +39,7 @@ export function MintButton({ sorobanContext, token, amountToMint }: MintButtonPr
     try {
       adminSource = await server?.getAccount(admin_account.publicKey());
     } catch (error) {
+      console.log('error from mint button', error);
       alert('Your wallet or the token admin wallet might not be funded');
       setSubmitting(false);
       return;
@@ -83,7 +83,7 @@ export function MintButton({ sorobanContext, token, amountToMint }: MintButtonPr
 
       //This will connect again the wallet to fetch its data
       sorobanContext.connect();
-    } catch (error) {}
+    } catch (error) { }
 
     setSubmitting(false);
   };
