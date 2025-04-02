@@ -271,7 +271,7 @@ export default function AddLiquidityComponent({
     handleAddLiquidity,
   ]);
 
-  const baseRoute = `/liquidity/add/`;
+  const baseRoute = `/pools/add/`;
 
   const handleCurrencyASelect = useCallback(
     (currencyA: TokenType) => {

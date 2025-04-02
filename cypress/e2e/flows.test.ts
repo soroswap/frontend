@@ -253,9 +253,9 @@ describe('Navigation flow', () => {
     cy.visit('/');
     cy.get('[data-testid="navbar__container"]').click();
     // cy.wait(1500);
-    cy.contains('Liquidity').click();
+    cy.contains('Pools').click();
     // cy.wait(3000);
-    cy.contains('List of your liquidity positions');
+    cy.contains('Liquidity pools');
   });
   it('should navigate to bridge', () => {
     cy.visit('/');

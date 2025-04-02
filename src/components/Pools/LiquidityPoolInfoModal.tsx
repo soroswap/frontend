@@ -12,7 +12,7 @@ import { formatTokenAmount } from 'helpers/format';
 import { useRouter } from 'next/router';
 import { LPPercentage } from './styleds';
 
-const ContentWrapper = styled('div')<{ isMobile: boolean }>`
+const ContentWrapper = styled('div') <{ isMobile: boolean }>`
   display: flex;
   flex-direction: column;
   gap: 24px;
@@ -37,12 +37,12 @@ export default function LiquidityPoolInfoModal({
   if (!selectedLP) return null;
 
   const handleAddClick = () => {
-    router.push(`/liquidity/add/${selectedLP.token_0?.contract}/${selectedLP.token_1?.contract}`);
+    router.push(`/pools/add/${selectedLP.token_0?.contract}/${selectedLP.token_1?.contract}`);
   };
 
   const handleRemoveClick = () => {
     router.push(
-      `/liquidity/remove/${selectedLP.token_0?.contract}/${selectedLP.token_1?.contract}`,
+      `/pools/remove/${selectedLP.token_0?.contract}/${selectedLP.token_1?.contract}`,
     );
   };
 
