@@ -95,7 +95,8 @@ const ConnectWalletContent = ({
   const theme = useTheme();
   const { ConnectWalletModal } = useContext(AppContext);
   const { setConnectWalletModalOpen } = ConnectWalletModal;
-  const { address, connect, disconnect } = useSorobanReact();
+  const sorobanContext = useSorobanReact();
+  const { address, connect, disconnect } = sorobanContext;
   const [walletsStatus, setWalletsStatus] = useState<
     { name: string; isInstalled: boolean; isLoading: boolean }[]
   >(buildWalletsStatus());
@@ -114,7 +115,6 @@ const ConnectWalletContent = ({
 
   useEffect(() => {
     const newWalletsStatus = walletsStatus.map(async (walletStatus) => {
-      const sorobanContext = useSorobanReact();
       const { kit } = sorobanContext;
       const contextConnector = (await kit?.getSupportedWallets()!).find((c) => c.id === walletStatus.name);
 
