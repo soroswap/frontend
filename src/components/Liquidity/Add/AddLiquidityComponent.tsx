@@ -1,5 +1,4 @@
 import { styled, useTheme } from 'soroswap-ui';
-import { TxResponse } from 'stellar-react';
 import { useSorobanReact } from 'stellar-react';
 import BigNumber from 'bignumber.js';
 import { ButtonError } from 'components/Buttons/Button';
@@ -35,6 +34,7 @@ import { opacify } from 'themes/utils';
 import { AddRemoveTabs } from '../AddRemoveHeader';
 import AddModalFooter from './AddModalFooter';
 import AddModalHeader from './AddModalHeader';
+import { TxResponse } from 'stellar-react/dist/contracts/types';
 
 export const PageWrapper = styled('main')`
   position: relative;
@@ -83,7 +83,6 @@ export default function AddLiquidityComponent({
 }: AddLiquidityComponentProps) {
   const theme = useTheme();
   const userSlippage = useUserSlippageToleranceWithDefault(DEFAULT_SLIPPAGE_INPUT_VALUE);
-  const { ConnectWalletModal } = useContext(AppContext);
 
   const router = useRouter();
 
@@ -271,7 +270,7 @@ export default function AddLiquidityComponent({
     handleAddLiquidity,
   ]);
 
-  const baseRoute = `/liquidity/add/`;
+  const baseRoute = `/pools/add/`;
 
   const handleCurrencyASelect = useCallback(
     (currencyA: TokenType) => {

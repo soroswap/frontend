@@ -154,7 +154,7 @@ export default function LiquidityPage() {
           </LPTokensContainer>
         )}
         {address ? (
-          <ButtonPrimary onClick={() => router.push('/liquidity/add')}>
+          <ButtonPrimary onClick={() => { router.push('/pools/add') }}>
             + Add Liquidity
           </ButtonPrimary>
         ) : (
