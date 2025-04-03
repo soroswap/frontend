@@ -93,7 +93,7 @@ export const getSwapAmounts = ({
   return { amount0, amount1, routerMethod, aggregatorMethod };
 };
 
-export type SuccessfullSwapResponse = StellarSdk.SorobanRpc.Api.GetSuccessfulTransactionResponse &
+export type SuccessfullSwapResponse = StellarSdk.rpc.Api.GetSuccessfulTransactionResponse &
   TxResponse & {
     switchValues: string[];
   };
@@ -118,7 +118,7 @@ export function useSwapCallback(
     simulation?: boolean,
   ): Promise<
     | SuccessfullSwapResponse
-    | StellarSdk.SorobanRpc.Api.GetTransactionResponse
+    | StellarSdk.rpc.Api.GetTransactionResponse
     | StellarSdk.Horizon.HorizonApi.SubmitTransactionResponse
   > => {
     if (!trade) throw new Error('missing trade');
@@ -154,12 +154,12 @@ export function useSwapCallback(
             routerMethod,
             args,
             !simulation,
-          )) as StellarSdk.SorobanRpc.Api.GetTransactionResponse;
+          )) as StellarSdk.rpc.Api.GetTransactionResponse;
 
           //if it is a simulation should return the result
           if (simulation) return result;
 
-          if (result.status !== StellarSdk.SorobanRpc.Api.GetTransactionStatus.SUCCESS)
+          if (result.status !== StellarSdk.rpc.Api.GetTransactionStatus.SUCCESS)
             throw result;
 
           const switchValues: string[] = scValToJs(result.returnValue!);
@@ -199,13 +199,13 @@ export function useSwapCallback(
             aggregatorMethod,
             aggregatorSwapParams,
             !simulation,
-          )) as StellarSdk.SorobanRpc.Api.GetTransactionResponse;
+          )) as StellarSdk.rpc.Api.GetTransactionResponse;
 
           console.log('🚀 « result:', result);
           //if it is a simulation should return the result
           if (simulation) return result;
 
-          if (result.status !== StellarSdk.SorobanRpc.Api.GetTransactionStatus.SUCCESS)
+          if (result.status !== StellarSdk.rpc.Api.GetTransactionStatus.SUCCESS)
             throw result;
 
           const switchValues: string[] = scValToJs(result.returnValue!);

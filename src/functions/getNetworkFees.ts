@@ -65,7 +65,7 @@ export async function calculateSwapFees(
     StellarSdk.nativeToScVal(getCurrentTimePlusOneHour(), { type: 'u64' }),
   ];
 
-  const server = new StellarSdk.SorobanRpc.Server(sorobanServer.serverURL, {
+  const server = new StellarSdk.rpc.Server(sorobanServer.serverURL, {
     allowHttp: true,
   });
 
@@ -79,10 +79,10 @@ export async function calculateSwapFees(
     args: scValParams,
   });
 
-  const simulated: StellarSdk.SorobanRpc.Api.SimulateTransactionResponse =
+  const simulated: StellarSdk.rpc.Api.SimulateTransactionResponse =
     await server?.simulateTransaction(txn);
 
-  if (StellarSdk.SorobanRpc.Api.isSimulationError(simulated)) {
+  if (StellarSdk.rpc.Api.isSimulationError(simulated)) {
     throw new Error(simulated.error);
   } else if (!simulated.result) {
     throw new Error(`invalid simulation: no result in ${simulated}`);
@@ -114,7 +114,7 @@ export async function calculateLiquidityFees(
   const routerData = await fetchRouter(network);
   const routerId = routerData.address;
 
-  const server = new StellarSdk.SorobanRpc.Server(sorobanRpcUrl, {
+  const server = new StellarSdk.rpc.Server(sorobanRpcUrl, {
     allowHttp: true,
   });
 
@@ -128,10 +128,10 @@ export async function calculateLiquidityFees(
     args,
   });
 
-  const simulated: StellarSdk.SorobanRpc.Api.SimulateTransactionResponse =
+  const simulated: StellarSdk.rpc.Api.SimulateTransactionResponse =
     await server?.simulateTransaction(txn);
 
-  if (StellarSdk.SorobanRpc.Api.isSimulationError(simulated)) {
+  if (StellarSdk.rpc.Api.isSimulationError(simulated)) {
     console.error(simulated.error);
     return;
   } else if (!simulated.result) {

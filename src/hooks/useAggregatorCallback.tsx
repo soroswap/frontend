@@ -46,7 +46,7 @@ export function useAggregatorCallback() {
 
       if (
         isObject(result) &&
-        result?.status !== StellarSdk.SorobanRpc.Api.GetTransactionStatus.SUCCESS
+        result?.status !== StellarSdk.rpc.Api.GetTransactionStatus.SUCCESS
       )
         throw result;
 

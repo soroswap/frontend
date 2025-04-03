@@ -14,7 +14,7 @@ import { scValToJs } from './convert';
 // export const baseFeeXlm = stroopToXlm(BASE_FEE).toString();
 
 // export const SendTxStatus: {
-//   [index: string]: StellarSdk.SorobanRpc.SendTransactionStatus;
+//   [index: string]: StellarSdk.rpc.SendTransactionStatus;
 // } = {
 //   Pending: 'PENDING',
 //   Duplicate: 'DUPLICATE',
@@ -23,7 +23,7 @@ import { scValToJs } from './convert';
 // };
 
 // export const GetTxStatus: {
-//   [index: string]: StellarSdk.SorobanRpc.GetTransactionStatus;
+//   [index: string]: StellarSdk.rpc.GetTransactionStatus;
 // } = {
 //   Success: 'SUCCESS',
 //   NotFound: 'NOT_FOUND',
