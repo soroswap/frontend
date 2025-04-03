@@ -4,7 +4,7 @@ import {
 } from 'helpers/bridge/pendulum/stellar';
 
 import { useInkathon } from '@scio-labs/use-inkathon';
-import { useSorobanReact } from '@soroban-react/core';
+import { useSorobanReact, WalletNetwork } from 'stellar-react';
 import { Asset, BASE_FEE, Memo, Operation, TransactionBuilder } from '@stellar/stellar-sdk';
 import BigNumber from 'bignumber.js';
 import { IssueStepsByKeys, StepKeys } from 'components/Bridge/BridgeSteps';
@@ -22,7 +22,7 @@ interface Props {
 }
 
 const useIssueHandler = ({ amount, selectedAsset, selectedVault, stepper }: Props) => {
-  const { address, serverHorizon, activeChain, activeConnector } = useSorobanReact();
+  const { address, horizonServer:serverHorizon, activeNetwork, kit } = useSorobanReact();
 
   const { activeAccount, activeSigner, api } = useInkathon();
 
@@ -50,7 +50,7 @@ const useIssueHandler = ({ amount, selectedAsset, selectedVault, stepper }: Prop
 
   const createStellarPayment = useCallback(
     async (recipient: string, memo: string) => {
-      if (!address || !selectedAsset) {
+      if (!address || !selectedAsset || !kit) {
         console.log('Stellar Wallet not connected');
         return;
       }
@@ -61,7 +61,7 @@ const useIssueHandler = ({ amount, selectedAsset, selectedVault, stepper }: Prop
       const fee = await serverHorizon?.fetchBaseFee();
       const transaction = new TransactionBuilder(sourceAccount, {
         fee: fee ? String(fee) : BASE_FEE,
-        networkPassphrase: activeChain?.networkPassphrase,
+        networkPassphrase: activeNetwork,
       })
         .addOperation(
           Operation.payment({
@@ -74,16 +74,16 @@ const useIssueHandler = ({ amount, selectedAsset, selectedVault, stepper }: Prop
         .setTimeout(180)
         .build();
 
-      const signedXDR = await activeConnector?.signTransaction(transaction.toXDR(), {
-        networkPassphrase: activeChain?.networkPassphrase,
+      const signedXDR = await kit.signTransaction(transaction.toXDR(), {
+        networkPassphrase: activeNetwork,
       });
 
       if (!signedXDR) throw new Error("Couldn't sign transaction");
       console.log('🚀 « signedXDR:', signedXDR);
 
       const transactionToSubmit = TransactionBuilder.fromXDR(
-        signedXDR,
-        activeChain?.networkPassphrase ?? '',
+        signedXDR.signedTxXdr,
+        activeNetwork ?? WalletNetwork.TESTNET,
       );
       console.log('🚀 « transactionToSubmit:', transactionToSubmit);
       const res = await serverHorizon?.submitTransaction(transactionToSubmit);
@@ -99,8 +99,8 @@ const useIssueHandler = ({ amount, selectedAsset, selectedVault, stepper }: Prop
       }
     },
     [
-      activeChain?.networkPassphrase,
-      activeConnector,
+      activeNetwork,
+      kit,
       address,
       amount,
       selectedAsset,

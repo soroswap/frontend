@@ -1,4 +1,4 @@
-import { useSorobanReact } from '@soroban-react/core';
+import { useSorobanReact } from 'stellar-react';
 import { getLpTokens } from 'functions/getLpTokens';
 import useSWRImmutable from 'swr/immutable';
 import { useAllTokens } from './tokens/useAllTokens';

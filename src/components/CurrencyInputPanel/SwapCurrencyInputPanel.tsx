@@ -1,6 +1,6 @@
 // import { Trans } from '@lingui/macro'
 import { ButtonBase, styled, useMediaQuery, useTheme } from 'soroswap-ui';
-import { useSorobanReact } from '@soroban-react/core';
+import { useSorobanReact } from 'stellar-react';
 import { darken } from 'polished';
 import { ReactNode, useCallback, useState } from 'react';
 import { ChevronDown } from 'react-feather';
@@ -212,7 +212,7 @@ export default function SwapCurrencyInputPanel({
   ...rest
 }: SwapCurrencyInputPanelProps) {
   const [modalOpen, setModalOpen] = useState(false);
-  const { address, activeChain } = useSorobanReact();
+  const { address } = useSorobanReact();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 

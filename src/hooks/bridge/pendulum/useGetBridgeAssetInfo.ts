@@ -1,4 +1,4 @@
-import { useSorobanReact } from '@soroban-react/core';
+import { useSorobanReact } from 'stellar-react';
 import { Asset } from '@stellar/stellar-sdk';
 import { BridgeChains } from 'components/Bridge/BridgeComponent';
 import { useAllTokens } from 'hooks/tokens/useAllTokens';
@@ -13,7 +13,7 @@ export const useGetBridgeAssetInfo = ({ asset, chain }: UseGetAssetInfoProps) =>
   const { tokensAsMap } = useAllTokens();
   const sorobanContext = useSorobanReact();
 
-  const passphrase = sorobanContext.activeChain?.networkPassphrase;
+  const passphrase = sorobanContext.activeNetwork;
 
   const getAssetCode = () => {
     if (!asset) return undefined;

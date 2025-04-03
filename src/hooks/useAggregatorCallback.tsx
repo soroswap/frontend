@@ -1,9 +1,8 @@
-import { TxResponse, contractInvoke } from '@soroban-react/contracts';
-
-import { useSorobanReact } from '@soroban-react/core';
+import { contractInvoke, useSorobanReact } from 'stellar-react';
 import * as StellarSdk from '@stellar/stellar-sdk';
 import { useCallback } from 'react';
 import { useAggregator } from './useAggregator';
+import { TxResponse } from 'stellar-react/dist/contracts/types';
 
 export enum AggregatorMethod {
   GET_PROTOCOLS = 'get_protocols',
@@ -47,7 +46,7 @@ export function useAggregatorCallback() {
 
       if (
         isObject(result) &&
-        result?.status !== StellarSdk.SorobanRpc.Api.GetTransactionStatus.SUCCESS
+        result?.status !== StellarSdk.rpc.Api.GetTransactionStatus.SUCCESS
       )
         throw result;
 

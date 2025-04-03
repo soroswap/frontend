@@ -1,12 +1,11 @@
 import { useContext, useEffect, useState } from 'react';
 
-import { useSorobanReact } from '@soroban-react/core';
-import { Connector } from '@soroban-react/types';
+import { useSorobanReact } from 'stellar-react';
+import { Connector } from 'stellar-react';
 import { ButtonPrimary } from 'components/Buttons/Button';
 import { AppContext } from 'contexts';
 import Image from 'next/image';
 import { AlertCircle } from 'react-feather';
-import { walletConnectors } from 'soroban/MySorobanReactProvider';
 import { Box, CircularProgress, Modal, styled, useMediaQuery, useTheme } from 'soroswap-ui';
 import ModalBox from './ModalBox';
 
@@ -81,12 +80,7 @@ export const ConnectWalletStyles = {
 };
 
 const buildWalletsStatus = () => {
-  return walletConnectors.map((w) => ({
-    isInstalled: false,
-    isLoading: true,
-    name: w.id,
-    connector: w,
-  }));
+  return [];
 };
 
 const ConnectWalletContent = ({
@@ -102,50 +96,23 @@ const ConnectWalletContent = ({
   const { ConnectWalletModal } = useContext(AppContext);
   const { setConnectWalletModalOpen } = ConnectWalletModal;
   const sorobanContext = useSorobanReact();
-  const { setActiveConnectorAndConnect } = sorobanContext;
+  const { address, connect, disconnect } = sorobanContext;
   const [walletsStatus, setWalletsStatus] = useState<
     { name: string; isInstalled: boolean; isLoading: boolean }[]
   >(buildWalletsStatus());
 
-  const installWallet = (wallet: Connector) => {
-    window.open(wallet.downloadUrls?.browserExtension, '_blank');
-  };
-
-  const connectWallet = async (wallet: Connector) => {
-    try {
-      setActiveConnectorAndConnect?.(wallet);
-      setConnectWalletModalOpen(false);
-    } catch (err) {
-      const errorMessage = `${err}`;
-      if (errorMessage.includes(`Error: Wallet hasn't been set upp`)) {
-        onError(`Error: Wallet hasn't been set up. Please set up your xBull wallet.`);
-      } else {
-        onError('Something went wrong. Please try again.');
-      }
-    }
-  };
-  const handleClick = async (
-    wallet: Connector,
-    walletStatus: { name: string; isInstalled: boolean; isLoading: boolean } | undefined,
-  ) => {
-    if (!walletStatus) return;
-    if (walletStatus.isLoading) return;
-
-    const isWalletInstalled = walletStatus.isInstalled;
-
-    if (isWalletInstalled) {
-      connectWallet(wallet);
-    } else {
-      installWallet(wallet);
-    }
+  const handleClick = async () => {
+    if (address) disconnect();
+    else connect();
   };
 
   useEffect(() => {
     const newWalletsStatus = walletsStatus.map(async (walletStatus) => {
-      const contextConnector = sorobanContext.connectors.find((c) => c.id === walletStatus.name);
+      const { kit } = sorobanContext;
+      const contextConnector = (await kit?.getSupportedWallets()!).find((c) => c.id === walletStatus.name);
 
       if (contextConnector) {
-        let connected = await contextConnector.isConnected();
+        let connected = !!sorobanContext.address;
 
         return { name: walletStatus.name, isInstalled: connected, isLoading: false };
       }
@@ -174,7 +141,7 @@ const ConnectWalletContent = ({
             let walletIconUrl = wallet.iconUrl as string;
 
             return (
-              <WalletBox key={index} onClick={() => handleClick(wallet, walletStatus)}>
+              <WalletBox key={index} onClick={handleClick}>
                 <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
                   <Image src={walletIconUrl} width={24} height={24} alt={wallet.name + ' Wallet'} />
                   <span>{wallet.name} Wallet</span>
@@ -237,8 +204,6 @@ const ErrorContent = ({
 
 export default function ConnectWalletModal() {
   const theme = useTheme();
-  const sorobanContext = useSorobanReact();
-  const supportedWallets = sorobanContext.connectors;
   const { ConnectWalletModal } = useContext(AppContext);
   const { isConnectWalletModalOpen, setConnectWalletModalOpen } = ConnectWalletModal;
 
@@ -269,8 +234,7 @@ export default function ConnectWalletModal() {
           />
         ) : (
           <ConnectWalletContent
-            isMobile={isMobile}
-            wallets={supportedWallets}
+              isMobile={isMobile}
             onError={handleError}
           />
         )}

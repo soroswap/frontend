@@ -1,6 +1,6 @@
 import { ServerApi } from '@stellar/stellar-sdk/lib/horizon';
 import { Asset } from '@stellar/stellar-sdk';
-import { SorobanContextType } from '@soroban-react/core';
+import { SorobanContextType } from 'stellar-react';
 import BigNumber from 'bignumber.js';
 import { CurrencyAmount, TokenType } from 'interfaces';
 import {
@@ -34,7 +34,7 @@ export const getAmount = (amount: string) => {
 };
 
 const getPools = async (path: any, sorobanContext: SorobanContextType) => {
-  const { serverHorizon } = sorobanContext;
+  const { horizonServer:serverHorizon } = sorobanContext;
   if (!serverHorizon) return;
   const pathPairs = [];
   for (let i = 0; i < path.length - 1; i++) {
@@ -216,9 +216,9 @@ export function getHorizonBestPath(
   if (!payload.assetFrom || !payload.assetTo || !payload.amount || !sorobanContext) {
     return;
   }
-  const { serverHorizon, activeChain } = sorobanContext;
-  if (!serverHorizon || !activeChain) {
-    console.error('no serverHorizon or activeChain');
+  const { horizonServer:serverHorizon, activeNetwork } = sorobanContext;
+  if (!serverHorizon || !activeNetwork) {
+    console.error('no serverHorizon or activeNetwork');
   }
   const args = {
     assetFrom: getClassicAsset(payload.assetFrom),

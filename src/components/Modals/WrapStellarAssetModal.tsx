@@ -1,6 +1,6 @@
 import { Box, CircularProgress, Modal, useTheme } from 'soroswap-ui';
-import { wrapStellarAsset } from '@soroban-react/contracts';
-import { useSorobanReact } from '@soroban-react/core';
+import { wrapStellarAsset } from 'stellar-react';
+import { useSorobanReact } from 'stellar-react';
 import { ButtonPrimary } from 'components/Buttons/Button';
 import { CloseButton } from 'components/Buttons/CloseButton';
 import { WalletButton } from 'components/Buttons/WalletButton';

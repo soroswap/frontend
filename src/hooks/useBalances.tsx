@@ -1,5 +1,5 @@
-import { contractInvoke } from '@soroban-react/contracts';
-import { SorobanContextType } from '@soroban-react/core';
+import { contractInvoke } from 'stellar-react';
+import { SorobanContextType } from 'stellar-react';
 import BigNumber from 'bignumber.js';
 import { scValToJs } from 'helpers/convert';
 import { xdr } from '@stellar/stellar-sdk';
@@ -116,7 +116,7 @@ export async function tokenBalances(
         }
 
         return {
-          balance: balance,
+          balance: balance ?? 0,
           usdValue: 0, //TODO: should get usd value
           issuer: token.issuer,
           code: token.code,

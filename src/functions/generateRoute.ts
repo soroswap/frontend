@@ -1,4 +1,4 @@
-import { useSorobanReact } from '@soroban-react/core';
+import { useSorobanReact, WalletNetwork } from 'stellar-react';
 import { AppContext, ProtocolsStatus } from 'contexts';
 import { useFactory } from 'hooks';
 import { useAggregator } from 'hooks/useAggregator';
@@ -43,7 +43,23 @@ export const useSoroswapApi = () => {
   const { Settings } = useContext(AppContext);
   const { maxHops, protocolsStatus, setProtocolsStatus } = Settings;
 
-  const network = sorobanContext.activeChain?.id ?? 'mainnet';
+  const getNetwork = useMemo(() => {
+    switch (sorobanContext.activeNetwork) {
+      case WalletNetwork.PUBLIC:
+        return Networks.PUBLIC;
+      case WalletNetwork.TESTNET:
+        return Networks.TESTNET;
+      case WalletNetwork.STANDALONE:
+        return Networks.STANDALONE;
+      case WalletNetwork.FUTURENET:
+        return Networks.FUTURENET;
+      case WalletNetwork.SANDBOX:
+        return Networks.SANDBOX;
+      default:
+        return Networks.TESTNET;
+    }
+  }, [sorobanContext]);
+  const network = getNetwork;
 
   const getProtocols = useMemo(() => {
     const newProtocols = [];

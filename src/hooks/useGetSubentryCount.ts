@@ -1,9 +1,9 @@
-import { useSorobanReact } from '@soroban-react/core';
+import { useSorobanReact } from 'stellar-react';
 import { useEffect, useState } from 'react';
 import useGetNativeTokenBalance from './useGetNativeTokenBalance';
 
 const useGetSubentryCount = () => {
-  const { address, serverHorizon } = useSorobanReact();
+  const { address, horizonServer:serverHorizon } = useSorobanReact();
 
   const [subentryCount, setSubentryCount] = useState<number>(0);
   const [isLoading, setIsLoading] = useState<boolean>(false);

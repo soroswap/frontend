@@ -1,4 +1,4 @@
-import { useSorobanReact } from '@soroban-react/core';
+import { useSorobanReact } from 'stellar-react';
 import BigNumber from 'bignumber.js';
 import { getPairInfo } from 'functions/getPairs';
 import { CurrencyAmount, TokenType } from 'interfaces';
