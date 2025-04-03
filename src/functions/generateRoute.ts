@@ -23,6 +23,7 @@ import { getExpectedAmount } from './getExpectedAmount';
 import { Networks } from '@stellar/stellar-sdk';
 import { fetchPairsFromApi, getSwapRoute, getSwapSplitRoute } from 'services/soroswapApi';
 import { platform } from 'os';
+import { passphraseToBackendNetworkName } from 'services/pairs';
 
 export interface GenerateRouteProps {
   amountAsset: AmountAsset;
@@ -59,7 +60,7 @@ export const useSoroswapApi = () => {
         return Networks.TESTNET;
     }
   }, [sorobanContext]);
-  const network = getNetwork;
+  const network = passphraseToBackendNetworkName[getNetwork];
 
   const getProtocols = useMemo(() => {
     const newProtocols = [];
