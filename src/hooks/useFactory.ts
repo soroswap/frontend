@@ -1,15 +1,17 @@
-import { SorobanContext, SorobanContextType } from '@soroban-react/core';
+import { SorobanContext, SorobanContextType } from 'stellar-react';
 import { useEffect, useState } from 'react';
 import { fetchFactory } from 'services/factory';
 import useSWRImmutable from 'swr/immutable';
+import { passphraseToBackendNetworkName } from 'services/pairs';
 
 export const useFactory = (sorobanContext: SorobanContextType) => {
-  const { activeChain } = sorobanContext;
+  const { activeNetwork } = sorobanContext;
+  const activeChain = passphraseToBackendNetworkName[activeNetwork!].toLowerCase();
 
-  const { data, error, isLoading, mutate } = useSWRImmutable(
+    const { data, error, isLoading, mutate } = useSWRImmutable(
     ['factory', activeChain],
     ([key, activeChain]) =>
-      fetchFactory(activeChain?.id!),
+      fetchFactory(activeChain),
   );
 
   const [factory, setFactory] = useState<string>();

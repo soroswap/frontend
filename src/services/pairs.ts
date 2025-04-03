@@ -10,10 +10,11 @@ export interface MercuryPair {
   reserveB: string;
 }
 
-const passphraseToBackendNetworkName: { [x: string]: string } = {
+export const passphraseToBackendNetworkName: { [x: string]: string } = {
   [Networks.PUBLIC]: 'MAINNET',
   [Networks.TESTNET]: 'TESTNET',
 };
+const baseURL = 'https://info.soroswap.finance/api/pairs';
 
 export const fetchAllSoroswapPairs = async (networkPassphrase: string) => {
   const networkName = passphraseToBackendNetworkName[networkPassphrase];

@@ -1,28 +1,37 @@
-import { useSorobanReact } from '@soroban-react/core';
+import { useSorobanReact } from 'stellar-react';
 import { TokenMapType, TokenType, tokensResponse } from 'interfaces';
 import { useEffect, useState } from 'react';
 import { fetchTokens } from 'services/tokens';
 import useSWRImmutable from 'swr/immutable';
 import { tokensToMap } from './utils';
+import { passphraseToBackendNetworkName } from 'services/pairs';
 
 //Returns tokens from the API
 export const useApiTokens = () => {
   const sorobanContext = useSorobanReact();
+  const [activeChain, setActiveChain] = useState<string>('');
+  const {activeNetwork} = sorobanContext;
+  useEffect(() => {
+    if (activeNetwork) {
+      let activeNetworkId = passphraseToBackendNetworkName[activeNetwork].toLowerCase();
+      setActiveChain(activeNetworkId);
+    }
+  }, [activeNetwork]);
   const { data, mutate, isLoading, error } = useSWRImmutable(
-    ['tokens', sorobanContext?.activeChain?.id],
-    () => fetchTokens(sorobanContext?.activeChain?.id!),
+    ['tokens', activeChain],
+    () => fetchTokens(activeChain),
   );
 
   const [tokens, setTokens] = useState<TokenType[]>([]);
   const [tokensAsMap, setTokensAsMap] = useState<TokenMapType>({});
 
   useEffect(() => {
-    if (data && sorobanContext.activeChain?.id == 'mainnet') {
+    if (data && activeChain == 'mainnet') {
       setTokens(data.assets)
     }
     if (data && data.length > 0) {
       const filtered = data?.filter(
-        (item: tokensResponse) => item.network === sorobanContext?.activeChain?.id,
+        (item: tokensResponse) => item.network === activeChain,
       );
 
       if (filtered?.length > 0) {
@@ -32,6 +41,6 @@ export const useApiTokens = () => {
     }
     const mappedTokens = tokensToMap(tokens);
     setTokensAsMap(mappedTokens);
-  }, [data, sorobanContext?.activeChain?.id, tokens]);
+  }, [data, activeChain, tokens]);
   return { tokens, mutate, isLoading, isError: error, data, tokensAsMap };
 };

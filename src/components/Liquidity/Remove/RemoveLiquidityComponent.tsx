@@ -1,6 +1,5 @@
 import { Button, CircularProgress, Slider, styled, useTheme } from 'soroswap-ui';
-import { TxResponse } from '@soroban-react/contracts';
-import { useSorobanReact } from '@soroban-react/core';
+import { useSorobanReact } from 'stellar-react';
 import BigNumber from 'bignumber.js';
 import { ButtonError, ButtonLight, ButtonPrimary } from 'components/Buttons/Button';
 import Column, { AutoColumn } from 'components/Column';
@@ -29,6 +28,7 @@ import { useUserSlippageToleranceWithDefault } from 'state/user/hooks';
 import * as StellarSdk from '@stellar/stellar-sdk';
 import { opacify } from 'themes/utils';
 import { AddRemoveTabs } from '../AddRemoveHeader';
+import { TxResponse } from 'stellar-react/dist/contracts/types';
 
 export const PageWrapper = styled('main')`
   position: relative;
@@ -144,7 +144,7 @@ export default function RemoveLiquidityComponent() {
     // if there was a tx hash, we want to clear the input
     if (txHash) {
       onUserInput(Field.LIQUIDITY_PERCENT, '');
-      router.push('/liquidity');
+      router.push('/pools');
     }
     setTxHash(undefined);
   }, [onUserInput, router, txHash]);

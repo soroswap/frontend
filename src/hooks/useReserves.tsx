@@ -1,5 +1,5 @@
-import { contractInvoke, useContractValue } from '@soroban-react/contracts';
-import { SorobanContextType } from '@soroban-react/core';
+import { contractInvoke, useContractValue } from 'stellar-react';
+import { SorobanContextType } from 'stellar-react';
 import BigNumber from 'bignumber.js';
 import { scValToJs } from 'helpers/convert';
 import * as StellarSdk from '@stellar/stellar-sdk';
@@ -35,7 +35,7 @@ export function useReservesBigNumber(pairAddress: string, sorobanContext: Soroba
 }
 
 export async function reservesBigNumber(pairAddress: string, sorobanContext: SorobanContextType) {
-  if (!sorobanContext.activeChain || !pairAddress) return;
+  if (!sorobanContext.activeNetwork || !pairAddress) return;
 
   const reserves_scval = await contractInvoke({
     contractAddress: pairAddress,

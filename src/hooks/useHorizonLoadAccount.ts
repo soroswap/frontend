@@ -1,4 +1,4 @@
-import { useSorobanReact } from '@soroban-react/core';
+import { useSorobanReact } from 'stellar-react';
 import useSWRImmutable from 'swr/immutable';
 import useGetNativeTokenBalance from './useGetNativeTokenBalance';
 
@@ -13,7 +13,7 @@ const useHorizonLoadAccount = () => {
     sorobanContext.address && isFunded
       ? ['horizon-account', sorobanContext.address, sorobanContext]
       : null,
-    ([_, address]) => sorobanContext.serverHorizon?.loadAccount(address),
+    ([_, address]) => sorobanContext.horizonServer?.loadAccount(address),
   );
 
   return { account: data, isLoading, error, mutate };

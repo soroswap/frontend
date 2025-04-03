@@ -132,7 +132,7 @@ export default function BalancesTable(props: any) {
       ...x,
       type: x.issuer
         ? 'Stellar Classic Asset'
-        : x.contract === nativeToken.contract && x.code === nativeToken.code
+        : x.contract && x.contract === nativeToken.contract && x.code === nativeToken.code
         ? 'Native'
         : 'Soroban Token',
     })) ?? [];

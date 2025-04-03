@@ -1,5 +1,5 @@
 import { CircularProgress, styled, useMediaQuery, useTheme } from 'soroswap-ui';
-import { useSorobanReact } from '@soroban-react/core';
+import { useSorobanReact } from 'stellar-react';
 import { ButtonPrimary } from 'components/Buttons/Button';
 import { WalletButton } from 'components/Buttons/WalletButton';
 import { AutoColumn } from 'components/Column';
@@ -154,7 +154,7 @@ export default function LiquidityPage() {
           </LPTokensContainer>
         )}
         {address ? (
-          <ButtonPrimary onClick={() => router.push('/liquidity/add')}>
+          <ButtonPrimary onClick={() => { router.push('/pools/add') }}>
             + Add Liquidity
           </ButtonPrimary>
         ) : (

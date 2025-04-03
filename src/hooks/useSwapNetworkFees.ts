@@ -1,6 +1,6 @@
 import { calculateSwapFees } from 'functions/getNetworkFees';
 import { InterfaceTrade } from 'state/routing/types';
-import { SorobanContextType, useSorobanReact } from '@soroban-react/core';
+import { SorobanContextType, useSorobanReact } from 'stellar-react';
 import { xlmTokenList } from 'constants/xlmToken';
 import { useRouterSDK } from 'functions/generateRoute';
 import { TokenType } from 'interfaces';
@@ -8,6 +8,7 @@ import { TradeType } from 'soroswap-router-sdk';
 import useSWRImmutable from 'swr/immutable';
 import { useContext } from 'react';
 import { AppContext } from 'contexts';
+import { passphraseToBackendNetworkName } from 'services/pairs';
 
 
 type Currencies = {
@@ -37,7 +38,9 @@ const useSwapNetworkFees = (trade: InterfaceTrade | undefined, currencies: Curre
 
     if (!currencyA || !currencyB) return false;
 
-    const chainId = sorobanContext.activeChain?.id;
+    const {activeNetwork} = sorobanContext;
+    if (!activeNetwork) return false;
+    const chainId = passphraseToBackendNetworkName[activeNetwork].toLowerCase();
 
     const xlmTokenContract = xlmTokenList.find((tList) => tList.network === chainId)?.assets?.[0]
       ?.contract;

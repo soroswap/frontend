@@ -1,28 +1,5 @@
-import { standalone, testnet, mainnet } from '@soroban-react/chains';
-import { SorobanReactProvider } from '@soroban-react/core';
-import { freighter } from '@soroban-react/freighter';
-import { lobstr } from '@soroban-react/lobstr';
-import { xbull } from '@soroban-react/xbull';
-import { hana } from '@soroban-react/hana';
-import { ChainMetadata, Connector, WalletChain } from '@soroban-react/types';
+import { NetworkDetails, SorobanReactProvider, WalletNetwork } from 'stellar-react';
 import useMounted from 'hooks/useMounted';
-
-// Set allowed chains:
-const chains: ChainMetadata[] =
-  process.env.NODE_ENV === 'production' ? [testnet, mainnet] : [standalone, testnet, mainnet];
-
-// Set chain by default:
-// Helper function
-const findWalletChainByName = (name: string): WalletChain | undefined => {
-  return chains.find((chain) => chain.id === name);
-};
-
-// Get the active chain based on the environment variable or default to testnet
-const activeChainName = process.env.NEXT_PUBLIC_DEFAULT_NETWORK || 'testnet';
-const activeChain: WalletChain = findWalletChainByName(activeChainName) || testnet;
-
-// Set allowed connectors
-export const walletConnectors: Connector[] = [freighter(), xbull(), lobstr(), hana()];
 
 export default function MySorobanReactProvider({
   children,
@@ -31,16 +8,32 @@ export default function MySorobanReactProvider({
   children: React.ReactNode;
   [x: string]: any;
 }) {
+
+
   const mounted = useMounted();
 
   if (!mounted) return null;
 
+  const mainnetNetworkDetails: NetworkDetails = {
+    network: WalletNetwork.PUBLIC,
+    sorobanRpcUrl: 'https://soroban-rpc.creit.tech/',
+    horizonRpcUrl: 'https://horizon.stellar.org'
+  }
+
+  const testnetNetworkDetails: NetworkDetails = {
+    network: WalletNetwork.TESTNET,
+    sorobanRpcUrl: 'https://soroban-testnet.stellar.org/',
+    horizonRpcUrl: 'https://horizon-testnet.stellar.org'
+  }
+  // Read network from environment variable
+  const isMainnet = process.env.NEXT_PUBLIC_DEFAULT_NETWORK === 'mainnet';
+  const activeNetwork = isMainnet ? WalletNetwork.PUBLIC : WalletNetwork.TESTNET;
+
   return (
     <SorobanReactProvider
-      chains={chains}
       appName={'Soroswap'}
-      connectors={walletConnectors}
-      activeChain={activeChain}
+      allowedNetworkDetails={[mainnetNetworkDetails, testnetNetworkDetails]}
+      activeNetwork={activeNetwork}
       {...rest}
     >
       {children}
