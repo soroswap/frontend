@@ -13,7 +13,7 @@ export default function MySorobanReactProvider({
   const mounted = useMounted();
 
   if (!mounted) return null;
-  
+
   const mainnetNetworkDetails: NetworkDetails = {
     network: WalletNetwork.PUBLIC,
     sorobanRpcUrl: 'https://soroban-rpc.creit.tech/',
@@ -25,12 +25,15 @@ export default function MySorobanReactProvider({
     sorobanRpcUrl: 'https://soroban-testnet.stellar.org/',
     horizonRpcUrl: 'https://horizon-testnet.stellar.org'
   }
-  
+  // Read network from environment variable
+  const isMainnet = process.env.NEXT_PUBLIC_DEFAULT_NETWORK === 'mainnet';
+  const activeNetwork = isMainnet ? WalletNetwork.PUBLIC : WalletNetwork.TESTNET;
+
   return (
     <SorobanReactProvider
       appName={'Soroswap'}
       allowedNetworkDetails={[mainnetNetworkDetails, testnetNetworkDetails]}
-      activeNetwork={WalletNetwork.PUBLIC}
+      activeNetwork={activeNetwork}
       {...rest}
     >
       {children}
