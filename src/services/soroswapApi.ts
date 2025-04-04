@@ -17,7 +17,6 @@ export const fetchPairsFromApi = async (
       `api/pairs?network=${network.toLowerCase()}&protocol=${protocol}`,
     );
 
-    console.log(response);
     return response.data;
   } catch (error: any) {
     console.error(`Unexpected error: ${error}`);
@@ -35,7 +34,6 @@ export const getSwapRoute = async (
       request,
     );
 
-    console.log('Route response', response);
     return { ...response.data, platform: PlatformType.ROUTER };
   } catch (error: any) {
     console.error(`Unexpected error: ${error}`);
@@ -50,7 +48,6 @@ export const getSwapSplitRoute = async (
   try {
     const response = await axios.post(`api/swap/split?network=${network.toLowerCase()}`, request);
 
-    console.log('Route Split response', response);
     return { ...response.data, platform: PlatformType.AGGREGATOR };
   } catch (error: any) {
     console.error(`Unexpected error: ${error}`);

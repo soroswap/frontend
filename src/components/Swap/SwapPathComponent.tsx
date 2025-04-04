@@ -55,7 +55,6 @@ export const calculatePercentage = (parts: number, totalParts: number) => {
 };
 
 function SwapPathComponent({ trade }: { trade: InterfaceTrade | undefined }) {
-  console.log('🚀 « trade:', trade);
   const sorobanContext = useSorobanReact();
   const { tokensAsMap, isLoading } = useAllTokens();
 
