@@ -63,7 +63,7 @@ export function useBestTrade(
         amountAsset,
         quoteAsset,
         amount,
-        tradeType: TradeType.EXACT_INPUT,
+        tradeType: tradeType,
         currentProtocolsStatus: protocolsStatus,
       }),
     {
