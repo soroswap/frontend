@@ -2,18 +2,12 @@ import { Analytics } from '@vercel/analytics/react';
 import { AppContext, AppContextType, SnackbarIconType, ProtocolsStatus } from 'contexts';
 import { useEffect, useMemo, useState } from 'react';
 import MainLayout from '../Layout/MainLayout';
+import { PlatformType, Protocol } from 'state/routing/types';
 import { useSorobanReact, WalletNetwork } from 'stellar-react';
-import config from 'configs/protocols.config.json'
-import { Protocol } from 'soroswap-router-sdk';
-import { PlatformType } from 'state/routing/types';
+import config from 'configs/protocols.config.json';
 import { useAggregator } from 'hooks/useAggregator';
 
-
-export default function ContextProvider({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function ContextProvider({ children }: { children: React.ReactNode }) {
   const sorobanContext = useSorobanReact();
   const { activeNetwork } = sorobanContext;
   const { isEnabled: isAggregator } = useAggregator();
@@ -71,7 +65,10 @@ export default function ContextProvider({
           protocols = protocols.filter((protocol) => protocol.key == Protocol.SOROSWAP);
           break;
         case WalletNetwork.PUBLIC:
-          protocols = protocols.filter((protocol) => protocol.key == Protocol.SOROSWAP || protocol.key == PlatformType.STELLAR_CLASSIC);
+          protocols = protocols.filter(
+            (protocol) =>
+              protocol.key == Protocol.SOROSWAP || protocol.key == PlatformType.STELLAR_CLASSIC,
+          );
           break;
       }
     }

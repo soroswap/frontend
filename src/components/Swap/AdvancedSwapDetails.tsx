@@ -1,5 +1,5 @@
 import React from 'react';
-import { BodySmall, } from 'components/Text';
+import { BodySmall } from 'components/Text';
 import { Box, styled } from 'soroswap-ui';
 import Column from 'components/Column';
 import { LoadingRows } from 'components/Loader/styled';
@@ -9,7 +9,6 @@ import { Separator } from 'components/SearchModal/styleds';
 import { MouseoverTooltip } from 'components/Tooltip';
 import { formatTokenAmount } from 'helpers/format';
 import { useAllTokens } from 'hooks/tokens/useAllTokens';
-import { Percent } from 'soroswap-router-sdk';
 import SwapPathComponent from './SwapPathComponent';
 import { InterfaceTrade } from 'state/routing/types';
 
@@ -38,28 +37,26 @@ export function TextWithLoadingPlaceholder({
   );
 }
 
-export const formattedPriceImpact = (priceImpact: Percent | Number | undefined) => {
-  if (!priceImpact) return 0;
+export const formattedPriceImpact = (
+  priceImpact: { numerator: number; denominator: number } | undefined,
+) => {
+  if (!priceImpact || !priceImpact.numerator || !priceImpact.denominator) return '0%';
 
-  const value = priceImpact?.toFixed(3);
+  const value = (priceImpact.numerator / priceImpact.denominator) * 100;
 
-  if (!value) {
-    return 0;
-  }
-
-  if (Number(value) < 0.01) {
+  if (value < 0.01) {
     return '<0.01%';
   }
 
-  return `~${priceImpact?.toFixed(2)}%`;
+  return `~${value.toFixed(2)}%`;
 };
 
 export const FormattedProtocolName = (protocol: string) => {
   return protocol.charAt(0).toUpperCase() + protocol.slice(1);
-}
+};
 export const calculatePercentage = (parts: number, totalParts: number) => {
   return (parts / totalParts) * 100;
-}
+};
 
 export function AdvancedSwapDetails({
   trade,
