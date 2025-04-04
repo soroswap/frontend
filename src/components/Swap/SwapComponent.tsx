@@ -156,7 +156,7 @@ export function SwapComponent({
   useEffect(() => {
     if (
       typeof currencyBalances[Field.OUTPUT] != 'string' &&
-      currencyBalances[Field.OUTPUT].balance === undefined
+      !currencyBalances[Field.OUTPUT].balance
     ) {
       setNeedTrustline(true);
     } else {

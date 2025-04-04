@@ -9,7 +9,7 @@ import { accountToScVal } from '../helpers/utils';
 import { TokenMapType, TokenType } from '../interfaces';
 
 export type relevantTokensType = {
-  balance: number | string | BigNumber | undefined;
+  balance: number | string | BigNumber | null;
   usdValue: number;
   issuer?: string;
   code: string;
@@ -94,14 +94,14 @@ export async function tokenBalances(
   const balances = await Promise.all(
     Object.values(tokens).map(async (token) => {
       try {
-        let balance: number | string | BigNumber | undefined;
+        let balance: number | string | BigNumber | null;
         let decimalsResponse = 18;
 
         if (token.issuer) {
           balance =
             account?.balances?.find(
               (b: any) => b?.asset_issuer === token.issuer && b?.asset_code === token.code,
-            )?.balance;
+            )?.balance ?? null;
         } else {
           const balanceResponse = await tokenBalance(token.contract, userAddress, sorobanContext);
           if (!balanceResponse) return notFoundReturn(token);
@@ -116,7 +116,7 @@ export async function tokenBalances(
         }
 
         return {
-          balance: balance ?? 0,
+          balance: balance,
           usdValue: 0, //TODO: should get usd value
           issuer: token.issuer,
           code: token.code,

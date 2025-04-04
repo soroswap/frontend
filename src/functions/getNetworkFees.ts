@@ -53,7 +53,6 @@ export async function calculateSwapFees(
     console.error('No secret key found.');
     return;
   }
-  console.log('🟡',network)
   const routerData = await fetchRouter(network);
   const routerId = routerData.address;
   const path = trade.path?.map((address) => new StellarSdk.Address(address));
@@ -110,7 +109,6 @@ export async function calculateLiquidityFees(
     return;
   }
   const sorobanRpcUrl = sorobanContext.sorobanServer.serverURL;
-  console.log('🔵',network)
   const routerData = await fetchRouter(network);
   const routerId = routerData.address;
 
