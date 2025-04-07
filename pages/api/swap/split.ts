@@ -38,7 +38,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         },
       },
     );
-    console.log('🚀 « swapResponse:', swapResponse);
 
     res.status(200).json(swapResponse.data);
   } catch (error: any) {

@@ -173,8 +173,8 @@ export const useSoroswapApi = () => {
     let sorobanPath: BuildTradeReturn | BuildSplitTradeReturn | undefined;
     if (isAggregator) {
       const swapSplitRequest: SwapRouteSplitRequest = {
-        assetIn: amountAsset.currency.contract,
-        assetOut: quoteAsset.contract,
+        assetIn: tradeType === TradeType.EXACT_INPUT ? amountAsset.currency.contract : quoteAsset.contract,
+        assetOut: tradeType === TradeType.EXACT_INPUT ? quoteAsset.contract : amountAsset.currency.contract,
         amount: amount,
         tradeType: tradeType,
         protocols: getProtocols,
@@ -193,8 +193,8 @@ export const useSoroswapApi = () => {
       }
     } else if (isSoroswapEnabled) {
       const swapRequest: SwapRouteRequest = {
-        assetIn: amountAsset.currency.contract,
-        assetOut: quoteAsset.contract,
+        assetIn: tradeType === TradeType.EXACT_INPUT ? amountAsset.currency.contract : quoteAsset.contract,
+        assetOut: tradeType === TradeType.EXACT_INPUT ? quoteAsset.contract : amountAsset.currency.contract,
         amount: amount,
         tradeType: tradeType,
         slippageTolerance: '0.01',
