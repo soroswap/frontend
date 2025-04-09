@@ -1,11 +1,8 @@
 import * as StellarSdk from '@stellar/stellar-sdk';
-import { useSorobanReact, SorobanContextType } from 'stellar-react';
-import { contractTransaction } from 'stellar-react';
-import axios from 'axios';
+import { contractTransaction, SorobanContextType } from 'stellar-react';
 import { fetchRouter } from 'services/router';
-import { useSwapCallback } from 'hooks/useSwapCallback';
 import { InterfaceTrade, PlatformType } from 'state/routing/types';
-import { RouterMethod, useRouterCallback } from 'hooks/useRouterCallback';
+import { RouterMethod } from 'hooks/useRouterCallback';
 import { passphraseToBackendNetworkName } from 'services/pairs';
 
 const getCurrentTimePlusOneHour = (): number => {
@@ -32,22 +29,20 @@ export async function calculateSwapFees(
     return;
   }
   if (trade.platform === PlatformType.STELLAR_CLASSIC) {
-    return await sorobanContext.horizonServer?.fetchBaseFee()
+    return await sorobanContext.horizonServer?.fetchBaseFee();
   }
 
   let op = RouterMethod.SWAP_EXACT_OUT;
-  if (trade.tradeType === 'EXACT_INPUT') {
+  if (trade.tradeType === 'EXACT_IN') {
     op = RouterMethod.SWAP_EXACT_IN;
   }
-  const {activeNetwork, sorobanServer} = sorobanContext;
+  const { activeNetwork, sorobanServer } = sorobanContext;
   const activeChain = passphraseToBackendNetworkName[activeNetwork!].toLowerCase();
-  const { networkPassphrase:passphrase,
-          id: network, 
-        } = {
-          networkPassphrase: activeNetwork,
-          id: activeChain,
-        };
-  if(!passphrase || !network || !sorobanServer) throw new Error('Missing soroban context')
+  const { networkPassphrase: passphrase, id: network } = {
+    networkPassphrase: activeNetwork,
+    id: activeChain,
+  };
+  if (!passphrase || !network || !sorobanServer) throw new Error('Missing soroban context');
   const adminPublicKey = process.env.NEXT_PUBLIC_TRUSTLINE_WALLET_PUBLIC_KEY;
   if (!adminPublicKey) {
     console.error('No secret key found.');
