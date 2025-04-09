@@ -165,7 +165,7 @@ const ConnectWalletContent = ({
           <Title>Connect a wallet to continue</Title>
           <Subtitle>
             Choose how you want to connect.{' '}
-            <span>If you don’t have a wallet, you can select a provider and create one.</span>
+            <span>If you don't have a wallet, you can select a provider and create one.</span>
           </Subtitle>
           {wallets?.map((wallet, index) => {
             const walletStatus = walletsStatus.find(
@@ -259,6 +259,9 @@ export default function ConnectWalletModal() {
       }}
       aria-labelledby="modal-wallet-connect"
       aria-describedby="modal-wallet-disconnect"
+      sx={{
+        zIndex: theme.zIndex.modal,
+      }}
     >
       <div>
         {errorMessage ? (

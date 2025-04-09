@@ -36,6 +36,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
         elevation={0}
         sx={{
           bgcolor: theme.palette.background.default,
+          zIndex: theme.zIndex.drawer - 1,
         }}
       >
         {/* <Banner show={showBanner} setShow={setShowBanner} /> */}
