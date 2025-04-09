@@ -104,7 +104,6 @@ export async function calculateLiquidityFees(
     return;
   }
   const sorobanRpcUrl = sorobanContext.sorobanServer.serverURL;
-  console.log('🔵', network);
   const routerData = await fetchRouter(network);
   const routerId = routerData.address;
 
