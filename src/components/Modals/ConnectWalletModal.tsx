@@ -225,7 +225,7 @@ export default function ConnectWalletModal() {
       aria-labelledby="modal-wallet-connect"
       aria-describedby="modal-wallet-disconnect"
       sx={{
-        zIndex: theme.zIndex.modal,
+        zIndex: 9999,
       }}
     >
       <div>
