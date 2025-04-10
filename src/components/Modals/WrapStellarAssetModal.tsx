@@ -68,7 +68,7 @@ const WrapStellarAssetModal = ({ isOpen, asset, onDismiss, onSuccess }: Props) =
       });
   };
   return (
-    <Modal open={isOpen} onClose={onDismiss}>
+    <Modal open={isOpen} onClose={onDismiss} sx={{ zIndex: 1000 }}>
       <Wrapper>
         <AutoColumn gap="12px">
           <RowBetween>
