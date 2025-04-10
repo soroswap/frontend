@@ -1,4 +1,4 @@
-import { SorobanContextType } from '@soroban-react/core';
+import { SorobanContextType } from 'stellar-react';
 import { getClassicStellarAsset, isAddress } from 'helpers/address';
 import * as StellarSdk from '@stellar/stellar-sdk';
 
@@ -13,7 +13,7 @@ export function getClassicAssetSorobanAddress(
   }
 
   const { assetCode, issuer } = assetParts;
-  const networkPassphrase = sorobanContext.activeChain?.networkPassphrase ?? '';
+  const networkPassphrase = sorobanContext.activeNetwork ?? '';
 
   try {
     const asset = new StellarSdk.Asset(assetCode, issuer);

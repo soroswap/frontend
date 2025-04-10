@@ -1,4 +1,4 @@
-import { SorobanContextType } from '@soroban-react/core';
+import { SorobanContextType } from 'stellar-react';
 import BigNumber from 'bignumber.js';
 import { TokenType } from 'interfaces';
 import { isClassicStellarAssetFormat } from './address';
@@ -23,7 +23,7 @@ export const requiresTrustline = async (
   amount?: string,
 ): Promise<boolean> => {
   if (!sorobanContext.address || !asset) return false
-  const {serverHorizon} = sorobanContext
+  const {horizonServer: serverHorizon} = sorobanContext
   const account = await serverHorizon?.loadAccount(sorobanContext.address)
   const tokenName = await getTokenName(asset.contract, sorobanContext);
   if (!account) return true;

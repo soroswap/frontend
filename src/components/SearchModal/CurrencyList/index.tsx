@@ -1,4 +1,4 @@
-import { SorobanContextType, useSorobanReact } from '@soroban-react/core';
+import { SorobanContextType, useSorobanReact } from 'stellar-react';
 import BigNumber from 'bignumber.js';
 import { CSSProperties, MutableRefObject, useCallback, useMemo } from 'react';
 import { Check } from 'react-feather';
@@ -125,7 +125,7 @@ export function CurrencyRow({
   const { account } = useHorizonLoadAccount();
 
   const { data, isLoading } = useSWRImmutable(
-    sorobanContext.activeChain && sorobanContext.address && account
+    sorobanContext.activeNetwork && sorobanContext.address && account
       ? ['currencyBalance', tokenBalancesResponse, currency, sorobanContext, account]
       : null,
     ([_, tokenBalancesResponse, currency, sorobanContext, account]) =>

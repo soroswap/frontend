@@ -11,7 +11,7 @@ import {
   TextField,
 } from 'soroswap-ui';
 
-import { SorobanContextType, useSorobanReact } from '@soroban-react/core';
+import { SorobanContextType, useSorobanReact } from 'stellar-react';
 import React, { useEffect, useState } from 'react';
 
 import BigNumber from 'bignumber.js';
@@ -111,7 +111,7 @@ export function MintTokens({
   const [balance, setBalance] = useState<string>();
 
   useEffect(() => {
-    if (sorobanContext.activeChain && sorobanContext.address) {
+    if (sorobanContext.activeNetwork && sorobanContext.address) {
       tokenBalance(inputToken.contract, sorobanContext.address, sorobanContext).then((resp) => {
         setBalance(formatTokenAmount(resp as BigNumber));
       });

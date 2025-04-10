@@ -2,7 +2,7 @@
 import { TokenType } from 'interfaces';
 // import { Pair } from '@uniswap/v2-sdk'
 // import { useWeb3React } from '@web3-react/core'
-import { useSorobanReact } from '@soroban-react/core';
+import { useSorobanReact } from 'stellar-react';
 // import JSBI from 'jsbi'
 import { CurrencyAmount } from 'interfaces';
 import tryParseCurrencyAmount from 'lib/utils/tryParseCurrencyAmount';
@@ -102,7 +102,7 @@ export function useDerivedMintInfo(
     { reserve0: BigNumber; reserve1: BigNumber } | undefined
   >();
   useEffect(() => {
-    if (sorobanContext.activeChain && sorobanContext.address) {
+    if (sorobanContext.activeNetwork && sorobanContext.address) {
       reservesBigNumber(pairAddress ?? '', sorobanContext)
         .then((resp) => {
           setReservesBN(resp);

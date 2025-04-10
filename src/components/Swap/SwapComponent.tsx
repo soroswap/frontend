@@ -1,6 +1,6 @@
 import { Box, CircularProgress, Modal, styled } from 'soroswap-ui';
-import { setTrustline } from '@soroban-react/contracts';
-import { useSorobanReact } from '@soroban-react/core';
+import { setTrustline } from 'stellar-react';
+import { useSorobanReact } from 'stellar-react';
 import { ButtonPrimary } from 'components/Buttons/Button';
 import { AutoColumn } from 'components/Column';
 import ConfirmSwapModal, { useConfirmModalState } from 'components/Swap/ConfirmSwapModal';
@@ -156,7 +156,7 @@ export function SwapComponent({
   useEffect(() => {
     if (
       typeof currencyBalances[Field.OUTPUT] != 'string' &&
-      currencyBalances[Field.OUTPUT].balance === undefined
+      !currencyBalances[Field.OUTPUT].balance
     ) {
       setNeedTrustline(true);
     } else {

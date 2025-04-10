@@ -1,4 +1,4 @@
-import { useSorobanReact } from '@soroban-react/core';
+import { useSorobanReact } from 'stellar-react';
 import BigNumber from 'bignumber.js';
 import { isAddress } from 'helpers/address';
 import { relevantTokensType, tokenBalances } from 'hooks';
@@ -107,10 +107,12 @@ export function useDerivedSwapInfo(state: SwapState) {
   const { account: horizonAccount } = useHorizonLoadAccount();
   useEffect(() => {
     if (account) {
-      tokenBalances(account, tokensArray, sorobanContext, horizonAccount).then((balances) => {
-        if (balances != undefined) {
-          setRelevantTokenBalances(balances.balances);
+      tokenBalances(account, tokensArray, sorobanContext, horizonAccount).then((res) => {
+        if (res) {
+          setRelevantTokenBalances(res.balances);
         }
+      }).catch((err) => {
+        console.error('Error fetching token balances:', err);
       });
     }
   }, [account, tokensArray, sorobanContext, horizonAccount]);

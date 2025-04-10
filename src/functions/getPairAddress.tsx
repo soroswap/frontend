@@ -1,8 +1,9 @@
-import { contractInvoke } from '@soroban-react/contracts';
-import { SorobanContextType } from '@soroban-react/core';
+import { contractInvoke } from 'stellar-react';
+import { SorobanContextType } from 'stellar-react';
 import { addressToScVal, scValToJs } from 'helpers/convert';
 import { fetchFactory } from 'services/factory';
 import { xdr } from '@stellar/stellar-sdk';
+import { passphraseToBackendNetworkName } from 'services/pairs';
 
 export async function getPairAddress(
   address_0: string | undefined,
@@ -10,7 +11,11 @@ export async function getPairAddress(
   sorobanContext: SorobanContextType,
 ) {
   if (!address_0 || !address_1) return '';
-  const factory = await fetchFactory(sorobanContext.activeChain?.id!);
+  const { activeNetwork } = sorobanContext;
+  const activeChain = passphraseToBackendNetworkName[activeNetwork!].toLowerCase();
+
+  const factory = await fetchFactory(activeChain);
+
 
   const response = await contractInvoke({
     contractAddress: factory.address,

@@ -1,5 +1,5 @@
-import { useContractValue } from "@soroban-react/contracts";
-import { SorobanContextType } from "@soroban-react/core";
+import { useContractValue } from "stellar-react";
+import { SorobanContextType } from "stellar-react";
 import * as StellarSdk from "@stellar/stellar-sdk";
 
 export function useTokensFromPair(
