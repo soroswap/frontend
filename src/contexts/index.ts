@@ -1,6 +1,5 @@
 import React from 'react';
-import { Protocol } from 'soroswap-router-sdk';
-import { PlatformType } from 'state/routing/types';
+import { PlatformType, Protocol } from 'state/routing/types';
 
 type ConnectWalletModalType = {
   isConnectWalletModalOpen: boolean;

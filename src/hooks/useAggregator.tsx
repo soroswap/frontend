@@ -23,7 +23,6 @@ export const useAggregator = () => {
   }, [activeChainId])
 
   useEffect(() => {
-    console.log('useAggregator', activeChainId, shouldUseAggregator);
     const setAggregatorData = async () => {
       if (!sorobanContext) return;
       const { data } = await axios.get(

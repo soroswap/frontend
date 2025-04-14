@@ -1,15 +1,13 @@
 import { calculateSwapFees } from 'functions/getNetworkFees';
-import { InterfaceTrade } from 'state/routing/types';
+import { ExactInBuildTradeReturn, InterfaceTrade, TradeType } from 'state/routing/types';
 import { SorobanContextType, useSorobanReact } from 'stellar-react';
 import { xlmTokenList } from 'constants/xlmToken';
-import { useRouterSDK } from 'functions/generateRoute';
+import { useSoroswapApi } from 'functions/generateRoute';
 import { TokenType } from 'interfaces';
-import { TradeType } from 'soroswap-router-sdk';
 import useSWRImmutable from 'swr/immutable';
 import { useContext } from 'react';
 import { AppContext } from 'contexts';
 import { passphraseToBackendNetworkName } from 'services/pairs';
-
 
 type Currencies = {
   INPUT?: TokenType | null | undefined;
@@ -27,10 +25,9 @@ const fetchNetworkFees = async (
 
 const useSwapNetworkFees = (trade: InterfaceTrade | undefined, currencies: Currencies) => {
   const sorobanContext = useSorobanReact();
-  const {protocolsStatus} = useContext(AppContext).Settings;
+  const { protocolsStatus } = useContext(AppContext).Settings;
 
-
-  const { generateRoute } = useRouterSDK();
+  const { generateRoute } = useSoroswapApi();
 
   const isFirstTokenXLMAndHasSecondTokenSelected = () => {
     const currencyA = currencies.INPUT;
@@ -38,7 +35,7 @@ const useSwapNetworkFees = (trade: InterfaceTrade | undefined, currencies: Curre
 
     if (!currencyA || !currencyB) return false;
 
-    const {activeNetwork} = sorobanContext;
+    const { activeNetwork } = sorobanContext;
     if (!activeNetwork) return false;
     const chainId = passphraseToBackendNetworkName[activeNetwork].toLowerCase();
 
@@ -66,11 +63,10 @@ const useSwapNetworkFees = (trade: InterfaceTrade | undefined, currencies: Curre
       amount: valueOfOne,
       tradeType: TradeType.EXACT_INPUT,
       currentProtocolsStatus: protocolsStatus,
-
     });
     if (!result) return undefined;
 
-    const outputAmount = result?.trade.amountOutMin || '0';
+    const outputAmount = (result as ExactInBuildTradeReturn)?.trade.amountOutMin || '0';
 
     const trade: InterfaceTrade = {
       inputAmount: {
@@ -78,10 +74,10 @@ const useSwapNetworkFees = (trade: InterfaceTrade | undefined, currencies: Curre
         currency: currencyA.currency!,
       },
       outputAmount: {
-        value: outputAmount,
+        value: outputAmount.toString(),
         currency: currencyB,
       },
-      path: result?.trade.path,
+      path: (result as ExactInBuildTradeReturn)?.trade.path,
       tradeType: TradeType.EXACT_INPUT,
       platform: result.platform,
     };

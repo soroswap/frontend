@@ -3,7 +3,6 @@ import QuestionHelper from 'components/QuestionHelper';
 import Row, { RowBetween } from 'components/Row';
 import { BodySmall } from 'components/Text';
 import { AppContext } from 'contexts';
-import { useRouterSDK } from 'functions/generateRoute';
 import React, { useContext, useEffect, useState } from 'react';
 import { Box, styled, Switch, SwitchProps, Typography, useTheme } from 'soroswap-ui';
 import { useSWRConfig } from 'swr';
@@ -59,7 +58,6 @@ const firstLetterUppercase = (string: string) => {
   return string.charAt(0).toUpperCase() + string.slice(1);
 };
 const ProtocolsSettings = () => {
-  const { resetRouterSdkCache } = useRouterSDK();
   const theme = useTheme();
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const { protocolsStatus, setProtocolsStatus } = useContext(AppContext).Settings;
@@ -77,7 +75,6 @@ const ProtocolsSettings = () => {
     });
     const hasTrueValue = newProtocolsStatus.some((protocol) => protocol.value);
     if (hasTrueValue) {
-      resetRouterSdkCache();
       setProtocolsStatus(newProtocolsStatus);
       mutate(
         (key: any) => {
