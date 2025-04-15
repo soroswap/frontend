@@ -28,7 +28,6 @@ Edit the `.env` file and provide the following variables:
 ```md
 NEXT_PUBLIC_BACKEND_URL=http://localhost:8010 // If you are following the instructions in `https://github.com/soroswap/core`
 NEXT_PUBLIC_SOROSWAP_BACKEND_URL=http://localhost:8000// Your local soroswap backend url
-NEXT_PUBLIC_SOROSWAP_BACKEND_ENABLED= false // Enables or disables the soroswap backend
 NEXT_PUBLIC_DEFAULT_NETWORK= standalone // The default network to connect
 NEXT_PUBLIC_AGGREGATOR_ENABLED= false // Enables or disables the aggregator
 NEXT_PUBLIC_SOROSWAP_BACKEND_API_KEY= BACKEND_API_KEY // The API key to autenthicate in the soroswap backend
@@ -43,7 +42,7 @@ The `NEXT_PUBLIC_BACKEND_URL` should serve:
 
 The `NEXT_PUBLIC_TEST_TOKENS_ADMIN_SECRET_KEY` should be the same as the one that deployed the tokens in the `core` repository.
 
-To enable or disable features like the `Soroswap backend` or the `aggregator`, switch the `NEXT_PUBLIC_SOROSWAP_BACKEND_ENABLED` and `NEXT_PUBLIC_AGGREGATOR_ENABLED` variables to `true` or `false`.
+To enable or disable features like the `Soroswap backend` or the `aggregator`, switch the  `NEXT_PUBLIC_AGGREGATOR_ENABLED` variables to `true` or `false`.
 
 Then, when you are ready for production, you can take Futurenet Contracts information from `https://api.soroswap.finance` and use the production env file:
 
@@ -56,7 +55,6 @@ NEXT_PUBLIC_AGGREGATOR_ENABLED_MAINNET=false
 NEXT_PUBLIC_AGGREGATOR_ENABLED_TESTNET=false
 NEXT_PUBLIC_BACKEND_URL=https://api.soroswap.finance
 NEXT_PUBLIC_DEFAULT_NETWORK=mainnet
-NEXT_PUBLIC_SOROSWAP_BACKEND_ENABLED=false
 NEXT_PUBLIC_SOROSWAP_BACKEND_API_KEY=<->
 NEXT_PUBLIC_SOROSWAP_BACKEND_URL=https://backend.soroswap.finance
 NEXT_PUBLIC_TRUSTLINE_WALLET_PUBLIC_KEY=<any-key>

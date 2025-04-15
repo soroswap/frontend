@@ -33,7 +33,6 @@ export interface GenerateRouteProps {
   currentProtocolsStatus: ProtocolsStatus[];
 }
 
-const shouldUseBackend = process.env.NEXT_PUBLIC_SOROSWAP_BACKEND_ENABLED === 'true';
 const shouldUseDirectPath = process.env.NEXT_PUBLIC_DIRECT_PATH_ENABLED === 'true';
 
 export const useSoroswapApi = () => {
