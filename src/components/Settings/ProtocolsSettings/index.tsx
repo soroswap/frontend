@@ -124,9 +124,9 @@ const ProtocolsSettings = () => {
               </Row>
             );
           })}
-          <BodySmall fontWeight={100} color={theme.palette.secondary.main}>
+          {/* <BodySmall fontWeight={100} color={theme.palette.secondary.main}>
             Use Phoenix at your own risk
-          </BodySmall>
+          </BodySmall> */}
         </Box>
       </RowBetween>
     </Expand>
