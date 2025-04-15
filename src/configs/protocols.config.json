@@ -2,29 +2,35 @@
   "mainnet": [
     {
       "key": "sdex",
-      "value": true
+      "value": true,
+      "url": "https://docs.soroswap.finance/soroswap-aggregator/supported-amms"
     },
     {
       "key": "soroswap",
-      "value": true
+      "value": true,
+      "url": "https://docs.soroswap.finance/soroswap-aggregator/supported-amms"
     },
     {
       "key": "phoenix",
-      "value": false
+      "value": true,
+      "url": "https://docs.soroswap.finance/soroswap-aggregator/supported-amms"
     }
   ],
   "testnet": [
     {
       "key": "soroswap",
-      "value": true
+      "value": true,
+      "url": "https://docs.soroswap.finance/soroswap-aggregator/supported-amms"
     },
     {
       "key": "phoenix",
-      "value": true
+      "value": true,
+      "url": "https://docs.soroswap.finance/soroswap-aggregator/supported-amms"
     },
     {
       "key": "sdex",
-      "value": false
+      "value": false,
+      "url": "https://docs.soroswap.finance/soroswap-aggregator/supported-amms"
     }
   ]
 }

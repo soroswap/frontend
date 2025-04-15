@@ -2,7 +2,7 @@ import { useSorobanReact, WalletNetwork } from 'stellar-react';
 import { AppContext, ProtocolsStatus } from 'contexts';
 import { useFactory } from 'hooks';
 import { useAggregator } from 'hooks/useAggregator';
-import { useContext, useEffect, useMemo } from 'react';
+import { useContext, useMemo } from 'react';
 import { TokenType } from 'interfaces';
 import { getBestPath, getHorizonBestPath } from 'helpers/horizon/getHorizonPath';
 import {
@@ -15,14 +15,12 @@ import {
   TradeType,
 } from 'state/routing/types';
 import { CurrencyAmount as AmountAsset } from 'interfaces';
-import { DexDistribution } from 'helpers/aggregator';
 import { reservesBNWithTokens } from 'hooks/useReserves';
 import { getPairAddress } from './getPairAddress';
 import BigNumber from 'bignumber.js';
 import { getExpectedAmount } from './getExpectedAmount';
 import { Networks } from '@stellar/stellar-sdk';
-import { fetchPairsFromApi, getSwapRoute, getSwapSplitRoute } from 'services/soroswapApi';
-import { platform } from 'os';
+import { getSwapRoute, getSwapSplitRoute } from 'services/soroswapApi';
 import { passphraseToBackendNetworkName } from 'services/pairs';
 
 export interface GenerateRouteProps {

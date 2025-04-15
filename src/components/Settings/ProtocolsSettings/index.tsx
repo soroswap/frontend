@@ -1,5 +1,7 @@
 import Expand from 'components/Expand';
 import QuestionHelper from 'components/QuestionHelper';
+import { ExternalLink} from 'react-feather';
+
 import Row, { RowBetween } from 'components/Row';
 import { BodySmall } from 'components/Text';
 import { AppContext } from 'contexts';
@@ -69,6 +71,7 @@ const ProtocolsSettings = () => {
         return {
           key: protocol.key,
           value: !protocol.value,
+          url: protocol.url,
         };
       }
       return protocol;
@@ -113,7 +116,16 @@ const ProtocolsSettings = () => {
               <Row key={index} gap="4px" justify="space-between" align="center">
                 <BodySmall fontWeight={100} color={theme.palette.secondary.main}>
                   {firstLetterUppercase(option.key)}
+                  <a
+                  href={option.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ marginLeft: 8, display: 'inline-flex', alignItems: 'center' }}
+                >
+                  <ExternalLink size={16} />
+                </a>
                 </BodySmall>
+                
                 <CustomSwitch
                   checked={option.value}
                   onClick={() => {
@@ -124,9 +136,7 @@ const ProtocolsSettings = () => {
               </Row>
             );
           })}
-          {/* <BodySmall fontWeight={100} color={theme.palette.secondary.main}>
-            Use Phoenix at your own risk
-          </BodySmall> */}
+
         </Box>
       </RowBetween>
     </Expand>
