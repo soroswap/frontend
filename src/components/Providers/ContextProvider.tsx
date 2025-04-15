@@ -57,6 +57,7 @@ export default function ContextProvider({ children }: { children: React.ReactNod
       protocols.push({
         key: key.toLocaleLowerCase() === 'sdex' ? PlatformType.STELLAR_CLASSIC : key,
         value: protocol.value,
+        url: protocol.url,
       });
     }
     if (isAggregator === false) {

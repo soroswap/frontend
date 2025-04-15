@@ -17,6 +17,7 @@ export enum SnackbarIconType {
 export interface ProtocolsStatus {
   key: Protocol | PlatformType;
   value: boolean;
+  url: string;
 }
 
 export type SnackbarContextType = {

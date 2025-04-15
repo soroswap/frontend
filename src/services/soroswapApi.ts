@@ -14,7 +14,7 @@ export const fetchPairsFromApi = async (
 ): Promise<MercuryPair[]> => {
   try {
     const response = await axios.get(
-      `api/pairs?network=${network.toLowerCase()}&protocol=${protocol}`,
+      `/api/pairs?network=${network.toLowerCase()}&protocol=${protocol}`,
     );
 
     return response.data;
@@ -30,7 +30,7 @@ export const getSwapRoute = async (
 ): Promise<BuildTradeReturn | undefined> => {
   try {
     const response = await axios.post<BuildTradeReturn>(
-      `api/swap?network=${network.toLowerCase()}`,
+      `/api/swap?network=${network.toLowerCase()}`,
       request,
     );
 
@@ -46,7 +46,7 @@ export const getSwapSplitRoute = async (
   request: SwapRouteSplitRequest,
 ): Promise<BuildSplitTradeReturn | undefined> => {
   try {
-    const response = await axios.post(`api/swap/split?network=${network.toLowerCase()}`, request);
+    const response = await axios.post(`/api/swap/split?network=${network.toLowerCase()}`, request);
 
     return { ...response.data, platform: PlatformType.AGGREGATOR };
   } catch (error: any) {
