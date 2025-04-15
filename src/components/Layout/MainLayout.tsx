@@ -40,7 +40,10 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
         position="fixed"
         color="inherit"
         elevation={0}
-        sx={{ bgcolor: theme.palette.background.default }}
+        sx={{
+          bgcolor: theme.palette.background.default,
+          zIndex: 800,
+        }}
       >
         {/* <Banner show={showBanner} setShow={setShowBanner} /> */}
         <Toolbar>

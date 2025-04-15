@@ -1,11 +1,9 @@
 import * as StellarSdk from '@stellar/stellar-sdk';
-import { useSorobanReact, SorobanContextType } from '@soroban-react/core';
-import { contractTransaction } from '@soroban-react/contracts';
-import axios from 'axios';
+import { contractTransaction, SorobanContextType } from 'stellar-react';
 import { fetchRouter } from 'services/router';
-import { useSwapCallback } from 'hooks/useSwapCallback';
 import { InterfaceTrade, PlatformType } from 'state/routing/types';
-import { RouterMethod, useRouterCallback } from 'hooks/useRouterCallback';
+import { RouterMethod } from 'hooks/useRouterCallback';
+import { passphraseToBackendNetworkName } from 'services/pairs';
 
 const getCurrentTimePlusOneHour = (): number => {
   // Get the current time in milliseconds
@@ -26,24 +24,25 @@ export async function calculateSwapFees(
     console.error('Trade data is not available.');
     return;
   }
-  if (!sorobanContext.activeChain || !sorobanContext.activeChain.sorobanRpcUrl) {
+  if (!sorobanContext.activeNetwork || !sorobanContext.sorobanServer) {
     console.error('Error getting Soroban context.');
     return;
   }
   if (trade.platform === PlatformType.STELLAR_CLASSIC) {
-    return await sorobanContext.serverHorizon?.fetchBaseFee()
+    return await sorobanContext.horizonServer?.fetchBaseFee();
   }
 
   let op = RouterMethod.SWAP_EXACT_OUT;
-  if (trade.tradeType === 'EXACT_INPUT') {
+  if (trade.tradeType === 'EXACT_IN') {
     op = RouterMethod.SWAP_EXACT_IN;
   }
-  const {activeChain} = sorobanContext;
-  const { networkPassphrase:passphrase,
-          id: network, 
-          sorobanRpcUrl,
-        } = activeChain;
-  if(!passphrase || !network || !sorobanRpcUrl) throw new Error('Missing soroban context')
+  const { activeNetwork, sorobanServer } = sorobanContext;
+  const activeChain = passphraseToBackendNetworkName[activeNetwork!].toLowerCase();
+  const { networkPassphrase: passphrase, id: network } = {
+    networkPassphrase: activeNetwork,
+    id: activeChain,
+  };
+  if (!passphrase || !network || !sorobanServer) throw new Error('Missing soroban context');
   const adminPublicKey = process.env.NEXT_PUBLIC_TRUSTLINE_WALLET_PUBLIC_KEY;
   if (!adminPublicKey) {
     console.error('No secret key found.');
@@ -60,7 +59,7 @@ export async function calculateSwapFees(
     StellarSdk.nativeToScVal(getCurrentTimePlusOneHour(), { type: 'u64' }),
   ];
 
-  const server = new StellarSdk.SorobanRpc.Server(sorobanRpcUrl, {
+  const server = new StellarSdk.rpc.Server(sorobanServer.serverURL, {
     allowHttp: true,
   });
 
@@ -74,10 +73,10 @@ export async function calculateSwapFees(
     args: scValParams,
   });
 
-  const simulated: StellarSdk.SorobanRpc.Api.SimulateTransactionResponse =
+  const simulated: StellarSdk.rpc.Api.SimulateTransactionResponse =
     await server?.simulateTransaction(txn);
 
-  if (StellarSdk.SorobanRpc.Api.isSimulationError(simulated)) {
+  if (StellarSdk.rpc.Api.isSimulationError(simulated)) {
     throw new Error(simulated.error);
   } else if (!simulated.result) {
     throw new Error(`invalid simulation: no result in ${simulated}`);
@@ -91,24 +90,24 @@ export async function calculateLiquidityFees(
   args: any,
   op: RouterMethod,
 ) {
-  if (!sorobanContext.activeChain || !sorobanContext.activeChain.sorobanRpcUrl) {
+  if (!sorobanContext.activeNetwork || !sorobanContext.sorobanServer) {
     console.error('Error getting Soroban context.');
     return;
   }
 
-  const passphrase = sorobanContext.activeChain.networkPassphrase;
-  const network = sorobanContext.activeChain.id;
+  const passphrase = sorobanContext.activeNetwork;
+  const network = passphraseToBackendNetworkName[passphrase!].toLowerCase();
 
   const adminPublicKey = process.env.NEXT_PUBLIC_TRUSTLINE_WALLET_PUBLIC_KEY;
   if (!adminPublicKey) {
     console.error('No secret key found.');
     return;
   }
-  const sorobanRpcUrl = sorobanContext.activeChain.sorobanRpcUrl;
+  const sorobanRpcUrl = sorobanContext.sorobanServer.serverURL;
   const routerData = await fetchRouter(network);
   const routerId = routerData.address;
 
-  const server = new StellarSdk.SorobanRpc.Server(sorobanRpcUrl, {
+  const server = new StellarSdk.rpc.Server(sorobanRpcUrl, {
     allowHttp: true,
   });
 
@@ -122,10 +121,10 @@ export async function calculateLiquidityFees(
     args,
   });
 
-  const simulated: StellarSdk.SorobanRpc.Api.SimulateTransactionResponse =
+  const simulated: StellarSdk.rpc.Api.SimulateTransactionResponse =
     await server?.simulateTransaction(txn);
 
-  if (StellarSdk.SorobanRpc.Api.isSimulationError(simulated)) {
+  if (StellarSdk.rpc.Api.isSimulationError(simulated)) {
     console.error(simulated.error);
     return;
   } else if (!simulated.result) {

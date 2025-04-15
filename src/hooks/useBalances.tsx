@@ -1,5 +1,5 @@
-import { contractInvoke } from '@soroban-react/contracts';
-import { SorobanContextType } from '@soroban-react/core';
+import { contractInvoke } from 'stellar-react';
+import { SorobanContextType } from 'stellar-react';
 import BigNumber from 'bignumber.js';
 import { scValToJs } from 'helpers/convert';
 import { xdr } from '@stellar/stellar-sdk';
@@ -9,7 +9,7 @@ import { accountToScVal } from '../helpers/utils';
 import { TokenMapType, TokenType } from '../interfaces';
 
 export type relevantTokensType = {
-  balance: number | string | BigNumber | undefined;
+  balance: number | string | BigNumber | null;
   usdValue: number;
   issuer?: string;
   code: string;
@@ -94,14 +94,14 @@ export async function tokenBalances(
   const balances = await Promise.all(
     Object.values(tokens).map(async (token) => {
       try {
-        let balance: number | string | BigNumber | undefined;
+        let balance: number | string | BigNumber | null;
         let decimalsResponse = 18;
 
         if (token.issuer) {
           balance =
             account?.balances?.find(
               (b: any) => b?.asset_issuer === token.issuer && b?.asset_code === token.code,
-            )?.balance;
+            )?.balance ?? null;
         } else {
           const balanceResponse = await tokenBalance(token.contract, userAddress, sorobanContext);
           if (!balanceResponse) return notFoundReturn(token);

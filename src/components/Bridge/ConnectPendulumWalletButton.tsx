@@ -11,7 +11,7 @@ import { Box, CircularProgress, Modal, useMediaQuery, useTheme } from 'soroswap-
 import { ButtonPrimary } from 'components/Buttons/Button';
 import { ButtonText } from 'components/Text';
 import { ConnectWalletStyles } from 'components/Modals/ConnectWalletModal';
-import { useSorobanReact } from '@soroban-react/core';
+import { useSorobanReact } from 'stellar-react';
 import { useContext, useState } from 'react';
 import ModalBox from 'components/Modals/ModalBox';
 import useBoolean from 'hooks/useBoolean';

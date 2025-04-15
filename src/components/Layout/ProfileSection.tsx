@@ -2,11 +2,12 @@ import React, { useContext, useEffect, useRef } from 'react';
 import { Box, Chip, useMediaQuery, Menu, MenuItem, MenuProps } from 'soroswap-ui';
 import { ArrowDropDownSharp, LinkOff } from '@mui/icons-material';
 import { useTheme, styled, alpha } from 'soroswap-ui';
-import { SorobanContextType, useSorobanReact } from '@soroban-react/core';
+import { SorobanContextType, useSorobanReact } from 'stellar-react';
 import { useInkathon } from '@scio-labs/use-inkathon';
 import { AppContext } from 'contexts';
 import { shortenAddress } from '../../helpers/address';
 import { WalletButton } from 'components/Buttons/WalletButton';
+import { passphraseToBackendNetworkName } from 'services/pairs';
 
 const StyledMenu = styled((props: MenuProps) => (
   <Menu
@@ -68,7 +69,7 @@ export const HeaderChip = ({
   const theme = useTheme();
   const sorobanReact = useSorobanReact();
   const inkathon = useInkathon();
-  const { setActiveChain } = sorobanReact;
+  const { setActiveNetwork: setActiveChain } = sorobanReact;
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
 
@@ -191,36 +192,32 @@ export const HeaderChip = ({
 
 export const ActiveChainHeaderChip = ({ isMobile }: { isMobile?: boolean }) => {
   const sorobanContext: SorobanContextType = useSorobanReact();
-  const { activeChain, chains, activeConnector, address } = sorobanContext;
+  const { activeNetwork: activeChain, address } = sorobanContext;
+  const activeChainName = passphraseToBackendNetworkName[activeChain!].toLowerCase();
+  const [chainName, setChainName] = React.useState(activeChainName);
+  useEffect(() => {
+    const formattedActiveChainName = activeChainName.charAt(0).toUpperCase() + activeChainName.slice(1);
+    setChainName(formattedActiveChainName);
+  }, [activeChain]);
 
   return (
     <>
-      {activeChain && chains && activeConnector?.id == 'xbull' && address ? (
+      {activeChain && address ? (
         <HeaderChip
-          label={[
-            activeChain?.name,
-            <ArrowDropDownSharp key={'action-icon'} className="MuiChip-action-icon" />,
-          ]}
+          label={chainName}
           isSmall={isMobile}
-          chains={chains}
         />
       ) : (
-        <HeaderChip label={activeChain?.name} isSmall={isMobile} />
+          <HeaderChip label={chainName} isSmall={isMobile} />
       )}
     </>
   );
 };
 
 export default function ProfileSection() {
-  const { ConnectWalletModal } = useContext(AppContext);
   const sorobanContext: SorobanContextType = useSorobanReact();
   const theme = useTheme();
-  const { setConnectWalletModalOpen } = ConnectWalletModal;
   const isMobile = useMediaQuery(theme.breakpoints.down(1220));
-
-  const handleClick = () => {
-    setConnectWalletModalOpen(true);
-  };
 
   return (
     <Box display="flex" gap="8px">

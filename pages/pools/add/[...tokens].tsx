@@ -1,12 +1,14 @@
-import { useSorobanReact } from '@soroban-react/core';
+import { useSorobanReact, WalletNetwork } from 'stellar-react';
 import AddLiquidityComponent from 'components/Liquidity/Add/AddLiquidityComponent';
 import SEO from 'components/SEO';
 import { xlmTokenList } from 'constants/xlmToken';
 import { useRouter } from 'next/router';
+import { passphraseToBackendNetworkName } from 'services/pairs';
 
 export default function AddLiquidityPage() {
-  const { activeChain } = useSorobanReact();
-  const xlmToken = xlmTokenList.find((set) => set.network === activeChain?.network)?.assets
+  const { activeNetwork } = useSorobanReact();
+  const activeChain = passphraseToBackendNetworkName[activeNetwork ?? WalletNetwork.TESTNET].toLowerCase();
+  const xlmToken = xlmTokenList.find((set) => set.network === activeChain)?.assets
 
   const router = useRouter();
 

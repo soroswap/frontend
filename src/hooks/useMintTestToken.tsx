@@ -1,5 +1,5 @@
-import { contractInvoke } from '@soroban-react/contracts';
-import { useSorobanReact } from '@soroban-react/core';
+import { contractInvoke } from 'stellar-react';
+import { useSorobanReact } from 'stellar-react';
 import BigNumber from 'bignumber.js';
 import { SnackbarIconType } from 'contexts';
 import { bigNumberToI128 } from 'helpers/utils';
@@ -29,7 +29,7 @@ export function useMintTestToken() {
       onTokenMintedSuccess,
       onTokenMintedError,
     }: MintTestTokenProps) => {
-      const server = sorobanContext.server;
+      const server = sorobanContext.sorobanServer;
       const account = sorobanContext.address;
 
       const amountScVal = bigNumberToI128(BigNumber(2500000).shiftedBy(7));
@@ -63,14 +63,15 @@ export function useMintTestToken() {
             signAndSend: true,
             secretKey: admin_account.secret(),
             reconnectAfterTx: false,
-          })) as StellarSdk.SorobanRpc.Api.GetTransactionResponse;
+          })) as StellarSdk.rpc.Api.GetTransactionResponse;
 
-          if (result.status !== StellarSdk.SorobanRpc.Api.GetTransactionStatus.SUCCESS)
+          if (result.status !== StellarSdk.rpc.Api.GetTransactionStatus.SUCCESS)
             throw result;
 
           totalMinted++;
           onTokenMintedSuccess?.(token);
         } catch (error) {
+          console.warn('Error minting token', error);
           onTokenMintedError?.(token);
         }
       }

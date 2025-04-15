@@ -1,6 +1,6 @@
 import { Box, Button } from 'soroswap-ui';
 import { useInkathon } from '@scio-labs/use-inkathon';
-import { useSorobanReact } from '@soroban-react/core';
+import { useSorobanReact, WalletNetwork } from 'stellar-react';
 import BigNumber from 'bignumber.js';
 import CurrencyBalance from 'components/CurrencyInputPanel/CurrencyBalance';
 import {
@@ -44,7 +44,7 @@ const chains = [
 ];
 
 const BridgeComponent = () => {
-  const { activeChain } = useSorobanReact();
+  const { activeNetwork } = useSorobanReact();
 
   const { isConnected } = useInkathon();
 
@@ -174,8 +174,8 @@ const BridgeComponent = () => {
     let stellarBalance =
       tokenBalancesResponse?.balances?.find(
         (b) =>
-          activeChain?.networkPassphrase &&
-          b?.contract === selectedAsset?.contractId(activeChain.networkPassphrase),
+          activeNetwork &&
+          b?.contract === selectedAsset?.contractId(activeNetwork),
       )?.balance || '0';
 
     if (selectedAsset?.code === 'XLM') {
@@ -298,7 +298,7 @@ const BridgeComponent = () => {
               </InputRow>
               {selectedChainFrom === 'Stellar' ? (
                 <CurrencyBalance
-                  contract={selectedAsset?.contractId(activeChain?.networkPassphrase ?? '') ?? ''}
+                  contract={selectedAsset?.contractId(activeNetwork ?? WalletNetwork.TESTNET) ?? ''}
                   onMax={(value) => setAmount(value)}
                   hideBalance={false}
                   showMaxButton={true}

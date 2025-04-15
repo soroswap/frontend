@@ -1,14 +1,15 @@
-import { fetchAllSoroswapPairs } from 'services/pairs';
 import { findToken } from 'hooks/tokens/useToken';
 import { getPairsFromFactory } from './getPairs';
 import { getTotalLpShares } from './getTotalLpShares';
 import { Networks } from '@stellar/stellar-sdk';
 import { reservesBigNumber } from 'hooks/useReserves';
-import { SorobanContextType } from '@soroban-react/core';
+import { SorobanContextType, WalletNetwork } from 'stellar-react';
 import { tokenBalance } from 'hooks';
 import { TokenMapType, TokenType } from 'interfaces';
 import BigNumber from 'bignumber.js';
 import { getTotalShares } from './LiquidityPools';
+import { fetchPairsFromApi } from 'services/soroswapApi';
+import { passphraseToBackendNetworkName } from 'services/pairs';
 
 export type LpTokensObj = {
   token_0: TokenType | undefined;
@@ -30,7 +31,8 @@ const getLpResultsFromBackendPairs = async (
 ) => {
   if (!sorobanContext.address) return;
 
-  const pairsBackend = await fetchAllSoroswapPairs(passphrase); // This one uses pairs from the backend
+  const network = passphraseToBackendNetworkName[passphrase].toLowerCase();
+  const pairsBackend = await fetchPairsFromApi(network, 'soroswap');
 
   const results: LpTokensObj[] = [];
 
@@ -139,10 +141,11 @@ const getLpResultsFromBlockchainPairs = async (
 };
 
 export async function getLpTokens(sorobanContext: SorobanContextType, tokensAsMap: TokenMapType) {
-  if (!sorobanContext.activeChain || !sorobanContext.address) return;
-  const currentPassphrase = sorobanContext.activeChain.networkPassphrase;
-  const isMainnet = currentPassphrase === Networks.PUBLIC;
-  const isTestnet = currentPassphrase === Networks.TESTNET;
+  if (!sorobanContext.activeNetwork || !sorobanContext.address) return;
+  const currentPassphrase = sorobanContext.activeNetwork;
+
+  const isMainnet = currentPassphrase.valueOf() === Networks.PUBLIC;
+  const isTestnet = currentPassphrase.valueOf() === Networks.TESTNET;
 
   if (isMainnet || isTestnet) {
     try {

@@ -2,23 +2,12 @@ import { Box } from 'soroswap-ui';
 import { Clipboard } from 'react-feather';
 import { LabelSmall } from 'components/Text';
 import { SnackbarIconType } from 'contexts';
-import { testnet, mainnet } from '@soroban-react/chains';
+import { WalletNetwork } from 'stellar-react';
 import { useEffect, useState } from 'react';
-import { useSorobanReact } from '@soroban-react/core';
-import { WalletChain } from '@soroban-react/types';
+import { useSorobanReact } from 'stellar-react';
 import CopyToClipboard from 'react-copy-to-clipboard';
 import Row from 'components/Row';
 import useNotification from 'hooks/useNotification';
-
-const getExplorerUrl = ({ chain, txHash }: { chain: WalletChain; txHash: string }) => {
-  if (chain.name === testnet.name) {
-    return `https://testnet.stellarchain.io/transactions/${txHash}`;
-  }
-
-  if (chain.name === mainnet.name) {
-    return `https://stellarchain.io/transactions/${txHash}`;
-  }
-};
 
 enum ExplorerType {
   STELLAR_EXPERT = 'STELLAR_EXPERT',
@@ -34,23 +23,21 @@ const CopyTxHash = ({ txHash }: { txHash: string }) => {
   const { notify } = useNotification();
 
   const sorobanContext = useSorobanReact();
-
-  const activeChain = sorobanContext?.activeChain;
+  const { activeNetwork } = sorobanContext;
 
   const [explorersLinks, setExplorersLinks] = useState<ExplorerLinks | undefined>(undefined);
 
-
   useEffect(() => {
-    if (!sorobanContext || !activeChain) return;
+    if (!sorobanContext || !activeNetwork) return;
 
-    if (activeChain.name === testnet.name) {
+    if (activeNetwork === WalletNetwork.TESTNET) {
       setExplorersLinks({
         stellarExpert: `https://stellar.expert/explorer/testnet/tx/${txHash}`,
         stellarChain: `https://testnet.stellarchain.io/transactions/${txHash}`,
       });
     }
 
-    if (activeChain.name === mainnet.name) {
+    if (activeNetwork === WalletNetwork.PUBLIC) {
       setExplorersLinks({
         stellarExpert: `https://stellar.expert/explorer/public/tx/${txHash}`,
         stellarChain: `https://stellarchain.io/transactions/${txHash}`,

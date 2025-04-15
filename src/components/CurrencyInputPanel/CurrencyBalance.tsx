@@ -4,11 +4,11 @@ import { BodySmall } from 'components/Text';
 import { MouseoverTooltip } from 'components/Tooltip';
 import useGetMyBalances from 'hooks/useGetMyBalances';
 
-import { useSorobanReact } from '@soroban-react/core';
+import { useSorobanReact, WalletNetwork } from 'stellar-react';
 import BigNumber from 'bignumber.js';
 import { TextWithLoadingPlaceholder } from 'components/Swap/AdvancedSwapDetails';
 import { xlmTokenList } from 'constants/xlmToken';
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 const StyledBalanceMax = styled('button')<{ disabled?: boolean }>`
   background-color: transparent;
@@ -52,10 +52,23 @@ export default function CurrencyBalance({
     availableNativeBalance,
     isLoading: isLoadingMyBalances,
   } = useGetMyBalances();
-  const { activeChain } = useSorobanReact();
-
+  const { activeNetwork } = useSorobanReact();
+  const [activeChain, setActiveChain] = useState('');
+  useEffect(() => {
+    switch (activeNetwork) {
+      case WalletNetwork.TESTNET:
+        setActiveChain('testnet');
+        break;
+      case WalletNetwork.PUBLIC:
+        setActiveChain('mainnet');
+        break;
+      default:
+        setActiveChain('testnet');
+        break;
+    }
+  }, [activeNetwork]);
   const xlmTokenContract = useMemo(() => {
-    return xlmTokenList.find((tList) => tList.network === activeChain?.id)?.assets[0].contract;
+    return xlmTokenList.find((tList) => tList.network === activeChain)?.assets[0].contract;
   }, [activeChain]);
 
   const isXLM = contract === xlmTokenContract;

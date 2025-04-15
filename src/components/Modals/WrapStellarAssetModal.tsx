@@ -1,6 +1,6 @@
 import { Box, CircularProgress, Modal, useTheme } from 'soroswap-ui';
-import { wrapStellarAsset } from '@soroban-react/contracts';
-import { useSorobanReact } from '@soroban-react/core';
+import { wrapStellarAsset } from 'stellar-react';
+import { useSorobanReact } from 'stellar-react';
 import { ButtonPrimary } from 'components/Buttons/Button';
 import { CloseButton } from 'components/Buttons/CloseButton';
 import { WalletButton } from 'components/Buttons/WalletButton';
@@ -68,7 +68,7 @@ const WrapStellarAssetModal = ({ isOpen, asset, onDismiss, onSuccess }: Props) =
       });
   };
   return (
-    <Modal open={isOpen} onClose={onDismiss}>
+    <Modal open={isOpen} onClose={onDismiss} sx={{ zIndex: 1000 }}>
       <Wrapper>
         <AutoColumn gap="12px">
           <RowBetween>

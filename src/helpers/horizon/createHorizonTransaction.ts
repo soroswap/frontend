@@ -1,12 +1,12 @@
-import { SorobanContextType, useSorobanReact } from "@soroban-react/core";
+import { SorobanContextType, useSorobanReact } from "stellar-react";
 import { InterfaceTrade, TradeType } from "state/routing/types";
 import { Asset, TransactionBuilder, Operation, BASE_FEE } from "@stellar/stellar-sdk";
 import { getAmount } from "./getHorizonPath";
 import BigNumber from "bignumber.js";
 
 export const createStellarPathPayment = async (trade: InterfaceTrade, allowedSlippage: any, sorobanContext: SorobanContextType) => {
-  const { address, activeConnector, serverHorizon, activeChain } = sorobanContext;
-  if (!address || !activeConnector || !serverHorizon || !activeChain) return;
+  const { address, kit, horizonServer:serverHorizon, activeNetwork } = sorobanContext;
+  if (!address || !kit || !serverHorizon || !activeNetwork) return;
   const amount = getAmount(trade.inputAmount?.value!);
   const sourceAsset = new Asset(trade.inputAmount?.currency.code!, trade.inputAmount?.currency.issuer)
   const destinationAsset = new Asset(trade.outputAmount?.currency.code!, trade.outputAmount?.currency.issuer)
@@ -30,7 +30,7 @@ export const createStellarPathPayment = async (trade: InterfaceTrade, allowedSli
     const destMin = new BigNumber(destinationAmount).multipliedBy(percentageSlippage).toFixed(7).toString();
     transaction = new TransactionBuilder(account, {
       fee: BASE_FEE,
-      networkPassphrase: activeChain?.networkPassphrase
+      networkPassphrase: activeNetwork
     }).addOperation(Operation.pathPaymentStrictSend({
       sendAsset: sourceAsset,
       sendAmount: amount,
@@ -45,7 +45,7 @@ export const createStellarPathPayment = async (trade: InterfaceTrade, allowedSli
     console.log(sendMax)
     transaction = new TransactionBuilder(account, {
       fee: BASE_FEE,
-      networkPassphrase: activeChain?.networkPassphrase
+      networkPassphrase: activeNetwork
     }).addOperation(Operation.pathPaymentStrictReceive({
       sendAsset: sourceAsset,
       sendMax: sendMax,
@@ -56,15 +56,15 @@ export const createStellarPathPayment = async (trade: InterfaceTrade, allowedSli
     })).setTimeout(180).build();
   }
   const transactionXDR = transaction.toXDR();
-  const signedTransaction = await activeConnector?.signTransaction(transactionXDR, {
-    networkPassphrase: activeChain?.networkPassphrase,
+  const signedTransaction = await kit.signTransaction(transactionXDR, {
+    networkPassphrase: activeNetwork,
   });
   if (!signedTransaction) {
     throw new Error("Couldn't sign transaction");
   }
   const transactionToSubmit = TransactionBuilder.fromXDR(
-    signedTransaction!,
-    activeChain?.networkPassphrase ?? '',
+    signedTransaction.signedTxXdr!,
+    activeNetwork,
   );
   try {
     const transactionResult = await serverHorizon?.submitTransaction(transactionToSubmit);

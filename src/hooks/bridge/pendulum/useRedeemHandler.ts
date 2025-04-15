@@ -1,5 +1,5 @@
 import { useInkathon } from '@scio-labs/use-inkathon';
-import { useSorobanReact } from '@soroban-react/core';
+import { useSorobanReact } from 'stellar-react';
 import { Asset } from '@stellar/stellar-sdk';
 import BigNumber from 'bignumber.js';
 import { decimalToStellarNative, isPublicKey } from 'helpers/bridge/pendulum/stellar';

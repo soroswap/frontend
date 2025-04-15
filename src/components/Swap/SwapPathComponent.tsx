@@ -1,14 +1,14 @@
-import React, { useEffect, useState } from 'react'
-import { ChevronRight } from 'react-feather'
-import { Box, styled } from 'soroswap-ui'
-import Row, { RowBetween, RowFixed } from 'components/Row'
-import { BodySmall, LabelSmall } from 'components/Text'
-import { InterfaceTrade, PlatformType } from 'state/routing/types'
-import { useSorobanReact } from '@soroban-react/core'
-import { useAllTokens } from 'hooks/tokens/useAllTokens'
-import { findToken } from 'hooks/tokens/useToken'
-import { MouseoverTooltip } from 'components/Tooltip'
-import { LoadingRows } from 'components/Loader/styled'
+import React, { useEffect, useState } from 'react';
+import { ChevronRight } from 'react-feather';
+import { Box, styled } from 'soroswap-ui';
+import Row, { RowBetween, RowFixed } from 'components/Row';
+import { BodySmall, LabelSmall } from 'components/Text';
+import { InterfaceTrade, PlatformType } from 'state/routing/types';
+import { useSorobanReact } from 'stellar-react';
+import { useAllTokens } from 'hooks/tokens/useAllTokens';
+import { findToken } from 'hooks/tokens/useToken';
+import { MouseoverTooltip } from 'components/Tooltip';
+import { LoadingRows } from 'components/Loader/styled';
 
 export const PathBox = styled(Box)`
   display: flex;
@@ -49,15 +49,14 @@ export interface distributionData {
 }
 export const formattedProtocolName = (protocol: string) => {
   return protocol.charAt(0).toUpperCase() + protocol.slice(1);
-}
+};
 export const calculatePercentage = (parts: number, totalParts: number) => {
   return (parts / totalParts) * 100;
-}
+};
 
 function SwapPathComponent({ trade }: { trade: InterfaceTrade | undefined }) {
   const sorobanContext = useSorobanReact();
   const { tokensAsMap, isLoading } = useAllTokens();
-
 
   const [pathArray, setPathArray] = useState<string[]>([]);
   const [distributionArray, setDistributionArray] = useState<distributionData[]>([]);
@@ -66,8 +65,8 @@ function SwapPathComponent({ trade }: { trade: InterfaceTrade | undefined }) {
 
   useEffect(() => {
     (async () => {
-      if (!trade?.path || isLoading) return;
-      if (trade.platform == PlatformType.ROUTER) {
+      if (!trade || isLoading) return;
+      if (trade.platform == PlatformType.ROUTER && trade.path) {
         setPathTokensIsLoading(true);
         const promises = trade.path.map(async (contract) => {
           const asset = await findToken(contract, tokensAsMap, sorobanContext);
@@ -81,7 +80,7 @@ function SwapPathComponent({ trade }: { trade: InterfaceTrade | undefined }) {
           .map((result) => (result.status === 'fulfilled' && result.value ? result.value : ''));
         setPathArray(fulfilledValues);
         setPathTokensIsLoading(false);
-      } else if (trade.platform == PlatformType.STELLAR_CLASSIC) {
+      } else if (trade.platform == PlatformType.STELLAR_CLASSIC && trade.path) {
         setPathTokensIsLoading(true);
         const codes = trade.path.map((address) => {
           if (address == 'native') return 'XLM';
@@ -103,7 +102,11 @@ function SwapPathComponent({ trade }: { trade: InterfaceTrade | undefined }) {
           const fulfilledValues = results
             .filter((result) => result.status === 'fulfilled' && result.value)
             .map((result) => (result.status === 'fulfilled' && result.value ? result.value : ''));
-          tempDistributionArray.push({ path: fulfilledValues, parts: distribution.parts, protocol: distribution.protocol_id });
+          tempDistributionArray.push({
+            path: fulfilledValues,
+            parts: distribution.parts,
+            protocol: distribution.protocol_id,
+          });
           setDistributionArray(tempDistributionArray);
           setTotalParts(tempDistributionArray.reduce((acc, curr) => acc + curr.parts, 0));
         }
@@ -120,11 +123,16 @@ function SwapPathComponent({ trade }: { trade: InterfaceTrade | undefined }) {
                   Routing through these assets resulted in the best price for your trade
                 `}
         >
-          <BodySmall color="textSecondary">{trade?.platform == PlatformType.AGGREGATOR && distributionArray.length > 1 ? 'Paths:' : 'Path'}</BodySmall>
+          <BodySmall color="textSecondary">
+            {trade?.platform == PlatformType.AGGREGATOR && distributionArray.length > 1
+              ? 'Paths:'
+              : 'Path'}
+          </BodySmall>
         </MouseoverTooltip>
       </RowFixed>
 
-      {(trade?.platform == PlatformType.ROUTER || trade?.platform == PlatformType.STELLAR_CLASSIC) && (
+      {(trade?.platform == PlatformType.ROUTER ||
+        trade?.platform == PlatformType.STELLAR_CLASSIC) && (
         <PathLoadingPlaceholder syncing={pathTokensIsLoading} width={100}>
           <PathBox data-testid="swap__details__path">
             {pathArray?.map((contract, index) => (
@@ -136,13 +144,15 @@ function SwapPathComponent({ trade }: { trade: InterfaceTrade | undefined }) {
           </PathBox>
         </PathLoadingPlaceholder>
       )}
-      {(trade?.platform == PlatformType.AGGREGATOR) && (
-        <PathLoadingPlaceholder syncing={pathTokensIsLoading} width={200} >
+      {trade?.platform == PlatformType.AGGREGATOR && (
+        <PathLoadingPlaceholder syncing={pathTokensIsLoading} width={200}>
           <AggregatorPathBox data-testid="swap__details__path">
             {distributionArray.map((distribution, index) => (
               <Box key={index}>
                 <Row>
-                  <LabelSmall fontWeight={100} sx={{ mr: 1 }}>{formattedProtocolName(distribution.protocol) + ':'}</LabelSmall>
+                  <LabelSmall fontWeight={100} sx={{ mr: 1 }}>
+                    {formattedProtocolName(distribution.protocol) + ':'}
+                  </LabelSmall>
                   {distribution.path.map((symbol, index) => (
                     <React.Fragment key={index}>
                       <LabelSmall fontWeight={100}>{symbol}</LabelSmall>
@@ -151,7 +161,9 @@ function SwapPathComponent({ trade }: { trade: InterfaceTrade | undefined }) {
                       )}
                     </React.Fragment>
                   ))}
-                  <LabelSmall fontWeight={100} sx={{ ml: 1 }}>({calculatePercentage(distribution.parts, totalParts)}%)</LabelSmall>
+                  <LabelSmall fontWeight={100} sx={{ ml: 1 }}>
+                    ({calculatePercentage(distribution.parts, totalParts)}%)
+                  </LabelSmall>
                 </Row>
               </Box>
             ))}
@@ -159,7 +171,7 @@ function SwapPathComponent({ trade }: { trade: InterfaceTrade | undefined }) {
         </PathLoadingPlaceholder>
       )}
     </RowBetween>
-  )
+  );
 }
 
-export default SwapPathComponent
+export default SwapPathComponent;

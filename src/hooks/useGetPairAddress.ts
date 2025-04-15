@@ -1,4 +1,4 @@
-import { useSorobanReact } from '@soroban-react/core';
+import { useSorobanReact } from 'stellar-react';
 import { getPairAddress } from 'functions/getPairAddress';
 import React from 'react';
 import useSWRImmutable from 'swr/immutable';

@@ -1,4 +1,4 @@
-import { useSorobanReact } from '@soroban-react/core';
+import { useSorobanReact } from 'stellar-react';
 import { AppContext } from 'contexts';
 import { TokenType } from 'interfaces';
 import { useContext } from 'react';
@@ -31,13 +31,11 @@ const useSwapMainButton = ({
   networkFees,
 }: Props) => {
   const sorobanContext = useSorobanReact();
-  const { ConnectWalletModal } = useContext(AppContext);
-  const { isConnectWalletModalOpen, setConnectWalletModalOpen } = ConnectWalletModal;
   const { data } = useGetNativeTokenBalance();
   const { availableNativeBalance } = useGetMyBalances();
   const { isEnabled: aggregatorEnabled } = useAggregator();
 
-  const { address } = sorobanContext;
+  const { address, connect } = sorobanContext;
   const userBalances = useGetMyBalances();
 
   const getSwapValues = () => {
@@ -136,7 +134,7 @@ const useSwapMainButton = ({
 
   const handleMainButtonClick = () => {
     if (!address) {
-      setConnectWalletModalOpen(true);
+      connect();
     } else {
       onSubmit();
     }

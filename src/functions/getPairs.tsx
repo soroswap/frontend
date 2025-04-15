@@ -1,5 +1,5 @@
-import { contractInvoke } from '@soroban-react/contracts';
-import { SorobanContextType } from '@soroban-react/core';
+import { contractInvoke } from 'stellar-react';
+import { SorobanContextType } from 'stellar-react';
 import BigNumber from 'bignumber.js';
 import { scValToJs } from 'helpers/convert';
 import { getTokenDecimals, getTokenName, getTokenSymbol } from 'helpers/soroban';
@@ -11,9 +11,13 @@ import { fetchFactory } from 'services/factory';
 import { xdr } from '@stellar/stellar-sdk';
 import { getPairAddress } from './getPairAddress';
 import { getTotalLpShares } from './getTotalLpShares';
+import { passphraseToBackendNetworkName } from 'services/pairs';
 
 export const getPairsFromFactory = async (sorobanContext: SorobanContextType) => {
-  const factory_address = await fetchFactory(sorobanContext.activeChain?.id!);
+  const { activeNetwork } = sorobanContext;
+  const activeChain = passphraseToBackendNetworkName[activeNetwork!].toLowerCase();
+
+  const factory_address = await fetchFactory(activeChain);
   let pairs = [];
   let allpairs_length = await contractInvoke({
     contractAddress: factory_address.address,

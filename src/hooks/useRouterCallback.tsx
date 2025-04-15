@@ -1,10 +1,11 @@
-import { TxResponse, contractInvoke } from '@soroban-react/contracts';
+import { contractInvoke } from 'stellar-react';
 
-import { useSorobanReact } from '@soroban-react/core';
+import { useSorobanReact } from 'stellar-react';
 import { useCallback } from 'react';
 import * as StellarSdk from '@stellar/stellar-sdk';
 import { useSWRConfig } from 'swr';
 import { useRouterAddress } from './useRouterAddress';
+import { TxResponse } from 'stellar-react/dist/contracts/types';
 
 export enum RouterMethod {
   ADD_LIQUIDITY = 'add_liquidity',
@@ -61,7 +62,7 @@ export function useRouterCallback() {
 
       if (
         isObject(result) &&
-        result?.status !== StellarSdk.SorobanRpc.Api.GetTransactionStatus.SUCCESS
+        result?.status !== StellarSdk.rpc.Api.GetTransactionStatus.SUCCESS
       )
         throw result;
 
