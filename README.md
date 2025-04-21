@@ -27,7 +27,6 @@ cp .env.local.example .env
 Edit the `.env` file and provide the following variables:
 ```md
 NEXT_PUBLIC_BACKEND_URL=http://localhost:8010 // If you are following the instructions in `https://github.com/soroswap/core`
-NEXT_PUBLIC_SOROSWAP_BACKEND_URL=http://localhost:8000// Your local soroswap backend url
 NEXT_PUBLIC_DEFAULT_NETWORK= standalone // The default network to connect
 NEXT_PUBLIC_AGGREGATOR_ENABLED= false // Enables or disables the aggregator
 NEXT_PUBLIC_TRUSTLINE_WALLET_PUBLIC_KEY= STELLAR_PUBLIC_KEY// The public key of the trustline wallet
@@ -54,7 +53,6 @@ NEXT_PUBLIC_AGGREGATOR_ENABLED_MAINNET=false
 NEXT_PUBLIC_AGGREGATOR_ENABLED_TESTNET=false
 NEXT_PUBLIC_BACKEND_URL=https://api.soroswap.finance
 NEXT_PUBLIC_DEFAULT_NETWORK=mainnet
-NEXT_PUBLIC_SOROSWAP_BACKEND_URL=https://backend.soroswap.finance
 NEXT_PUBLIC_TRUSTLINE_WALLET_PUBLIC_KEY=<any-key>
 NEXT_PUBLIC_TEST_TOKENS_ADMIN_SECRET_KEY=<any-key>
 NEXT_PUBLIC_DIRECT_PATH_ENABLED=true
