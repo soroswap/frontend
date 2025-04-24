@@ -35,11 +35,11 @@ const shouldUseDirectPath = process.env.NEXT_PUBLIC_DIRECT_PATH_ENABLED === 'tru
 
 export const useSoroswapApi = () => {
   const sorobanContext = useSorobanReact();
-  const { factory } = useFactory(sorobanContext);
-  const { isEnabled: isAggregator } = useAggregator();
-
   const { Settings } = useContext(AppContext);
-  const { maxHops, protocolsStatus, setProtocolsStatus } = Settings;
+
+  const { factory } = useFactory(sorobanContext);
+
+  const { maxHops, protocolsStatus, setProtocolsStatus, isAggregatorState: isAggregator } = Settings;
 
   const getNetwork = useMemo(() => {
     switch (sorobanContext.activeNetwork) {

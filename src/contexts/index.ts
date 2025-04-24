@@ -36,6 +36,10 @@ export type Settings = {
   setMaxHops: React.Dispatch<React.SetStateAction<number>>;
   protocolsStatus: ProtocolsStatus[];
   setProtocolsStatus: React.Dispatch<React.SetStateAction<ProtocolsStatus[]>>;
+  isAggregatorState: boolean;
+  setAggregatorStatus: React.Dispatch<React.SetStateAction<boolean>>;
+  aggregatorAddress: string | undefined;
+  setAggregatorAdddress: React.Dispatch<React.SetStateAction<string | undefined>>;
 };
 
 export type AppContextType = {
@@ -68,5 +72,9 @@ export const AppContext = React.createContext<AppContextType>({
     setMaxHops: () => {},
     protocolsStatus: [],
     setProtocolsStatus: () => {},
+    isAggregatorState: false,
+    setAggregatorStatus: () => {},
+    aggregatorAddress: '',
+    setAggregatorAdddress: () => {}
   },
 });
