@@ -3,6 +3,7 @@ import { xlmTokenList } from 'constants/xlmToken';
 import soroAxios from './axios';
 
 export const fetchTokens = async (network: string) => {
+  if (!network) return undefined
   let tokensList;
   if (network === 'mainnet') {
     const xlmToken = xlmTokenList.find((set) => set.network === network)?.assets
