@@ -2,7 +2,7 @@ import { useSorobanReact, WalletNetwork } from 'stellar-react';
 import { AppContext, ProtocolsStatus } from 'contexts';
 import { useFactory } from 'hooks';
 import { useAggregator } from 'hooks/useAggregator';
-import { useContext, useMemo } from 'react';
+import { useCallback, useContext, useMemo } from 'react';
 import { TokenType } from 'interfaces';
 import { getBestPath, getHorizonBestPath } from 'helpers/horizon/getHorizonPath';
 import {
@@ -22,6 +22,7 @@ import { getExpectedAmount } from './getExpectedAmount';
 import { Networks } from '@stellar/stellar-sdk';
 import { getSwapRoute, getSwapSplitRoute } from 'services/soroswapApi';
 import { passphraseToBackendNetworkName } from 'services/pairs';
+import { debounce } from 'lodash-es';
 
 export interface GenerateRouteProps {
   amountAsset: AmountAsset;
@@ -170,8 +171,10 @@ export const useSoroswapApi = () => {
     let sorobanPath: BuildTradeReturn | BuildSplitTradeReturn | undefined;
     if (isAggregator) {
       const swapSplitRequest: SwapRouteSplitRequest = {
-        assetIn: tradeType === TradeType.EXACT_INPUT ? amountAsset.currency.contract : quoteAsset.contract,
-        assetOut: tradeType === TradeType.EXACT_INPUT ? quoteAsset.contract : amountAsset.currency.contract,
+        assetIn:
+          tradeType === TradeType.EXACT_INPUT ? amountAsset.currency.contract : quoteAsset.contract,
+        assetOut:
+          tradeType === TradeType.EXACT_INPUT ? quoteAsset.contract : amountAsset.currency.contract,
         amount: amount,
         tradeType: tradeType,
         protocols: getProtocols,
@@ -190,8 +193,10 @@ export const useSoroswapApi = () => {
       }
     } else if (isSoroswapEnabled) {
       const swapRequest: SwapRouteRequest = {
-        assetIn: tradeType === TradeType.EXACT_INPUT ? amountAsset.currency.contract : quoteAsset.contract,
-        assetOut: tradeType === TradeType.EXACT_INPUT ? quoteAsset.contract : amountAsset.currency.contract,
+        assetIn:
+          tradeType === TradeType.EXACT_INPUT ? amountAsset.currency.contract : quoteAsset.contract,
+        assetOut:
+          tradeType === TradeType.EXACT_INPUT ? quoteAsset.contract : amountAsset.currency.contract,
         amount: amount,
         tradeType: tradeType,
         slippageTolerance: '0.01',
@@ -211,5 +216,13 @@ export const useSoroswapApi = () => {
     return bestPath;
   };
 
-  return { generateRoute, resetRouterSdkCache, maxHops };
+  const generateRouteDebounce = useCallback(debounce(generateRoute, 500), [
+    factory,
+    getProtocols,
+    isAggregator,
+    network,
+    sorobanContext,
+  ]);
+
+  return { generateRoute: generateRouteDebounce, resetRouterSdkCache, maxHops };
 };
