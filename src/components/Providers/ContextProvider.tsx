@@ -19,7 +19,7 @@ export default function ContextProvider({ children }: { children: React.ReactNod
   const [snackbarTitle, setSnackbarTitle] = useState<string>('Swapped');
   const [snackbarType, setSnackbarType] = useState<SnackbarIconType>(SnackbarIconType.SWAP);
   const [isAggregatorState, setAggregatorStatus] = useState<boolean>(isAggregator);
-  const [aggregatorAddress, setAggregatorAdddress] = useState<string | undefined>(address);
+  const [aggregatorAddress, setAggregatorAddress] = useState<string | undefined>(address);
 
 
   const appContextValues: AppContextType = {
@@ -45,7 +45,7 @@ export default function ContextProvider({ children }: { children: React.ReactNod
       isAggregatorState,
       setAggregatorStatus,
       aggregatorAddress,
-      setAggregatorAdddress
+      setAggregatorAddress
     },
   };
 
@@ -67,7 +67,7 @@ export default function ContextProvider({ children }: { children: React.ReactNod
         url: protocol.url,
       });
     }
-    address && setAggregatorAdddress(address);
+    address && setAggregatorAddress(address);
     if (isAggregator === false) {
       switch (activeNetwork) {
         case WalletNetwork.TESTNET:

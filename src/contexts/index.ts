@@ -39,7 +39,7 @@ export type Settings = {
   isAggregatorState: boolean;
   setAggregatorStatus: React.Dispatch<React.SetStateAction<boolean>>;
   aggregatorAddress: string | undefined;
-  setAggregatorAdddress: React.Dispatch<React.SetStateAction<string | undefined>>;
+  setAggregatorAddress: React.Dispatch<React.SetStateAction<string | undefined>>;
 };
 
 export type AppContextType = {
@@ -75,6 +75,6 @@ export const AppContext = React.createContext<AppContextType>({
     isAggregatorState: false,
     setAggregatorStatus: () => {},
     aggregatorAddress: '',
-    setAggregatorAdddress: () => {}
+    setAggregatorAddress: () => {}
   },
 });
