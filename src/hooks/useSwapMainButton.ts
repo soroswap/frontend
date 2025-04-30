@@ -31,9 +31,10 @@ const useSwapMainButton = ({
   networkFees,
 }: Props) => {
   const sorobanContext = useSorobanReact();
+  const { Settings } = useContext(AppContext);
+  const { isAggregatorState: aggregatorEnabled } = Settings;
   const { data } = useGetNativeTokenBalance();
   const { availableNativeBalance } = useGetMyBalances();
-  const { isEnabled: aggregatorEnabled } = useAggregator();
 
   const { address, connect } = sorobanContext;
   const userBalances = useGetMyBalances();
