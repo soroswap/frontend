@@ -5,14 +5,13 @@ Welcome to Soroswap, a decentralized exchange (DEX) that draws inspiration from 
 Before you begin, ensure you have met the following requirements:
 
 - docker >= v24.0.2
-- **Freighter Wallet v5.6.3** Please use this version. You can have an intependent environment following the instructios in [this post](https://discord.com/channels/897514728459468821/1135655444157833256/1135655444157833256)
+- **Freighter Wallet** You can have an intependent environment following the instructios in [this post](https://discord.com/channels/897514728459468821/1135655444157833256/1135655444157833256)
 
 ## 🛠 Setting Up Soroswap 🛠
 
 ### 1. Clone the Repository
 
     ```bash
-
     git clone https://github.com/soroswap/frontend.git
     cd frontend
     ```
@@ -24,41 +23,13 @@ Copy the .env.example file to create a new .env file:
 ```bash
 cp .env.local.example .env
 ```
-Edit the `.env` file and provide the following variables:
+Edit the `.env` file. Check the `.env.local.example` file for explanations
 ```md
-NEXT_PUBLIC_BACKEND_URL=http://localhost:8010 // If you are following the instructions in `https://github.com/soroswap/core`
-NEXT_PUBLIC_DEFAULT_NETWORK= standalone // The default network to connect
-NEXT_PUBLIC_AGGREGATOR_ENABLED= false // Enables or disables the aggregator
-NEXT_PUBLIC_TRUSTLINE_WALLET_PUBLIC_KEY= STELLAR_PUBLIC_KEY// The public key of the trustline wallet
-NEXT_PUBLIC_TEST_TOKENS_ADMIN_SECRET_KEY= STELLAR_SECRET_KEY // The secret key of the test tokens admin
-```
-Hints:
-The `NEXT_PUBLIC_BACKEND_URL` should serve:
-- the list of known tokens
-- the SoroswapFactory address
-- the SoroswapRouter address
 
 The `NEXT_PUBLIC_TEST_TOKENS_ADMIN_SECRET_KEY` should be the same as the one that deployed the tokens in the `core` repository.
+This is only important if you will be minting testnet tokens, otherwise is not interesting.
 
 To enable or disable features like the `Soroswap backend` or the `aggregator`, switch the  `NEXT_PUBLIC_AGGREGATOR_ENABLED` variables to `true` or `false`.
-
-Then, when you are ready for production, you can take Futurenet Contracts information from `https://api.soroswap.finance` and use the production env file:
-
-```bash
-cp .env.production.example .env
-```
-.env should be like:
-```
-NEXT_PUBLIC_AGGREGATOR_ENABLED_MAINNET=false
-NEXT_PUBLIC_AGGREGATOR_ENABLED_TESTNET=false
-NEXT_PUBLIC_BACKEND_URL=https://api.soroswap.finance
-NEXT_PUBLIC_DEFAULT_NETWORK=mainnet
-NEXT_PUBLIC_TRUSTLINE_WALLET_PUBLIC_KEY=<any-key>
-NEXT_PUBLIC_TEST_TOKENS_ADMIN_SECRET_KEY=<any-key>
-NEXT_PUBLIC_DIRECT_PATH_ENABLED=true
-```
-
-> [!IMPORTANT] Note that some Futurenet RPC's might not have the same version, so we strongly recomend you to connect to a local quickstart node following the instructions in `https://github.com/soroswap/core`; and setting up your Freighter Wallet as in step 6.
 
 1. Start Docker
 
@@ -67,6 +38,7 @@ NEXT_PUBLIC_DIRECT_PATH_ENABLED=true
     ```bash
     bash docker/run.sh
     ```
+    If the soroswap-network does not exisit, please create: `docker network create soroswap-network`
 
     This script will set up and start the Docker containers required for Soroswap.
 
@@ -87,8 +59,11 @@ NEXT_PUBLIC_DIRECT_PATH_ENABLED=true
     ```
 
     This will start the Soroswap development instance.
+    http://localhost:3000
+    
 
-6. Configure your Freigher Wallet
+6. For Tesntet Development, check your Freigher Wallet Configuration if you are running your one node
+    THis is not necesary if you are using Mainnet or Testnet.
 
     For Standalone network
     | | |
