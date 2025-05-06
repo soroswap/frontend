@@ -18,7 +18,7 @@ export default function ContextProvider({ children }: { children: React.ReactNod
   const [snackbarMessage, setSnackbarMessage] = useState<string>('');
   const [snackbarTitle, setSnackbarTitle] = useState<string>('Swapped');
   const [snackbarType, setSnackbarType] = useState<SnackbarIconType>(SnackbarIconType.SWAP);
-  const [isAggregatorState, setAggregatorStatus] = useState<boolean>(isAggregator);
+  const [isAggregatorState, setAggregatorStatus] = useState<boolean>(true);
   const [aggregatorAddress, setAggregatorAddress] = useState<string | undefined>(address);
 
 
