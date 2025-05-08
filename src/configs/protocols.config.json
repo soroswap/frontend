@@ -14,6 +14,11 @@
       "key": "phoenix",
       "value": true,
       "url": "https://docs.soroswap.finance/soroswap-aggregator/supported-amms"
+    },
+    {
+      "key": "aqua",
+      "value": true,
+      "url": "https://docs.soroswap.finance/soroswap-aggregator/supported-amms"
     }
   ],
   "testnet": [
