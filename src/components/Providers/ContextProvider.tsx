@@ -21,6 +21,10 @@ export default function ContextProvider({ children }: { children: React.ReactNod
   const [isAggregatorState, setAggregatorStatus] = useState<boolean>(true);
   const [aggregatorAddress, setAggregatorAddress] = useState<string | undefined>(address);
 
+  useEffect(() => {
+    setAggregatorStatus(isAggregator);
+  }, [isAggregator]);
+
 
   const appContextValues: AppContextType = {
     ConnectWalletModal: {
