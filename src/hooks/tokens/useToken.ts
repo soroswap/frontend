@@ -69,7 +69,7 @@ export function useToken(tokenAddress: string | undefined) {
   const { activeNetwork: network } = sorobanContext;
   const { tokensAsMap } = useAllTokens();
 
-  const { data: name } = useSWR(
+  const { data: name } = useSWRImmutable(
     tokenAddress && sorobanContext ? ['tokenName', tokenAddress, sorobanContext] : null,
     ([key, tokenAddress, sorobanContext]) => getTokenName(tokenAddress!, sorobanContext),
   );
