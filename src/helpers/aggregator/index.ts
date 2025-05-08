@@ -8,6 +8,16 @@ export interface DexDistribution {
   poolHashes: string[] | undefined;
 }
 
+// #[contracttype]
+// #[derive(Clone, Debug, Eq, PartialEq)]
+// pub struct DexDistribution {
+//     pub protocol_id: String,
+//     pub path: Vec<Address>,
+//     pub parts: u32,
+//     pub bytes: Option<Vec<BytesN<32>>>
+
+// }
+
 /**
  * Converts an optional array of Base64-encoded strings to ScVal: Option<Vec<BytesN<32>>>
  *
@@ -18,7 +28,9 @@ export interface DexDistribution {
 export function poolHashesToScVal(poolHashes?: string[]): xdr.ScVal {
   // Handle undefined or empty array: return Option::None
   if (!poolHashes || poolHashes.length === 0) {
-    return xdr.ScVal.scvVoid();
+    console.log("🚀 ~ poolHashesToScVal ~ poolHashes:", poolHashes)
+    return  nativeToScVal(null);
+    
   }
 
   // Convert each Base64 string to ScVal (BytesN<32>)
@@ -55,8 +67,8 @@ export const dexDistributionParser = (dexDistributionRaw: DexDistribution[]): xd
   const dexDistributionScVal = dexDistributionRaw.map((distribution) => {
     return xdr.ScVal.scvMap([
       new xdr.ScMapEntry({
-        key: xdr.ScVal.scvSymbol('protocol_id'),
-        val: xdr.ScVal.scvString(distribution.protocol_id),
+        key: xdr.ScVal.scvSymbol('bytes'),
+        val: poolHashesToScVal(distribution.poolHashes),
       }),
       new xdr.ScMapEntry({
         key: xdr.ScVal.scvSymbol('parts'),
@@ -67,8 +79,8 @@ export const dexDistributionParser = (dexDistributionRaw: DexDistribution[]): xd
         val: nativeToScVal(distribution.path.map((pathAddress) => new Address(pathAddress))),
       }),
       new xdr.ScMapEntry({
-        key: xdr.ScVal.scvSymbol('bytes'),
-        val: poolHashesToScVal(distribution.poolHashes),
+        key: xdr.ScVal.scvSymbol('protocol_id'),
+        val: xdr.ScVal.scvString(distribution.protocol_id),
       }),
     ]);
   });
