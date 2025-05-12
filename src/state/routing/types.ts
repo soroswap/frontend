@@ -48,6 +48,7 @@ export type SwapRouteRequest = {
   tradeType: string;
   slippageTolerance: string;
   assetList?: string[];
+  maxHops?: number;
 };
 
 export type SwapRouteSplitRequest = {
@@ -59,6 +60,7 @@ export type SwapRouteSplitRequest = {
   parts: number;
   slippageTolerance: string;
   assetList?: string[];
+  maxHops?: number;
 };
 
 interface CommonBuildTradeReturnFields {
