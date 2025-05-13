@@ -13,6 +13,7 @@ export const findToken = async (
   tokenAddress: string | undefined,
   tokensAsMap: TokenMapType,
   sorobanContext: SorobanContextType,
+  initiator?: string
 ) => {
   if (!tokenAddress || tokenAddress === '') return undefined;
 
@@ -22,10 +23,11 @@ export const findToken = async (
   if (!formattedAddress) return undefined;
   
   const fromMap = tokensAsMap[formattedAddress];
-  
+
   if (fromMap) return fromMap;
   
-  const token = await getToken(sorobanContext, formattedAddress);
+  const token = await getToken(sorobanContext, formattedAddress, initiator + '/' + 'findToken');
+
   // const token: TokenType = {
   //   contract: formattedAddress,
   //   name: name as string,
@@ -69,10 +71,11 @@ export function useToken(tokenAddress: string | undefined) {
   const { activeNetwork: network } = sorobanContext;
   const { tokensAsMap } = useAllTokens();
 
-  const { data: name } = useSWR(
+  const { data: name } = useSWRImmutable(
     tokenAddress && sorobanContext ? ['tokenName', tokenAddress, sorobanContext] : null,
     ([key, tokenAddress, sorobanContext]) => getTokenName(tokenAddress!, sorobanContext),
   );
+
 
   const { mutate } = useSWRConfig();
   const { data, isLoading, error } = useSWRImmutable(
@@ -80,6 +83,7 @@ export function useToken(tokenAddress: string | undefined) {
     ([key, tokenAddress, tokensAsMap, sorobanContext]) =>
       findToken(tokenAddress, tokensAsMap, sorobanContext),
   );
+
 
   const handleTokenRefresh = () => {
     mutate((key: any) => revalidateKeysCondition(key), undefined, { revalidate: true });
@@ -102,6 +106,7 @@ export function useToken(tokenAddress: string | undefined) {
       return undefined;
     }
     const asset = new Asset(code, issuer);
+    console.log("[] ~ useToken ~ asset:", asset)
     if (asset.contractId(network ?? WalletNetwork.TESTNET) === contractId) {
       return true;
     } else {

@@ -1,6 +1,6 @@
 import { useSorobanReact } from 'stellar-react';
 import { TokenMapType, TokenType, tokensResponse } from 'interfaces';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { tokensToMap } from './utils';
 import { passphraseToBackendNetworkName } from 'services/pairs';
 
@@ -8,26 +8,25 @@ import { passphraseToBackendNetworkName } from 'services/pairs';
 export const useUserAddedTokens = () => {
   const sorobanContext = useSorobanReact();
 
+
   const [userAddedTokens, setUserAddedTokens] = useState<tokensResponse[]>([]);
-  const [tokensFromActiveChain, setTokensFromActiveChain] = useState<TokenType[]>([]);
-  const [tokensAsMap, setTokensAsMap] = useState<TokenMapType>({});
 
   const userAddedTokensLocalStorage = localStorage.getItem(`userAddedTokens`);
 
   useEffect(() => {
     const userAddedTokensStr = localStorage.getItem(`userAddedTokens`) || '[]';
     const userAddedTokens = (JSON.parse(userAddedTokensStr) ?? []) as tokensResponse[];
-    const activeNetwork = sorobanContext.activeNetwork;
-    const activeChain = passphraseToBackendNetworkName[activeNetwork!].toLowerCase();
-    const tokensFromActiveChain =
-      userAddedTokens?.find((item: tokensResponse) => item?.network === activeChain)?.tokens ?? [];
-    const tokensAsMap = tokensToMap(tokensFromActiveChain);
-
     setUserAddedTokens(userAddedTokens);
+  }, [userAddedTokensLocalStorage]); // Depend only on localStorage string
 
-    setTokensFromActiveChain(tokensFromActiveChain);
-    setTokensAsMap(tokensAsMap);
-  }, [sorobanContext, userAddedTokensLocalStorage]);
+  const tokensFromActiveChain = useMemo(() => {
+    const activeNetwork = sorobanContext.activeNetwork;
+    if (!activeNetwork) return [];
+    const activeChain = passphraseToBackendNetworkName[activeNetwork].toLowerCase();
+    return userAddedTokens?.find((item: tokensResponse) => item?.network === activeChain)?.tokens ?? [];
+  }, [userAddedTokens, sorobanContext]); // Depend on userAddedTokens and sorobanContext
+
+  const tokensAsMap = useMemo(() => tokensToMap(tokensFromActiveChain), [tokensFromActiveChain]); // Depend on tokensFromActiveChain
 
   return {
     allUserAddedTokens: userAddedTokens,

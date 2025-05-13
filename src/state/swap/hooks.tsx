@@ -5,7 +5,6 @@ import { relevantTokensType, tokenBalances } from 'hooks';
 import { useToken } from 'hooks/tokens/useToken';
 import { useBestTrade } from 'hooks/useBestTrade';
 import useHorizonLoadAccount from 'hooks/useHorizonLoadAccount';
-import { TokenType } from 'interfaces';
 import tryParseCurrencyAmount from 'lib/utils/tryParseCurrencyAmount';
 import { ParsedQs } from 'qs';
 import { ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
@@ -15,6 +14,7 @@ import { useUserSlippageToleranceWithDefault } from 'state/user/hooks';
 import { Field, selectCurrency, setRecipient, switchCurrencies, typeInput } from './actions';
 import { SwapState } from './reducer';
 import { DEFAULT_SLIPPAGE_INPUT_VALUE } from 'components/Settings/MaxSlippageSettings';
+import { TokenType } from 'interfaces';
 
 export function useSwapActionHandlers(dispatch: React.Dispatch<AnyAction>): {
   onCurrencySelection: (field: Field, currency: TokenType) => void;
@@ -90,14 +90,16 @@ export function useDerivedSwapInfo(state: SwapState) {
   } = state;
 
   const { token: inputCurrency } = useToken(inputCurrencyId!);
+
   //
   const { token: outputCurrency } = useToken(outputCurrencyId!);
+  
   const recipientLookup = { address: '' }; //TODO: Use ENS useENS(recipient ?? undefined)
   //
   const to: string | null | undefined = account; //recipient === null ? account : recipientLookup.contract) ?? null
 
   const tokensArray = useMemo(() => {
-    return inputCurrency && outputCurrency ? [inputCurrency, outputCurrency] : undefined;
+    return inputCurrency && outputCurrency?.code ? [inputCurrency, outputCurrency] : undefined;
   }, [inputCurrency, outputCurrency]);
 
   const [relevantTokenBalances, setRelevantTokenBalances] = useState<
@@ -105,9 +107,10 @@ export function useDerivedSwapInfo(state: SwapState) {
   >();
 
   const { account: horizonAccount } = useHorizonLoadAccount();
+
   useEffect(() => {
     if (account) {
-      tokenBalances(account, tokensArray, sorobanContext, horizonAccount).then((res) => {
+      tokenBalances(account, tokensArray, sorobanContext, horizonAccount, undefined).then((res) => {
         if (res) {
           setRelevantTokenBalances(res.balances);
         }
@@ -316,3 +319,4 @@ export function queryParametersToSwapState(parsedQs: ParsedQs): SwapState {
 
 //   return parsedSwapState
 // }
+

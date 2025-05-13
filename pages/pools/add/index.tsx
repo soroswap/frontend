@@ -5,7 +5,7 @@ import { useRouter } from 'next/router';
 import { useEffect } from 'react';
 
 export default function AddLiquidityPage() {
-  const { tokens } = useApiTokens();
+  const { tokens } = useApiTokens('/pages/pools/add/index.tsx');
   const router = useRouter();
 
   useEffect(() => {

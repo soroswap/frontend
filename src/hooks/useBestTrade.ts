@@ -56,6 +56,7 @@ export function useBestTrade(
     isLoading: isLoadingSWR,
     isValidating,
   } = useSWR(
+
     amountSpecified && otherCurrency
       ? [amountSpecified, otherCurrency, tradeType, amountSpecified.value, maxHops, protocolsStatus]
       : null,
@@ -69,10 +70,11 @@ export function useBestTrade(
       }),
     {
       revalidateIfStale: true,
-      revalidateOnFocus: true,
+      revalidateOnFocus: false,
       refreshInterval: 0,
     },
   );
+
   const isLoading = isLoadingSWR || isValidating;
 
   //Define the input and output currency based on the trade type

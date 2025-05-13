@@ -12,13 +12,15 @@ import { sendNotification } from 'functions/sendNotification';
 import { formatTokenAmount } from 'helpers/format';
 import { requiresTrustline } from 'helpers/stellar';
 import { relevantTokensType } from 'hooks';
-import { useToken } from 'hooks/tokens/useToken';
+import { findTokenService, getAllTokensService } from 'services/tokenService';
+import { getDerivedSwapInfoService, SwapInfoService } from 'services/swapService'; // Import the service and its type
 import useGetNativeTokenBalance from 'hooks/useGetNativeTokenBalance';
 import { useSwapCallback } from 'hooks/useSwapCallback';
 import useSwapMainButton from 'hooks/useSwapMainButton';
 import useSwapNetworkFees from 'hooks/useSwapNetworkFees';
 import { TokenType } from 'interfaces';
 import {
+  memo,
   ReactNode,
   SetStateAction,
   useCallback,
@@ -31,13 +33,17 @@ import {
 import { ArrowDown } from 'react-feather';
 import { InterfaceTrade, TradeState } from 'state/routing/types';
 import { Field } from 'state/swap/actions';
-import { useDerivedSwapInfo, useSwapActionHandlers } from 'state/swap/hooks';
+import { useSwapActionHandlers } from 'state/swap/hooks'; // Keep useSwapActionHandlers
 import swapReducer, { SwapState, initialState as initialSwapState } from 'state/swap/reducer';
 import { opacify } from 'themes/utils';
 import SwapCurrencyInputPanel from '../CurrencyInputPanel/SwapCurrencyInputPanel';
 import SwapHeader from './SwapHeader';
 import { ArrowWrapper, SwapWrapper } from './styleds';
 import useGetMyBalances from 'hooks/useGetMyBalances';
+import useHorizonLoadAccount from 'hooks/useHorizonLoadAccount'; // Import useHorizonLoadAccount
+import { useFactory } from 'hooks'; // Import useFactory
+import { useUserSlippageToleranceWithDefault } from 'state/user/hooks'; // Import useUserSlippageToleranceWithDefault
+import { DEFAULT_SLIPPAGE_INPUT_VALUE } from 'components/Settings/MaxSlippageSettings'; // Import DEFAULT_SLIPPAGE_INPUT_VALUE
 
 export const SwapSection = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -118,6 +124,7 @@ export function SwapComponent({
   handleDoSwap?: (setSwapState: (value: SetStateAction<SwapStateProps>) => void) => void;
 }) {
   const sorobanContext = useSorobanReact();
+  const { address } = sorobanContext;
   const { refetch } = useGetMyBalances();
   const { SnackbarContext } = useContext(AppContext);
   const [showPriceImpactModal, setShowPriceImpactModal] = useState<boolean>(false);
@@ -126,36 +133,132 @@ export function SwapComponent({
 
   const [needTrustline, setNeedTrustline] = useState<boolean>(true);
 
-  const { token: prefilledToken } = useToken(prefilledState.INPUT?.currencyId!);
-
   // modal and loading
   const [{ showConfirm, tradeToConfirm, swapError, swapResult }, setSwapState] =
     useState<SwapStateProps>(INITIAL_SWAP_STATE);
 
   const [state, dispatch] = useReducer(swapReducer, { ...initialSwapState, ...prefilledState });
+
   const { typedValue, recipient, independentField } = state;
 
   const { onSwitchTokens, onCurrencySelection, onUserInput, onChangeRecipient } =
     useSwapActionHandlers(dispatch);
+
   const dependentField: Field = independentField === Field.INPUT ? Field.OUTPUT : Field.INPUT;
 
+  const [tokensAsMap, setTokensAsMap] = useState({});
+
   useEffect(() => {
-    if (prefilledToken) {
-      onCurrencySelection(Field.INPUT, prefilledToken);
-    }
-  }, [onCurrencySelection, prefilledToken]);
+
+    const fetchTokens = async () => {
+      const { tokensAsMap } = await getAllTokensService(sorobanContext, 'SwapComponent');
+      setTokensAsMap(tokensAsMap);
+    };
+
+    sorobanContext && fetchTokens();
+  }, [sorobanContext]);
+
+  useEffect(() => {
+    const fetchPrefilledToken = async () => {
+      if (prefilledState.INPUT?.currencyId && Object.keys(tokensAsMap).length > 0) {
+  
+        const prefilledToken = await findTokenService(
+          prefilledState.INPUT.currencyId,
+          tokensAsMap,
+          sorobanContext,
+          'SwapComponent',
+        );
+        if (prefilledToken) {
+          onCurrencySelection(Field.INPUT, prefilledToken);
+        }
+      }
+    };
+
+    fetchPrefilledToken();
+  }, [prefilledState, sorobanContext, tokensAsMap]);
+
+  const { account: horizonAccount } = useHorizonLoadAccount(); // Fetch horizonAccount
+  const { factory } = useFactory(sorobanContext); // Fetch factory
+  const { Settings } = useContext(AppContext); // Access AppContext for Settings
+  // Need to check AppContext definition for how to access maxHops, protocolsStatus, and isAggregator
+  // For now, using placeholders or assuming direct access if no errors
+  const maxHops = Settings?.maxHops; // Assuming direct access
+  const protocolsStatus = Settings?.protocolsStatus; // Assuming direct access
+  const isAggregator = Settings?.isAggregatorState; // Use isAggregatorState
+
+  const allowedSlippage = useUserSlippageToleranceWithDefault(DEFAULT_SLIPPAGE_INPUT_VALUE); // Fetch allowedSlippage
+
+  const [swapInfoServiceResult, setSwapInfoServiceResult] = useState<SwapInfoService>({
+    currencies: {},
+    currencyBalances: {},
+    parsedAmount: undefined,
+    inputError: undefined,
+    trade: {
+      trade: undefined,
+      state: TradeState.LOADING,
+      uniswapXGasUseEstimateUSD: undefined,
+      error: undefined
+    },
+    allowedSlippage: undefined,
+    autoSlippage: undefined,
+  });
+
+  const [isLoadingSwapInfo, setIsLoadingSwapInfo] = useState(true); // New loading state
+
+  useEffect(() => {
+    const fetchSwapInfo = async () => {
+      // Ensure tokensAsMap and settings are loaded before fetching swap info
+      const dependenciesReady = Object.keys(tokensAsMap).length > 0 && protocolsStatus !== undefined && maxHops !== undefined && isAggregator !== undefined;
+
+      if (dependenciesReady) {
+        setIsLoadingSwapInfo(true); // Set loading to true before the async operation
+        try {
+          const result = await getDerivedSwapInfoService(
+            state,
+            sorobanContext,
+            address,
+            tokensAsMap,
+            horizonAccount,
+            allowedSlippage, // Pass allowedSlippage
+            factory, // Pass factory
+            maxHops, // Pass maxHops
+            protocolsStatus, // Pass protocolsStatus
+            isAggregator, // Pass isAggregator
+          );
+          setSwapInfoServiceResult(result);
+        } catch (error) {
+          console.error("Error fetching swap info:", error);
+          // Optionally set an error state here
+        } finally {
+          setIsLoadingSwapInfo(false); // Set loading to false after the operation
+        }
+      } else {
+        // If dependencies are not ready, keep loading state true
+        // The effect will re-run when dependencies change and the service will be called
+        setIsLoadingSwapInfo(true); // Keep loading true while waiting for dependencies
+      }
+    };
+
+    fetchSwapInfo();
+  }, [
+    state, sorobanContext, address, tokensAsMap,  horizonAccount, 
+    allowedSlippage, factory, maxHops, protocolsStatus, isAggregator
+  ]);
 
   const {
-    trade: { state: tradeState, trade, resetRouterSdkCache },
-    allowedSlippage,
+    trade: { state: tradeState, trade },
     currencyBalances,
     parsedAmount,
     currencies,
     inputError: swapInputError,
-  } = useDerivedSwapInfo(state);
+  } = useMemo(() => {
+    return swapInfoServiceResult
+  }, [swapInfoServiceResult, isLoadingSwapInfo])
+
   useEffect(() => {
     if (
-      typeof currencyBalances[Field.OUTPUT] != 'string' &&
+      currencyBalances?.[Field.OUTPUT] &&
+      typeof currencyBalances[Field.OUTPUT] !== 'string' &&
       !currencyBalances[Field.OUTPUT].balance
     ) {
       setNeedTrustline(true);
@@ -174,16 +277,10 @@ export function SwapComponent({
 
   const decimals = useMemo(
     () => ({
-      [Field.INPUT]:
-        independentField === Field.INPUT
-          ? trade?.outputAmount?.currency.decimals ?? 7
-          : trade?.inputAmount?.currency.decimals ?? 7,
-      [Field.OUTPUT]:
-        independentField === Field.OUTPUT
-          ? trade?.inputAmount?.currency.decimals ?? 7
-          : trade?.outputAmount?.currency.decimals ?? 7,
+      [Field.INPUT]: trade?.inputAmount?.currency.decimals ?? 7,
+      [Field.OUTPUT]: trade?.outputAmount?.currency.decimals ?? 7,
     }),
-    [independentField, trade],
+    [trade],
   );
 
   const userHasSpecifiedInputOutput = Boolean(
@@ -197,8 +294,8 @@ export function SwapComponent({
   const showFiatValueInput = Boolean(parsedAmounts[Field.INPUT]);
   const showFiatValueOutput = Boolean(parsedAmounts[Field.OUTPUT]);
 
-  const maxInputAmount: relevantTokensType | string = useMemo(
-    () => currencyBalances[Field.INPUT],
+  const maxInputAmount: relevantTokensType | string | undefined = useMemo(
+    () => currencyBalances?.[Field.INPUT], // Use optional chaining
     // () => maxAmountSpend(currencyBalances[Field.INPUT]), TODO: Create maxAmountSpend if is native token (XLM) should count for the fees and minimum xlm for the account to have
     [currencyBalances],
   );
@@ -233,21 +330,20 @@ export function SwapComponent({
     (value: string) => {
       const currency = currencies[Field.INPUT];
       const decimals = currency?.decimals ?? 7;
-
+      console.count('handleInputSelect');
       // Prevents user from inputting more decimals than the token supports
       if (value.split('.').length > 1 && value.split('.')[1].length > decimals) {
         return;
       }
-
       onUserInput(Field.INPUT, value);
     },
     [onUserInput, currencies],
   );
+
   const handleTypeOutput = useCallback(
     (value: string) => {
       const currency = currencies[Field.OUTPUT];
       const decimals = currency?.decimals ?? 7;
-
       // Prevents user from inputting more decimals than the token supports
       if (value.split('.').length > 1 && value.split('.')[1].length > decimals) {
         return;
@@ -260,22 +356,28 @@ export function SwapComponent({
 
   const formattedAmounts = useMemo(
     () => ({
-      [independentField]: typedValue,
-      [dependentField]: formatTokenAmount(trade?.expectedAmount, decimals[independentField]),
+      [Field.INPUT]: independentField === Field.INPUT ? typedValue : formatTokenAmount(trade?.inputAmount?.value, decimals[Field.INPUT]),
+      [Field.OUTPUT]: independentField === Field.OUTPUT ? typedValue : formatTokenAmount(trade?.outputAmount?.value, decimals[Field.OUTPUT]),
     }),
-    [decimals, dependentField, independentField, trade?.expectedAmount, typedValue],
+    [decimals, independentField, trade, typedValue],
   );
 
   const showMaxButton = Boolean((maxInputAmount as relevantTokensType)?.balance ?? 0 > 0);
 
-  const [routeNotFound, routeIsLoading, routeIsSyncing] = useMemo(
-    () => [
-      tradeState === TradeState.NO_ROUTE_FOUND,
-      tradeState === TradeState.LOADING,
-      tradeState === TradeState.LOADING && Boolean(trade),
-    ],
-    [trade, tradeState],
-  );
+
+  // const routeNotFound = tradeState === TradeState.NO_ROUTE_FOUND;
+  // const routeIsLoading = isLoadingSwapInfo || tradeState === TradeState.LOADING; 
+  // const routeIsSyncing = isLoadingSwapInfo || (tradeState === TradeState.LOADING && Boolean(trade));
+
+  const {routeNotFound, routeIsLoading, routeIsSyncing} = useMemo(()=> {
+    
+    return {
+      routeNotFound: tradeState === TradeState.NO_ROUTE_FOUND,
+      routeIsLoading: isLoadingSwapInfo || tradeState === TradeState.LOADING,
+      routeIsSyncing: isLoadingSwapInfo || (tradeState === TradeState.LOADING && Boolean(trade))
+    }
+  }, [isLoadingSwapInfo, tradeState])
+
 
   const handleContinueToReview = () => {
     setSwapState({
@@ -360,20 +462,26 @@ export function SwapComponent({
     userHasSpecifiedInputOutput && (trade || routeIsLoading || routeIsSyncing),
   );
 
-  const inputCurrency = currencies[Field.INPUT] ?? undefined;
+  const inputCurrency = currencies?.[Field.INPUT] ?? undefined; // Use optional chaining
   const priceImpactSeverity = 2; //IF is < 2 it shows Swap anyway button in red
   const showPriceImpactWarning = false;
 
+  //SECTION: Hook with effect
   const nativeBalance = useGetNativeTokenBalance();
 
-  const { networkFees, isLoading: isLoadingNetworkFees } = useSwapNetworkFees(trade, currencies);
+  //SECTION: Hook with effect
+  const { networkFees, isLoading: isLoadingNetworkFees } = useSwapNetworkFees(trade, currencies); // Keep useSwapNetworkFees
+
 
   const { getMainButtonText, isMainButtonDisabled, handleMainButtonClick, getSwapValues } =
     useSwapMainButton({
       currencies,
-      currencyBalances,
+      currencyBalances: { // Transform currencyBalances
+        [Field.INPUT]: currencyBalances?.[Field.INPUT] ?? '', // Provide a default empty string if undefined
+        [Field.OUTPUT]: currencyBalances?.[Field.OUTPUT] ?? '', // Provide a default empty string if undefined
+      },
       formattedAmounts,
-      routeNotFound,
+      routeNotFound, // Use routeNotFound variable
       onSubmit: handleContinueToReview,
       trade,
       networkFees,
@@ -381,7 +489,7 @@ export function SwapComponent({
 
   const useConfirmModal = useConfirmModalState({
     trade: trade!,
-    allowedSlippage,
+    allowedSlippage: allowedSlippage, // Use allowedSlippage variable
     onSwap: handleSwap,
     onSetTrustline: handleTrustline,
     onCurrencySelection,
@@ -395,16 +503,17 @@ export function SwapComponent({
       onUserInput(Field.INPUT, '');
     }
 
-    resetRouterSdkCache();
+    // resetRouterSdkCache(); // Commenting out as resetRouterSdkCache is not available from the service
 
     useConfirmModal.resetStates();
-  }, [onUserInput, swapResult, useConfirmModal, resetRouterSdkCache]);
+  }, [onUserInput, swapResult, useConfirmModal]); // Removed resetRouterSdkCache from dependencies
 
   const handleErrorDismiss = () => {
     setTxError(false);
     setTxErrorMessage(undefined);
     handleConfirmDismiss();
   };
+
 
   return (
     <>
@@ -465,13 +574,13 @@ export function SwapComponent({
               onMax={(maxBalance) => handleTypeInput(maxBalance.toString())}
               fiatValue={showFiatValueInput ? fiatValueInput : undefined}
               onCurrencySelect={handleInputSelect}
-              otherCurrency={currencies[Field.OUTPUT]}
+              otherCurrency={currencies?.[Field.OUTPUT]} // Use optional chaining
               networkFees={networkFees}
               isLoadingNetworkFees={isLoadingNetworkFees}
               // showCommonBases
               // id={InterfaceSectionName.CURRENCY_INPUT_PANEL}
-              loading={independentField === Field.OUTPUT && routeIsSyncing}
-              currency={currencies[Field.INPUT] ?? null}
+              loading={routeIsLoading && independentField === Field.OUTPUT} // Use routeIsLoading variable
+              currency={currencies?.[Field.INPUT] ?? null} // Use optional chaining
               id={'swap-input'}
               disableInput={getSwapValues().noCurrencySelected}
             />
