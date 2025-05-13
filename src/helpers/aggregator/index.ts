@@ -63,8 +63,23 @@ export function poolHashesToScVal(poolHashes?: string[]): xdr.ScVal {
 }
 
 export const dexDistributionParser = (dexDistributionRaw: DexDistribution[]): xdr.ScVal => {
+  
+
   console.log("🚀 ~ dexDistributionRaw:", dexDistributionRaw)
   const dexDistributionScVal = dexDistributionRaw.map((distribution) => {
+
+    let protocol_id_num;
+    if (distribution.protocol_id === 'soroswap') {
+      protocol_id_num = 0;
+    }
+    else if (distribution.protocol_id === 'phoenix') {
+      protocol_id_num = 1;
+    } else if (distribution.protocol_id === 'aqua') {
+      protocol_id_num = 2;
+    } else {
+      throw new Error(`Unknown protocol_id: ${distribution.protocol_id}`);
+    }
+  
     return xdr.ScVal.scvMap([
       new xdr.ScMapEntry({
         key: xdr.ScVal.scvSymbol('bytes'),
@@ -80,7 +95,7 @@ export const dexDistributionParser = (dexDistributionRaw: DexDistribution[]): xd
       }),
       new xdr.ScMapEntry({
         key: xdr.ScVal.scvSymbol('protocol_id'),
-        val: xdr.ScVal.scvString(distribution.protocol_id),
+        val: nativeToScVal(protocol_id_num, {type: 'u32'}),
       }),
     ]);
   });

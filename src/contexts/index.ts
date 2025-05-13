@@ -1,5 +1,6 @@
 import React from 'react';
 import { PlatformType, Protocol } from 'state/routing/types';
+import defaultSettings from 'configs/default.settings.json';
 
 type ConnectWalletModalType = {
   isConnectWalletModalOpen: boolean;
@@ -68,13 +69,13 @@ export const AppContext = React.createContext<AppContextType>({
     setSnackbarType: () => {},
   },
   Settings: {
-    maxHops: 2,
+    maxHops: defaultSettings.maxHops,
     setMaxHops: () => {},
     protocolsStatus: [],
     setProtocolsStatus: () => {},
     isAggregatorState: false,
     setAggregatorStatus: () => {},
     aggregatorAddress: '',
-    setAggregatorAddress: () => {}
+    setAggregatorAddress: () => {},
   },
 });

@@ -22,6 +22,8 @@ import { getExpectedAmount } from './getExpectedAmount';
 import { Networks } from '@stellar/stellar-sdk';
 import { getSwapRoute, getSwapSplitRoute } from 'services/soroswapApi';
 import { passphraseToBackendNetworkName } from 'services/pairs';
+import { DEFAULT_SLIPPAGE_INPUT_VALUE } from 'components/Settings/MaxSlippageSettings';
+import { useUserSlippageToleranceWithDefault } from 'state/user/hooks';
 
 export interface GenerateRouteProps {
   amountAsset: AmountAsset;
@@ -36,6 +38,8 @@ const shouldUseDirectPath = process.env.NEXT_PUBLIC_DIRECT_PATH_ENABLED === 'tru
 export const useSoroswapApi = () => {
   const sorobanContext = useSorobanReact();
   const { Settings } = useContext(AppContext);
+  const allowedSlippage = useUserSlippageToleranceWithDefault(DEFAULT_SLIPPAGE_INPUT_VALUE);
+
 
   const { factory } = useFactory(sorobanContext);
 
@@ -176,8 +180,9 @@ export const useSoroswapApi = () => {
         tradeType: tradeType,
         protocols: getProtocols,
         parts: 10,
-        slippageTolerance: '0.01',
+        slippageTolerance: allowedSlippage.toString(),
         assetList: ['SOROSWAP'],
+        maxHops: maxHops,
       };
 
       try {
@@ -194,8 +199,9 @@ export const useSoroswapApi = () => {
         assetOut: tradeType === TradeType.EXACT_INPUT ? quoteAsset.contract : amountAsset.currency.contract,
         amount: amount,
         tradeType: tradeType,
-        slippageTolerance: '0.01',
+        slippageTolerance: allowedSlippage.toString(),
         assetList: ['SOROSWAP'],
+        maxHops: maxHops,
       };
 
       try {
