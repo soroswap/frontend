@@ -1,13 +1,13 @@
 import { useSorobanReact } from 'stellar-react';
 import { TokenMapType, TokenType, tokensResponse } from 'interfaces';
-import { useEffect, useState, useMemo } from 'react'; // Import useMemo
+import { useEffect, useState, useMemo } from 'react'; 
 import { fetchTokens } from 'services/tokens';
 import useSWRImmutable from 'swr/immutable';
 import { tokensToMap } from './utils';
 import { passphraseToBackendNetworkName } from 'services/pairs';
 
 //Returns tokens from the API
-export const useApiTokens = (initiator?: string) => {
+export const useApiTokens = () => {
   const sorobanContext = useSorobanReact();
   const [activeChain, setActiveChain] = useState<string>('');
   const {activeNetwork} = sorobanContext;

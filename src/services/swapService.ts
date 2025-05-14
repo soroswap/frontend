@@ -249,12 +249,12 @@ export const getDerivedSwapInfoService = async (
   
   const outputCurrency = await findTokenService(outputCurrencyId ?? undefined, tokensAsMap, sorobanContext);
 
-  const tokensArray = inputCurrency && outputCurrency?.code ? [inputCurrency, outputCurrency] : undefined;
+  const tokensArray = inputCurrency && outputCurrency ? [inputCurrency, outputCurrency] : undefined;
 
   // Fetch relevant token balances
   let relevantTokenBalances: { [field in Field]?: relevantTokensType | string | undefined } | undefined;
   if (account && tokensArray && horizonAccount) { // Use passed horizonAccount
-    const balancesResult = await tokenBalances(account, tokensArray, sorobanContext, horizonAccount, undefined);
+    const balancesResult = await tokenBalances(account, tokensArray, sorobanContext, horizonAccount);
     // Transform the balances array into an object with INPUT and OUTPUT fields
     relevantTokenBalances = {
       [Field.INPUT]: balancesResult?.balances?.[0] ?? '', // Assuming the order is always input then output

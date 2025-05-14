@@ -11,8 +11,7 @@ import { passphraseToBackendNetworkName } from 'services/pairs';
 export const findTokenService = async (
   tokenAddress: string | undefined,
   tokensAsMap: TokenMapType,
-  sorobanContext: SorobanContextType,
-  initiator?: string
+  sorobanContext: SorobanContextType
 ): Promise<TokenType | undefined> => {
   if (!tokenAddress || tokenAddress === '') return undefined;
 
@@ -25,7 +24,7 @@ export const findTokenService = async (
 
   if (fromMap) return fromMap;
 
-  const token = await getToken(sorobanContext, formattedAddress, initiator + '/' + 'findTokenService');
+  const token = await getToken(sorobanContext, formattedAddress);
 
   if (!token?.name || !token?.code) return undefined;
   // Here from token.name we will try to understand if this is a classic asset (even if we got a soroban contracta as address).
@@ -63,7 +62,7 @@ export const isClassicStellarAssetService = async (
 export const getTokenNameService = async (
   tokenAddress: string | undefined,
   sorobanContext: SorobanContextType,
-  initiator?: string
+  
 ): Promise<string | null | undefined> => {
   if (!tokenAddress) return undefined;
   return getTokenName(tokenAddress, sorobanContext);
@@ -71,7 +70,7 @@ export const getTokenNameService = async (
 
 export const getAllTokensService = async (
   sorobanContext: SorobanContextType,
-  initiator?: string
+  
 ): Promise<{ tokens: TokenType[]; tokensAsMap: TokenMapType }> => {
   const { activeNetwork } = sorobanContext;
   if (!activeNetwork) {

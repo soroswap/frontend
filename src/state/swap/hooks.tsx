@@ -110,7 +110,7 @@ export function useDerivedSwapInfo(state: SwapState) {
 
   useEffect(() => {
     if (account) {
-      tokenBalances(account, tokensArray, sorobanContext, horizonAccount, undefined).then((res) => {
+      tokenBalances(account, tokensArray, sorobanContext, horizonAccount).then((res) => {
         if (res) {
           setRelevantTokenBalances(res.balances);
         }

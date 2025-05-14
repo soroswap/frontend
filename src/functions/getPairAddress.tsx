@@ -17,9 +17,6 @@ export async function getPairAddress(
 
   const factory = await fetchFactory(activeChain);
 
-
-  console.log("getPairAddress: Calling get_pair with addresses:", address_0, address_1);
-
   const response = await contractInvoke({
     contractAddress: factory.address,
     method: 'get_pair',

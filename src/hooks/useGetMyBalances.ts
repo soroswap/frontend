@@ -17,7 +17,7 @@ interface FetchBalancesProps {
   account: AccountResponse | undefined;
 }
 
-const fetchBalances = async ({ address, tokens, sorobanContext, account }: FetchBalancesProps, initiator?: string) => {
+const fetchBalances = async ({ address, tokens, sorobanContext, account }: FetchBalancesProps, ) => {
   if (!address || !tokens || !sorobanContext || !account) return null;
   
   const response = await tokenBalances(address, tokens, sorobanContext, account, true);
@@ -37,11 +37,11 @@ export function calculateAvailableBalance(
   return BigNumber.max(new BigNumber(0), baseBalance.minus(adjustment)).decimalPlaces(7);
 }
 
-const useGetMyBalances = (initiator?: string) => {
+const useGetMyBalances = () => {
   const sorobanContext = useSorobanReact();
 
   const { address } = sorobanContext;
-  const { tokens, isLoading: isLoadingTokens } = useAllTokens(initiator + '/' + 'useGetMyBalances');
+  const { tokens, isLoading: isLoadingTokens } = useAllTokens();
   const { subentryCount, nativeBalance, isLoading: isSubentryLoading } = useGetSubentryCount();
 
   const { account, mutate: refetchAccount } = useHorizonLoadAccount();
@@ -56,7 +56,7 @@ const useGetMyBalances = (initiator?: string) => {
       ? ['balance', address, tokens, sorobanContext, account, tokens.length]
       : null,
     ([key, address, tokens, sorobanContext, account]) =>
-      fetchBalances({ address, tokens, sorobanContext, account }, initiator),
+      fetchBalances({ address, tokens, sorobanContext, account }),
   );
 
   const availableNativeBalance = useCallback(

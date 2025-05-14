@@ -151,7 +151,7 @@ export function SwapComponent({
   useEffect(() => {
 
     const fetchTokens = async () => {
-      const { tokensAsMap } = await getAllTokensService(sorobanContext, 'SwapComponent');
+      const { tokensAsMap } = await getAllTokensService(sorobanContext);
       setTokensAsMap(tokensAsMap);
     };
 
@@ -165,8 +165,7 @@ export function SwapComponent({
         const prefilledToken = await findTokenService(
           prefilledState.INPUT.currencyId,
           tokensAsMap,
-          sorobanContext,
-          'SwapComponent',
+          sorobanContext
         );
         if (prefilledToken) {
           onCurrencySelection(Field.INPUT, prefilledToken);
@@ -295,7 +294,7 @@ export function SwapComponent({
   const showFiatValueOutput = Boolean(parsedAmounts[Field.OUTPUT]);
 
   const maxInputAmount: relevantTokensType | string | undefined = useMemo(
-    () => currencyBalances?.[Field.INPUT], // Use optional chaining
+    () => currencyBalances?.[Field.INPUT], 
     // () => maxAmountSpend(currencyBalances[Field.INPUT]), TODO: Create maxAmountSpend if is native token (XLM) should count for the fees and minimum xlm for the account to have
     [currencyBalances],
   );
@@ -330,7 +329,6 @@ export function SwapComponent({
     (value: string) => {
       const currency = currencies[Field.INPUT];
       const decimals = currency?.decimals ?? 7;
-      console.count('handleInputSelect');
       // Prevents user from inputting more decimals than the token supports
       if (value.split('.').length > 1 && value.split('.')[1].length > decimals) {
         return;
@@ -462,7 +460,7 @@ export function SwapComponent({
     userHasSpecifiedInputOutput && (trade || routeIsLoading || routeIsSyncing),
   );
 
-  const inputCurrency = currencies?.[Field.INPUT] ?? undefined; // Use optional chaining
+  const inputCurrency = currencies?.[Field.INPUT] ?? undefined; 
   const priceImpactSeverity = 2; //IF is < 2 it shows Swap anyway button in red
   const showPriceImpactWarning = false;
 
@@ -503,10 +501,10 @@ export function SwapComponent({
       onUserInput(Field.INPUT, '');
     }
 
-    // resetRouterSdkCache(); // Commenting out as resetRouterSdkCache is not available from the service
+    // resetRouterSdkCache(); // Commenting out as resetRouterSdkCache is an empty method 
 
     useConfirmModal.resetStates();
-  }, [onUserInput, swapResult, useConfirmModal]); // Removed resetRouterSdkCache from dependencies
+  }, [onUserInput, swapResult, useConfirmModal]); 
 
   const handleErrorDismiss = () => {
     setTxError(false);
@@ -574,13 +572,13 @@ export function SwapComponent({
               onMax={(maxBalance) => handleTypeInput(maxBalance.toString())}
               fiatValue={showFiatValueInput ? fiatValueInput : undefined}
               onCurrencySelect={handleInputSelect}
-              otherCurrency={currencies?.[Field.OUTPUT]} // Use optional chaining
+              otherCurrency={currencies?.[Field.OUTPUT]} 
               networkFees={networkFees}
               isLoadingNetworkFees={isLoadingNetworkFees}
               // showCommonBases
               // id={InterfaceSectionName.CURRENCY_INPUT_PANEL}
               loading={routeIsLoading && independentField === Field.OUTPUT} // Use routeIsLoading variable
-              currency={currencies?.[Field.INPUT] ?? null} // Use optional chaining
+              currency={currencies?.[Field.INPUT] ?? null} 
               id={'swap-input'}
               disableInput={getSwapValues().noCurrencySelected}
             />

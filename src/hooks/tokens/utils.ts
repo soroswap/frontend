@@ -54,8 +54,7 @@ export const addUserToken = (token: TokenType, sorobanContext: SorobanContextTyp
 
 export async function getToken(
   sorobanContext: SorobanContextType,
-  tokenAddress?: string | undefined,
-  from?: string
+  tokenAddress?: string | undefined
 ): Promise<TokenType | undefined> {
   if (!tokenAddress || tokenAddress === '' || !sorobanContext.activeNetwork) return undefined;
 
@@ -83,7 +82,7 @@ export async function getToken(
   }
 }
 
-export const getTokenLogo = async (address: string, sorobanContext: SorobanContextType, from?: string) => {
+export const getTokenLogo = async (address: string, sorobanContext: SorobanContextType) => {
   const backendURL = `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/tokens`;
 
   // fetch token list from url

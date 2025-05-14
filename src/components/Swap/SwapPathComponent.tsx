@@ -69,8 +69,7 @@ function SwapPathComponent({ trade }: { trade: InterfaceTrade | undefined }) {
       const asset = await findToken(
         contract,
         tokensAsMap,
-        sorobanContext,
-        'SwapPathComponent.tsx&trade.platform == PlatformType.ROUTER',
+        sorobanContext
       );
       const code = asset?.code == 'native' ? 'XLM' : asset?.code;
 
@@ -92,8 +91,7 @@ function SwapPathComponent({ trade }: { trade: InterfaceTrade | undefined }) {
       const asset = await findToken(
         contract,
         tokensAsMap,
-        sorobanContext,
-        'SwapPathComponent.tsx&trade.platform == PlatformType.AGGREGATOR',
+        sorobanContext
       );
       const code = asset?.code == 'native' ? 'XLM' : asset?.code;
       return code;
@@ -107,12 +105,13 @@ function SwapPathComponent({ trade }: { trade: InterfaceTrade | undefined }) {
   useEffect(() => {
     (async () => {
       if (!memoizedTradePath || isLoading) return;
-      console.log('!!!Change swap items', memoizedTradePath, isLoading, sorobanContext);
 
       if (memoizedTradePath.platform == PlatformType.ROUTER && memoizedTradePath.path) {
         setPathTokensIsLoading(true);
 
-        //TODO: memoizedTradePath.path.inputAmount && memoizedTradePath.path.output already have this - We don't need external request
+        /**
+         * NOTE: memoizedTradePath.path.inputAmount && memoizedTradePath.path.output already have this - We don't need * external request 
+         **/
         let pathtokenNames = ['', ''];
         if (
           !memoizedTradePath.inputAmount ||
@@ -120,10 +119,8 @@ function SwapPathComponent({ trade }: { trade: InterfaceTrade | undefined }) {
           memoizedTradePath?.path[0] !== memoizedTradePath?.inputAmount?.currency?.contract ||
           memoizedTradePath.path[1] !== memoizedTradePath?.outputAmount?.currency?.contract
         ) {
-          console.log('GET FROM API');
           pathtokenNames = await getTradedCurrencies(memoizedTradePath?.path);
         } else {
-          console.log('GET FROM STATE');
           pathtokenNames = [memoizedTradePath?.inputAmount?.currency?.code, memoizedTradePath.outputAmount?.currency?.code as string];
         }
     

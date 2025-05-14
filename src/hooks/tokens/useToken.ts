@@ -12,8 +12,7 @@ import { Asset } from '@stellar/stellar-sdk';
 export const findToken = async (
   tokenAddress: string | undefined,
   tokensAsMap: TokenMapType,
-  sorobanContext: SorobanContextType,
-  initiator?: string
+  sorobanContext: SorobanContextType
 ) => {
   if (!tokenAddress || tokenAddress === '') return undefined;
 
@@ -26,7 +25,7 @@ export const findToken = async (
 
   if (fromMap) return fromMap;
   
-  const token = await getToken(sorobanContext, formattedAddress, initiator + '/' + 'findToken');
+  const token = await getToken(sorobanContext, formattedAddress);
 
   // const token: TokenType = {
   //   contract: formattedAddress,
@@ -106,7 +105,6 @@ export function useToken(tokenAddress: string | undefined) {
       return undefined;
     }
     const asset = new Asset(code, issuer);
-    console.log("[] ~ useToken ~ asset:", asset)
     if (asset.contractId(network ?? WalletNetwork.TESTNET) === contractId) {
       return true;
     } else {
