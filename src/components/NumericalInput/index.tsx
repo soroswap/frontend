@@ -1,6 +1,16 @@
 import { styled } from 'soroswap-ui';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { escapeRegExp } from '../../utils/escapeRegExp';
+
+interface InnerInputProps extends Omit<React.HTMLProps<HTMLInputElement>, 'ref' | 'onChange' | 'as'> {
+  value: string | number;
+  onUserInput: (input: string) => void;
+  error ?: boolean;
+  fontSize ?: string;
+  align ?: 'right' | 'left';
+  prependSymbol ?: string;
+}
+
 
 const StyledInput = styled('input')<{ error?: boolean; fontSize?: string; align?: string }>`
   color: ${({ error, theme }) => (error ? theme.palette.error.main : theme.palette.primary.main)};
@@ -46,14 +56,9 @@ export const Input = React.memo(function InnerInput({
   placeholder,
   prependSymbol,
   ...rest
-}: {
-  value: string | number;
-  onUserInput: (input: string) => void;
-  error?: boolean;
-  fontSize?: string;
-  align?: 'right' | 'left';
-  prependSymbol?: string;
-} & Omit<React.HTMLProps<HTMLInputElement>, 'ref' | 'onChange' | 'as'>) {
+}: InnerInputProps) {
+
+
   const enforcer = (nextUserInput: string) => {
     if (nextUserInput === '' || inputRegex.test(escapeRegExp(nextUserInput))) {
       onUserInput(nextUserInput);
@@ -93,5 +98,6 @@ export const Input = React.memo(function InnerInput({
     />
   );
 });
+
 
 export default Input;

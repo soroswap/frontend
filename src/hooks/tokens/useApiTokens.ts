@@ -1,6 +1,6 @@
 import { useSorobanReact } from 'stellar-react';
 import { TokenMapType, TokenType, tokensResponse } from 'interfaces';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react'; 
 import { fetchTokens } from 'services/tokens';
 import useSWRImmutable from 'swr/immutable';
 import { tokensToMap } from './utils';
@@ -17,6 +17,7 @@ export const useApiTokens = () => {
       setActiveChain(activeNetworkId);
     }
   }, [activeNetwork]);
+  
   const { data, mutate, isLoading, error } = useSWRImmutable(
     ['tokens', activeChain],
     () => fetchTokens(activeChain),
