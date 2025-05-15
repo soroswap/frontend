@@ -118,6 +118,11 @@ export function useSwapCallback(
   useEffect(() => {
     if (trade) {
       console.group('%c[Soroswap Debug] SwapCallback', 'color: #00aced; font-weight: bold');
+      console.log('🚀 Trade:', trade);
+      console.log('🚀 sorobanContext:', sorobanContext);
+      console.log('🚀 address:', address);
+      console.log('🚀 activeNetwork:', activeNetwork);
+      console.log('🚀 kit:', kit);
       console.log('🚀 Tipo de operación:', trade.tradeType);
       console.log('🔄 Plataforma seleccionada:', trade.platform);
       console.log('💰 Moneda de entrada:', trade.inputAmount?.currency.code, 'cantidad:', trade.inputAmount?.value);

@@ -28,8 +28,10 @@ const isObject = (val: any) => typeof val === 'object' && val !== null && !Array
 export function useAggregatorCallback() {
   const sorobanContext = useSorobanReact();
   const { Settings } = useContext(AppContext);
-  const { aggregatorAddress: aggregator_address } = Settings;
+  //const { aggregatorAddress: aggregator_address } = Settings;
+  const { address: aggregator_address } = useAggregator();
 
+  console.log('🚀 aggregator_address:', aggregator_address);
 
   return useCallback(
     async (method: AggregatorMethod, args?: StellarSdk.xdr.ScVal[], signAndSend?: boolean) => {
