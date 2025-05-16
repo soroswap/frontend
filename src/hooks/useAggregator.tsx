@@ -16,6 +16,7 @@ export const setAggregatorData = async (activeChainId: string) => {
   });
   const { data } = response;
   const aggregatorAddress = data.ids.aggregator;
+  console.log('aggregatorAddress', aggregatorAddress)
   return aggregatorAddress
 };
 
@@ -27,6 +28,7 @@ export const useAggregator = () => {
   const [address, setAddress] = useState<string>();
   const [isEnabled, setIsAggregatorEnabled] = useState<boolean>(false);
   const activeChainId = passphraseToBackendNetworkName[activeNetwork!].toLowerCase();
+  console.log('activeChainId', activeChainId)
 
   const shouldUseAggregator = useMemo(() => {
     if (activeChainId === 'mainnet') {
@@ -40,6 +42,7 @@ export const useAggregator = () => {
   const getAggregatorData = async () => {
     if (!sorobanContext) return;
     const aggregatorAddress = await setAggregatorData(activeChainId);
+    console.log('aggregatorAddress antes de entrar al setAddress', aggregatorAddress)
     setAddress(aggregatorAddress);
     setIsAggregatorEnabled(!!shouldUseAggregator && !!aggregatorAddress)
   }
