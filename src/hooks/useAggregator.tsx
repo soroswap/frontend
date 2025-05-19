@@ -7,6 +7,12 @@ const aggregatorMainnet = process.env.NEXT_PUBLIC_AGGREGATOR_ENABLED_MAINNET ===
 const aggregatorTestnet = process.env.NEXT_PUBLIC_AGGREGATOR_ENABLED_TESTNET === 'true';
 
 export const setAggregatorData = async (activeChainId: string) => {
+  // If testnet, return the hardcoded address
+  if (activeChainId === 'testnet') {
+    console.log('using testnet aggregator address hardcoded');
+    return 'CAS3LSOAZGZ4ZEN5YEVJ3ACXTCPC3L6QGG47EP6BH2JNYVEMRELYGYUP';
+  }
+  
   const response = await axios.get(
     `https://raw.githubusercontent.com/soroswap/aggregator/refs/heads/aqua-adapter/public/${activeChainId}.contracts.json` 
   ).catch((error) => {
@@ -16,6 +22,7 @@ export const setAggregatorData = async (activeChainId: string) => {
   });
   const { data } = response;
   const aggregatorAddress = data.ids.aggregator;
+  console.log('aggregatorAddress', aggregatorAddress)
   return aggregatorAddress
 };
 
@@ -27,6 +34,7 @@ export const useAggregator = () => {
   const [address, setAddress] = useState<string>();
   const [isEnabled, setIsAggregatorEnabled] = useState<boolean>(false);
   const activeChainId = passphraseToBackendNetworkName[activeNetwork!].toLowerCase();
+  console.log('activeChainId', activeChainId)
 
   const shouldUseAggregator = useMemo(() => {
     if (activeChainId === 'mainnet') {
@@ -40,6 +48,7 @@ export const useAggregator = () => {
   const getAggregatorData = async () => {
     if (!sorobanContext) return;
     const aggregatorAddress = await setAggregatorData(activeChainId);
+    console.log('aggregatorAddress antes de entrar al setAddress', aggregatorAddress)
     setAddress(aggregatorAddress);
     setIsAggregatorEnabled(!!shouldUseAggregator && !!aggregatorAddress)
   }
