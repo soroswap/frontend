@@ -28,6 +28,11 @@
       "url": "https://docs.soroswap.finance/soroswap-aggregator/supported-amms"
     },
     {
+      "key": "aqua",
+      "value": true,
+      "url": "https://docs.soroswap.finance/soroswap-aggregator/supported-amms"
+    },
+    {
       "key": "sdex",
       "value": false,
       "url": "https://docs.soroswap.finance/soroswap-aggregator/supported-amms"

@@ -7,6 +7,12 @@ const aggregatorMainnet = process.env.NEXT_PUBLIC_AGGREGATOR_ENABLED_MAINNET ===
 const aggregatorTestnet = process.env.NEXT_PUBLIC_AGGREGATOR_ENABLED_TESTNET === 'true';
 
 export const setAggregatorData = async (activeChainId: string) => {
+  // If testnet, return the hardcoded address
+  if (activeChainId === 'testnet') {
+    console.log('using testnet aggregator address hardcoded');
+    return 'CAS3LSOAZGZ4ZEN5YEVJ3ACXTCPC3L6QGG47EP6BH2JNYVEMRELYGYUP';
+  }
+  
   const response = await axios.get(
     `https://raw.githubusercontent.com/soroswap/aggregator/refs/heads/aqua-adapter/public/${activeChainId}.contracts.json` 
   ).catch((error) => {
