@@ -18,7 +18,8 @@ import { RouterMethod, useRouterCallback } from './useRouterCallback';
 import { createStellarPathPayment } from 'helpers/horizon/createHorizonTransaction';
 import { extractContractError } from 'functions/extractContractError';
 import { TxResponse } from 'stellar-react/dist/contracts/types';
-
+import { ProtocolsStatus } from 'contexts';
+import { WalletNetwork } from 'stellar-react';
 
 // Returns a function that will execute a swap, if the parameters are all valid
 // and the user has approved the slippage adjusted input amount for the trade
@@ -104,7 +105,8 @@ export function useSwapCallback(
   // allowedSlippage: Percent, // in bips
   // permitSignature: PermitSignature | undefined
 ) {
-  const { SnackbarContext } = useContext(AppContext);
+  const { SnackbarContext, Settings } = useContext(AppContext);
+  const { protocolsStatus } = Settings;
   const sorobanContext = useSorobanReact();
   const { activeNetwork, address, kit } = sorobanContext;
   const routerCallback = useRouterCallback();
@@ -113,6 +115,9 @@ export function useSwapCallback(
   const isUsingAggregator = hasDistribution(trade);
 
   const { mutate } = useSWRConfig();
+  console.log("TTrade swap 1", trade);
+
+  //console.log("trade.platform", trade.platform);
 
   // Logs de depuración para el proceso de swap
   useEffect(() => {
@@ -150,6 +155,8 @@ export function useSwapCallback(
     if (!trade) throw new Error('missing trade');
     if (!address || !activeNetwork) throw new Error('wallet must be connected to swap');
     if (!trade.tradeType) throw new Error('tradeType must be defined');
+    
+    
 
     const { amount0, amount1, routerMethod, aggregatorMethod } = getSwapAmounts({
       tradeType: trade.tradeType,
@@ -278,6 +285,7 @@ export function useSwapCallback(
         throw new Error('Unsupported platform');
     }
   };
+  console.log("trade swap final", trade);
 
   return { doSwap, isLoading: trade?.isLoading };
 }

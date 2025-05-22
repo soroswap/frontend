@@ -124,6 +124,7 @@ export function useBestTrade(
   }, [data, currencyIn, currencyOut, tradeType]);
 
   // Create the trade object
+  console.log("data best trade", data);
   const trade: InterfaceTrade = useMemo(() => {
     const baseTrade = {
       inputAmount,
