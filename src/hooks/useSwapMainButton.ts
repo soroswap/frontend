@@ -1,8 +1,8 @@
-import { useSorobanReact } from 'stellar-react';
+import { useSorobanReact, WalletNetwork } from 'stellar-react';
 import { AppContext } from 'contexts';
 import { TokenType } from 'interfaces';
 import { useContext } from 'react';
-import { InterfaceTrade } from 'state/routing/types';
+import { InterfaceTrade, PlatformType } from 'state/routing/types';
 import { Field } from 'state/swap/actions';
 import { relevantTokensType } from './useBalances';
 import useGetMyBalances from './useGetMyBalances';
@@ -35,6 +35,8 @@ const useSwapMainButton = ({
   const { isAggregatorState: aggregatorEnabled } = Settings;
   const { data } = useGetNativeTokenBalance();
   const { availableNativeBalance } = useGetMyBalances();
+  
+  console.log("trade", trade);
 
   const { address, connect } = sorobanContext;
   const userBalances = useGetMyBalances();
@@ -67,14 +69,26 @@ const useSwapMainButton = ({
       Number(inputA) > Number(balanceA) ? currencyA?.code : undefined;
 
     const invalidAmount = Number(inputA) < 0 || Number(inputB) < 0;
+
     let insufficientLiquidity = !noAmountTyped && !trade;
+    console.log("aggregatorEnabled", aggregatorEnabled);
+    
     if(aggregatorEnabled){
       const distribution = trade?.distribution;
+      console.log("distribution", distribution);
+      
+      //check if SDEX is enabled
+      const isSDEXEnabled = Settings.protocolsStatus.some(
+        protocol => protocol.key === PlatformType.STELLAR_CLASSIC && protocol.value
+      );
+      console.log("isSDEXEnabled", isSDEXEnabled);
       if (distribution?.every((d) => d.path.length === 0)) {
-        insufficientLiquidity = true;
+        if (!isSDEXEnabled || sorobanContext.activeNetwork !== WalletNetwork.PUBLIC) {
+          insufficientLiquidity = true;
+        }
       }
     }
-    
+    console.log("insufficientLiquidity", insufficientLiquidity);
     return {
       currencyA,
       currencyB,

@@ -124,7 +124,7 @@ export type InterfaceTrade = {
     denominator: number;
   };
   [x: string]: any;
-  platform?: PlatformType;
+  platform?: PlatformType | PlatformType[];
 };
 
 export enum QuoteState {
