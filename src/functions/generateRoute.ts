@@ -176,7 +176,7 @@ export const useSoroswapApi = () => {
         tradeType: tradeType,
         protocols: getProtocols,
         parts: 10,
-        slippageTolerance: '0.01',
+        slippageTolerance: '50',
         assetList: ['SOROSWAP'],
       };
 
@@ -194,7 +194,7 @@ export const useSoroswapApi = () => {
         assetOut: tradeType === TradeType.EXACT_INPUT ? quoteAsset.contract : amountAsset.currency.contract,
         amount: amount,
         tradeType: tradeType,
-        slippageTolerance: '0.01',
+        slippageTolerance: '50',
         assetList: ['SOROSWAP'],
       };
 
