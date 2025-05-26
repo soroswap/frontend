@@ -281,6 +281,7 @@ export const getBestPath = (
   if (!tradeType) throw new Error('Trade type not found');
   if (!horizonPath) return routerPath;
   if (!routerPath) return horizonPath;
+  
   if (tradeType === TradeType.EXACT_INPUT) {
     const horizonAmountOutMin = parseInt(
       (horizonPath as ExactInBuildTradeReturn)?.trade.amountOutMin.toString() || '0',
@@ -290,9 +291,15 @@ export const getBestPath = (
         routerPath as ExactInBuildTradeReturn | ExactInSplitBuildTradeReturn
       )?.trade.amountOutMin?.toString() || '0',
     );
+    
+    // if horizon has liquidity and router doesn't
+    if (horizonAmountOutMin !== 0 && routerAmountOutMin === 0) {
+      return horizonPath;
+    }
+    
+    // If there is liquidity in both, return the best
     if (horizonAmountOutMin !== 0 && routerAmountOutMin !== 0) {
-      if (routerAmountOutMin > horizonAmountOutMin) return routerPath;
-      else return horizonPath;
+      return routerAmountOutMin > horizonAmountOutMin ? routerPath : horizonPath;
     }
   } else if (tradeType === TradeType.EXACT_OUTPUT) {
     const horizonAmountInMax = parseInt(
