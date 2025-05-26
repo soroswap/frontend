@@ -89,7 +89,6 @@ export default function ContextProvider({ children }: { children: React.ReactNod
       protocols = protocols.filter((protocol) => protocol.key != PlatformType.STELLAR_CLASSIC);
     }
     setProtocolsStatus(protocols);
-    console.log('protocols', protocols);
   }, [defaultProtocolsStatus, isAggregator, activeNetwork]);
 
   return (

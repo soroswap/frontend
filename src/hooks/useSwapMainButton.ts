@@ -35,8 +35,6 @@ const useSwapMainButton = ({
   const { isAggregatorState: aggregatorEnabled } = Settings;
   const { data } = useGetNativeTokenBalance();
   const { availableNativeBalance } = useGetMyBalances();
-  
-  console.log("trade", trade);
 
   const { address, connect } = sorobanContext;
   const userBalances = useGetMyBalances();
@@ -71,24 +69,22 @@ const useSwapMainButton = ({
     const invalidAmount = Number(inputA) < 0 || Number(inputB) < 0;
 
     let insufficientLiquidity = !noAmountTyped && !trade;
-    console.log("aggregatorEnabled", aggregatorEnabled);
+
     
     if(aggregatorEnabled){
       const distribution = trade?.distribution;
-      console.log("distribution", distribution);
+
       
       //check if SDEX is enabled
       const isSDEXEnabled = Settings.protocolsStatus.some(
         protocol => protocol.key === PlatformType.STELLAR_CLASSIC && protocol.value
       );
-      console.log("isSDEXEnabled", isSDEXEnabled);
       if (distribution?.every((d) => d.path.length === 0)) {
         if (!isSDEXEnabled || sorobanContext.activeNetwork !== WalletNetwork.PUBLIC) {
           insufficientLiquidity = true;
         }
       }
     }
-    console.log("insufficientLiquidity", insufficientLiquidity);
     return {
       currencyA,
       currencyB,
