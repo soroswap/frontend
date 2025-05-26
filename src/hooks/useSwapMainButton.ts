@@ -1,8 +1,8 @@
-import { useSorobanReact, WalletNetwork } from 'stellar-react';
+import { useSorobanReact } from 'stellar-react';
 import { AppContext } from 'contexts';
 import { TokenType } from 'interfaces';
 import { useContext } from 'react';
-import { InterfaceTrade, PlatformType } from 'state/routing/types';
+import { InterfaceTrade } from 'state/routing/types';
 import { Field } from 'state/swap/actions';
 import { relevantTokensType } from './useBalances';
 import useGetMyBalances from './useGetMyBalances';
@@ -67,15 +67,14 @@ const useSwapMainButton = ({
       Number(inputA) > Number(balanceA) ? currencyA?.code : undefined;
 
     const invalidAmount = Number(inputA) < 0 || Number(inputB) < 0;
-
     let insufficientLiquidity = !noAmountTyped && !trade;
-
     if(aggregatorEnabled){
       const distribution = trade?.distribution;
       if (distribution?.every((d) => d.path.length === 0)) {
         insufficientLiquidity = true;
       }
     }
+    
     return {
       currencyA,
       currencyB,
