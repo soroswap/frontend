@@ -115,7 +115,6 @@ export function useSwapCallback(
   const isUsingAggregator = hasDistribution(trade);
 
   const { mutate } = useSWRConfig();
-  console.log("TTrade swap 1", trade);
 
   //console.log("trade.platform", trade.platform);
 
