@@ -70,19 +70,10 @@ const useSwapMainButton = ({
 
     let insufficientLiquidity = !noAmountTyped && !trade;
 
-    
     if(aggregatorEnabled){
       const distribution = trade?.distribution;
-
-      
-      //check if SDEX is enabled
-      const isSDEXEnabled = Settings.protocolsStatus.some(
-        protocol => protocol.key === PlatformType.STELLAR_CLASSIC && protocol.value
-      );
       if (distribution?.every((d) => d.path.length === 0)) {
-        if (!isSDEXEnabled || sorobanContext.activeNetwork !== WalletNetwork.PUBLIC) {
-          insufficientLiquidity = true;
-        }
+        insufficientLiquidity = true;
       }
     }
     return {
