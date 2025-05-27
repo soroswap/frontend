@@ -39,20 +39,20 @@ import {
   Protocol,
   SwapRouteRequest,
   SwapRouteSplitRequest,
-  ExactInBuildTradeReturn, // Import ExactInBuildTradeReturn
-  ExactInSplitBuildTradeReturn, // Import ExactInSplitBuildTradeReturn
-  ExactOutBuildTradeReturn, // Import ExactOutBuildTradeReturn
-  ExactOutSplitBuildTradeReturn, // Import ExactOutSplitBuildTradeReturn
+  ExactInBuildTradeReturn, 
+  ExactInSplitBuildTradeReturn, 
+  ExactOutBuildTradeReturn, 
+  ExactOutSplitBuildTradeReturn,
 } from 'state/routing/types';
 import { CurrencyAmount as AmountAsset } from 'interfaces';
 import { getPairAddress } from 'functions/getPairAddress';
-import { reservesBNWithTokens } from 'hooks/useReserves'; // This is a hook, need to check if it can be used or replaced
+import { reservesBNWithTokens } from 'hooks/useReserves'; //NOTE: This is a hook, need to check if it can be used or replaced
 import { getExpectedAmount } from 'functions/getExpectedAmount';
 import { Networks } from '@stellar/stellar-sdk';
 import { getSwapRoute, getSwapSplitRoute } from 'services/soroswapApi';
 import { passphraseToBackendNetworkName } from 'services/pairs';
-import { getBestPath, getHorizonBestPath } from 'helpers/horizon/getHorizonPath'; // Import getBestPath and getHorizonBestPath
-import { ProtocolsStatus } from 'contexts'; // Import ProtocolsStatus
+import { getBestPath, getHorizonBestPath } from 'helpers/horizon/getHorizonPath'; 
+import { ProtocolsStatus } from 'contexts';
 
 export interface CalculateRouteServiceProps {
   amountAsset: AmountAsset;
@@ -66,6 +66,7 @@ export interface CalculateRouteServiceProps {
   protocolsStatus: ProtocolsStatus[];
   isAggregator: boolean;
   isExactIn: boolean;
+  allowedSlippage: number
 }
 
 const shouldUseDirectPath = process.env.NEXT_PUBLIC_DIRECT_PATH_ENABLED === 'true';
@@ -81,13 +82,12 @@ export const calculateBestRouteService = async ({
   maxHops,
   protocolsStatus,
   isAggregator,
-  isExactIn
+  isExactIn,
+  allowedSlippage
 }: CalculateRouteServiceProps): Promise<BuildTradeReturn | BuildSplitTradeReturn | undefined> => {
 
   if (shouldUseDirectPath) {
     try {
-
-
       // get pair address from factory
       const pairAddress = await getPairAddress(
         isExactIn ? amountAsset.currency.contract : quoteAsset.contract,
@@ -185,7 +185,7 @@ export const calculateBestRouteService = async ({
       tradeType: tradeType,
       protocols: protocolsStatus.filter(p => p.key !== PlatformType.STELLAR_CLASSIC && p.value).map(p => p.key as Protocol),
       parts: 10,
-      slippageTolerance: '0.01', // TODO: Use actual slippage
+      slippageTolerance: Math.floor(Number(allowedSlippage) * 100).toString(),
       assetList: ['SOROSWAP'], // TODO: Use actual asset list
     };
 
@@ -203,7 +203,7 @@ export const calculateBestRouteService = async ({
       assetOut: isExactIn ? quoteAsset.contract : amountAsset.currency.contract,
       amount: amount,
       tradeType: tradeType,
-      slippageTolerance: '0.01', // TODO: Use actual slippage
+      slippageTolerance: Math.floor(Number(allowedSlippage) * 100).toString(),
       assetList: ['SOROSWAP'], // TODO: Use actual asset list
     };
 
@@ -226,7 +226,7 @@ export const getDerivedSwapInfoService = async (
   account: string | undefined | null,
   tokensAsMap: TokenMapType,
   horizonAccount: AccountResponse | undefined, // Accept AccountResponse as argument
-  allowedSlippage: any, // Accept allowedSlippage as argument
+  allowedSlippage: number, // Accept allowedSlippage as argument
   // Add arguments for calculateBestRouteService dependencies
   factory: string | undefined,
   maxHops: number,
@@ -282,7 +282,8 @@ export const getDerivedSwapInfoService = async (
         maxHops, // Pass maxHops
         protocolsStatus, // Pass protocolsStatus again? Check if needed twice
         isAggregator, // Pass isAggregator
-        isExactIn: isExactIn
+        isExactIn: isExactIn,
+        allowedSlippage
       });
 
       // Map the route result to the trade structure expected by SwapInfoService

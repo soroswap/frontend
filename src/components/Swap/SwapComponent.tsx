@@ -203,6 +203,7 @@ export function SwapComponent({
   });
 
   const [isLoadingSwapInfo, setIsLoadingSwapInfo] = useState(true); // New loading state
+  
 
   useEffect(() => {
     const fetchSwapInfo = async () => {
