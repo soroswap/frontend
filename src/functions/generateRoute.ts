@@ -180,7 +180,7 @@ export const useSoroswapApi = () => {
         tradeType: tradeType,
         protocols: getProtocols,
         parts: 10,
-        slippageTolerance: allowedSlippage.toString(),
+        slippageTolerance: Math.floor(Number(allowedSlippage) * 100).toString(),
         assetList: ['SOROSWAP'],
         maxHops: maxHops,
       };
@@ -199,7 +199,7 @@ export const useSoroswapApi = () => {
         assetOut: tradeType === TradeType.EXACT_INPUT ? quoteAsset.contract : amountAsset.currency.contract,
         amount: amount,
         tradeType: tradeType,
-        slippageTolerance: allowedSlippage.toString(),
+        slippageTolerance: Math.floor(Number(allowedSlippage) * 100).toString(),
         assetList: ['SOROSWAP'],
         maxHops: maxHops,
       };
