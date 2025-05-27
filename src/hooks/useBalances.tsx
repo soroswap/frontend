@@ -30,7 +30,7 @@ export interface tokenBalancesType {
 export async function tokenBalance(
   tokenAddress: string,
   userAddress: string,
-  sorobanContext: SorobanContextType,
+  sorobanContext: SorobanContextType
 ) {
   const user = accountToScVal(userAddress);
 

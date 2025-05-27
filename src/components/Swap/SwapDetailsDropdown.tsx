@@ -4,7 +4,7 @@ import Column from 'components/Column';
 import { LoadingOpacityContainer } from 'components/Loader/styled';
 import { RowBetween, RowFixed } from 'components/Row';
 import { SubHeaderSmall } from 'components/Text';
-import { useState } from 'react';
+import { memo, useMemo, useState } from 'react';
 import { ChevronDown } from 'react-feather';
 import { InterfaceTrade } from 'state/routing/types';
 import { AdvancedSwapDetails } from './AdvancedSwapDetails';
@@ -88,13 +88,13 @@ interface SwapDetailsInlineProps {
   networkFees: number | null;
 }
 
-export default function SwapDetailsDropdown({
+ const SwapDetailsDropdown = ({
   trade,
   syncing,
   loading,
   allowedSlippage,
   networkFees,
-}: SwapDetailsInlineProps) {
+}: SwapDetailsInlineProps) => {
   const theme = useTheme();
   const [showDetails, setShowDetails] = useState(false);
 
@@ -147,3 +147,5 @@ export default function SwapDetailsDropdown({
     </Wrapper>
   );
 }
+
+export default memo(SwapDetailsDropdown);

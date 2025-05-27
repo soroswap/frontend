@@ -79,6 +79,7 @@ export function CurrencySearch({
   const sorobanContext = useSorobanReact();
   const theme = useTheme();
 
+
   const [tokenLoaderTimerElapsed, setTokenLoaderTimerElapsed] = useState(false);
 
   // refs for fixed size lists
@@ -137,7 +138,7 @@ export function CurrencySearch({
   }
 
   const handleConfirmAddUserToken = () => {
-    if (!searchToken) return;
+    if (!searchToken || !searchToken.code) return;
     addUserToken(searchToken, sorobanContext);
     onCurrencySelect(searchToken);
   };
@@ -312,3 +313,4 @@ export function CurrencySearch({
     </>
   );
 }
+
