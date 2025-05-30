@@ -4,7 +4,7 @@
 currentDir=$(pwd)
 
 # Set the name, image and version for the Docker container
-containerName=soroswapFrontend
+containerName=soroswap-frontend
 
 imageName=node
 versionTag=20.18.0
@@ -27,6 +27,7 @@ fi
 # Run a new Docker container
 docker run --volume ${currentDir}:/workspace \
            --name ${containerName} \
+           --network soroswap-network \
            --interactive \
            --publish 3000:3000 \
            --workdir="/workspace" \

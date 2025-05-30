@@ -1,8 +1,9 @@
 import { contractInvoke, useSorobanReact } from 'stellar-react';
 import * as StellarSdk from '@stellar/stellar-sdk';
-import { useCallback } from 'react';
+import { useCallback, useContext } from 'react';
 import { useAggregator } from './useAggregator';
 import { TxResponse } from 'stellar-react/dist/contracts/types';
+import { AppContext } from 'contexts';
 
 export enum AggregatorMethod {
   GET_PROTOCOLS = 'get_protocols',
@@ -26,7 +27,9 @@ const isObject = (val: any) => typeof val === 'object' && val !== null && !Array
 
 export function useAggregatorCallback() {
   const sorobanContext = useSorobanReact();
-  const { address: aggregator_address } = useAggregator();
+  const { Settings } = useContext(AppContext);
+  const { aggregatorAddress: aggregator_address } = Settings;
+
 
   return useCallback(
     async (method: AggregatorMethod, args?: StellarSdk.xdr.ScVal[], signAndSend?: boolean) => {

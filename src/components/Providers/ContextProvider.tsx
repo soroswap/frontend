@@ -10,7 +10,7 @@ import { useAggregator } from 'hooks/useAggregator';
 export default function ContextProvider({ children }: { children: React.ReactNode }) {
   const sorobanContext = useSorobanReact();
   const { activeNetwork } = sorobanContext;
-  const { isEnabled: isAggregator } = useAggregator();
+  const { isEnabled: isAggregator, address } = useAggregator();
   const [isConnectWalletModal, setConnectWalletModal] = useState<boolean>(false);
   const [maxHops, setMaxHops] = useState<number>(2);
   const [protocolsStatus, setProtocolsStatus] = useState<ProtocolsStatus[]>([]);
@@ -18,6 +18,13 @@ export default function ContextProvider({ children }: { children: React.ReactNod
   const [snackbarMessage, setSnackbarMessage] = useState<string>('');
   const [snackbarTitle, setSnackbarTitle] = useState<string>('Swapped');
   const [snackbarType, setSnackbarType] = useState<SnackbarIconType>(SnackbarIconType.SWAP);
+  const [isAggregatorState, setAggregatorStatus] = useState<boolean>(isAggregator);
+  const [aggregatorAddress, setAggregatorAddress] = useState<string | undefined>(address);
+
+  useEffect(() => {
+    setAggregatorStatus(isAggregator);
+  }, [isAggregator]);
+
 
   const appContextValues: AppContextType = {
     ConnectWalletModal: {
@@ -39,6 +46,10 @@ export default function ContextProvider({ children }: { children: React.ReactNod
       setMaxHops,
       protocolsStatus,
       setProtocolsStatus,
+      isAggregatorState,
+      setAggregatorStatus,
+      aggregatorAddress,
+      setAggregatorAddress
     },
   };
 
@@ -60,6 +71,7 @@ export default function ContextProvider({ children }: { children: React.ReactNod
         url: protocol.url,
       });
     }
+    address && setAggregatorAddress(address);
     if (isAggregator === false) {
       switch (activeNetwork) {
         case WalletNetwork.TESTNET:

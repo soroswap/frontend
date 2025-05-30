@@ -6,14 +6,28 @@ import { passphraseToBackendNetworkName } from 'services/pairs';
 const aggregatorMainnet = process.env.NEXT_PUBLIC_AGGREGATOR_ENABLED_MAINNET === 'true';
 const aggregatorTestnet = process.env.NEXT_PUBLIC_AGGREGATOR_ENABLED_TESTNET === 'true';
 
-export const useAggregator = () => {
-  const sorobanContext: SorobanContextType = useSorobanReact();
+export const setAggregatorData = async (activeChainId: string) => {
+  const response = await axios.get(
+    `https://raw.githubusercontent.com/soroswap/aggregator/refs/heads/aqua-adapter/public/${activeChainId}.contracts.json` 
+  ).catch((error) => {
+    console.error('Error fetching aggregator data', error);
+    console.warn('No address found Aggregator is disabled');
+    return { data: { ids: { aggregator: '' } } };
+  });
+  const { data } = response;
+  const aggregatorAddress = data.ids.aggregator;
+  return aggregatorAddress
+};
 
+export const useAggregator = () => {
+
+  const sorobanContext: SorobanContextType = useSorobanReact();
   const { activeNetwork } = sorobanContext;
 
   const [address, setAddress] = useState<string>();
   const [isEnabled, setIsAggregatorEnabled] = useState<boolean>(false);
   const activeChainId = passphraseToBackendNetworkName[activeNetwork!].toLowerCase();
+
   const shouldUseAggregator = useMemo(() => {
     if (activeChainId === 'mainnet') {
       return !!aggregatorMainnet
@@ -22,23 +36,17 @@ export const useAggregator = () => {
     }
   }, [activeChainId])
 
+
+  const getAggregatorData = async () => {
+    if (!sorobanContext) return;
+    const aggregatorAddress = await setAggregatorData(activeChainId);
+    setAddress(aggregatorAddress);
+    setIsAggregatorEnabled(!!shouldUseAggregator && !!aggregatorAddress)
+  }
+
   useEffect(() => {
-    const setAggregatorData = async () => {
-      if (!sorobanContext) return;
-      const { data } = await axios.get(
-        `https://raw.githubusercontent.com/soroswap/aggregator/refs/heads/main/public/${activeChainId}.contracts.json`
-      ).catch((error) => {
-        console.error('Error fetching aggregator data', error);
-        console.warn('No address found Aggregator is disabled');
-        setIsAggregatorEnabled(false);
-        return { data: { ids: { aggregator: '' } } };
-      });
-      const aggregatorAddress = data.ids.aggregator;
-      setAddress(aggregatorAddress);
-      setIsAggregatorEnabled(!!shouldUseAggregator && !!aggregatorAddress);
-    };
-    setAggregatorData();
-  }, [activeChainId, shouldUseAggregator]);
+    getAggregatorData();
+  }, [activeChainId, activeNetwork]);
 
   return { address, isEnabled };
 };
