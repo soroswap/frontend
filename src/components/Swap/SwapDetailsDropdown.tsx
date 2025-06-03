@@ -115,7 +115,7 @@ interface SwapDetailsInlineProps {
             </StyledPolling>
           )}
           <>
-            {trade ? (
+            {!loading && trade ? (
               <LoadingOpacityContainer $loading={syncing} data-testid="trade-price-container">
                 <TradePrice trade={trade} />
               </LoadingOpacityContainer>
@@ -132,7 +132,7 @@ interface SwapDetailsInlineProps {
           />
         </RowFixed>
       </StyledHeaderRow>
-      {trade && (
+      {!loading && trade && (
         <AnimatedDropdown open={showDetails}>
           <SwapDetailsWrapper data-testid="advanced-swap-details">
             <AdvancedSwapDetails

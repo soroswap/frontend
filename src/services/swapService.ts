@@ -145,7 +145,7 @@ export const calculateBestRouteService = async ({
             trade: {
               amountOut: BigInt(amount),
               amountInMax: BigInt(quoteAmountInteger.toString()),
-              path: [quoteAsset.contract, amountAsset.currency.contract],
+              path: [amountAsset.currency.contract, quoteAsset.contract ],
             },
           };
 
@@ -178,15 +178,17 @@ export const calculateBestRouteService = async ({
 
   let sorobanPath: BuildTradeReturn | BuildSplitTradeReturn | undefined;
   if (isAggregator) {
+    
     const swapSplitRequest: SwapRouteSplitRequest = {
-      assetIn: isExactIn ? amountAsset.currency.contract : quoteAsset.contract,
-      assetOut: isExactIn ? quoteAsset.contract : amountAsset.currency.contract,
+      assetIn: amountAsset.currency.contract,
+      assetOut: quoteAsset.contract,
       amount: amount,
       tradeType: tradeType,
       protocols: protocolsStatus.filter(p => p.key !== PlatformType.STELLAR_CLASSIC && p.value).map(p => p.key as Protocol),
       parts: 10,
       slippageTolerance: Math.floor(Number(allowedSlippage) * 100).toString(),
-      assetList: ['SOROSWAP'], // TODO: Use actual asset list
+      assetList: ['SOROSWAP'], // TODO: Use actual asset list,
+      maxHops: maxHops,
     };
 
     try {
@@ -197,14 +199,17 @@ export const calculateBestRouteService = async ({
       console.error('Error getting soroban split path:', error);
       return undefined;
     }
+
   } else if (isSoroswapEnabled) {
+    //NOTE: Asset changed to defaultm without reverse
     const swapRequest: SwapRouteRequest = {
-      assetIn: isExactIn ? amountAsset.currency.contract : quoteAsset.contract,
-      assetOut: isExactIn ? quoteAsset.contract : amountAsset.currency.contract,
+      assetIn: amountAsset.currency.contract,
+      assetOut: quoteAsset.contract,
       amount: amount,
       tradeType: tradeType,
       slippageTolerance: Math.floor(Number(allowedSlippage) * 100).toString(),
-      assetList: ['SOROSWAP'], // TODO: Use actual asset list
+      assetList: ['SOROSWAP'], // TODO: Use actual asset list,
+      maxHops: maxHops,
     };
 
     try {
@@ -216,7 +221,7 @@ export const calculateBestRouteService = async ({
       return undefined;
     }
   }
-  const bestPath = getBestPath(horizonPath, sorobanPath, tradeType);
+  const bestPath = getBestPath(horizonPath, sorobanPath, tradeType);  
   return bestPath;
 };
 
@@ -242,11 +247,8 @@ export const getDerivedSwapInfoService = async (
     recipient,
   } = state;
 
-
-
   // Fetch input and output tokens using findTokenService
   const inputCurrency = await findTokenService(inputCurrencyId ?? undefined, tokensAsMap, sorobanContext);
-  
   const outputCurrency = await findTokenService(outputCurrencyId ?? undefined, tokensAsMap, sorobanContext);
 
   const tokensArray = inputCurrency && outputCurrency ? [inputCurrency, outputCurrency] : undefined;
@@ -297,7 +299,7 @@ export const getDerivedSwapInfoService = async (
           const tradeDetails = exactInRoute.trade;
           inputAmount = { currency: inputCurrency, value: tradeDetails.amountIn.toString() };
           outputAmount = { currency: outputCurrency, value: tradeDetails.amountOutMin.toString() };
-        } else { // TradeType.EXACT_OUTPUT
+        } else if (route.tradeType === TradeType.EXACT_OUTPUT) { // TradeType.EXACT_OUTPUT
           const exactOutRoute = route as ExactOutBuildTradeReturn | ExactOutSplitBuildTradeReturn;
           const tradeDetails = exactOutRoute.trade;
           inputAmount = { currency: inputCurrency, value: tradeDetails.amountInMax.toString() };
@@ -320,6 +322,7 @@ export const getDerivedSwapInfoService = async (
           tradeType: route?.tradeType,
         },
       };
+      
     } catch (error) {
       console.error("Error calculating best route:", error);
       trade.state = TradeState.INVALID; // Set state to invalid on error

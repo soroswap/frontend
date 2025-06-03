@@ -202,7 +202,7 @@ export function SwapComponent({
     autoSlippage: undefined,
   });
 
-  const [isLoadingSwapInfo, setIsLoadingSwapInfo] = useState(true); // New loading state
+  const [isLoadingSwapInfo, setIsLoadingSwapInfo] = useState(false); 
   
 
   useEffect(() => {
@@ -251,6 +251,7 @@ export function SwapComponent({
     parsedAmount,
     currencies,
     inputError: swapInputError,
+    
   } = useMemo(() => {
     return swapInfoServiceResult
   }, [swapInfoServiceResult, isLoadingSwapInfo])
@@ -272,7 +273,7 @@ export function SwapComponent({
       [Field.INPUT]: independentField === Field.INPUT ? parsedAmount : trade?.inputAmount,
       [Field.OUTPUT]: independentField === Field.OUTPUT ? parsedAmount : trade?.outputAmount,
     }),
-    [independentField, parsedAmount, trade],
+    [independentField, parsedAmount],
   );
 
   const decimals = useMemo(
@@ -363,13 +364,7 @@ export function SwapComponent({
 
   const showMaxButton = Boolean((maxInputAmount as relevantTokensType)?.balance ?? 0 > 0);
 
-
-  // const routeNotFound = tradeState === TradeState.NO_ROUTE_FOUND;
-  // const routeIsLoading = isLoadingSwapInfo || tradeState === TradeState.LOADING; 
-  // const routeIsSyncing = isLoadingSwapInfo || (tradeState === TradeState.LOADING && Boolean(trade));
-
   const {routeNotFound, routeIsLoading, routeIsSyncing} = useMemo(()=> {
-    
     return {
       routeNotFound: tradeState === TradeState.NO_ROUTE_FOUND,
       routeIsLoading: isLoadingSwapInfo || tradeState === TradeState.LOADING,
@@ -458,7 +453,7 @@ export function SwapComponent({
   };
 
   const showDetailsDropdown = Boolean(
-    userHasSpecifiedInputOutput && (trade || routeIsLoading || routeIsSyncing),
+    userHasSpecifiedInputOutput && (trade || routeIsLoading || routeIsSyncing)
   );
 
   const inputCurrency = currencies?.[Field.INPUT] ?? undefined; 
@@ -627,11 +622,12 @@ export function SwapComponent({
               />
             </OutputSwapSection>
           </div>
+
           {showDetailsDropdown && !getSwapValues().insufficientLiquidity && (
             <SwapDetailsDropdown
               trade={trade}
               syncing={routeIsSyncing}
-              loading={routeIsLoading}
+              loading={isLoadingSwapInfo}
               allowedSlippage={allowedSlippage}
               networkFees={networkFees}
             />

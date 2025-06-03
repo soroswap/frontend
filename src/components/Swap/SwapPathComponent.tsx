@@ -58,7 +58,7 @@ function SwapPathComponent({ trade }: { trade: InterfaceTrade | undefined }) {
   const sorobanContext = useSorobanReact();
   const { tokensAsMap, isLoading } = useAllTokens();
 
-  const memoizedTradePath = useMemo(() => trade, [trade]);
+  const memoizedTradePath = useMemo(() => trade, [trade?.path, trade?.distribution]);
   const [pathArray, setPathArray] = useState<string[]>([]);
   const [distributionArray, setDistributionArray] = useState<distributionData[]>([]);
   const [totalParts, setTotalParts] = useState<number>(0);
@@ -105,10 +105,8 @@ function SwapPathComponent({ trade }: { trade: InterfaceTrade | undefined }) {
   useEffect(() => {
     (async () => {
       if (!memoizedTradePath || isLoading) return;
-
+      setPathTokensIsLoading(true);
       if (memoizedTradePath.platform == PlatformType.ROUTER && memoizedTradePath.path) {
-        setPathTokensIsLoading(true);
-
         /**
          * NOTE: memoizedTradePath.path.inputAmount && memoizedTradePath.path.output already have this - We don't need * external request 
          **/
@@ -127,7 +125,6 @@ function SwapPathComponent({ trade }: { trade: InterfaceTrade | undefined }) {
         setPathArray(pathtokenNames);
         setPathTokensIsLoading(false);
       } else if (memoizedTradePath.platform == PlatformType.STELLAR_CLASSIC && memoizedTradePath.path) {
-        setPathTokensIsLoading(true);
         const codes = memoizedTradePath.path.map((address) => {
           if (address == 'native') return 'XLM';
           return address.split(':')[0];
@@ -138,8 +135,6 @@ function SwapPathComponent({ trade }: { trade: InterfaceTrade | undefined }) {
         if (!memoizedTradePath?.distribution) return;
 
         let tempDistributionArray: distributionData[] = [];
-        setPathTokensIsLoading(true); // Set loading to true at the start of processing aggregator paths
-
         for (let distribution of memoizedTradePath?.distribution) {
           const fulfilledValues = await getAggregatorPathCurrencyCodes(
             distribution.path,
@@ -156,9 +151,11 @@ function SwapPathComponent({ trade }: { trade: InterfaceTrade | undefined }) {
           setTotalParts(tempDistributionArray.reduce((acc, curr) => acc + curr.parts, 0));
         }
         setPathTokensIsLoading(false);
+      } else {
+        setPathTokensIsLoading(false);
       }
     })();
-  }, [trade?.path, isLoading, sorobanContext]);
+  }, [trade?.path, memoizedTradePath, isLoading, sorobanContext]);
 
   return (
     <RowBetween sx={{ alignItems: 'start' }}>
