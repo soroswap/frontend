@@ -16,6 +16,8 @@ export default defineConfig({
       runMode: 9, // Retries failing tests 2 times in CI mode
       openMode: 0 // No retries in interactive mode
     },
+    viewportHeight: 768,
+    viewportWidth: 1366,
   },
   component: {
     devServer: {
