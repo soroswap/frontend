@@ -1,14 +1,10 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
+import { cors } from 'services/cors';
 import axios from 'axios';
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  const allowedOrigin = ['.soroswap.finance', 'http://localhost:3000', 'paltalabs.vercel.app'];
-  const origin = req.headers.origin || req.headers.referer || '';
+export default cors(handler);
 
-  if (!allowedOrigin.some((allowed) => origin.includes(allowed))) {
-    return res.status(403).json({ message: 'Forbidden' });
-  }
-
+async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { network } = req.query;
 
   if (req.method !== 'POST') {
