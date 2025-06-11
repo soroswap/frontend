@@ -124,7 +124,8 @@ export const useSoroswapApi = () => {
                 tradeType: TradeType.EXACT_INPUT,
                 trade: {
                   amountIn: BigInt(amountAsset.value),
-                  amountOutMin: BigInt(quoteAmount.toString()),
+                  amountOutMin: BigInt(quoteAmount.toString()), // fixme: this should count the slippage
+                  expectedAmountOut: BigInt(quoteAmount.toString()), 
                   path: [amountAsset.currency.contract, quoteAsset.contract],
                 },
               }
@@ -139,7 +140,8 @@ export const useSoroswapApi = () => {
                 tradeType: TradeType.EXACT_OUTPUT,
                 trade: {
                   amountOut: BigInt(amount),
-                  amountInMax: BigInt(quoteAmount.toString()),
+                  expectedAmountIn: BigInt(quoteAmount.toString()), 
+                  amountInMax: BigInt(quoteAmount.toString()), // fixme: this should count the slippage
                   path: [quoteAsset.contract, amountAsset.currency.contract],
                 },
               };

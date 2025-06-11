@@ -180,6 +180,7 @@ export const parseHorizonResult = async (
           trade: {
             amountIn: BigInt(inputAmount.value),
             amountOutMin: BigInt(outputAmount.value),
+            expectedAmountOut: BigInt(outputAmount.value),
             path: formattedPath,
           },
         }
@@ -194,6 +195,7 @@ export const parseHorizonResult = async (
           tradeType: TradeType.EXACT_OUTPUT,
           trade: {
             amountOut: BigInt(outputAmount.value),
+            expectedAmountIn: BigInt(inputAmount.value),
             amountInMax: BigInt(inputAmount.value),
             path: formattedPath,
           },

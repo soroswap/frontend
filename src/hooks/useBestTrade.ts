@@ -92,6 +92,7 @@ export function useBestTrade(
     if (!data || !currencyIn || !currencyOut) return;
     if (tradeType === TradeType.EXACT_INPUT) {
       const result = (data as ExactInBuildTradeReturn | ExactInSplitBuildTradeReturn).trade;
+      
 
       setInputAmount({
         value: result?.amountIn.toString(),
@@ -99,11 +100,11 @@ export function useBestTrade(
       });
 
       setOutputAmount({
-        value: result?.amountOutMin.toString(),
+        value: result?.expectedAmountOut.toString(),
         currency: currencyOut,
       });
 
-      setExpectedAmount(result?.amountOutMin.toString());
+      setExpectedAmount(result?.expectedAmountOut.toString());
     }
 
     if (tradeType === TradeType.EXACT_OUTPUT) {
