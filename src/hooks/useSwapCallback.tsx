@@ -118,22 +118,22 @@ export function useSwapCallback(
   useEffect(() => {
     if (trade) {
       console.group('%c[Soroswap Debug] SwapCallback', 'color: #00aced; font-weight: bold');
-      console.log('🚀 Tipo de operación:', trade.tradeType);
-      console.log('🔄 Plataforma seleccionada:', trade.platform);
-      console.log('💰 Moneda de entrada:', trade.inputAmount?.currency.code, 'cantidad:', trade.inputAmount?.value);
-      console.log('💰 Moneda de salida:', trade.outputAmount?.currency.code, 'cantidad:', trade.outputAmount?.value);
-      console.log('⚙️ Configuración de slippage:', allowedSlippage);
+      console.log('🚀 TradeType:', trade.tradeType);
+      console.log('🔄 Platform:', trade.platform);
+      console.log('💰 Input Currency:', trade.inputAmount?.currency.code, 'amount:', trade.inputAmount?.value);
+      console.log('💰 Output Currency:', trade.outputAmount?.currency.code, 'amount:', trade.outputAmount?.value);
+      console.log('⚙️ Slippage:', allowedSlippage);
       
       if (trade.path) {
-        console.log('🛣️ Ruta de swap:', trade.path);
+        console.log('🛣️ Swap Path:', trade.path);
       }
       
       if (trade.distribution) {
-        console.log('📊 Distribución:', trade.distribution);
+        console.log('📊 Distribution:', trade.distribution);
       }
       
       if (isUsingAggregator) {
-        console.log('🔀 Usando agregador para optimizar la ruta');
+        console.log('🔀 Using aggregator to optimize the route');
       }
       
       console.groupEnd();

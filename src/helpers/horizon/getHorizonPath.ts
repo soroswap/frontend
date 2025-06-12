@@ -13,6 +13,7 @@ import {
   PlatformType,
   TradeType,
 } from 'state/routing/types';
+import { normalizeAssetFormat } from 'helpers/address';
 
 const getClassicAsset = (currency: TokenType) => {
   if (!currency) return;
@@ -21,7 +22,15 @@ const getClassicAsset = (currency: TokenType) => {
     return nativeAsset;
   }
   if (!currency.issuer) {
-    //throw new Error(`Can't convert ${currency.code} to stellar classic asset`);
+    // Try to extract issuer from contract if it's in CODE:ISSUER or CODE-ISSUER format
+    if (currency.contract) {
+      const normalized = normalizeAssetFormat(currency.contract);
+      const parts = normalized.split(':');
+      if (parts.length === 2) {
+        const asset = new Asset(parts[0], parts[1]);
+        return asset;
+      }
+    }
     return;
   }
   const asset = new Asset(currency.code, currency.issuer);
