@@ -77,6 +77,7 @@ export interface ExactInBuildTradeReturn extends CommonBuildTradeReturnFields {
   tradeType: TradeType.EXACT_INPUT;
   trade: {
     amountIn: bigint;
+    expectedAmountOut: bigint;
     amountOutMin: bigint;
     path: string[];
   };
@@ -86,6 +87,7 @@ export interface ExactOutBuildTradeReturn extends CommonBuildTradeReturnFields {
   tradeType: TradeType.EXACT_OUTPUT;
   trade: {
     amountOut: bigint;
+    expectedAmountIn: bigint;
     amountInMax: bigint;
     path: string[];
   };
@@ -95,6 +97,7 @@ export interface ExactInSplitBuildTradeReturn extends CommonBuildTradeReturnFiel
   tradeType: TradeType.EXACT_INPUT;
   trade: {
     amountIn: bigint;
+    expectedAmountOut: bigint;
     amountOutMin: bigint;
     distribution: DexDistribution[];
   };
@@ -104,6 +107,7 @@ export interface ExactOutSplitBuildTradeReturn extends CommonBuildTradeReturnFie
   tradeType: TradeType.EXACT_OUTPUT;
   trade: {
     amountOut: bigint;
+    expectedAmountIn: bigint;
     amountInMax: bigint;
     distribution: DexDistribution[];
   };
