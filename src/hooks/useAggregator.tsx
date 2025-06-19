@@ -8,7 +8,7 @@ const aggregatorTestnet = process.env.NEXT_PUBLIC_AGGREGATOR_ENABLED_TESTNET ===
 
 export const setAggregatorData = async (activeChainId: string) => {
   const response = await axios.get(
-    `https://raw.githubusercontent.com/soroswap/aggregator/refs/heads/aqua-adapter/public/${activeChainId}.contracts.json` 
+    `https://raw.githubusercontent.com/soroswap/aggregator/refs/heads/main/public/${activeChainId}.contracts.json` 
   ).catch((error) => {
     console.error('Error fetching aggregator data', error);
     console.warn('No address found Aggregator is disabled');
