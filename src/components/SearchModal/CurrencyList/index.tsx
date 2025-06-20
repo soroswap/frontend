@@ -71,11 +71,12 @@ export const getCurrencyBalance = async (
   sorobanContext: SorobanContextType,
   account: AccountResponse,
 ) => {
-  if (!sorobanContext.address) return '0';
+  if (!tokenBalancesResponse || !sorobanContext.address) return '0';
 
   const findInBalances = tokenBalancesResponse?.balances.find(
     (token) => token.contract === currency.contract,
   );
+
 
   //First find if balance is already in the "my balances" list
   if (findInBalances) {

@@ -54,7 +54,7 @@ export const addUserToken = (token: TokenType, sorobanContext: SorobanContextTyp
 
 export async function getToken(
   sorobanContext: SorobanContextType,
-  tokenAddress?: string | undefined,
+  tokenAddress?: string | undefined
 ): Promise<TokenType | undefined> {
   if (!tokenAddress || tokenAddress === '' || !sorobanContext.activeNetwork) return undefined;
 
