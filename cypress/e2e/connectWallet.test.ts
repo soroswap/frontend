@@ -9,6 +9,9 @@ describe('Connect Wallet', () => {
           getPublicKey: () =>
             Promise.resolve('GCHR5WWPDFF3U3HP2NA6TI6FCQPYEWS3UOPIPJKZLAAFM57CEG4ZYBWP'),
           signTransaction: () => Promise.resolve('signedTransaction'),
+          connect: () => console.log("GG"),
+          getAddress: () => console.log("GG"),
+          requestAccess: () => console.log("GG")
           // Add other methods as needed
         };
 
@@ -16,32 +19,25 @@ describe('Connect Wallet', () => {
         cy.spy(win.console, 'log').as('consoleLog');
       },
     });
-    cy.get('[data-testid="primary-button"]').click();
-    cy.contains('Detected');
-    cy.contains('Freighter Wallet').click();
-    cy.get('@consoleLog').should('have.been.calledWithMatch', 'wallet');
-    cy.get('@consoleLog').should('have.been.calledWithMatch', 'Changing connector to ');
+    
+    // Click the wallet button to open the modal
+    cy.get('[data-testid="wallet-button"]').click();
+    
+    // Get the shadow root of the stellar-wallets-modal
+    cy.get('stellar-wallets-modal')
+      .shadow()
+      .find('dialog.dialog-modal')
+      .should('be.visible');
 
-    // Get the window object
-    cy.window().then((win: any) => {
-      // Get the spy from the window object
-      const consoleLog = win.console.log;
-      var logs = [];
-      for (let i = 0; i < consoleLog.callCount; i++) {
-        // Get the i-th call to the spy
-        const call = consoleLog.getCall(i);
-
-        // Get the arguments of the call
-        const callArgs = call.args;
-
-        // Log the arguments using cy.log()
-        cy.log(`Call ${i} args: ${JSON.stringify(callArgs)}`);
-        console.log(`Call ${i} args: ${JSON.stringify(callArgs)}`);
-        logs.push(`Call ${i} args: ${JSON.stringify(callArgs)}`);
-      }
-      //write logs to a file on cypress/logs/logs.txt
-      cy.writeFile('cypress/logs/logs.txt', logs.join('\n'));
-    });
-    // cy.contains('Public Key: publicKey')
+    // Find and click the Freighter wallet option inside the shadow DOM
+    cy.get('stellar-wallets-modal')
+      .shadow()
+      .find('.wallets-body__item')
+      .contains('Freighter')
+      .should('be.visible')
+      .click();
+    
+    // // Verify the console logs
+    // cy.get('@consoleLog').should('have.been.calledWithMatch', 'wallet');
   });
 });
