@@ -20,11 +20,11 @@ Before you begin, ensure you have met the following requirements:
 
 Copy the .env.example file to create a new .env file:
 
-```bash
-cp .env.local.example .env
-```
+    ```bash
+    cp .env.local.example .env
+    ```
+
 Edit the `.env` file. Check the `.env.local.example` file for explanations
-```md
 
 The `NEXT_PUBLIC_TEST_TOKENS_ADMIN_SECRET_KEY` should be the same as the one that deployed the tokens in the `core` repository.
 This is only important if you will be minting testnet tokens, otherwise is not interesting.
@@ -35,34 +35,35 @@ To enable or disable features like the `Soroswap backend` or the `aggregator`, s
 
     Navigate to the the `run.sh` script inside the `docker` folder
 
-    ```bash
-    bash docker/run.sh
-    ```
+        ```bash
+        bash docker/run.sh
+        ```
+
     If the soroswap-network does not exisit, please create: `docker network create soroswap-network`
 
     This script will set up and start the Docker containers required for Soroswap.
 
-4. Install the Dependencies
+2. Install the Dependencies
 
     After the Docker container is up, you will be inside the root folder on the container. Then, install the dependencies using Yarn:
 
-    ```bash
-    yarn install
-    ```
+        ```bash
+        yarn install
+        ```
 
-5. Run the Development Instance
+3. Run the Development Instance
 
     Now you are ready to start the development instance. Run the following command:
 
-    ```bash
-    yarn dev
-    ```
+        ```bash
+        yarn dev
+        ```
 
     This will start the Soroswap development instance.
     http://localhost:3000
     
 
-6. For Tesntet Development, check your Freigher Wallet Configuration if you are running your one node
+4. For Tesntet Development, check your Freigher Wallet Configuration if you are running your one node
     THis is not necesary if you are using Mainnet or Testnet.
 
     For Standalone network
@@ -89,7 +90,7 @@ To enable or disable features like the `Soroswap backend` or the `aggregator`, s
 
     ** Important:** You should also do: Preferences> Allow experimental mode
 
-7. Last, but not least, add some lumens to your Freighter wallet!
+5. Last, but not least, add some lumens to your Freighter wallet!
 
    Do it directly on the wallet or use:
 
