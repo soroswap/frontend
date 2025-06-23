@@ -16,7 +16,7 @@ export default function MySorobanReactProvider({
 
   const mainnetNetworkDetails: NetworkDetails = {
     network: WalletNetwork.PUBLIC,
-    sorobanRpcUrl: 'https://soroban-rpc.creit.tech/',
+    sorobanRpcUrl: 'https://small-bold-season.stellar-mainnet.quiknode.pro/6d0f6fba2fe974ffab1c41e24d8b91061588c413/',
     horizonRpcUrl: 'https://horizon.stellar.org'
   }
 
