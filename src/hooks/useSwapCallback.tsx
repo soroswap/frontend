@@ -112,34 +112,6 @@ export function useSwapCallback(
   const allowedSlippage = useUserSlippageToleranceWithDefault(DEFAULT_SLIPPAGE_INPUT_VALUE);
   const isUsingAggregator = hasDistribution(trade);
 
-  const { mutate } = useSWRConfig();
-
-  // Logs de depuración para el proceso de swap
-  useEffect(() => {
-    if (trade) {
-      console.group('%c[Soroswap Debug] SwapCallback', 'color: #00aced; font-weight: bold');
-      console.log('🚀 TradeType:', trade.tradeType);
-      console.log('🔄 Platform:', trade.platform);
-      console.log('💰 Input Currency:', trade.inputAmount?.currency.code, 'amount:', trade.inputAmount?.value);
-      console.log('💰 Output Currency:', trade.outputAmount?.currency.code, 'amount:', trade.outputAmount?.value);
-      console.log('⚙️ Slippage:', allowedSlippage);
-      
-      if (trade.path) {
-        console.log('🛣️ Swap Path:', trade.path);
-      }
-      
-      if (trade.distribution) {
-        console.log('📊 Distribution:', trade.distribution);
-      }
-      
-      if (isUsingAggregator) {
-        console.log('🔀 Using aggregator to optimize the route');
-      }
-      
-      console.groupEnd();
-    }
-  }, [trade, allowedSlippage, isUsingAggregator]);
-
   const doSwap = async (
     simulation?: boolean,
   ): Promise<
