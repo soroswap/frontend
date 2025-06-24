@@ -55,6 +55,7 @@ export function useRouterCallback() {
         sorobanContext,
         signAndSend: signAndSend,
         reconnectAfterTx: false,
+        fee: `1000`,
       })) as TxResponse;
 
       //If is only a simulation return the result
