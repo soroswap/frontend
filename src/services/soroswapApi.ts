@@ -1,11 +1,9 @@
 import axios from 'axios';
 import {
-  BuildSplitTradeReturn,
-  BuildTradeReturn,
   MercuryPair,
   PlatformType,
-  SwapRouteRequest,
-  SwapRouteSplitRequest,
+  QuoteRequest,
+  QuoteResponse,
 } from 'state/routing/types';
 
 export const fetchPairsFromApi = async (
@@ -24,29 +22,14 @@ export const fetchPairsFromApi = async (
   }
 };
 
-export const getSwapRoute = async (
+export const getQuote = async (
   network: string,
-  request: SwapRouteRequest,
-): Promise<BuildTradeReturn | undefined> => {
+  request: QuoteRequest,
+): Promise<QuoteResponse | undefined> => {
   try {
-    const response = await axios.post<BuildTradeReturn>(
-      `/api/swap?network=${network.toLowerCase()}`,
-      request,
-    );
+    const response = await axios.post(`/api/quote?network=${network.toLowerCase()}`, request);
 
-    return { ...response.data, platform: PlatformType.ROUTER };
-  } catch (error: any) {
-    console.error(`Unexpected error: ${error}`);
-    return undefined;
-  }
-};
-
-export const getSwapSplitRoute = async (
-  network: string,
-  request: SwapRouteSplitRequest,
-): Promise<BuildSplitTradeReturn | undefined> => {
-  try {
-    const response = await axios.post(`/api/swap/split?network=${network.toLowerCase()}`, request);
+    console.log(response.data);
 
     return { ...response.data, platform: PlatformType.AGGREGATOR };
   } catch (error: any) {

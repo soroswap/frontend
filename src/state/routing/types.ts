@@ -41,17 +41,7 @@ export interface MercuryPair {
   reserveB: string;
 }
 
-export type SwapRouteRequest = {
-  assetIn: string;
-  assetOut: string;
-  amount: string;
-  tradeType: string;
-  slippageTolerance: string;
-  assetList?: string[];
-  maxHops?: number;
-};
-
-export type SwapRouteSplitRequest = {
+export type QuoteRequest = {
   assetIn: string;
   assetOut: string;
   amount: string;
@@ -71,6 +61,12 @@ interface CommonBuildTradeReturnFields {
     denominator: number;
   };
   platform?: PlatformType;
+  feeBps?: number;
+  feeAmount?: bigint;
+  xdr?: string;
+  from?: string;
+  to?: string;
+  referralId?: string;
 }
 
 export interface ExactInBuildTradeReturn extends CommonBuildTradeReturnFields {
@@ -116,6 +112,8 @@ export interface ExactOutSplitBuildTradeReturn extends CommonBuildTradeReturnFie
 export type BuildTradeReturn = ExactInBuildTradeReturn | ExactOutBuildTradeReturn;
 
 export type BuildSplitTradeReturn = ExactInSplitBuildTradeReturn | ExactOutSplitBuildTradeReturn;
+
+export type QuoteResponse = BuildTradeReturn | BuildSplitTradeReturn;
 
 export type InterfaceTrade = {
   inputAmount: CurrencyAmount | undefined;

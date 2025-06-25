@@ -10,8 +10,7 @@ import {
   BuildTradeReturn,
   PlatformType,
   Protocol,
-  SwapRouteRequest,
-  SwapRouteSplitRequest,
+  QuoteRequest,
   TradeType,
 } from 'state/routing/types';
 import { CurrencyAmount as AmountAsset } from 'interfaces';
@@ -20,7 +19,7 @@ import { getPairAddress } from './getPairAddress';
 import BigNumber from 'bignumber.js';
 import { getExpectedAmount } from './getExpectedAmount';
 import { Networks } from '@stellar/stellar-sdk';
-import { getSwapRoute, getSwapSplitRoute } from 'services/soroswapApi';
+import { getQuote } from 'services/soroswapApi';
 import { passphraseToBackendNetworkName } from 'services/pairs';
 import { DEFAULT_SLIPPAGE_INPUT_VALUE } from 'components/Settings/MaxSlippageSettings';
 import { useUserSlippageToleranceWithDefault } from 'state/user/hooks';
@@ -175,7 +174,7 @@ export const useSoroswapApi = () => {
 
     let sorobanPath: BuildTradeReturn | BuildSplitTradeReturn | undefined;
     if (isAggregator) {
-      const swapSplitRequest: SwapRouteSplitRequest = {
+      const swapSplitRequest: QuoteRequest = {
         assetIn: tradeType === TradeType.EXACT_INPUT ? amountAsset.currency.contract : quoteAsset.contract,
         assetOut: tradeType === TradeType.EXACT_INPUT ? quoteAsset.contract : amountAsset.currency.contract,
         amount: amount,
@@ -188,7 +187,7 @@ export const useSoroswapApi = () => {
       };
 
       try {
-        const response = await getSwapSplitRoute(network, swapSplitRequest);
+        const response = await getQuote(network, swapSplitRequest);
         sorobanPath = response;
       } catch (error) {
         //TODO: Here it could be a on chain solution
@@ -196,18 +195,20 @@ export const useSoroswapApi = () => {
         return undefined;
       }
     } else if (isSoroswapEnabled) {
-      const swapRequest: SwapRouteRequest = {
+      const swapRequest: QuoteRequest = {
         assetIn: tradeType === TradeType.EXACT_INPUT ? amountAsset.currency.contract : quoteAsset.contract,
         assetOut: tradeType === TradeType.EXACT_INPUT ? quoteAsset.contract : amountAsset.currency.contract,
         amount: amount,
         tradeType: tradeType,
+        protocols: ["SOROSWAP"],
+        parts: 10,
         slippageTolerance: Math.floor(Number(allowedSlippage) * 100).toString(),
         assetList: ['SOROSWAP'],
         maxHops: maxHops,
       };
 
       try {
-        const response = await getSwapRoute(network, swapRequest);
+        const response = await getQuote(network, swapRequest);
         sorobanPath = response;
       } catch (error) {
         //TODO: Here it could be a on chain solution

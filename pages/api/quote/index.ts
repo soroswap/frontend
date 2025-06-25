@@ -28,7 +28,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const token = loginResponse.data.access_token;
 
     const swapResponse = await axios.post(
-      `${process.env.SOROSWAP_API_URL}/router/swap/split?network=${(
+      `${process.env.SOROSWAP_API_URL}/quote?network=${(
         network as string
       ).toLowerCase()}`,
       req.body,
