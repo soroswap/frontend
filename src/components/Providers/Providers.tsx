@@ -1,7 +1,7 @@
 import { ColorModeContext } from 'contexts';
 import { Provider } from 'react-redux';
 import { useMemo, useState } from 'react';
-import InkathonProvider from 'inkathon/InkathonProvider';
+// import InkathonProvider from 'inkathon/InkathonProvider';
 import MySorobanReactProvider from 'soroban/MySorobanReactProvider';
 import store from 'state';
 import { SorobanContextType } from 'stellar-react';
@@ -27,7 +27,7 @@ export default function Providers({
 
   return (
     <Provider store={store}>
-      <InkathonProvider>
+      {/* <InkathonProvider> */}
         <ColorModeContext.Provider value={colorMode}>
           <SoroswapThemeProvider theme={mode}>
             <MySorobanReactProvider {...sorobanReactProviderProps}>
@@ -37,7 +37,7 @@ export default function Providers({
             </MySorobanReactProvider>
           </SoroswapThemeProvider>
         </ColorModeContext.Provider>
-      </InkathonProvider>
+      {/* </InkathonProvider> */}
     </Provider>
   );
 }

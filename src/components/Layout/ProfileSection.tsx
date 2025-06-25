@@ -3,7 +3,7 @@ import { Box, Chip, useMediaQuery, Menu, MenuItem, MenuProps } from 'soroswap-ui
 import { ArrowDropDownSharp, LinkOff } from '@mui/icons-material';
 import { useTheme, styled, alpha } from 'soroswap-ui';
 import { SorobanContextType, useSorobanReact } from 'stellar-react';
-import { useInkathon } from '@scio-labs/use-inkathon';
+// import { useInkathon } from '@scio-labs/use-inkathon';
 import { AppContext } from 'contexts';
 import { shortenAddress } from '../../helpers/address';
 import { WalletButton } from 'components/Buttons/WalletButton';
@@ -68,7 +68,7 @@ export const HeaderChip = ({
 }) => {
   const theme = useTheme();
   const sorobanReact = useSorobanReact();
-  const inkathon = useInkathon();
+  // const inkathon = useInkathon();
   const { setActiveNetwork: setActiveChain } = sorobanReact;
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
@@ -89,7 +89,7 @@ export const HeaderChip = ({
   const handleDisconnect = () => {
     if (!disconnect) {
       sorobanReact.disconnect();
-      inkathon.disconnect!();
+      // inkathon.disconnect!();
     } else {
       disconnect();
     }
