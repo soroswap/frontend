@@ -12,7 +12,7 @@ import { Asset } from '@stellar/stellar-sdk';
 export const findToken = async (
   tokenAddress: string | undefined,
   tokensAsMap: TokenMapType,
-  sorobanContext: SorobanContextType,
+  sorobanContext: SorobanContextType
 ) => {
   if (!tokenAddress || tokenAddress === '') return undefined;
 
@@ -22,10 +22,11 @@ export const findToken = async (
   if (!formattedAddress) return undefined;
   
   const fromMap = tokensAsMap[formattedAddress];
-  
+
   if (fromMap) return fromMap;
   
   const token = await getToken(sorobanContext, formattedAddress);
+
   // const token: TokenType = {
   //   contract: formattedAddress,
   //   name: name as string,
@@ -74,12 +75,14 @@ export function useToken(tokenAddress: string | undefined) {
     ([key, tokenAddress, sorobanContext]) => getTokenName(tokenAddress!, sorobanContext),
   );
 
+
   const { mutate } = useSWRConfig();
   const { data, isLoading, error } = useSWRImmutable(
     ['token', tokenAddress, tokensAsMap, sorobanContext],
     ([key, tokenAddress, tokensAsMap, sorobanContext]) =>
       findToken(tokenAddress, tokensAsMap, sorobanContext),
   );
+
 
   const handleTokenRefresh = () => {
     mutate((key: any) => revalidateKeysCondition(key), undefined, { revalidate: true });

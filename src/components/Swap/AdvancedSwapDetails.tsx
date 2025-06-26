@@ -67,7 +67,7 @@ export function AdvancedSwapDetails({
   // const { chainId } = useWeb3React()
   // const nativeCurrency = useNativeCurrency(chainId)
   // const txCount = getTransactionCount(trade)
-  const { tokensAsMap, isLoading } = useAllTokens();
+  const { isLoading } = useAllTokens();
 
   return (
     <Column gap="md">

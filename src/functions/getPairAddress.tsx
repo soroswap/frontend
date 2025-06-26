@@ -10,12 +10,12 @@ export async function getPairAddress(
   address_1: string | undefined,
   sorobanContext: SorobanContextType,
 ) {
+
   if (!address_0 || !address_1) return '';
   const { activeNetwork } = sorobanContext;
   const activeChain = passphraseToBackendNetworkName[activeNetwork!].toLowerCase();
 
   const factory = await fetchFactory(activeChain);
-
 
   const response = await contractInvoke({
     contractAddress: factory.address,

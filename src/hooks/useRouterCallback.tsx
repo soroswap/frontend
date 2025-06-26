@@ -48,6 +48,8 @@ export function useRouterCallback() {
 
   return useCallback(
     async (method: RouterMethod, args?: StellarSdk.xdr.ScVal[], signAndSend?: boolean) => {
+
+      
       let result = (await contractInvoke({
         contractAddress: router_address as string,
         method: method,

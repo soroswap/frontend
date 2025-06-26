@@ -18,7 +18,7 @@ const fetchNetworkFees = async (
   trade: InterfaceTrade | undefined,
   sorobanContext: SorobanContextType,
 ) => {
-  if (!trade || !sorobanContext) return 0;
+  if (!trade || !sorobanContext) return 0;  
   const fees = await calculateSwapFees(sorobanContext, trade);
   return fees ? Number(fees) / 10 ** 7 : 0;
 };

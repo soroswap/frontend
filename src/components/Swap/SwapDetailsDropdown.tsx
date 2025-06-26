@@ -4,7 +4,7 @@ import Column from 'components/Column';
 import { LoadingOpacityContainer } from 'components/Loader/styled';
 import { RowBetween, RowFixed } from 'components/Row';
 import { SubHeaderSmall } from 'components/Text';
-import { useState } from 'react';
+import { memo, useMemo, useState } from 'react';
 import { ChevronDown } from 'react-feather';
 import { InterfaceTrade } from 'state/routing/types';
 import { AdvancedSwapDetails } from './AdvancedSwapDetails';
@@ -88,13 +88,13 @@ interface SwapDetailsInlineProps {
   networkFees: number | null;
 }
 
-export default function SwapDetailsDropdown({
+ const SwapDetailsDropdown = ({
   trade,
   syncing,
   loading,
   allowedSlippage,
   networkFees,
-}: SwapDetailsInlineProps) {
+}: SwapDetailsInlineProps) => {
   const theme = useTheme();
   const [showDetails, setShowDetails] = useState(false);
 
@@ -115,7 +115,7 @@ export default function SwapDetailsDropdown({
             </StyledPolling>
           )}
           <>
-            {trade ? (
+            {!loading && trade ? (
               <LoadingOpacityContainer $loading={syncing} data-testid="trade-price-container">
                 <TradePrice trade={trade} />
               </LoadingOpacityContainer>
@@ -132,7 +132,7 @@ export default function SwapDetailsDropdown({
           />
         </RowFixed>
       </StyledHeaderRow>
-      {trade && (
+      {!loading && trade && (
         <AnimatedDropdown open={showDetails}>
           <SwapDetailsWrapper data-testid="advanced-swap-details">
             <AdvancedSwapDetails
@@ -147,3 +147,5 @@ export default function SwapDetailsDropdown({
     </Wrapper>
   );
 }
+
+export default memo(SwapDetailsDropdown);
