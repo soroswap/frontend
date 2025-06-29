@@ -12,7 +12,7 @@
     },
     {
       "key": "phoenix",
-      "value": true,
+      "value": false,
       "url": "https://docs.soroswap.finance/soroswap-aggregator/supported-amms"
     },
     {
