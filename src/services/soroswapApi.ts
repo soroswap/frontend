@@ -12,7 +12,7 @@ export const fetchPairsFromApi = async (
 ): Promise<MercuryPair[]> => {
   try {
     const response = await axios.get(
-      `/api/pairs?network=${network.toLowerCase()}&protocol=${protocol}`,
+      `/api/pools?network=${network.toLowerCase()}&protocol=${protocol}`,
     );
 
     return response.data;

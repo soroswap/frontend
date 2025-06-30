@@ -25,7 +25,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const token = loginResponse.data.access_token;
 
     const pairsResponse = await axios.get(
-      `${process.env.SOROSWAP_API_URL}/pairs?network=${(
+      `${process.env.SOROSWAP_API_URL}/pools?network=${(
         network as string
       ).toLowerCase()}&protocol=${(protocol as string).toLowerCase()}`,
       {
