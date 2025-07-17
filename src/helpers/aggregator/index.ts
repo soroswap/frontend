@@ -5,7 +5,7 @@ export interface DexDistribution {
   path: string[];
   parts: number;
   is_exact_in: boolean;
-  poolHashes: string[] | undefined;
+  poolHashes?: string[];
 }
 
 // #[contracttype]
