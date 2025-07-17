@@ -2898,6 +2898,13 @@
     rpc-websockets "^9.0.2"
     superstruct "^2.0.2"
 
+"@soroswap/sdk@^0.3.3":
+  version "0.3.3"
+  resolved "https://registry.yarnpkg.com/@soroswap/sdk/-/sdk-0.3.3.tgz#32f9d3b23092aef430752455532149f98c3906d0"
+  integrity sha512-5U9ecfy/kI4tgzPqmcV3B6GvJkG4snxvI7AotbT3bEWBbJYC5/XFQh5YdicJ1Y6NZQskePXOdiGCf/Ji1gypvw==
+  dependencies:
+    axios "^1.10.0"
+
 "@stablelib/aead@^1.0.1":
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/@stablelib/aead/-/aead-1.0.1.tgz#c4b1106df9c23d1b867eb9b276d8f42d5fc4c0c3"
@@ -4584,7 +4591,7 @@ axe-core@^4.10.0:
   resolved "https://registry.yarnpkg.com/axe-core/-/axe-core-4.10.3.tgz#04145965ac7894faddbac30861e5d8f11bfd14fc"
   integrity sha512-Xm7bpRXnDSX2YE2YFfBk2FnF0ep6tmG7xPh8iHee8MIcrgq762Nkce856dYtJYLkuIoYZvGfTs/PbZhideTcEg==
 
-axios@^1.6.2, axios@^1.7.9:
+axios@^1.10.0, axios@^1.6.2, axios@^1.7.9:
   version "1.10.0"
   resolved "https://registry.yarnpkg.com/axios/-/axios-1.10.0.tgz#af320aee8632eaf2a400b6a1979fa75856f38d54"
   integrity sha512-/1xYAC4MP/HEG+3duIhFr4ZQXR4sQXOIe+o6sdqzeykGLx6Upp/1p8MHqhINOvGeP7xyNHe7tsiJByc4SSVUxw==

@@ -3,8 +3,8 @@ import {
   MercuryPair,
   PlatformType,
   QuoteRequest,
-  QuoteResponse,
 } from 'state/routing/types';
+import { QuoteResponse } from '@soroswap/sdk';
 
 export const fetchPairsFromApi = async (
   network: string,
@@ -29,9 +29,7 @@ export const getQuote = async (
   try {
     const response = await axios.post(`/api/quote?network=${network.toLowerCase()}`, request);
 
-    console.log(response.data);
-
-    return { ...response.data, platform: PlatformType.AGGREGATOR };
+    return { ...response.data, platform: response.data.platform === "aggregator" ? PlatformType.AGGREGATOR : PlatformType.ROUTER };
   } catch (error: any) {
     console.error(`Unexpected error: ${error}`);
     return undefined;

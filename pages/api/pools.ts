@@ -17,12 +17,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
-    const loginResponse = await axios.post(`${process.env.SOROSWAP_API_URL}/login`, {
-      email: process.env.SOROSWAP_API_EMAIL,
-      password: process.env.SOROSWAP_API_PASSWORD,
-    });
-
-    const token = loginResponse.data.access_token;
+    const apiKey = process.env.SOROSWAP_API_KEY;
 
     const pairsResponse = await axios.get(
       `${process.env.SOROSWAP_API_URL}/pools?network=${(
@@ -30,7 +25,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       ).toLowerCase()}&protocol=${(protocol as string).toLowerCase()}`,
       {
         headers: {
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${apiKey}`,
         },
       },
     );

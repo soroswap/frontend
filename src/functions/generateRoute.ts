@@ -172,7 +172,7 @@ export const useSoroswapApi = () => {
       horizonPath = (await getHorizonBestPath(horizonProps, sorobanContext)) as BuildTradeReturn;
     }
 
-    let sorobanPath: BuildTradeReturn | BuildSplitTradeReturn | undefined;
+    let sorobanPath: any;
     if (isAggregator) {
       const swapSplitRequest: QuoteRequest = {
         assetIn: tradeType === TradeType.EXACT_INPUT ? amountAsset.currency.contract : quoteAsset.contract,
@@ -188,7 +188,68 @@ export const useSoroswapApi = () => {
 
       try {
         const response = await getQuote(network, swapSplitRequest);
-        sorobanPath = response;
+
+        sorobanPath = (response?.platform as any) === "Soroswap Aggregator" && tradeType === TradeType.EXACT_INPUT ? {
+          assetIn: response?.assetIn,
+          assetOut: response?.assetOut,
+          priceImpact: {
+            numerator: parseFloat(response?.priceImpactPct || "0"),
+            denominator: 1,
+          },
+          platform: PlatformType.AGGREGATOR,
+          tradeType: tradeType,
+          trade: {
+            amountIn: response?.amountIn,
+            expectedAmountOut: response?.amountOut,
+            amountOutMin: (response?.rawTrade as any)?.amountOutMin || BigInt(0),
+            distribution: (response?.rawTrade as any)?.distribution,
+          },
+        } : (response?.platform as any) == "Soroswap Aggregator" && tradeType === TradeType.EXACT_OUTPUT ? {
+          assetIn: response?.assetIn,
+          assetOut: response?.assetOut,
+          priceImpact: {
+            numerator: parseFloat(response?.priceImpactPct || "0"),
+            denominator: 1,
+          },
+          platform: PlatformType.AGGREGATOR,
+          tradeType: tradeType,
+          trade: {
+            amountOut: response?.amountOut,
+            expectedAmountIn: response?.amountIn,
+            amountInMax: (response?.rawTrade as any)?.amountInMax || BigInt(0),
+            distribution: (response?.rawTrade as any)?.distribution,
+          },
+        } : (response?.platform as any) === "Soroswap AMM" && tradeType === TradeType.EXACT_INPUT ? {
+          assetIn: response?.assetIn,
+          assetOut: response?.assetOut,
+          priceImpact: {
+            numerator: parseFloat(response?.priceImpactPct || "0"),
+            denominator: 1,
+          },
+          platform: PlatformType.ROUTER,
+          tradeType: tradeType,
+          trade: {
+            amountIn: response?.amountIn,
+            expectedAmountOut: response?.amountOut,
+            amountOutMin: (response?.rawTrade as any)?.amountOutMin || BigInt(0),
+            path: response?.rawTrade?.path as any || [],
+          },
+        } : (response?.platform as any) === "Soroswap AMM" && tradeType === TradeType.EXACT_OUTPUT ? {
+          assetIn: response?.assetIn,
+          assetOut: response?.assetOut,
+          priceImpact: {
+            numerator: parseFloat(response?.priceImpactPct || "0"),
+            denominator: 1,
+          },
+          platform: PlatformType.ROUTER,
+          tradeType: tradeType,
+          trade: {
+            amountOut: response?.amountOut,
+            expectedAmountIn: response?.amountIn,
+            amountInMax: (response?.rawTrade as any)?.amountInMax || BigInt(0),
+            path: response?.rawTrade?.path as any || [],
+          },
+        } : undefined;
       } catch (error) {
         //TODO: Here it could be a on chain solution
         console.error('Error getting soroban path:', error);
@@ -209,13 +270,76 @@ export const useSoroswapApi = () => {
 
       try {
         const response = await getQuote(network, swapRequest);
-        sorobanPath = response;
+        console.log("🚀 | useSoroswapApi | response:", response)
+
+        sorobanPath = response?.platform === "aggregator" && response.tradeType === "EXACT_IN" ? {
+          assetIn: response?.assetIn,
+          assetOut: response?.assetOut,
+          priceImpact: {
+            numerator: parseFloat(response?.priceImpactPct || "0"),
+            denominator: 1,
+          },
+          platform: PlatformType.AGGREGATOR,
+          tradeType: tradeType,
+          trade: {
+            amountIn: response?.amountIn,
+            expectedAmountOut: response?.amountOut,
+            amountOutMin: (response?.rawTrade as any)?.amountOutMin || BigInt(0),
+            distribution: (response?.rawTrade as any)?.distribution,
+          },
+        } : response?.platform === "aggregator" && response.tradeType === "EXACT_OUT" ? {
+          assetIn: response?.assetIn,
+          assetOut: response?.assetOut,
+          priceImpact: {
+            numerator: parseFloat(response?.priceImpactPct || "0"),
+            denominator: 1,
+          },
+          platform: PlatformType.AGGREGATOR,
+          tradeType: tradeType,
+          trade: {
+            amountOut: response?.amountOut,
+            expectedAmountIn: response?.amountIn,
+            amountInMax: (response?.rawTrade as any)?.amountInMax || BigInt(0),
+            distribution: (response?.rawTrade as any)?.distribution,
+          },
+        } : response?.platform === "router" && response.tradeType === "EXACT_IN" ? {
+          assetIn: response?.assetIn,
+          assetOut: response?.assetOut,
+          priceImpact: {
+            numerator: parseFloat(response?.priceImpactPct || "0"),
+            denominator: 1,
+          },
+          platform: PlatformType.ROUTER,
+          tradeType: tradeType,
+          trade: {
+            amountIn: response?.amountIn,
+            expectedAmountOut: response?.amountOut,
+            amountOutMin: (response?.rawTrade as any)?.amountOutMin || BigInt(0),
+            path: response?.rawTrade?.path as any || [],
+          },
+        } : response?.platform === "router" && response.tradeType === "EXACT_OUT" ? {
+          assetIn: response?.assetIn,
+          assetOut: response?.assetOut,
+          priceImpact: {
+            numerator: parseFloat(response?.priceImpactPct || "0"),
+            denominator: 1,
+          },
+          platform: PlatformType.ROUTER,
+          tradeType: tradeType,
+          trade: {
+            amountOut: response?.amountOut,
+            expectedAmountIn: response?.amountIn,
+            amountInMax: (response?.rawTrade as any)?.amountInMax || BigInt(0),
+            distribution: (response?.rawTrade as any)?.distribution,
+          },
+        } : undefined;
       } catch (error) {
         //TODO: Here it could be a on chain solution
         console.error('Error getting soroban path:', error);
         return undefined;
       }
     }
+    console.log("🚀 | sorobanPath:", sorobanPath)
     const bestPath = getBestPath(horizonPath, sorobanPath, tradeType);
     return bestPath;
   };
