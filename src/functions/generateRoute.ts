@@ -189,7 +189,7 @@ export const useSoroswapApi = () => {
       try {
         const response = await getQuote(network, swapSplitRequest);
 
-        sorobanPath = (response?.platform as any) === "Soroswap Aggregator" && tradeType === TradeType.EXACT_INPUT ? {
+        sorobanPath = (response?.platform as any) === "Soroswap Aggregator" && response?.tradeType === "EXACT_IN" ? {
           assetIn: response?.assetIn,
           assetOut: response?.assetOut,
           priceImpact: {
@@ -204,7 +204,7 @@ export const useSoroswapApi = () => {
             amountOutMin: (response?.rawTrade as any)?.amountOutMin || BigInt(0),
             distribution: (response?.rawTrade as any)?.distribution,
           },
-        } : (response?.platform as any) == "Soroswap Aggregator" && tradeType === TradeType.EXACT_OUTPUT ? {
+        } : (response?.platform as any) == "Soroswap Aggregator" && response?.tradeType === "EXACT_OUT" ? {
           assetIn: response?.assetIn,
           assetOut: response?.assetOut,
           priceImpact: {
@@ -219,7 +219,7 @@ export const useSoroswapApi = () => {
             amountInMax: (response?.rawTrade as any)?.amountInMax || BigInt(0),
             distribution: (response?.rawTrade as any)?.distribution,
           },
-        } : (response?.platform as any) === "Soroswap AMM" && tradeType === TradeType.EXACT_INPUT ? {
+        } : (response?.platform as any) === "Soroswap AMM" && response?.tradeType === "EXACT_IN" ? {
           assetIn: response?.assetIn,
           assetOut: response?.assetOut,
           priceImpact: {
@@ -234,7 +234,7 @@ export const useSoroswapApi = () => {
             amountOutMin: (response?.rawTrade as any)?.amountOutMin || BigInt(0),
             path: response?.rawTrade?.path as any || [],
           },
-        } : (response?.platform as any) === "Soroswap AMM" && tradeType === TradeType.EXACT_OUTPUT ? {
+        } : (response?.platform as any) === "Soroswap AMM" && response?.tradeType === "EXACT_OUT" ? {
           assetIn: response?.assetIn,
           assetOut: response?.assetOut,
           priceImpact: {
@@ -272,7 +272,7 @@ export const useSoroswapApi = () => {
         const response = await getQuote(network, swapRequest);
         console.log("🚀 | useSoroswapApi | response:", response)
 
-        sorobanPath = response?.platform === "aggregator" && response.tradeType === "EXACT_IN" ? {
+        sorobanPath = (response?.platform as any) === "Soroswap Aggregator" && response?.tradeType === "EXACT_IN" ? {
           assetIn: response?.assetIn,
           assetOut: response?.assetOut,
           priceImpact: {
@@ -287,7 +287,7 @@ export const useSoroswapApi = () => {
             amountOutMin: (response?.rawTrade as any)?.amountOutMin || BigInt(0),
             distribution: (response?.rawTrade as any)?.distribution,
           },
-        } : response?.platform === "aggregator" && response.tradeType === "EXACT_OUT" ? {
+        } : (response?.platform as any) === "Soroswap Aggregator" && response?.tradeType === "EXACT_OUT" ? {
           assetIn: response?.assetIn,
           assetOut: response?.assetOut,
           priceImpact: {
@@ -302,7 +302,7 @@ export const useSoroswapApi = () => {
             amountInMax: (response?.rawTrade as any)?.amountInMax || BigInt(0),
             distribution: (response?.rawTrade as any)?.distribution,
           },
-        } : response?.platform === "router" && response.tradeType === "EXACT_IN" ? {
+        } : (response?.platform as any) === "Soroswap AMM" && response?.tradeType === "EXACT_IN" ? {
           assetIn: response?.assetIn,
           assetOut: response?.assetOut,
           priceImpact: {
@@ -317,7 +317,7 @@ export const useSoroswapApi = () => {
             amountOutMin: (response?.rawTrade as any)?.amountOutMin || BigInt(0),
             path: response?.rawTrade?.path as any || [],
           },
-        } : response?.platform === "router" && response.tradeType === "EXACT_OUT" ? {
+        } : (response?.platform as any) === "Soroswap AMM" && response?.tradeType === "EXACT_OUT" ? {
           assetIn: response?.assetIn,
           assetOut: response?.assetOut,
           priceImpact: {
