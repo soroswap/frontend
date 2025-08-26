@@ -17,15 +17,14 @@ interface FetchBalancesProps {
   account: AccountResponse | undefined;
 }
 
-const fetchBalances = async ({ address, tokens, sorobanContext, account }: FetchBalancesProps) => {
+const fetchBalances = async ({ address, tokens, sorobanContext, account }: FetchBalancesProps, ) => {
   if (!address || !tokens || !sorobanContext || !account) return null;
-
+  
   const response = await tokenBalances(address, tokens, sorobanContext, account, true);
-
   return response;
 };
 
-function calculateAvailableBalance(
+export function calculateAvailableBalance(
   balance?: string | number | BigNumber | null,
   networkFees?: string | number | BigNumber | null,
   subentryCount?: number,

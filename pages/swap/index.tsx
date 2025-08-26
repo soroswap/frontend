@@ -17,6 +17,7 @@ export default function SwapPage() {
   });
 
   useEffect(() => {
+    if (!activeChain || !xlmTokenList) return undefined
     const newXlmToken =
       xlmTokenList.find((tList) => tList.network === activeChain)?.assets[0].contract ?? null;
     setXlmToken(newXlmToken);

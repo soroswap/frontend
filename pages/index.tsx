@@ -21,7 +21,10 @@ export default function Home() {
     [Field.OUTPUT]: { currencyId: null },
   });
   const activeChain = passphraseToBackendNetworkName[activeNetwork!].toLowerCase();
+  
   useEffect(() => {
+    if (!activeChain || !xlmTokenList) return undefined
+    
     if (prefilledState.INPUT?.currencyId == null) {
       const newXlmToken =
         xlmTokenList.find((tList) => tList.network === activeChain)?.assets[0].contract ?? null;

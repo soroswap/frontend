@@ -2,7 +2,7 @@
 import { ButtonBase, styled, useMediaQuery, useTheme } from 'soroswap-ui';
 import { useSorobanReact } from 'stellar-react';
 import { darken } from 'polished';
-import { ReactNode, useCallback, useState } from 'react';
+import { memo, ReactNode, useCallback, useState } from 'react';
 import { ChevronDown } from 'react-feather';
 import { TokenType } from '../../interfaces';
 import { flexColumnNoWrap, flexRowNoWrap } from '../../themes/styles';
@@ -186,7 +186,7 @@ interface SwapCurrencyInputPanelProps {
   isLoadingNetworkFees?: boolean;
 }
 
-export default function SwapCurrencyInputPanel({
+const SwapCurrencyInputPanel =  ({
   value,
   onUserInput,
   onMax,
@@ -210,7 +210,7 @@ export default function SwapCurrencyInputPanel({
   networkFees,
   isLoadingNetworkFees,
   ...rest
-}: SwapCurrencyInputPanelProps) {
+}: SwapCurrencyInputPanelProps) => {
   const [modalOpen, setModalOpen] = useState(false);
   const { address } = useSorobanReact();
   const theme = useTheme();
@@ -310,6 +310,10 @@ export default function SwapCurrencyInputPanel({
         showCurrencyAmount={showCurrencyAmount}
         disableNonToken={disableNonToken}
       />
+      
     </InputPanel>
   );
 }
+
+
+export default memo(SwapCurrencyInputPanel)
