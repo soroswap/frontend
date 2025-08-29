@@ -1,4 +1,3 @@
-
 import { Box, useTheme } from 'soroswap-ui';
 import { ButtonPrimary } from 'components/Buttons/Button';
 import { CloseButton } from 'components/Buttons/CloseButton';
@@ -32,7 +31,7 @@ const UnsafeTokenModalContent = ({ onDismiss, onConfirm, isSafe }: Props) => {
           </SubHeaderLarge>
           {isSafe === false && (
             <SubHeaderSmall color={"textSecondary"} textAlign="center" marginBottom="12px">
-              The chosen token has been identified as potentially unsafe due to a mismatch between its contract ID and the expected CODE:ISSUER combination indicated by its name.
+              The chosen token has been identified as potentially unsafe due to a mismatch between its contract ID and the expected (CODE:ISSUER or CODE-ISSUER) combination indicated by its name.
             </SubHeaderSmall>
           )}
           {isSafe === undefined && (

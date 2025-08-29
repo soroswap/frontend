@@ -43,7 +43,8 @@ export function isValidSymbol(code: string): boolean {
 
 export function isClassicStellarAssetFormat(value: string): boolean {
   if (!value) return false;
-  const parts = value.split(':');
+  // Support both : and - separators
+  const parts = value.split(/[:-]/);
   if (parts.length !== 2) {
     return false;
   }
@@ -53,10 +54,11 @@ export function isClassicStellarAssetFormat(value: string): boolean {
   return toReturn;
 }
 
-//Receives the name of the token must be SYMBOL:ISSUER
+//Receives the name of the token must be SYMBOL:ISSUER or SYMBOL-ISSUER
 export function getClassicStellarAsset(value: string) {
   if (!value) return false;
-  const parts = value.split(':');
+  // Support both : and - separators
+  const parts = value.split(/[:-]/);
   if (parts.length !== 2) {
     return false;
   }
@@ -68,6 +70,13 @@ export function getClassicStellarAsset(value: string) {
   return {
     assetCode,
     issuer,
-    asset: `${assetCode}:${issuer}`,
+    asset: `${assetCode}:${issuer}`, // Always normalize to : format internally
   };
+}
+
+// Add helper function to normalize format
+export function normalizeAssetFormat(value: string): string {
+  if (!value) return value;
+  // Convert CODE-ISSUER to CODE:ISSUER
+  return value.replace(/-([A-Z0-9]{56})/, ':$1');
 }
