@@ -196,19 +196,17 @@ export const ActiveChainHeaderChip = ({ isMobile }: { isMobile?: boolean }) => {
   const activeChainName = passphraseToBackendNetworkName[activeChain!].toLowerCase();
   const [chainName, setChainName] = React.useState(activeChainName);
   useEffect(() => {
-    const formattedActiveChainName = activeChainName.charAt(0).toUpperCase() + activeChainName.slice(1);
+    const formattedActiveChainName =
+      activeChainName.charAt(0).toUpperCase() + activeChainName.slice(1);
     setChainName(formattedActiveChainName);
   }, [activeChain]);
 
   return (
     <>
       {activeChain && address ? (
-        <HeaderChip
-          label={chainName}
-          isSmall={isMobile}
-        />
+        <HeaderChip label={chainName} isSmall={isMobile} />
       ) : (
-          <HeaderChip label={chainName} isSmall={isMobile} />
+        <HeaderChip label={chainName} isSmall={isMobile} />
       )}
     </>
   );
@@ -218,6 +216,14 @@ export default function ProfileSection() {
   const sorobanContext: SorobanContextType = useSorobanReact();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down(1220));
+
+  useEffect(() => {
+    if (sorobanContext.address) {
+      console.log('wallet:', sorobanContext.address);
+    } else {
+      console.log('Disconnected from wallet');
+    }
+  }, [sorobanContext.address]);
 
   return (
     <Box display="flex" gap="8px">
